@@ -243,6 +243,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
 
     // initial condition parameters
     const double aa__hxhx = (a*a)/(hx*hx);
+    const double b__2_0hx = b/(2.0*hx);
     const double htht_05  = 0.5*ht*ht;
     const double ht_ht    = ht*ht;
 
@@ -292,22 +293,24 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         if (n==xmin)
         {
             sdx = aa__hxhx*(+2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-1.0*u00[3]);
-            fdx = (-3.0*u00[0]+4.0*u00[1]-u00[2])/(2.0*hx);
+            fdx = b__2_0hx*(-3.0*u00[0]+4.0*u00[1]-u00[2]);
         }
         else if (n==xmax)
         {
             sdx = aa__hxhx*(-1.0*u00[N-3]+4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
-            fdx = (u00[N-2]-4.0*u00[N-1]+3.0*u00[N])/(2.0*hx);
+            fdx = b__2_0hx*(u00[N-2]-4.0*u00[N-1]+3.0*u00[N]);
         }
         else
         {
             sdx = aa__hxhx*(u00[i-1]-2.0*u00[i]+u00[i+1]);
-            fdx = (u00[i+1]-u00[i-1])/(2.0*hx);
+            fdx = b__2_0hx*(u00[i+1]-u00[i-1]);
         }
 
-        u10[i] = u00[i] + fdt*ht;
-        u10[i] += (sdx + b*fdx + c*u00[i] + f(sn,tn00) - d*fdt) * htht_05;
+        double sdt = sdx + fdx + c*u00[i] + f(sn, tn00) - d*fdt;
+
+        u10[i] = u00[i] + fdt*ht + sdt*htht_05;
     }
+
     layerInfo(u10, tn10);
 
     /***********************************************************************************************/
@@ -593,9 +596,9 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
 
 void IWaveEquationIBVP::implicit_calculate_D2V1() const
 {
-    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) -1;
-    const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) -1;
-    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) -1;
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) - 1;
 
     const int xmin = spaceDimensionX().min();
     const int xmax = spaceDimensionX().max();
@@ -624,7 +627,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     const double htht_0250 = ht*ht*0.250;
     const double htht_0125 = ht*ht*0.125;
     const double ht_0500 = ht*0.500;
-    const double ht_0250 = ht*0.250;
+    //const double ht_0250 = ht*0.250;
 
     // equation parameters
     const double k101 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 + (0.125*b1)*((ht*ht)/(hx))*w1;           // i-1
@@ -660,7 +663,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     const double b114 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 + ((0.25*c)*(ht*ht))*w2;
     const double b115 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w2 + (0.25*b1*ht*ht)*w2;
     const double b116 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w2;
-    const double b117 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 + ((0.25*c)*(ht*ht))*w3;
+    const double b117 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 + ((0.25*c)*(ht*ht))*w3 + 0.25*d*ht;
     const double b118 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w3 + (0.25*b1*ht*ht)*w3;
     const double b119 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w3;
     const double b120 = +((0.25*a2*a2*ht*ht)/(hy*hy));
@@ -670,16 +673,50 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     // right border condition parameters x = xmax
     const double b211 = -((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w1;
     const double b212 = +(0.25*a1*a1*(ht*ht)/(0.5*hx))*w1 + (0.25*b1*ht*ht)*w1;
-    const double b213 = +1.0 + (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w1 + ((0.25*c)*(ht*ht))*w1 + 0.25*d*ht;
+    const double b213 = +1.0 + (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w1 - ((0.25*c)*(ht*ht))*w1 + 0.25*d*ht;
     const double b214 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w2;
     const double b215 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w2 - (0.25*b1*ht*ht)*w2;
-    const double b216 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 - ((0.25*c)*(ht*ht))*w2;
+    const double b216 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 + ((0.25*c)*(ht*ht))*w2;
     const double b217 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w3;
     const double b218 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w3 - (0.25*b1*ht*ht)*w3;
-    const double b219 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 - ((0.25*c)*(ht*ht))*w3;
+    const double b219 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 + ((0.25*c)*(ht*ht))*w3 + 0.25*d*ht;
     const double b220 = +((0.25*a2*a2*ht*ht)/(hy*hy));
     const double b221 = +((0.25*b2*ht*ht)/(2.0*hy));
     const double b222 = +(0.25*a1*a1*ht*ht)/(0.5*hx) + (0.25*b1*ht*ht);
+
+    // bottom border condition parameters y = ymin
+    const double b311 = +1.0 + (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w1 - ((0.25*c)*(ht*ht))*w1 + 0.25*d*ht;
+    const double b312 = +(0.25*a2*a2*(ht*ht)/(0.5*hy))*w1 - (0.25*b2*ht*ht)*w1;
+    const double b313 = -((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w1;
+    const double b314 = +2.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b315 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w2 + (0.25*b2*ht*ht)*w2;
+    const double b316 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w2;
+    const double b317 = -1.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w3 + ((0.25*c)*(ht*ht))*w3 + 0.25*d*ht;
+    const double b318 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w3 + (0.25*b2*ht*ht)*w3;
+    const double b319 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w3;
+    const double b320 = +((0.25*a1*a1*ht*ht)/(hx*hx));
+    const double b321 = +((0.25*b1*ht*ht)/(2.0*hx));
+    const double b322 = +(0.25*a2*a2*ht*ht)/(0.5*hy) - (0.25*b2*ht*ht);
+
+    // upper border condition parameters y = ymax
+    const double b411 = -((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w1;
+    const double b412 = +(0.25*a2*a2*(ht*ht)/(0.5*hy))*w1 + (0.25*b2*ht*ht)*w1;
+    const double b413 = +1.0 + (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w1 - ((0.25*c)*(ht*ht))*w1 + 0.25*d*ht;
+    const double b414 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w2;
+    const double b415 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w2 - (0.25*b2*ht*ht)*w2;
+    const double b416 = +2.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b417 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w3;
+    const double b418 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w3 - (0.25*b1*ht*ht)*w3;
+    const double b419 = -1.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w3 + ((0.25*c)*(ht*ht))*w3 + 0.25*d*ht;
+    const double b420 = +((0.25*a1*a1*ht*ht)/(hx*hx));
+    const double b421 = +((0.25*b1*ht*ht)/(2.0*hx));
+    const double b422 = +(0.25*a2*a2*ht*ht)/(0.5*hy) + (0.25*b2*ht*ht);
+
+    // initial condition parameters
+    const double a1a1__hxhx = (a1*a1)/(hx*hx);
+    const double a2a2__hyhy = (a2*a2)/(hy*hy);
+    const double b1__20_0hx = ((b1)/(2.0*hx));
+    const double b2__20_0hy = ((b2)/(2.0*hy));
 
 
     double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -744,43 +781,42 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
         for (n=xmin, sn.i = n, sn.x = n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
             double fdt = initial(sn, InitialCondition::InitialFirstDerivative);
-            double sdt = 0.0;
 
             double sdxy = 0.0;
             double fdxy = 0.0;
             if (j==0)
             {
-                sdxy += ((a2*a2)/(hy*hy))*(+2.0*u00[0][i]-5.0*u00[1][i]+4.0*u00[2][i]-1.0*u00[3][i]);
-                fdxy += ((b2)/(2.0*hy))*(-3.0*u00[0][i]+4.0*u00[1][i]-1.0*u00[2][i]);
+                sdxy += a2a2__hyhy*(+2.0*u00[0][i]-5.0*u00[1][i]+4.0*u00[2][i]-1.0*u00[3][i]);
+                fdxy += b2__20_0hy*(-3.0*u00[0][i]+4.0*u00[1][i]-1.0*u00[2][i]);
             }
             else if (j==M)
             {
-                sdxy += ((a2*a2)/(hy*hy))*(-1.0*u00[M-3][i]+4.0*u00[M-2][i]-5.0*u00[M-1][i]+2.0*u00[M][i]);
-                fdxy += ((b2)/(2.0*hy))*(u00[N-2][i]-4.0*u00[N-1][i]+3.0*u00[N][i]);
+                sdxy += a2a2__hyhy*(-1.0*u00[M-3][i]+4.0*u00[M-2][i]-5.0*u00[M-1][i]+2.0*u00[M][i]);
+                fdxy += b2__20_0hy*(u00[N-2][i]-4.0*u00[N-1][i]+3.0*u00[N][i]);
             }
             else
             {
-                sdxy += ((a2*a2)/(hy*hy))*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
-                fdxy += ((b2)/(2.0*hy))*(u00[j+1][i]-u00[j-1][i]);
+                sdxy += a2a2__hyhy*(u00[j-1][i]-2.0*u00[j][i]+u00[j+1][i]);
+                fdxy += b2__20_0hy*(u00[j+1][i]-u00[j-1][i]);
             }
 
             if (i==0)
             {
-                sdxy += ((a1*a1)/(hx*hx))*(+2.0*u00[j][0]-5.0*u00[j][1]+4.0*u00[j][2]-1.0*u00[j][3]);
-                fdxy += ((b1)/(2.0*hx))*(-3.0*u00[j][0]+4.0*u00[j][1]-1.0*u00[j][2]);
+                sdxy += a1a1__hxhx*(+2.0*u00[j][0]-5.0*u00[j][1]+4.0*u00[j][2]-1.0*u00[j][3]);
+                fdxy += b1__20_0hx*(-3.0*u00[j][0]+4.0*u00[j][1]-1.0*u00[j][2]);
             }
             else if (i==N)
             {
-                sdxy += ((a1*a1)/(hx*hx))*(-1.0*u00[j][N-3]+4.0*u00[j][N-2]-5.0*u00[j][N-1]+2.0*u00[j][N]);
-                fdxy += ((b1)/(2.0*hx))*(u00[j][M-2]-4.0*u00[j][M-1]+3.0*u00[j][M]);
+                sdxy += a1a1__hxhx*(-1.0*u00[j][N-3]+4.0*u00[j][N-2]-5.0*u00[j][N-1]+2.0*u00[j][N]);
+                fdxy += b1__20_0hx*(u00[j][M-2]-4.0*u00[j][M-1]+3.0*u00[j][M]);
             }
             else
             {
-                sdxy += ((a1*a1)/(hx*hx))*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
-                fdxy += ((b1)/(2.0*hx))*(u00[j][i+1]-u00[j][i-1]);
+                sdxy += a1a1__hxhx*(u00[j][i-1]-2.0*u00[j][i]+u00[j][i+1]);
+                fdxy += b1__20_0hx*(u00[j][i+1]-u00[j][i-1]);
             }
 
-            sdt = sdxy + fdxy + c*u00[j][i] + f(sn,tn00) - d*fdt;
+            double sdt = sdxy + fdxy + c*u00[j][i] + f(sn, tn00) - d*fdt;
 
             u05[j][i] = u00[j][i] + fdt*ht_0500 + sdt*htht_0125;
             u10[j][i] = u00[j][i] + fdt*ht      + sdt*htht_0500;
@@ -826,7 +862,21 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {}
+            {
+                s = 0;
+                ax[0]  = 0.0;
+                bx[0]  = beta  * b111;
+                cx[0]  = beta  * b113;
+
+                dx[0]  = beta  * b114 * u10[j][0] + beta  * b116 * u10[j][1];
+                dx[0] += beta  * b117 * u05[j][0] + beta  * b119 * u05[j][1];
+
+                dx[0] += beta  * b120 * (u10[j+1][0]-2.0*u10[j][0]+u10[j-1][0]);
+                dx[0] += beta  * b121 * (u10[j+1][0]-u10[j-1][0]);
+
+                dx[0] += beta  * htht_0250 * f(sn, tn10);
+                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+            }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
@@ -837,8 +887,8 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dx[0]  = beta  * b114 * u10[j][0] + alpha  * b115 * u10[j][0] + beta  * b116 * u10[j][1];
                 dx[0] += beta  * b117 * u05[j][0] + alpha  * b118 * u05[j][0] + beta  * b119 * u05[j][1];
 
-                dx[0] += beta  * b120 * (u10[j+1][s]-2.0*u10[j][s]+u10[j-1][s]);
-                dx[0] += beta  * b121 * (u10[j+1][s]-u10[j-1][s]);
+                dx[0] += beta  * b120 * (u10[j+1][0]-2.0*u10[j][0]+u10[j-1][0]);
+                dx[0] += beta  * b121 * (u10[j+1][0]-u10[j-1][0]);
 
                 dx[0] += beta  * htht_0250 * f(sn, tn10);
                 dx[0] += gamma * b122 * boundary(sn, tn10, condition);
@@ -858,7 +908,21 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {}
+            {
+                e = N;
+                ax[N]  = beta  * b211;
+                bx[N]  = beta  * b213;
+                cx[N]  = 0.0;
+
+                dx[N]  = beta  * b214 * u10[j][N-1] + beta  * b216 * u10[j][N];
+                dx[N] += beta  * b217 * u05[j][N-1] + beta  * b219 * u05[j][N];
+
+                dx[N] += beta  * b220 * (u10[j+1][N]-2.0*u10[j][N]+u10[j-1][N]);
+                dx[N] += beta  * b221 * (u10[j+1][N]-u10[j-1][N]);
+
+                dx[N] += beta  * htht_0250 * f(sn, tn10);
+                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+            }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = N;
@@ -866,11 +930,11 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 bx[N]  = beta  * b213 + alpha * b212;
                 cx[N]  = 0.0;
 
-                dx[N]  = beta  * b214 * u10[j][N] + alpha  * b215 * u10[j][N] + beta  * b216 * u10[j][N-1];
-                dx[N] += beta  * b217 * u05[j][N] + alpha  * b218 * u05[j][N] + beta  * b219 * u05[j][N-1];
+                dx[N]  = beta  * b214 * u10[j][N-1] + alpha  * b215 * u10[j][N] + beta  * b216 * u10[j][N];
+                dx[N] += beta  * b217 * u05[j][N-1] + alpha  * b218 * u05[j][N] + beta  * b219 * u05[j][N];
 
-                dx[N] += beta  * b220 * (u10[j+1][s]-2.0*u10[j][s]+u10[j-1][s]);
-                dx[N] += beta  * b221 * (u10[j+1][s]-u10[j-1][s]);
+                dx[N] += beta  * b220 * (u10[j+1][N]-2.0*u10[j][N]+u10[j-1][N]);
+                dx[N] += beta  * b221 * (u10[j+1][N]-u10[j-1][N]);
 
                 dx[N] += beta  * htht_0250 * f(sn, tn10);
                 dx[N] += gamma * b222 * boundary(sn, tn10, condition);
@@ -916,16 +980,16 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 u15[M][i] = (3.5*u15[M-1][i] - 2.0*u15[M-2][i] + 0.5*u15[M-3][i] + hy*(gamma/beta)*value)/(2.0);
-                //u05[M][i] = (u05[M-1][i] + hy*(gamma/beta)*value));
+                //u15[M][i] = (u15[M-1][i] + hy*(gamma/beta)*value));
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 u15[M][i] = (3.5*u15[M-1][i] - 2.0*u15[M-2][i] + 0.5*u15[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
-                //u05[M][i] = (u05[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+                //u15[M][i] = (u15[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
             }
         }
 
-        layerInfo(u15, tn15); exit(-1);
+        layerInfo(u15, tn15);
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -956,9 +1020,37 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {}
+            {
+                s = 0;
+                ay[0]  = 0.0;
+                by[0]  = beta  * b311;
+                cy[0]  = beta  * b313;
+
+                dy[0]  = beta  * b314 * u15[0][i] + beta  * b316 * u15[1][i];
+                dy[0] += beta  * b317 * u10[0][i] + beta  * b319 * u10[1][i];
+
+                dy[0] += beta  * b320 * (u15[0][i+1]-2.0*u15[0][i]+u15[0][i-1]);
+                dy[0] += beta  * b321 * (u15[0][i+1]-u15[0][i-1]);
+
+                dy[0] += beta  * htht_0250 * f(sn, tn15);
+                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+            }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
-            {}
+            {
+                s = 0;
+                ay[0]  = 0.0;
+                by[0]  = beta  * b311 + alpha * b312;
+                cy[0]  = beta  * b313;
+
+                dy[0]  = beta  * b314 * u15[0][i] + alpha  * b315 * u15[0][i] + beta  * b316 * u15[1][i];
+                dy[0] += beta  * b317 * u10[0][i] + alpha  * b318 * u10[0][i] + beta  * b319 * u10[1][i];
+
+                dy[0] += beta  * b320 * (u15[0][i+1]-2.0*u15[0][i]+u15[0][i-1]);
+                dy[0] += beta  * b321 * (u15[0][i+1]-u15[0][i-1]);
+
+                dy[0] += beta  * htht_0250 * f(sn, tn15);
+                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+            }
 
             sn.j = ymax; sn.y = ymax*hy;
             value = boundary(sn, tn20, condition);
@@ -974,9 +1066,37 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {}
+            {
+                e = M;
+                ay[M]  = beta  * b411;
+                by[M]  = beta  * b413;
+                cy[M]  = 0.0;
+
+                dy[M]  = beta  * b414 * u15[M-1][i] + beta  * b416 * u15[M][i];
+                dy[M] += beta  * b417 * u10[M-1][i] + beta  * b419 * u10[M][i];
+
+                dy[M] += beta  * b420 * (u15[M][i+1]-2.0*u15[M][i]+u15[M][i-1]);
+                dy[M] += beta  * b421 * (u15[M][i+1]-u15[M][i-1]);
+
+                dy[M] += beta  * htht_0250 * f(sn, tn15);
+                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+            }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
-            {}
+            {
+                e = M;
+                ay[M]  = beta  * b411;
+                by[M]  = beta  * b413 + alpha * b412;
+                cy[M]  = 0.0;
+
+                dy[M]  = beta  * b414 * u15[M-1][i] + alpha  * b415 * u15[M][i] + beta  * b416 * u15[M][i];
+                dy[M] += beta  * b417 * u10[M-1][i] + alpha  * b418 * u10[M][i] + beta  * b419 * u10[M][i];
+
+                dy[M] += beta  * b420 * (u15[M][i+1]-2.0*u15[M][i]+u15[M][i-1]);
+                dy[M] += beta  * b421 * (u15[M][i+1]-u15[M][i-1]);
+
+                dy[M] += beta  * htht_0250 * f(sn, tn15);
+                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+            }
 
             tomasAlgorithmLeft2Right(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
             for (unsigned int j=s; j<=e; j++) u20[j][i] = ry[j];
@@ -996,13 +1116,13 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0);
-                //u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value);
+                u20[j][0] = (3.5*u20[j][1] - 2.0*u20[j][2] + 0.5*u20[j][3] + hx*(gamma/beta)*value)/(2.0);
+                //u20[j][0] = (u20[j][1] + hx*(gamma/beta)*value);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
-                //u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
+                u20[j][0] = (3.5*u20[j][1] - 2.0*u20[j][2] + 0.5*u20[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //u20[j][0] = (u20[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
             }
 
             sn.i = xmax; sn.x = xmax*hx;
@@ -1017,13 +1137,13 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0);
-                //u10[j][N] = (u10[j][N-1] + hx*(gamma/beta)*value);
+                u20[j][N] = (3.5*u20[j][N-1] - 2.0*u20[j][N-2] + 0.5*u20[j][N-3] + hx*(gamma/beta)*value)/(2.0);
+                //u20[j][N] = (u20[j][N-1] + hx*(gamma/beta)*value);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
-                //u10[j][N] = (u10[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+                u20[j][N] = (3.5*u20[j][N-1] - 2.0*u20[j][N-2] + 0.5*u20[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //u20[j][N] = (u20[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
             }
         }
 
@@ -1161,6 +1281,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
 
     // initial condition parameters
     const double aa__hxhx = (a*a)/(hx*hx);
+    const double b__2_0hx = (b/(2.0*hx));
+
     const double htht_05  = 0.5*ht*ht;
     const double ht_ht    = ht*ht;
 
@@ -1178,9 +1300,9 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
-    DoubleVector u00(N+1);
-    DoubleVector u10(N+1);
-    DoubleVector u20(N+1);
+    DoubleVector p00(N+1);
+    DoubleVector p10(N+1);
+    DoubleVector p20(N+1);
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -1193,9 +1315,9 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
     for (int n=xmin; n<=xmax; n++, i++)
     {
         sn.i = n; sn.x = n*hx;
-        u00[i] = final(sn, FinalCondition::FinalValue);
+        p00[i] = final(sn, FinalCondition::FinalValue);
     }
-    layerInfo(u00, tn00);
+    layerInfo(p00, tn00);
 
     /***********************************************************************************************/
 
@@ -1203,28 +1325,32 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
     for (int n=xmin; n<=xmax; n++, i++)
     {
         sn.i = n; sn.x = n*hx;
-        double firstDerivativeT = final(sn, FinalCondition::FinalFirstDerivative);
-        u10[i] = u00[i] - firstDerivativeT*ht;
-        double secndDerivativeX = 0.0;
-        double firstDerivativeX = 0.0;
+        double fdt = final(sn, FinalCondition::FinalFirstDerivative);
+
+        double sdx = 0.0;
+        double fdx = 0.0;
         if (n==xmin)
         {
-            secndDerivativeX = aa__hxhx*(+2.0*u00[0]-5.0*u00[1]+4.0*u00[2]-1.0*u00[3]);
-            firstDerivativeX = (-3.0*u00[0]+4.0*u00[1]-u00[2])/(2.0*hx);
+            sdx = aa__hxhx*(+2.0*p00[0]-5.0*p00[1]+4.0*p00[2]-1.0*p00[3]);
+            fdx = b__2_0hx*(-3.0*p00[0]+4.0*p00[1]-p00[2]);
         }
         else if (n==xmax)
         {
-            secndDerivativeX = aa__hxhx*(-1.0*u00[N-3]+4.0*u00[N-2] -5.0*u00[N-1] +2.0*u00[N]);
-            firstDerivativeX = (u00[N-2]-4.0*u00[N-1]+3.0*u00[N])/(2.0*hx);
+            sdx = aa__hxhx*(-1.0*p00[N-3]+4.0*p00[N-2] -5.0*p00[N-1] +2.0*p00[N]);
+            fdx = b__2_0hx*(p00[N-2]-4.0*p00[N-1]+3.0*p00[N]);
         }
         else
         {
-            secndDerivativeX = aa__hxhx*(u00[i-1]-2.0*u00[i]+u00[i+1]);
-            firstDerivativeX = (u00[i+1]-u00[i-1])/(2.0*hx);
+            sdx = aa__hxhx*(p00[i-1]-2.0*p00[i]+p00[i+1]);
+            fdx = b__2_0hx*(p00[i+1]-p00[i-1]);
         }
-        u10[i] += (secndDerivativeX + b*firstDerivativeX + c*u00[i] + f(sn,tn00) - d*firstDerivativeT) * htht_05;
+
+        double sdt = sdx + fdx + c*p00[i] + f(sn, tn00) - d*fdt;
+
+        p10[i] = p00[i] - fdt*ht + sdt*htht_05;
     }
-    layerInfo(u10, tn10);
+
+    layerInfo(p10, tn10);
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -1240,8 +1366,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
         {
             sn.i = n; sn.x = n*hx;
             dx[i] = 0.0;
-            dx[i] += k21 * u10[i-1] + k22 * u10[i] + k23 * u10[i+1];
-            dx[i] += k31 * u00[i-1] + k32 * u00[i] + k33 * u00[i+1];
+            dx[i] += k21 * p10[i-1] + k22 * p10[i] + k23 * p10[i+1];
+            dx[i] += k31 * p00[i-1] + k32 * p00[i] + k33 * p00[i+1];
 
             dx[i] += ht_ht*f(sn, tn10);
             //dx[i] += ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00);
@@ -1259,8 +1385,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
         {
             s = 1;
 
-            u20[0] = (gamma/alpha)*value;
-            dx[1] -= k11 * u20[0];
+            p20[0] = (gamma/alpha)*value;
+            dx[1] -= k11 * p20[0];
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
@@ -1271,8 +1397,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             bx[s]  = beta * b11 + alpha * b12;
             cx[s]  = beta * b13;
 
-            dx[s]  = beta * b14 * u10[s] + beta * b16 * u10[s+1];
-            dx[s] += beta * b17 * u00[s] + beta * b19 * u00[s+1];
+            dx[s]  = beta * b14 * p10[s] + beta * b16 * p10[s+1];
+            dx[s] += beta * b17 * p00[s] + beta * b19 * p00[s+1];
 
             dx[s] += gamma * b20 * boundary(sn, tn10, condition);
             dx[s] += beta  * ht_ht*f(sn,tn10);
@@ -1293,8 +1419,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             bx[s]  = beta * b11 + alpha * b12;
             cx[s]  = beta * b13;
 
-            dx[s]  = beta * b14 * u10[s] + alpha * b15 * u10[s] + beta * b16 * u10[s+1];
-            dx[s] += beta * b17 * u00[s] + alpha * b18 * u00[s] + beta * b19 * u00[s+1];
+            dx[s]  = beta * b14 * p10[s] + alpha * b15 * p10[s] + beta * b16 * p10[s+1];
+            dx[s] += beta * b17 * p00[s] + alpha * b18 * p00[s] + beta * b19 * p00[s+1];
 
             dx[s] += gamma * b20 * boundary(sn, tn10, condition);
             dx[s] += beta  * ht_ht*f(sn,tn10);
@@ -1312,8 +1438,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
         {
             e = N-1;
 
-            u20[N] = (gamma/alpha)*value;
-            dx[N-1] -= k13 * u20[N];
+            p20[N] = (gamma/alpha)*value;
+            dx[N-1] -= k13 * p20[N];
             cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
@@ -1324,8 +1450,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             bx[e]  = beta * b23 + alpha * b22;
             cx[e]  = 0.0;
 
-            dx[e]  = beta * b24 * u10[e-1] + beta * b26 * u10[e];
-            dx[e] += beta * b27 * u00[e-1] + beta * b29 * u00[e];
+            dx[e]  = beta * b24 * p10[e-1] + beta * b26 * p10[e];
+            dx[e] += beta * b27 * p00[e-1] + beta * b29 * p00[e];
 
             dx[e] += gamma * b30 * boundary(sn, tn10, condition);
             dx[e] += beta  * ht_ht*f(sn,tn10);
@@ -1346,8 +1472,8 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             bx[e]  = beta * b23 + alpha * b22;
             cx[e]  = 0.0;
 
-            dx[e]  = beta * b24 * u10[e-1] + alpha * b25 * u10[e] + beta * b26 * u10[e];
-            dx[e] += beta * b27 * u00[e-1] + alpha * b28 * u00[e] + beta * b29 * u00[e];
+            dx[e]  = beta * b24 * p10[e-1] + alpha * b25 * p10[e] + beta * b26 * p10[e];
+            dx[e] += beta * b27 * p00[e-1] + alpha * b28 * p00[e] + beta * b29 * p00[e];
 
             dx[e] += gamma * b30 * boundary(sn, tn10, condition);
             dx[e] += beta  * ht_ht*f(sn,tn10);
@@ -1357,19 +1483,19 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
         }
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        for (unsigned int n=s; n<=e; n++) u20[n] = rx[n];
-        layerInfo(u20, tn20);
+        for (unsigned int n=s; n<=e; n++) p20[n] = rx[n];
+        layerInfo(p20, tn20);
 
         for (unsigned int i=0; i<=N; i++)
         {
-            u00[i] = u10[i];
-            u10[i] = u20[i];
+            p00[i] = p10[i];
+            p10[i] = p20[i];
         }
     }
 
-    u00.clear();
-    u10.clear();
-    u20.clear();
+    p00.clear();
+    p10.clear();
+    p20.clear();
 
     free(rx);
     free(dx);
@@ -1516,67 +1642,156 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
 
 void IWaveEquationFBVP::implicit_calculate_D2V1() const
 {
-    const Dimension _spaceDimensionX = spaceDimensionX();
-    const Dimension _spaceDimensionY = spaceDimensionX();
-    const Dimension _timeDimension = timeDimension();
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
+    const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
+    const unsigned int L = static_cast<unsigned int>(timeDimension().size()) - 1;
 
-    const unsigned int N = static_cast<unsigned int>( _spaceDimensionX.size() - 1 );
-    const unsigned int M = static_cast<unsigned int>( _spaceDimensionY.size() - 1 );
-    const unsigned int L = static_cast<unsigned int>( _timeDimension.size() - 1 );
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    const int ymin = spaceDimensionY().min();
+    const int ymax = spaceDimensionY().max();
+    //const int tmin = timeDimension().min();
+    //const int tmax = timeDimension().max();
 
-    const double hx = _spaceDimensionX.step();
-    const double hy = _spaceDimensionY.step();
-    const double ht = _timeDimension.step();
+    const double hx = spaceDimensionX().step();
+    const double hy = spaceDimensionY().step();
+    const double ht = timeDimension().step();
 
-    const double _lambda = weight();
-    const double a = waveSpeed();
-    const double alpha = waveDissipation();
-    const double ht_050 = ht*0.50;
-    const double ht_ht_025 = ht*ht*0.25;
-    const double ht_ht_025_05 = ht_ht_025*0.50;
-    const double alpha_ht_025 = alpha*ht*0.25;
-    const double aa__hxhx = (a*a)/(hx*hx);
-    const double aa__hyhy = (a*a)/(hy*hy);
+    const double a1 = waveSpeed();
+    const double a2 = waveSpeed();
+    const double b1 = unknownB();
+    const double b2 = unknownB();
+    const double c  = restoration();
+    const double d  = waveDissipation();
 
-    const double m_aa_htht__hxhx_025_lambda = -(0.25*a*a)*((ht*ht)/(hx*hx))*_lambda;
-    const double b_aa_htht__hxhx = +(1.0 + 0.5*(a*a)*((ht*ht)/(hx*hx))*_lambda + alpha_ht_025);
-    const double p_aa_htht__hyhy_025 = +(0.25*a*a)*((ht*ht)/(hy*hy));
-    const double p_aa_htht__hxhx_025_1m2lambda = +(0.25*a*a)*((ht*ht)/(hx*hx))*(1.0-2.0*_lambda);
-    const double p_aa_htht__hxhx_025_lambda = +(0.25*a*a)*((ht*ht)/(hx*hx))*_lambda;
+    const double w1 = weight();
+    const double w2 = 1.0 - 2.0*w1;
+    const double w3 = w1;
 
-    const double m_aa_htht__hyhy_025_lambda = -(0.25*a*a)*((ht*ht)/(hy*hy))*_lambda;
-    const double b_aa_htht__hyhy = +(1.0 + 0.5*(a*a)*((ht*ht)/(hy*hy))*_lambda + alpha_ht_025);
-    const double p_aa_htht__hxhx_025 = +(0.25*a*a)*((ht*ht)/(hx*hx));
-    const double p_aa_htht__hyhy_025_1m2lambda = +(0.25*a*a)*((ht*ht)/(hy*hy))*(1.0-2.0*_lambda);
-    const double p_aa_htht__hyhy_025_lambda = +(0.25*a*a)*((ht*ht)/(hy*hy))*_lambda;
+    // common parameters
+    const double htht_0500 = ht*ht*0.500;
+    const double htht_0250 = ht*ht*0.250;
+    const double htht_0125 = ht*ht*0.125;
+    const double ht_0500 = ht*0.500;
+    //const double ht_0250 = ht*0.250;
 
-    double *ax = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *bx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *cx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *dx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
-    double *rx = static_cast<double*>(malloc(sizeof(double)*(N-1)));
+    // equation parameters
+    const double k101 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 + (0.125*b1)*((ht*ht)/(hx))*w1;           // i-1
+    const double k102 = +1.0 + (0.5*a1*a1)*((ht*ht)/(hx*hx))*w1 - (0.25*c)*(ht*ht)*w1 - 0.25*d*ht;   // i
+    const double k103 = -(0.25*a1*a1)*((ht*ht)/(hx*hx))*w1 - (0.125*b1)*((ht*ht)/(hx))*w1;           // i+1
+    const double k104 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w2 - (0.125*b1)*((ht*ht)/(hx))*w2;           // i-1
+    const double k105 = +2.0 - (0.5*a1*a1)*((ht*ht)/(hx*hx))*w2 + (0.25*c)*(ht*ht)*w2;               // i
+    const double k106 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w2 + (0.125*b1)*((ht*ht)/(hx))*w2;           // i+1
+    const double k107 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w3 - (0.125*b1)*((ht*ht)/(hx))*w3;           // i-1
+    const double k108 = -1.0 - (0.5*a1*a1)*((ht*ht)/(hx*hx))*w3 + (0.25*c)*(ht*ht)*w3 - 0.25*d*ht;   // i
+    const double k109 = +(0.25*a1*a1)*((ht*ht)/(hx*hx))*w3 + (0.125*b1)*((ht*ht)/(hx))*w3;           // i+1
+    const double k110 = +(0.25*a2*a2)*((ht*ht)/(hy*hy)) - (0.125*b2)*((ht*ht)/(hy));                 // j-1
+    const double k111 = -(0.50*a2*a2)*((ht*ht)/(hy*hy));                                             // j
+    const double k112 = +(0.25*a2*a2)*((ht*ht)/(hy*hy)) + (0.125*b2)*((ht*ht)/(hy));                 // j+1
 
-    for (unsigned int n=0; n<=N-2; n++)
+    const double k201 = -(0.25*a2*a2)*((ht*ht)/(hy*hy))*w1 + (0.125*b2)*((ht*ht)/(hy))*w1;           // j-1
+    const double k202 = +1.0 + (0.5*a2*a2)*((ht*ht)/(hy*hy))*w1 - (0.25*c)*(ht*ht)*w1 - 0.25*d*ht;   // j
+    const double k203 = -(0.25*a2*a2)*((ht*ht)/(hy*hy))*w1 - (0.125*b2)*((ht*ht)/(hy))*w1;           // j+1
+    const double k204 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w2 - (0.125*b2)*((ht*ht)/(hy))*w2;           // j-1
+    const double k205 = +2.0 - (0.5*a2*a2)*((ht*ht)/(hy*hy))*w2 + (0.25*c)*(ht*ht)*w2;               // j
+    const double k206 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w2 + (0.125*b2)*((ht*ht)/(hy))*w2;           // j+1
+    const double k207 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w3 - (0.125*b2)*((ht*ht)/(hy))*w3;           // j-1
+    const double k208 = -1.0 - (0.5*a2*a2)*((ht*ht)/(hy*hy))*w3 + (0.25*c)*(ht*ht)*w3 - 0.25*d*ht;   // j
+    const double k209 = +(0.25*a2*a2)*((ht*ht)/(hy*hy))*w3 + (0.125*b2)*((ht*ht)/(hy))*w3;           // j+1
+    const double k210 = +(0.25*a1*a1)*((ht*ht)/(hx*hx)) - (0.125*b1)*((ht*ht)/(hx));                 // i-1
+    const double k211 = -(0.50*a1*a1)*((ht*ht)/(hx*hx));                                             // i
+    const double k212 = +(0.25*a1*a1)*((ht*ht)/(hx*hx)) + (0.125*b1)*((ht*ht)/(hx));                 // i+1
+
+    // left border condition parameters x = xmin
+    const double b111 = +1.0 + (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w1 - ((0.25*c)*(ht*ht))*w1 - 0.25*d*ht;
+    const double b112 = +(0.25*a1*a1*(ht*ht)/(0.5*hx))*w1 - (0.25*b1*ht*ht)*w1;
+    const double b113 = -((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w1;
+    const double b114 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b115 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w2 + (0.25*b1*ht*ht)*w2;
+    const double b116 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w2;
+    const double b117 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 + ((0.25*c)*(ht*ht))*w3 - 0.25*d*ht;
+    const double b118 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w3 + (0.25*b1*ht*ht)*w3;
+    const double b119 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w3;
+    const double b120 = +((0.25*a2*a2*ht*ht)/(hy*hy));
+    const double b121 = +((0.25*b2*ht*ht)/(2.0*hy));
+    const double b122 = +(0.25*a1*a1*ht*ht)/(0.5*hx) - (0.25*b1*ht*ht);
+
+    // right border condition parameters x = xmax
+    const double b211 = -((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w1;
+    const double b212 = +(0.25*a1*a1*(ht*ht)/(0.5*hx))*w1 + (0.25*b1*ht*ht)*w1;
+    const double b213 = +1.0 + (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w1 - ((0.25*c)*(ht*ht))*w1 - 0.25*d*ht;
+    const double b214 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w2;
+    const double b215 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w2 - (0.25*b1*ht*ht)*w2;
+    const double b216 = +2.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b217 = +((0.25*a1*a1*ht*ht)/(0.5*hx*hx))*w3;
+    const double b218 = -(0.25*a1*a1*(ht*ht)/(0.5*hx))*w3 - (0.25*b1*ht*ht)*w3;
+    const double b219 = -1.0 - (0.25*a1*a1*((ht*ht)/(0.5*hx*hx)))*w3 + ((0.25*c)*(ht*ht))*w3 - 0.25*d*ht;
+    const double b220 = +((0.25*a2*a2*ht*ht)/(hy*hy));
+    const double b221 = +((0.25*b2*ht*ht)/(2.0*hy));
+    const double b222 = +(0.25*a1*a1*ht*ht)/(0.5*hx) + (0.25*b1*ht*ht);
+
+    // bottom border condition parameters y = ymin
+    const double b311 = +1.0 + (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w1 - ((0.25*c)*(ht*ht))*w1 - 0.25*d*ht;
+    const double b312 = +(0.25*a2*a2*(ht*ht)/(0.5*hy))*w1 - (0.25*b2*ht*ht)*w1;
+    const double b313 = -((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w1;
+    const double b314 = +2.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b315 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w2 + (0.25*b2*ht*ht)*w2;
+    const double b316 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w2;
+    const double b317 = -1.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w3 + ((0.25*c)*(ht*ht))*w3 - 0.25*d*ht;
+    const double b318 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w3 + (0.25*b2*ht*ht)*w3;
+    const double b319 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w3;
+    const double b320 = +((0.25*a1*a1*ht*ht)/(hx*hx));
+    const double b321 = +((0.25*b1*ht*ht)/(2.0*hx));
+    const double b322 = +(0.25*a2*a2*ht*ht)/(0.5*hy) - (0.25*b2*ht*ht);
+
+    // upper border condition parameters y = ymax
+    const double b411 = -((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w1;
+    const double b412 = +(0.25*a2*a2*(ht*ht)/(0.5*hy))*w1 + (0.25*b2*ht*ht)*w1;
+    const double b413 = +1.0 + (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w1 - ((0.25*c)*(ht*ht))*w1 - 0.25*d*ht;
+    const double b414 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w2;
+    const double b415 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w2 - (0.25*b2*ht*ht)*w2;
+    const double b416 = +2.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w2 + ((0.25*c)*(ht*ht))*w2;
+    const double b417 = +((0.25*a2*a2*ht*ht)/(0.5*hy*hy))*w3;
+    const double b418 = -(0.25*a2*a2*(ht*ht)/(0.5*hy))*w3 - (0.25*b1*ht*ht)*w3;
+    const double b419 = -1.0 - (0.25*a2*a2*((ht*ht)/(0.5*hy*hy)))*w3 + ((0.25*c)*(ht*ht))*w3 - 0.25*d*ht;
+    const double b420 = +((0.25*a1*a1*ht*ht)/(hx*hx));
+    const double b421 = +((0.25*b1*ht*ht)/(2.0*hx));
+    const double b422 = +(0.25*a2*a2*ht*ht)/(0.5*hy) + (0.25*b2*ht*ht);
+
+    // initial condition parameters
+    const double a1a1__hxhx = (a1*a1)/(hx*hx);
+    const double a2a2__hyhy = (a2*a2)/(hy*hy);
+    const double b1__20_0hx = ((b1)/(2.0*hx));
+    const double b2__20_0hy = ((b2)/(2.0*hy));
+
+
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+
+    for (unsigned int n=0; n<=N; n++)
     {
-        ax[n] = m_aa_htht__hxhx_025_lambda;
-        bx[n] = b_aa_htht__hxhx;
-        cx[n] = m_aa_htht__hxhx_025_lambda;
+        ax[n] = k101;
+        bx[n] = k102;
+        cx[n] = k103;
     }
-    ax[0] = 0.0; cx[N-2] = 0.0;
+    ax[0] = 0.0; cx[N] = 0.0;
 
-    double *ay = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *by = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *cy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *dy = static_cast<double*>(malloc(sizeof(double)*(M-1)));
-    double *ry = static_cast<double*>(malloc(sizeof(double)*(M-1)));
+    double *ay = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *by = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *cy = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *dy = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    double *ry = static_cast<double*>(malloc(sizeof(double)*(M+1)));
 
-    for (unsigned int m=0; m<=M-2; m++)
+    for (unsigned int m=0; m<=M; m++)
     {
-        ay[m] = m_aa_htht__hyhy_025_lambda;
-        by[m] = b_aa_htht__hyhy;
-        cy[m] = m_aa_htht__hyhy_025_lambda;
+        ay[m] = k201;
+        by[m] = k202;
+        cy[m] = k203;
     }
-    ay[0] = 0.0; cy[M-2] = 0.0;
+    ay[0] = 0.0; cy[M] = 0.0;
 
     DoubleMatrix p00(M+1, N+1);
     DoubleMatrix p05(M+1, N+1);
@@ -1590,150 +1805,397 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
     TimeNodePDE tn00; tn00.i = 2*L-0; tn00.t = 0.5*tn00.i*ht;
     TimeNodePDE tn05; tn05.i = 2*L-1; tn05.t = 0.5*tn05.i*ht;
     TimeNodePDE tn10; tn10.i = 2*L-2; tn10.t = 0.5*tn10.i*ht;
-
     SpaceNodePDE sn;
-    for (unsigned int m=0; m<=M; m++)
+
+    unsigned int i=0, j=0, s=0, e=N;
+    int n = 0, m = 0;
+    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+
+    for (m=ymin, sn.j = m, sn.y = m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
     {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
+        for (n=xmin, sn.i = n, sn.x = n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            p00[m][n] = final(sn, FinalCondition::FinalValue);
+            p00[j][i] = final(sn, FinalCondition::FinalValue);
         }
     }
     layerInfo(p00, tn00);
 
     /***********************************************************************************************/
 
-    for (unsigned int m=0; m<=M; m++)
+    for (m=ymin, sn.j = m, sn.y = m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
     {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
+        for (n=xmin, sn.i = n, sn.x = n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            double firstDerivative = final(sn, FinalCondition::FinalFirstDerivative);
+            double fdt = final(sn, FinalCondition::FinalFirstDerivative);
 
-            double secndDerivative = 0.0;
-            if (m==0) { secndDerivative += aa__hyhy*(+2.0*p00[0][n]-5.0*p00[1][n]+4.0*p00[2][n]-1.0*p00[3][n]); }
+            double sdxy = 0.0;
+            double fdxy = 0.0;
+            if (j==0)
+            {
+                sdxy += a2a2__hyhy*(+2.0*p00[0][i]-5.0*p00[1][i]+4.0*p00[2][i]-1.0*p00[3][i]);
+                fdxy += b2__20_0hy*(-3.0*p00[0][i]+4.0*p00[1][i]-1.0*p00[2][i]);
+            }
+            else if (j==M)
+            {
+                sdxy += a2a2__hyhy*(-1.0*p00[M-3][i]+4.0*p00[M-2][i]-5.0*p00[M-1][i]+2.0*p00[M][i]);
+                fdxy += b2__20_0hy*(p00[N-2][i]-4.0*p00[N-1][i]+3.0*p00[N][i]);
+            }
             else
-                if (m==M) { secndDerivative += aa__hyhy*(-1.0*p00[M-3][n]+4.0*p00[M-2][n]-5.0*p00[M-1][n]+2.0*p00[M][n]); }
-                else { secndDerivative += aa__hyhy*(p00[m-1][n]-2.0*p00[m][n]+p00[m+1][n]); }
+            {
+                sdxy += a2a2__hyhy*(p00[j-1][i]-2.0*p00[j][i]+p00[j+1][i]);
+                fdxy += b2__20_0hy*(p00[j+1][i]-p00[j-1][i]);
+            }
 
-            if (n==0) { secndDerivative += aa__hxhx*(+2.0*p00[m][0]-5.0*p00[m][1]+4.0*p00[m][2]-1.0*p00[m][3]); }
+            if (i==0)
+            {
+                sdxy += a1a1__hxhx*(+2.0*p00[j][0]-5.0*p00[j][1]+4.0*p00[j][2]-1.0*p00[j][3]);
+                fdxy += b1__20_0hx*(-3.0*p00[j][0]+4.0*p00[j][1]-1.0*p00[j][2]);
+            }
+            else if (i==N)
+            {
+                sdxy += a1a1__hxhx*(-1.0*p00[j][N-3]+4.0*p00[j][N-2]-5.0*p00[j][N-1]+2.0*p00[j][N]);
+                fdxy += b1__20_0hx*(p00[j][M-2]-4.0*p00[j][M-1]+3.0*p00[j][M]);
+            }
             else
-                if (n==N) { secndDerivative += aa__hxhx*(-1.0*p00[m][N-3]+4.0*p00[m][N-2]-5.0*p00[m][N-1]+2.0*p00[m][N]); }
-                else { secndDerivative += aa__hxhx*(p00[m][n-1]-2.0*p00[m][n]+p00[m][n+1]); }
+            {
+                sdxy += a1a1__hxhx*(p00[j][i-1]-2.0*p00[j][i]+p00[j][i+1]);
+                fdxy += b1__20_0hx*(p00[j][i+1]-p00[j][i-1]);
+            }
 
-            secndDerivative += f(sn,tn00);
-            secndDerivative += alpha*firstDerivative;
+            double sdt = sdxy + fdxy + c*p00[j][i] + f(sn,tn00) - d*fdt;
 
-            p05[m][n] = p00[m][n] - firstDerivative*ht_050 + secndDerivative*ht_ht_025_05;
-            //p10[m][n] = p00[m][n] - firstDerivative*ht    + secndDericative*ht_ht_05;
+            p05[j][i] = p00[j][i] - fdt*ht_0500 + sdt*htht_0125;
+            p10[j][i] = p00[j][i] - fdt*ht      + sdt*htht_0500;
         }
     }
+
     layerInfo(p05, tn05);
-
-    for (unsigned int m=0; m<=M; m++)
-    {
-        sn.j = static_cast<int>(m); sn.y = sn.j*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            p10[m][n]  = 2.0*p05[m][n]-p00[m][n];
-
-            double secndDerivative = 0.0;
-            if (m==0) { secndDerivative += aa__hyhy*(+2.0*p05[0][n]-5.0*p05[1][n]+4.0*p05[2][n]-1.0*p05[3][n]); } else
-                if (m==M) { secndDerivative += aa__hyhy*(-1.0*p05[M-3][n]+4.0*p05[M-2][n]-5.0*p05[M-1][n]+2.0*p05[M][n]); }
-                else { secndDerivative += aa__hyhy*(p05[m-1][n]-2.0*p05[m][n]+p05[m+1][n]); }
-
-            if (n==0) { secndDerivative += aa__hxhx*(+2.0*p05[m][0]-5.0*p05[m][1]+4.0*p05[m][2]-1.0*p05[m][3]); } else
-                if (n==N) { secndDerivative += aa__hxhx*(-1.0*p05[m][N-3]+4.0*p05[m][N-2]-5.0*p05[m][N-1]+2.0*p05[m][N]); }
-                else { secndDerivative += aa__hxhx*(p05[m][n-1]-2.0*p05[m][n]+p05[m][n+1]); }
-
-            secndDerivative += f(sn,tn05);
-            p10[m][n] += ht_ht_025*secndDerivative;
-            p10[m][n] += alpha_ht_025*p00[m][n];
-
-            p10[m][n] /= (1.0+alpha_ht_025);
-        }
-    }
     layerInfo(p10, tn10);
+
     /***********************************************************************************************/
-    const unsigned int size_ln = static_cast<unsigned int>(0)-1;
-    for (unsigned int ln=L-2; ln !=size_ln; ln--)
+
+    for (unsigned int ln=L-2, size_ln = static_cast<unsigned int>(0)-1; ln !=size_ln; ln--)
     {
         TimeNodePDE tn05; tn05.i = 2*ln+3; tn05.t = 0.5*tn05.i*ht;
         TimeNodePDE tn10; tn10.i = 2*ln+2; tn10.t = 0.5*tn10.i*ht;
         TimeNodePDE tn15; tn15.i = 2*ln+1; tn15.t = 0.5*tn15.i*ht;
         TimeNodePDE tn20; tn20.i = 2*ln+0; tn20.t = 0.5*tn20.i*ht;
 
-        /**************************************************** border conditions ***************************************************/
-
-        SpaceNodePDE sn0, sn1;
-        BoundaryConditionPDE condition;
-
-        sn0.i = static_cast<int>(0); sn0.x = 0*hx;
-        sn1.i = static_cast<int>(N); sn1.x = N*hx;
-        for (unsigned int m=0; m<=M; m++)
-        {
-            sn0.j = static_cast<int>(m); sn0.y = m*hy; p15[m][0] = boundary(sn0, tn15, condition); p20[m][0] = boundary(sn0, tn20, condition);
-            sn1.j = static_cast<int>(m); sn1.y = m*hy; p15[m][N] = boundary(sn1, tn15, condition); p20[m][N] = boundary(sn1, tn20, condition);
-        }
-
-        sn0.j = static_cast<int>(0); sn0.y = 0*hy;
-        sn1.j = static_cast<int>(M); sn1.y = M*hy;
-        for (unsigned int n=0; n<=N; n++)
-        {
-            sn0.i = static_cast<int>(n); sn0.x = n*hx; p15[0][n] = boundary(sn0, tn15, condition); p20[0][n] = boundary(sn0, tn20, condition);
-            sn1.i = static_cast<int>(n); sn1.x = n*hx; p15[M][n] = boundary(sn1, tn15, condition); p20[M][n] = boundary(sn1, tn20, condition);
-        }
-
-        /**************************************************** border conditions ***************************************************/
-
         /**************************************************** x direction apprx ***************************************************/
-        for (unsigned int m=1; m<=M-1; m++)
+
+        for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
         {
-            sn.j = static_cast<int>(m); sn.y = m*hy;
-            for (unsigned int n=1; n<=N-1; n++)
+            for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
             {
-                sn.i = static_cast<int>(n); sn.x = n*hx;
-                dx[n-1] = 0.0;
-                dx[n-1] += (p10[m][n-1] - 2.0*p10[m][n] + p10[m][n+1])*p_aa_htht__hxhx_025_1m2lambda;
-                dx[n-1] += (p05[m][n-1] - 2.0*p05[m][n] + p05[m][n+1])*p_aa_htht__hxhx_025_lambda;
-                dx[n-1] += (p10[m-1][n] - 2.0*p10[m][n] + p10[m+1][n])*p_aa_htht__hyhy_025;
-                dx[n-1] += 2.0*p10[m][n] - p05[m][n] + alpha_ht_025*p05[m][n];
-                dx[n-1] += ht_ht_025*f(sn, tn10);
-                //dx[n-1] += ht_ht_025*(_lambda*f(sn, tn05)+(1.0-2.0*_lambda)*f(sn, tn10)+_lambda*f(sn, tn15));
+                dx[i] = 0.0;
+                dx[i] += k104*p10[j][i-1] + k105*p10[j][i] + k106*p10[j][i+1];
+                dx[i] += k107*p05[j][i-1] + k108*p05[j][i] + k109*p05[j][i+1];
+                dx[i] += k110*p10[j-1][i] + k111*p10[j][i] + k112*p10[j+1][i];
+                dx[i] += htht_0250 * f(sn, tn10);
             }
-            dx[0]   -= p15[m][0]*m_aa_htht__hxhx_025_lambda;
-            dx[N-2] -= p15[m][N]*m_aa_htht__hxhx_025_lambda;
-            tomasAlgorithm(ax, bx, cx, dx, rx, N-1);
-            for (unsigned int n=1; n<=N-1; n++) p15[m][n] = rx[n-1];
+
+            sn.i = xmin; sn.x = xmin*hx;
+            value = boundary(sn, tn15, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                s = 1;
+                p15[j][0] = (gamma/alpha)*value;
+                dx[1] -= k101 * p15[j][0];
+                ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                s = 0;
+                ax[0]  = 0.0;
+                bx[0]  = beta  * b111;
+                cx[0]  = beta  * b113;
+
+                dx[0]  = beta  * b114 * p10[j][0] + beta  * b116 * p10[j][1];
+                dx[0] += beta  * b117 * p05[j][0] + beta  * b119 * p05[j][1];
+
+                dx[0] += beta  * b120 * (p10[j+1][0]-2.0*p10[j][0]+p10[j-1][0]);
+                dx[0] += beta  * b121 * (p10[j+1][0]-p10[j-1][0]);
+
+                dx[0] += beta  * htht_0250 * f(sn, tn10);
+                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+            }
+            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                s = 0;
+                ax[0]  = 0.0;
+                bx[0]  = beta  * b111 + alpha * b112;
+                cx[0]  = beta  * b113;
+
+                dx[0]  = beta  * b114 * p10[j][0] + alpha  * b115 * p10[j][0] + beta  * b116 * p10[j][1];
+                dx[0] += beta  * b117 * p05[j][0] + alpha  * b118 * p05[j][0] + beta  * b119 * p05[j][1];
+
+                dx[0] += beta  * b120 * (p10[j+1][0]-2.0*p10[j][0]+p10[j-1][0]);
+                dx[0] += beta  * b121 * (p10[j+1][0]-p10[j-1][0]);
+
+                dx[0] += beta  * htht_0250 * f(sn, tn10);
+                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+            }
+
+            sn.i = xmax; sn.x = xmax*hx;
+            value = boundary(sn, tn15, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                e = N-1;
+                p15[j][N] = (gamma/alpha)*value;
+                dx[N-1] -= k103 * p15[j][N];
+                cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                e = N;
+                ax[N]  = beta  * b211;
+                bx[N]  = beta  * b213;
+                cx[N]  = 0.0;
+
+                dx[N]  = beta  * b214 * p10[j][N-1] + beta  * b216 * p10[j][N];
+                dx[N] += beta  * b217 * p05[j][N-1] + beta  * b219 * p05[j][N];
+
+                dx[N] += beta  * b220 * (p10[j+1][N]-2.0*p10[j][N]+p10[j-1][N]);
+                dx[N] += beta  * b221 * (p10[j+1][N]-p10[j-1][N]);
+
+                dx[N] += beta  * htht_0250 * f(sn, tn10);
+                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                e = N;
+                ax[N]  = beta  * b211;
+                bx[N]  = beta  * b213 + alpha * b212;
+                cx[N]  = 0.0;
+
+                dx[N]  = beta  * b214 * p10[j][N-1] + alpha  * b215 * p10[j][N] + beta  * b216 * p10[j][N];
+                dx[N] += beta  * b217 * p05[j][N-1] + alpha  * b218 * p05[j][N] + beta  * b219 * p05[j][N];
+
+                dx[N] += beta  * b220 * (p10[j+1][N]-2.0*p10[j][N]+p10[j-1][N]);
+                dx[N] += beta  * b221 * (p10[j+1][N]-p10[j-1][N]);
+
+                dx[N] += beta  * htht_0250 * f(sn, tn10);
+                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+            }
+
+            tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+            for (unsigned int i=s; i<=e; i++) p15[j][i] = rx[i];
         }
+
+        for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
+        {
+            sn.j = ymin; sn.y = ymin*hy;
+            value = boundary(sn, tn15, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                p15[0][i] = (gamma/alpha)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                p15[0][i] = (3.5*p15[1][i] - 2.0*p15[2][i] + 0.5*p15[3][i] + hy*(gamma/beta)*value)/(2.0);
+                //p15[0][i] = (p15[1][i] + hy*(gamma/beta)*value));
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                p15[0][i] = (3.5*p15[1][i] - 2.0*p15[2][i] + 0.5*p15[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                //p15[0][i] = (p15[1][i] + hy*(gamma/beta)*value)/(1.0+hy*(alpha/beta));
+            }
+
+            sn.j = ymax; sn.y = ymax*hy;
+            value = boundary(sn, tn15, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                p15[M][i] = (gamma/alpha)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                p15[M][i] = (3.5*p15[M-1][i] - 2.0*p15[M-2][i] + 0.5*p15[M-3][i] + hy*(gamma/beta)*value)/(2.0);
+                //p15[M][i] = (p15[M-1][i] + hy*(gamma/beta)*value));
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                p15[M][i] = (3.5*p15[M-1][i] - 2.0*p15[M-2][i] + 0.5*p15[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                //p15[M][i] = (p15[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+            }
+        }
+
+
         layerInfo(p15, tn15);
+
         /**************************************************** x direction apprx ***************************************************/
 
         /**************************************************** y direction apprx ***************************************************/
-        for (unsigned int n=1; n<=N-1; n++)
+
+        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
-            sn.i = static_cast<int>(n); sn.x = n*hx;
-            for (unsigned int m=1; m<=M-1; m++)
+            for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
-                sn.j = static_cast<int>(m); sn.y = m*hy;
-                dy[m-1] = 0.0;
-                dy[m-1] += (p15[m-1][n] - 2.0*p15[m][n] + p15[m+1][n])*p_aa_htht__hyhy_025_1m2lambda;
-                dy[m-1] += (p10[m-1][n] - 2.0*p10[m][n] + p10[m+1][n])*p_aa_htht__hyhy_025_lambda;
-                dy[m-1] += (p15[m][n-1] - 2.0*p15[m][n] + p15[m][n+1])*p_aa_htht__hxhx_025;
-                dy[m-1] += 2.0*p15[m][n] - p10[m][n] + alpha_ht_025*p10[m][n];
-                dy[m-1] += ht_ht_025*f(sn, tn15);
-                //dy[m-1] += ht_ht_025*(_lambda*f(sn, tn10)+(1.0-2.0*_lambda)*f(sn, tn15)+_lambda*f(sn, tn20));
+                dy[j] = 0.0;
+                dy[j] += k204*p15[j-1][i] + k205*p15[j][i] + k206*p15[j+1][i];
+                dy[j] += k207*p10[j-1][i] + k208*p10[j][i] + k209*p10[j+1][i];
+                dy[j] += k210*p15[j][i-1] + k211*p15[j][i] + k212*p15[j][i+1];
+                dy[j] += htht_0250 * f(sn, tn15);
             }
-            dy[0]   -= p20[0][n]*m_aa_htht__hyhy_025_lambda;
-            dy[M-2] -= p20[M][n]*m_aa_htht__hyhy_025_lambda;
-            tomasAlgorithm(ay, by, cy, dy, ry, M-1);
-            for (unsigned int m=1; m<=M-1; m++) p20[m][n] = ry[m-1];
+
+            sn.j = ymin; sn.y = ymin*hy;
+            value = boundary(sn, tn20, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                s = 1;
+                p20[0][i] = (gamma/alpha)*value;
+                dy[1] -= k201 * p20[0][i];
+                ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                s = 0;
+                ay[0]  = 0.0;
+                by[0]  = beta  * b311;
+                cy[0]  = beta  * b313;
+
+                dy[0]  = beta  * b314 * p15[0][i] + beta  * b316 * p15[1][i];
+                dy[0] += beta  * b317 * p10[0][i] + beta  * b319 * p10[1][i];
+
+                dy[0] += beta  * b320 * (p15[0][i+1]-2.0*p15[0][i]+p15[0][i-1]);
+                dy[0] += beta  * b321 * (p15[0][i+1]-p15[0][i-1]);
+
+                dy[0] += beta  * htht_0250 * f(sn, tn15);
+                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                s = 0;
+                ay[0]  = 0.0;
+                by[0]  = beta  * b311 + alpha * b312;
+                cy[0]  = beta  * b313;
+
+                dy[0]  = beta  * b314 * p15[0][i] + alpha  * b315 * p15[0][i] + beta  * b316 * p15[1][i];
+                dy[0] += beta  * b317 * p10[0][i] + alpha  * b318 * p10[0][i] + beta  * b319 * p10[1][i];
+
+                dy[0] += beta  * b320 * (p15[0][i+1]-2.0*p15[0][i]+p15[0][i-1]);
+                dy[0] += beta  * b321 * (p15[0][i+1]-p15[0][i-1]);
+
+                dy[0] += beta  * htht_0250 * f(sn, tn15);
+                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+            }
+
+            sn.j = ymax; sn.y = ymax*hy;
+            value = boundary(sn, tn20, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                e = M-1;
+                p20[M][i] = (gamma/alpha)*value;
+                dy[M-1] -= k203 * p20[M][i];
+                cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                e = M;
+                ay[M]  = beta  * b411;
+                by[M]  = beta  * b413;
+                cy[M]  = 0.0;
+
+                dy[M]  = beta  * b414 * p15[M-1][i] + beta  * b416 * p15[M][i];
+                dy[M] += beta  * b417 * p10[M-1][i] + beta  * b419 * p10[M][i];
+
+                dy[M] += beta  * b420 * (p15[M][i+1]-2.0*p15[M][i]+p15[M][i-1]);
+                dy[M] += beta  * b421 * (p15[M][i+1]-p15[M][i-1]);
+
+                dy[M] += beta  * htht_0250 * f(sn, tn15);
+                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                e = M;
+                ay[M]  = beta  * b411;
+                by[M]  = beta  * b413 + alpha * b412;
+                cy[M]  = 0.0;
+
+                dy[M]  = beta  * b414 * p15[M-1][i] + alpha  * b415 * p15[M][i] + beta  * b416 * p15[M][i];
+                dy[M] += beta  * b417 * p10[M-1][i] + alpha  * b418 * p10[M][i] + beta  * b419 * p10[M][i];
+
+                dy[M] += beta  * b420 * (p15[M][i+1]-2.0*p15[M][i]+p15[M][i-1]);
+                dy[M] += beta  * b421 * (p15[M][i+1]-p15[M][i-1]);
+
+                dy[M] += beta  * htht_0250 * f(sn, tn15);
+                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+            }
+
+            tomasAlgorithmLeft2Right(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
+            for (unsigned int j=s; j<=e; j++) p20[j][i] = ry[j];
         }
+
+        for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
+        {
+            sn.i = xmin; sn.x = xmin*hx;
+            value = boundary(sn, tn20, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                p20[j][0] = (gamma/alpha)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                p20[j][0] = (3.5*p20[j][1] - 2.0*p20[j][2] + 0.5*p20[j][3] + hx*(gamma/beta)*value)/(2.0);
+                //p20[j][0] = (p20[j][1] + hx*(gamma/beta)*value);
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                p20[j][0] = (3.5*p20[j][1] - 2.0*p20[j][2] + 0.5*p20[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //p20[j][0] = (p20[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
+            }
+
+            sn.i = xmax; sn.x = xmax*hx;
+            value = boundary(sn, tn20, condition);
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                p20[j][N] = (gamma/alpha)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                p20[j][N] = (3.5*p20[j][N-1] - 2.0*p20[j][N-2] + 0.5*p20[j][N-3] + hx*(gamma/beta)*value)/(2.0);
+                //p20[j][N] = (p20[j][N-1] + hx*(gamma/beta)*value);
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                p20[j][N] = (3.5*p20[j][N-1] - 2.0*p20[j][N-2] + 0.5*p20[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //p20[j][N] = (p20[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+            }
+        }
+
         layerInfo(p20, tn20);
+
         /**************************************************** y direction apprx ***************************************************/
 
         for (unsigned int m=0; m<=M; m++)

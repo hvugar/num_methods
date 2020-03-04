@@ -1,4 +1,5 @@
 ﻿#include "problem0h_solver.h"
+#include <r1minimize.h>
 
 using namespace h0p;
 
@@ -19,6 +20,16 @@ ProblemSolver::ProblemSolver()
     backward = new WaveEquationFBVP(this);
 }
 
+ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY)
+{
+    this->_timeDimension = timeDimension;
+    this->_spaceDimensionX = spaceDimensionX;
+    this->_spaceDimensionY = spaceDimensionY;
+
+    forward = new WaveEquationIBVP(this);
+    backward = new WaveEquationFBVP(this);
+}
+
 ProblemSolver::ProblemSolver(const ProblemSolver &)
 {
 }
@@ -35,22 +46,20 @@ void ProblemSolver::checkingForwardProblem()
     int M = 100;
 
     ProblemSolver fw1;
+
+    fw1.externalSource = {SpacePoint(0.25, 0.36), 0.05, 0.05, 0.05, 0.01};
     fw1.source_number = 2;
-    //fw1.ksi = SpacePoint(0.25, 0.36);
-    fw1.ksi = SpacePoint(0.50, 0.50);
-    fw1.p_sigmaX = 0.05;
-    fw1.p_sigmaY = 0.05;
-    fw1.p_sigmaT = 0.01;
-    //fw1.c_sigmaX = N/100;
-    //fw1.c_sigmaY = M/100;
 
     fw1.setDimension(Dimension(0.01, 0, 2000), Dimension(0.01, 0, N), Dimension(0.01, 0, M));
-    fw1.optimalParameters[0].distribute(SpacePoint(0.308, 0.608));
-    fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
+    fw1.optimalParameters[0].initialize(Dimension(0.01, 0, 2000), Dimension(0.01, 0, N), Dimension(0.01, 0, M)).distribute(SpacePoint(0.308, 0.608));
+    fw1.optimalParameters[1].initialize(Dimension(0.01, 0, 2000), Dimension(0.01, 0, N), Dimension(0.01, 0, M)).distribute(SpacePoint(0.708, 0.208));
 
+    fw1.f_saveToFilePng = true;
+    fw1.f_saveToFileTxt = true;
     fw1.forward->setWaveSpeed(1.0);
     fw1.forward->setWaveDissipation(0.0);
     fw1.forward->implicit_calculate_D2V1();
+
     return;
 
     //    Problem0HForward fw2;
@@ -73,26 +82,26 @@ void ProblemSolver::checkingForwardProblem()
 void ProblemSolver::compareGradients()
 {
     ProblemSolver functional;
-    functional.ksi = SpacePoint(0.25, 0.25);
-    functional.p_sigmaX = 0.05;
-    functional.p_sigmaY = 0.05;
-    functional.p_sigmaT = 0.01;
+
+    functional.externalSource = {SpacePoint(0.25, 0.36), 0.05, 0.05, 0.05, 0.01};
 
     functional.forward->setWaveSpeed(1.0);
     functional.forward->setWaveDissipation(0.00);
     functional.backward->setWaveSpeed(1.0);
     functional.backward->setWaveDissipation(0.00);
 
-    functional.epsilon1 = 1.0;
-    functional.epsilon2 = 1.0;
+    functional.eps1 = 1.0;
+    functional.esp2 = 1.0;
     functional.source_number = 2;
     functional.setDimension(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     //functional.optimalParameters[0].distribute(SpacePoint(0.314, 0.647));
     //functional.optimalParameters[1].distribute(SpacePoint(0.729, 0.232));
+
     functional.optimalParameters[0].distribute(SpacePoint(0.310, 0.640));
     functional.optimalParameters[1].distribute(SpacePoint(0.720, 0.230));
-    for (unsigned int n=0; n<201; n++) functional.optimalParameters[0].pwr_vl[n] = 0.001*n;
-    for (unsigned int n=0; n<201; n++) functional.optimalParameters[1].pwr_vl[n] = 0.002*n;
+
+    for (unsigned int n=0; n<201; n++) functional.optimalParameters[0].pwr_vl[n] = 0.1;//0.001*n;
+    for (unsigned int n=0; n<201; n++) functional.optimalParameters[1].pwr_vl[n] = 0.2;//0.002*n;
 
     DoubleVector x;
     functional.parameterToVector(x);
@@ -102,12 +111,14 @@ void ProblemSolver::compareGradients()
     const unsigned int s2 = 1*(2*L+1); const unsigned int f2 = s2+2*L;
     const unsigned int s3 = 2*(2*L+1); const unsigned int f3 = s3+3;
 
+    // printing parameter values
     IPrinter::printSeperatorLine();
     IPrinter::printVector(x.mid(s1, f1));
     IPrinter::printVector(x.mid(s2, f2));
     IPrinter::print(x.mid(s3, f3), 4);
     IPrinter::printSeperatorLine();
 
+    // printing analitic gradients
     DoubleVector ga;
     functional.gradient(x, ga);
     IPrinter::printVector(ga.mid(s1, f1).EuclideanNormalize());
@@ -115,12 +126,14 @@ void ProblemSolver::compareGradients()
     IPrinter::print(ga.mid(s3, f3).EuclideanNormalize(), 4);
     IPrinter::printSeperatorLine();
 
+    // printing numerical gradients
     DoubleVector gn;
     gn.resize(x.length());
     IGradient::Gradient(&functional, 0.01, x, gn, s1, f1);
     IGradient::Gradient(&functional, 0.01, x, gn, s2, f2);
     IGradient::Gradient(&functional, 0.01, x, gn, s3, f3);
     gn[s1] = gn[s2] = 0.0;
+    gn[f1] = gn[f2] = 0.0;
     IPrinter::printVector(gn.mid(s1, f1).EuclideanNormalize());
     IPrinter::printVector(gn.mid(s2, f2).EuclideanNormalize());
     IPrinter::print(gn.mid(s3, f3).EuclideanNormalize(), 4);
@@ -128,7 +141,7 @@ void ProblemSolver::compareGradients()
 
     //IGradient::Gradient(&functional, 0.001, x, gn, s1, f1);
     //IGradient::Gradient(&functional, 0.001, x, gn, s2, f2);
-    IGradient::Gradient(&functional, 0.02, x, gn, s3, f3);
+    IGradient::Gradient(&functional, 0.001, x, gn, s3, f3);
     IPrinter::printVector(gn.mid(s1, f1).EuclideanNormalize());
     IPrinter::printVector(gn.mid(s2, f2).EuclideanNormalize());
     IPrinter::print(gn.mid(s3, f3).EuclideanNormalize(), 4);
@@ -137,63 +150,16 @@ void ProblemSolver::compareGradients()
 
 void ProblemSolver::optimization()
 {
-    ProblemSolver fw1;
-    fw1.source_number = 2;
-    fw1.ksi = SpacePoint(0.25, 0.36);
-    fw1.p_sigmaX = 0.05;
-    fw1.p_sigmaY = 0.05;
-    fw1.p_sigmaT = 0.01;
-
-    fw1.a = 1.0;
-    fw1.gamma = 0.0;
-
-    fw1.epsilon1 = 1.0;
-    fw1.epsilon2 = 1.0;
-
-    fw1.setDimension(Dimension(0.01, 0, 400), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
-    fw1.optimalParameters[0].distribute(SpacePoint(0.308, 0.608));
-    fw1.optimalParameters[1].distribute(SpacePoint(0.708, 0.208));
-
-    DoubleVector x;
-    fw1.parameterToVector(x);
-
-    ConjugateGradient g;
-    //SteepestDescentGradient g;
-    g.setFunction(&fw1);
-    g.setGradient(&fw1);
-    g.setPrinter(&fw1);
-    g.setProjection(&fw1);
-    g.setOptimalityTolerance(0.0);
-    g.setFunctionTolerance(0.0);
-    g.setStepTolerance(0.0);
-    g.setR1MinimizeEpsilon(1.0, 0.1);
-    g.setMaxIterationCount(100);
-    g.setNormalize(true);
-    g.showExitMessage(true);
-    g.calculate(x);
-
-    fw1.vectorToParameter(x);
-    fw1.f_saveToFileTxt = true;
-    fw1.forward->implicit_calculate_D2V1();
-
-    unsigned int L = 100;
-    unsigned int s1 = 0*(2*L+1); unsigned int f1 = 0*(2*L+1)+2*L;
-    unsigned int s2 = 1*(2*L+1); unsigned int f2 = 1*(2*L+1)+2*L;
-    unsigned int s3 = 2*(2*L+1); unsigned int f3 = 2*(2*L+1)+3;
-
-    IPrinter::printVector(x.mid(s1, f1).EuclideanNormalize());
-    IPrinter::printVector(x.mid(s2, f2).EuclideanNormalize());
-    IPrinter::print(x.mid(s3, f3).EuclideanNormalize(), 4);
-    IPrinter::printSeperatorLine();
+    double a,b,fxa,fxb;
+    bool unimodal;
+    R1FxMinimizer r1min;
+    r1min.setFunction(new ProblemSolver);
+    //r1min.straightLineSearch(0.5, 0.1, a, b, fxa, fxb, unimodal);
+    double t = 1.0;
+    a = 1.0;
+    b = 5.0;
+    r1min.uniformLineSearch(t, a, b, 20);
 }
-
-//WaveEquationIBVP& ProblemSolver::forward() { return *this; }
-
-//WaveEquationFBVP& ProblemSolver::backward() { return *this; }
-
-//const WaveEquationIBVP& ProblemSolver::forward() const { return *this; }
-
-//const WaveEquationFBVP& ProblemSolver::backward() const { return *this; }
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -211,25 +177,78 @@ auto ProblemSolver::setDimension(const Dimension &timeDimension, const Dimension
     u2.resize(dimensionY.size(), dimensionX.size(), 0.0);
 
     optimalParameters.resize(source_number);
-    for (unsigned int sn=0; sn<source_number; sn++) optimalParameters[sn].create(timeDimension, dimensionX, dimensionY);
+
+    for (unsigned int sn=0; sn<source_number; sn++) optimalParameters[sn].initialize(timeDimension, dimensionX, dimensionY);
 }
 
 auto ProblemSolver::fx(const DoubleVector &x) const -> double
 {
-    //IPrinter::print(x, x.length());
-    //IPrinter::printSeperatorLine();
-
     vectorToParameter(x);
 
-    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()+1);
     forward->implicit_calculate_D2V1();
-    //const_cast<ProblemSolver*>(this)->_timeDimension.setMax(_timeDimension.max()-1);
-    double sum = 0.0;
-    sum += epsilon1 * integral1(u1);
-    sum += epsilon2 * integral2(u2);
+    double sum = eps1 * integral1(u1) + esp2 * integral2(u2);
     //sum += norm();
     //sum += penalty();
     return sum;
+}
+
+auto ProblemSolver::fx(double t) const -> double
+{
+    IPrinter::printSeperatorLine(nullptr, '=');
+    std::cout << "Time: " << t << std::endl;
+
+    ProblemSolver fw1;
+
+    fw1.externalSource = {SpacePoint(0.25, 0.36), 0.05, 0.05, 0.05, 0.01};
+
+    fw1.source_number = 2;
+
+    fw1.waveSpeed = 1.0;
+    fw1.waveDissapation = 0.0;
+
+    fw1.eps1 = 1.0;
+    fw1.esp2 = 1.0;
+
+    fw1.setDimension(Dimension(0.01, 0, static_cast<int>(t/0.01)), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    fw1.optimalParameters[0].distribute(SpacePoint(0.38, 0.68));
+    fw1.optimalParameters[1].distribute(SpacePoint(0.78, 0.28));
+
+    DoubleVector x;
+    fw1.parameterToVector(x);
+
+    ConjugateGradient g;
+    //SteepestDescentGradient g;
+    g.setFunction(&fw1);
+    g.setGradient(&fw1);
+    g.setPrinter(&fw1);
+    g.setProjection(&fw1);
+    g.setOptimalityTolerance(0.0);
+    g.setFunctionTolerance(0.0);
+    g.setStepTolerance(0.0);
+    g.setR1MinimizeEpsilon(0.1, 0.01);
+    g.setMaxIterationCount(100);
+    g.setNormalize(false);
+    g.showExitMessage(true);
+    g.calculate(x);
+
+//    fw1.vectorToParameter(x);
+//    fw1.f_saveToFileTxt = true;
+//    fw1.forward->implicit_calculate_D2V1();
+
+//    unsigned int L = 100;
+//    unsigned int s1 = 0*(2*L+1); unsigned int f1 = 0*(2*L+1)+2*L;
+//    unsigned int s2 = 1*(2*L+1); unsigned int f2 = 1*(2*L+1)+2*L;
+//    unsigned int s3 = 2*(2*L+1); unsigned int f3 = 2*(2*L+1)+3;
+
+//    IPrinter::printVector(x.mid(s1, f1).EuclideanNormalize());
+//    IPrinter::printVector(x.mid(s2, f2).EuclideanNormalize());
+//    IPrinter::print(x.mid(s3, f3).EuclideanNormalize(), 4);
+//    IPrinter::printSeperatorLine();
+
+    double res = fw1.fx(x);
+    std::cout << "Result: " << res << std::endl;
+
+    return res;
 }
 
 auto ProblemSolver::integral1(const DoubleMatrix &) const -> double
@@ -436,17 +455,25 @@ double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const 
 
 void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const { return solver->frw_layerInfo(u, tn); }
 
-const Dimension& WaveEquationIBVP::timeDimension() const { return solver->timeDimension(); }
+Dimension WaveEquationIBVP::timeDimension() const
+{
+//    return Dimension(solver->timeDimension().step(), solver->timeDimension().min(), solver->timeDimension().max());
+    return solver->timeDimension();
+}
 
-const Dimension& WaveEquationIBVP::spaceDimensionX() const { return solver->spaceDimensionX(); }
+Dimension WaveEquationIBVP::spaceDimensionX() const { return solver->spaceDimensionX(); }
 
-const Dimension& WaveEquationIBVP::spaceDimensionY() const { return solver->spaceDimensionY(); }
+Dimension WaveEquationIBVP::spaceDimensionY() const { return solver->spaceDimensionY(); }
 
-const Dimension& WaveEquationIBVP::spaceDimensionZ() const { return solver->spaceDimensionZ(); }
+Dimension WaveEquationIBVP::spaceDimensionZ() const { return solver->spaceDimensionZ(); }
 
 double ProblemSolver::frw_initial(const SpaceNodePDE &, InitialCondition) const { return 0.0; }
 
-double ProblemSolver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &) const { return 0.0; }
+double ProblemSolver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE & condition) const
+{
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 0.0);
+    return 0.0;
+}
 
 double ProblemSolver::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
@@ -462,7 +489,7 @@ double ProblemSolver::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 
 void ProblemSolver::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    calculateU1U2(u, tn);
+    frw_calculateU1U2(u, tn);
 
     //unsigned int w = 6;
     //unsigned int p = 3;
@@ -478,43 +505,72 @@ void ProblemSolver::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) 
     //if (abs(tn.t - 1.0) <= 0.0) { IPrinter::printMatrix(w,p,u); IPrinter::printSeperatorLine(); }
 
 #ifdef USE_LIB_XLSX_WRITER
-    saveToExcel(u, tn);
+    frw_saveToExcel(u, tn);
 #endif
 
-    if (f_saveToFilePng) saveToImage(u, tn);
-    if (f_saveToFileTxt) saveToTextF(u, tn);
+    if (f_saveToFilePng) frw_saveToImage(u, tn);
+    if (f_saveToFileTxt) frw_saveToTextF(u, tn);
 }
 
 double ProblemSolver::p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
-    if (fabs(tn.i - 10.0*p_sigmaT) == 0.0) return 0.0;
+    if (fabs(tn.i - 10.0*externalSource.sigmaT) == 0.0) return 0.0;
 
     //const double ht = timeDimension().step();
-    const double factor1 = 1.0/(2.0*M_PI*p_sigmaX*p_sigmaY);
-    const double sigmax2 = 1.0/(2.0*p_sigmaX*p_sigmaX);
-    const double sigmay2 = 1.0/(2.0*p_sigmaY*p_sigmaY);
-    const double factor2 = 2.0/(sqrt(2.0*M_PI)*p_sigmaT);
-    const double sigmat2 = 1.0/(2.0*p_sigmaT*p_sigmaT);
+    const double factor1 = 1.0/(2.0*M_PI*externalSource.sigmaX*externalSource.sigmaY);
+    const double sigmax2 = 1.0/(2.0*externalSource.sigmaX*externalSource.sigmaX);
+    const double sigmay2 = 1.0/(2.0*externalSource.sigmaY*externalSource.sigmaY);
+    const double factor2 = 2.0/(sqrt(2.0*M_PI)*externalSource.sigmaT);
+    const double sigmat2 = 1.0/(2.0*externalSource.sigmaT*externalSource.sigmaT);
 
-    const double q = 0.05;
+    const double power = externalSource.power;
+    const SpacePoint pnt = externalSource.point;
 
     double a, b;
-    a = factor1 * exp(-(sigmax2*(sn.x-ksi.x)*(sn.x-ksi.x)+sigmay2*(sn.y-ksi.y)*(sn.y-ksi.y)));
+    a = factor1 * exp(-(sigmax2*(sn.x-pnt.x)*(sn.x-pnt.x)+sigmay2*(sn.y-pnt.y)*(sn.y-pnt.y)));
     b = factor2 * exp(-(sigmat2*(tn.t-0.0)*(tn.t-0.0)));
 
-    return q*a*b;
+    return power*a*b;
 }
 
-void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const
+void ProblemSolver::frw_calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    const Dimension &time = timeDimension();
+    const Dimension &time = forward->timeDimension();
+
     const unsigned int L = static_cast<unsigned int>(time.size()-1);
     const double ht = time.step();
+
+    //printf("%d %d\n", L, time.size());
 
     const Dimension &dimX = spaceDimensionX();
     const Dimension &dimY = spaceDimensionY();
     const unsigned int N = static_cast<unsigned int>(dimX.size()-1);
     const unsigned int M = static_cast<unsigned int>(dimY.size()-1);
+
+//    if (tn.i == 2*(L-2))
+//    {
+//        for (unsigned int m=0; m<=M; m++)
+//        {
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                u2[m][n] = -u[m][n];
+//            }
+//        }
+//    }
+
+//    if (tn.i == 2*L)
+//    {
+//        for (unsigned int m=0; m<=M; m++)
+//        {
+//            for (unsigned int n=0; n<=N; n++)
+//            {
+//                u1[m][n]  = u[m][n];
+//                u2[m][n] += u[m][n];
+//                u2[m][n] /= (2.0*ht);
+//            }
+//        }
+//    }
+
 
     if (tn.i == 2*(L-2))
     {
@@ -590,7 +646,7 @@ void ProblemSolver::calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) 
     //    }
 }
 
-void ProblemSolver::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+void ProblemSolver::frw_saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_XLSX_WRITER
     //    const Dimension &time = Problem0HForward::timeDimension();
@@ -651,7 +707,7 @@ void ProblemSolver::saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNo
 #endif
 }
 
-void ProblemSolver::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+void ProblemSolver::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_IMAGING
     //const Dimension &time = Problem0HForward::timeDimension();
@@ -674,18 +730,17 @@ void ProblemSolver::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNo
 #endif
 }
 
-void ProblemSolver::saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
+void ProblemSolver::frw_saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
 {
     static double MIN = +100000.0;
     static double MAX = -100000.0;
 
     std::string txt_number = std::to_string(tn.i);
-    std::string filename = std::string("data/problem0H/f/txt/f_") +
-            std::string(4 - txt_number.length(), '0') + txt_number + std::string(".txt");
+    std::string filename = std::string("data/problem0H/f/txt/f_") + std::string(4 - txt_number.length(), '0') + txt_number + std::string(".txt");
     IPrinter::print(u, filename.c_str());
     if (MIN > u.min()) MIN = u.min();
     if (MAX < u.max()) MAX = u.max();
-    printf("Forward: %4d %0.3f %10.8f %10.8f %10.8f %10.8f %4d %4d\n", tn.i, tn.t, u.min(), u.max(), MIN, MAX, 0, 0);
+    printf("Forward: %4d %6.3f | %12.8f %12.8f | %12.8f %12.8f | %4d %4d\n", tn.i, tn.t, u.min(), u.max(), MIN, MAX, 0, 0);
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -702,34 +757,38 @@ double WaveEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const 
 
 void WaveEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const { return solver->bcw_layerInfo(p, tn); }
 
-const Dimension& WaveEquationFBVP::timeDimension() const { return solver->timeDimension(); }
+Dimension WaveEquationFBVP::timeDimension() const { return solver->timeDimension(); }
 
-const Dimension& WaveEquationFBVP::spaceDimensionX() const { return solver->spaceDimensionX(); }
+Dimension WaveEquationFBVP::spaceDimensionX() const { return solver->spaceDimensionX(); }
 
-const Dimension& WaveEquationFBVP::spaceDimensionY() const { return solver->spaceDimensionY(); }
+Dimension WaveEquationFBVP::spaceDimensionY() const { return solver->spaceDimensionY(); }
 
-const Dimension& WaveEquationFBVP::spaceDimensionZ() const { return solver->spaceDimensionZ(); }
+Dimension WaveEquationFBVP::spaceDimensionZ() const { return solver->spaceDimensionZ(); }
 
 double ProblemSolver::bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const
 {
     unsigned int n = static_cast<unsigned int>(sn.i);
     unsigned int m = static_cast<unsigned int>(sn.j);
-    if (condition == FinalCondition::FinalValue) { return -2.0*epsilon2*(u2[m][n]/*-U2[m][n]*/); }
-    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*epsilon1*(u1[m][n]/*-U1[m][n]*/) + gamma*bcw_final(sn, FinalCondition::FinalValue); }
+    if (condition == FinalCondition::FinalValue) { return -2.0*esp2*(u2[m][n]/*-U2[m][n]*/); }
+    if (condition == FinalCondition::FinalFirstDerivative) { return +2.0*eps1*(u1[m][n]/*-U1[m][n]*/) + waveDissapation*bcw_final(sn, FinalCondition::FinalValue); }
     throw std::exception();
 }
 
-double ProblemSolver::bcw_boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &) const { return 0.0; }
+double ProblemSolver::bcw_boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &condition) const
+{
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 0.0);
+    return 0.0;
+}
 
 double ProblemSolver::bcw_f(const SpaceNodePDE&, const TimeNodePDE&) const { return 0.0; }
 
 void ProblemSolver::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
-    saveBackwardInformarion(p, tn);
+    bcw_saveBackwardInformarion(p, tn);
     //saveToImage(p, ln);
 }
 
-void ProblemSolver::saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const
+void ProblemSolver::bcw_saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
     ProblemSolver* const_this = const_cast<ProblemSolver*>(this);
 
@@ -774,8 +833,6 @@ void ProblemSolver::bcw_saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn
 
 //--------------------------------------------------------------------------------------------------------------//
 
-//--------------------------------------------------------------------------------------------------------------//
-
 auto ProblemSolver::vectorToParameter(const DoubleVector &x) const -> void
 {
     const Dimension &time = timeDimension();
@@ -793,7 +850,7 @@ auto ProblemSolver::vectorToParameter(const DoubleVector &x) const -> void
     for (unsigned int sn=0; sn<source_number; sn++)
     {
         Problem0HParameter &parameter = const_this->optimalParameters[sn];
-        parameter.create(time, dimX, dimY);
+        parameter.initialize(time, dimX, dimY);
         for (unsigned int ln=0; ln<length; ln++) parameter.pwr_vl[ln] = x.at(sn*length+ln);
         parameter.p.x = x.at(points_offset+2*sn+0);
         parameter.p.y = x.at(points_offset+2*sn+1);

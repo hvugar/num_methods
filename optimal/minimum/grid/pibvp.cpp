@@ -164,12 +164,12 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double w2 = 1.0 - w1;
 
     // equation parameters
-    const double k11 = -((a*ht)/(hx*hx))*w1 + ((b*ht)/(2.0*hx))*w1;
-    const double k12 = +1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1;
-    const double k13 = -((a*ht)/(hx*hx))*w1 - ((b*ht)/(2.0*hx))*w1;
-    const double k21 = +((a*ht)/(hx*hx))*w2 - ((b*ht)/(2.0*hx))*w2;
-    const double k22 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
-    const double k23 = +((a*ht)/(hx*hx))*w2 + ((b*ht)/(2.0*hx))*w2;
+    const double k11 = -((a*ht)/(hx*hx))*w1 + ((b*ht)/(2.0*hx))*w1; // i-1
+    const double k12 = +1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1;    // i
+    const double k13 = -((a*ht)/(hx*hx))*w1 - ((b*ht)/(2.0*hx))*w1; // i+1
+    const double k21 = +((a*ht)/(hx*hx))*w2 - ((b*ht)/(2.0*hx))*w2; // i-1
+    const double k22 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;    // i
+    const double k23 = +((a*ht)/(hx*hx))*w2 + ((b*ht)/(2.0*hx))*w2; // i+1
     
     // left border condition parameters
     const double b11 = +1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1;

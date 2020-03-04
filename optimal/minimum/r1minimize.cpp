@@ -462,7 +462,7 @@ void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsi
     unsigned int iteration = 0;
     unsigned int fx__count = 0;
 
-    if ( mfunction == NULL )
+    if ( mfunction == nullptr )
     {
         std::string msg = "in function \"halphIntervalMethod\" function pointer is null.";
         throw std::runtime_error(msg);
@@ -517,7 +517,7 @@ void R1FxMinimizer::uniformLineSearch(double &x, double &a, double &b, unsigned 
     //unsigned int iteration = 0;
     unsigned int fx__count = 0;
 
-    if ( mfunction == NULL )
+    if ( mfunction == nullptr )
     {
         std::string msg = "in function \"uniformLineSearch\" function pointer is null.";
         throw std::runtime_error(msg);

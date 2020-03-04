@@ -75,3 +75,38 @@ double trapesium(R1Function *f, unsigned int N, double a, double b)
     }
     return sum;
 }
+
+double trapesium2D(const DoubleMatrix &m, double hx, double hy)
+{
+//    unsigned int rows = m.rows();
+//    unsigned int cols = m.cols();
+
+    double sum = 0.0;
+//    sum += 0.25 * m[0][0];
+//    udiff = u1[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
+//    udiff = u1[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
+//    udiff = u1[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
+
+//    for (unsigned int n=1; n<=N-1; n++)
+//    {
+//        udiff = u1[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+//        udiff = u1[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+//    }
+
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        udiff = u1[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+//        udiff = u1[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+//    }
+
+//    for (unsigned int m=1; m<=M-1; m++)
+//    {
+//        for (unsigned int n=1; n<=N-1; n++)
+//        {
+//            udiff = u1[m][n]; usum += udiff * udiff;// * mu(n, m);
+//        }
+//    }
+
+
+    return sum;
+}

@@ -26,10 +26,10 @@ public:
     InitialBoundaryValueProblemPDE & operator= (const InitialBoundaryValueProblemPDE &);
     virtual ~InitialBoundaryValueProblemPDE();
 
-    virtual const Dimension& timeDimension() const = 0;
-    virtual const Dimension& spaceDimensionX() const = 0;
-    virtual const Dimension& spaceDimensionY() const = 0;
-    virtual const Dimension& spaceDimensionZ() const = 0;
+    virtual Dimension timeDimension() const = 0;
+    virtual Dimension spaceDimensionX() const = 0;
+    virtual Dimension spaceDimensionY() const = 0;
+    virtual Dimension spaceDimensionZ() const = 0;
 };
 
 /**
@@ -44,10 +44,10 @@ public:
     FinalBoundaryValueProblemPDE & operator = (const FinalBoundaryValueProblemPDE &);
     virtual ~FinalBoundaryValueProblemPDE();
 
-    virtual const Dimension& timeDimension() const = 0;
-    virtual const Dimension& spaceDimensionX() const = 0;
-    virtual const Dimension& spaceDimensionY() const = 0;
-    virtual const Dimension& spaceDimensionZ() const = 0;
+    virtual Dimension timeDimension() const = 0;
+    virtual Dimension spaceDimensionX() const = 0;
+    virtual Dimension spaceDimensionY() const = 0;
+    virtual Dimension spaceDimensionZ() const = 0;
 };
 
 #endif // INITIAL_BOUNDARY_VALUE_PROBLEM_H

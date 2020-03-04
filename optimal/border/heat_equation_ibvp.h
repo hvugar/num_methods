@@ -22,10 +22,10 @@ protected:
     double weight() const { return 0.5; }
 
 protected:
-    virtual const Dimension& timeDimension() const { return _timeDimension; }
-    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
-    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
-    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+    virtual Dimension timeDimension() const { return _timeDimension; }
+    virtual Dimension spaceDimensionX() const { return _spaceDimensionX; }
+    virtual Dimension spaceDimensionY() const { return _spaceDimensionY; }
+    virtual Dimension spaceDimensionZ() const { return _spaceDimensionZ; }
 
     void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
     void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
@@ -57,10 +57,10 @@ protected:
     double weight() const { return 0.5; }
 
 protected:
-    virtual const Dimension& timeDimension() const { return _timeDimension; }
-    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
-    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
-    virtual const Dimension& spaceDimensionZ() const { return _spaceDimensionZ; }
+    virtual Dimension timeDimension() const { return _timeDimension; }
+    virtual Dimension spaceDimensionX() const { return _spaceDimensionX; }
+    virtual Dimension spaceDimensionY() const { return _spaceDimensionY; }
+    virtual Dimension spaceDimensionZ() const { return _spaceDimensionZ; }
 
     void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
     void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }

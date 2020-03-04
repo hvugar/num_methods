@@ -488,7 +488,7 @@ double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s)
     C_UNUSED(x);
     C_UNUSED(s);
 
-    double alpha0 = min_step;
+    double alpha0 = 0.0;
     double a=0.0, b=0.0, alpha=0.0;
 
     double fxa = 0.0, fxb = 0.0;

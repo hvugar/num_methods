@@ -1,7 +1,7 @@
 #include "wave_equation_ibvp.h"
 
 #define WAVE_DIMENSION_2
-#define WAVE_QUADRATIC
+//#define WAVE_QUADRATIC
 
 #if defined(WAVE_DIMENSION_1)
 #define WAVE_LEFT_DIRICHLET
@@ -20,20 +20,21 @@
 #define WAVE_Y2
 #define WAVE_T1
 #else
+#define EXAMPLE_1
 #endif
 
 double u_fx(const IHyperbolicIBVP *h, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
 double p_fx(const IHyperbolicFBVP *h, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
 
-const double fa = +1.0;   // must be plus for forward
+const double fa = +5.0;   // must be plus for forward
 const double fb = +0.0;   // must be minus or plus for forward -  some problems on high values
 const double fc = -0.0;   // must be minus for forward
 const double fd = +0.0;   // must be plus for forward
 
-const double ba = +1.2;   // must be plus for backward
-const double bb = -0.0;   // must be minus or plus for forward -  some problems on high values
-const double bc = -0.0;   // must be minus for backward
-const double bd = -0.0;   // must be minus for backward
+const double ba = +1.0;   // must be plus for backward
+const double bb = -1.0;   // must be minus or plus for forward -  some problems on high values
+const double bc = -1.0;   // must be minus for backward
+const double bd = -1.0;   // must be minus for backward
 
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -44,10 +45,10 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationIBVP w;
-    w.setTimeDimension(Dimension(0.01, 0, 1000));
-    w.setSpaceDimensionX(Dimension(0.01, 100, 200));
+    w.setTimeDimension(Dimension(0.001, 0, 1000));
+    w.setSpaceDimensionX(Dimension(0.001, 1000, 2000));
 #ifdef WAVE_DIMENSION_2
-    w.setSpaceDimensionY(Dimension(0.01, 200, 300));
+    w.setSpaceDimensionY(Dimension(0.001, 2000, 3000));
 #endif
 
     w.setWaveSpeed(fa);
@@ -77,7 +78,7 @@ void WaveEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationFBVP w;
-    w.setTimeDimension(Dimension(0.01, 0, 10000));
+    w.setTimeDimension(Dimension(0.01, 0, 1000));
     w.setSpaceDimensionX(Dimension(0.01, 100, 200));
 #ifdef WAVE_DIMENSION_2
     w.setSpaceDimensionY(Dimension(0.01, 200, 300));
@@ -103,14 +104,23 @@ void WaveEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
 double WaveEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition condition) const
 {
-    TimeNodePDE tn; tn.t = 0.0;
+    TimeNodePDE tn; tn.t = timeDimension().min()*timeDimension().step();
+
+#if defined(WAVE_QUADRATIC)
     if (condition == InitialCondition::InitialValue) return ::u_fx(this, sn, tn);
     if (condition == InitialCondition::InitialFirstDerivative) return ::u_fx(this, sn, tn, +1, -1, -1);
     throw std::exception();
+#else
+#if defined(EXAMPLE_1)
+    if (condition == InitialCondition::InitialValue) return 0.0;
+    if (condition == InitialCondition::InitialFirstDerivative) { if ( fabs(sn.x - 1.5) <= 0.00001 && fabs(sn.y - 2.5) <= 0.00001 ) return 1000.0; else return 0.0; }
+#endif
+#endif
 }
 
 double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
 {
+#if defined(WAVE_QUADRATIC)
 #if defined(WAVE_DIMENSION_1)
     if (sn.i == spaceDimensionX().min())
     {
@@ -146,12 +156,20 @@ double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     return (condition.alpha()*::u_fx(this, sn, tn, 0, 0, 0)+condition.beta()*::u_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
 #endif
 #endif
+#else
+#if defined(EXAMPLE_1)
+    condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +0.0);
+//    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +1.0, +0.0, +0.0);
+    return 0.0;
+#endif
+#endif
 
     throw std::runtime_error("WaveEquationIBVP::boundary");
 }
 
 double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
 {
+#if defined(WAVE_QUADRATIC)
 #if defined(WAVE_DIMENSION_1)
     const double a = waveSpeed();
     const double b = unknownB();
@@ -170,6 +188,11 @@ double WaveEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     return ::u_fx(this, sn,tn,+2,-1,-1) + ::u_fx(this, sn,tn,+1,-1,-1)*d
             - ::u_fx(this, sn,tn,-1,+2,-1)*a1*a1 - ::u_fx(this, sn,tn,-1,+1,-1)*b1
             - ::u_fx(this, sn,tn,-1,-1,+2)*a2*a2 - ::u_fx(this, sn,tn,-1,-1,+1)*b2 - ::u_fx(this, sn, tn)*c;
+#endif
+#else
+#if defined(EXAMPLE_1)
+    return 0.0;
+#endif
 #endif
 }
 
@@ -282,6 +305,8 @@ void WaveEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 
 void WaveEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
+    saveToImage(u, tn);
+
     if (tn.i % (timeDimension().size() / 5) == 0 || tn.i==0 || tn.i==1 || tn.i==2 || tn.i==3 || tn.i==4)
     {
         (tn.i%2==0) ? IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '-') : IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '=');
@@ -401,8 +426,8 @@ void WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const Tim
 {
 #ifdef USE_LIB_IMAGING
     //const unsigned int L = static_cast<unsigned int>(_timeDimension.size());
-    const unsigned int N = static_cast<unsigned int>(_spaceDimensionX.size());
-    const unsigned int M = static_cast<unsigned int>(_spaceDimensionY.size());
+    const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size());
+    const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size());
     //const double ht = _timeDimension.step();
     //const double hx = _spaceDimensionX.step();
     //const double hy = _spaceDimensionY.step();
@@ -412,7 +437,7 @@ void WaveEquationIBVP::saveToImage(const DoubleMatrix &u UNUSED_PARAM, const Tim
 
     QString filename = QString("data/border/f/png/f_%1.png").arg(tn.i, 4, 10, QChar('0'));
     QPixmap pixmap;
-    visualizeMatrixHeat(u, u.min(), u.max(), pixmap, N+1, M+1);
+    visualizeMatrixHeat(u, -0.05, +0.05, pixmap, N+1, M+1);
     pixmap.save(filename);
 #endif
 }
@@ -619,10 +644,12 @@ void WaveEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 
 void WaveEquationFBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) const
 {
-    if (tn.i % (timeDimension().size() / 5) == 0)
+    unsigned int L = timeDimension().max();
+
+    if (tn.i % (timeDimension().size() / 5) == 0 || tn.i==2*L || tn.i==2*L-1 || tn.i==2*L-2 || tn.i==2*L-3 || tn.i==L-4)
     {
+        (tn.i%2==0) ? IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '-') : IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '=');
         IPrinter::printMatrix(16, 8, p);
-        IPrinter::printSeperatorLine();
     }
     return;
 

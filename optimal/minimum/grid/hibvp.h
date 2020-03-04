@@ -63,7 +63,7 @@ public:
     void implicit_calculate_D1V1() const; // COMPLETED
 
     void explicit_calculate_D2V1() const; // TO-DO
-    void implicit_calculate_D2V1() const; // TO-DO
+    void implicit_calculate_D2V1() const; // COMPLETED
 
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
@@ -103,7 +103,7 @@ public:
     void implicit_calculate_D1V1() const; // COMPLETED
 
     void explicit_calculate_D2V1() const; // TO-DO
-    void implicit_calculate_D2V1() const; // TO-DO
+    void implicit_calculate_D2V1() const; // COMPLETED
 
 protected:
     virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const = 0;

@@ -22,6 +22,21 @@ class WaveEquationIBVP;
 class WaveEquationFBVP;
 class ProblemSolver;
 
+struct ExternalSource
+{
+    SpacePoint point;
+    double power;
+    double sigmaX;
+    double sigmaY;
+    double sigmaT;
+};
+
+struct FunctionalParemeter
+{
+    double epsilon1;
+    double epsilon2;
+};
+
 struct Problem0HParameter
 {
     SpacePoint p;
@@ -33,12 +48,12 @@ struct Problem0HParameter
     std::vector<double> psi_y;
     DeltaGrid2D deltaGrid;
 
-    void create(const Dimension &time, const Dimension &dimX, const Dimension &dimY);
+    Problem0HParameter& initialize(const Dimension &time, const Dimension &dimX, const Dimension &dimY);
     void destroy();
     void distribute(const SpacePoint &p);
 };
 
-void Problem0HParameter::create(const Dimension &time, const Dimension &dimX, const Dimension &dimY)
+Problem0HParameter& Problem0HParameter::initialize(const Dimension &time, const Dimension &dimX, const Dimension &dimY)
 {
     destroy();
 
@@ -53,9 +68,7 @@ void Problem0HParameter::create(const Dimension &time, const Dimension &dimX, co
     psi_x.resize(length, 0.0);
     psi_y.resize(length, 0.0);
 
-    //pwr_vl[0] = 0.0;
-    //pwr_vl[1] = 0.0;
-    //pwr_vl[L] = 0.0;
+    return *this;
 }
 
 void Problem0HParameter::destroy()
@@ -81,6 +94,7 @@ class PROBLEM0HSHARED_EXPORT WaveEquationIBVP : virtual public IWaveEquationIBVP
 {
 public:
     WaveEquationIBVP(ProblemSolver *solver);
+    //WaveEquationIBVP(const WaveEquationIBVP &wibvp);
     virtual ~WaveEquationIBVP();
 
 protected:
@@ -90,10 +104,11 @@ protected:
 
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
-    virtual const Dimension& timeDimension() const;
-    virtual const Dimension& spaceDimensionX() const;
-    virtual const Dimension& spaceDimensionY() const;
-    virtual const Dimension& spaceDimensionZ() const;
+public:
+    virtual Dimension timeDimension() const;
+    virtual Dimension spaceDimensionX() const;
+    virtual Dimension spaceDimensionY() const;
+    virtual Dimension spaceDimensionZ() const;
 
 private:
     ProblemSolver *solver;
@@ -105,6 +120,7 @@ class PROBLEM0HSHARED_EXPORT WaveEquationFBVP : virtual public IWaveEquationFBVP
 {
 public:
     WaveEquationFBVP(ProblemSolver *solver);
+    //WaveEquationFBVP(const WaveEquationFBVP &wibvp);
     virtual ~WaveEquationFBVP();
 
 protected:
@@ -114,10 +130,11 @@ protected:
 
     virtual void layerInfo(const DoubleMatrix &, const TimeNodePDE &) const;
 
-    virtual const Dimension& timeDimension() const;
-    virtual const Dimension& spaceDimensionX() const;
-    virtual const Dimension& spaceDimensionY() const;
-    virtual const Dimension& spaceDimensionZ() const;
+public:
+    virtual Dimension timeDimension() const;
+    virtual Dimension spaceDimensionX() const;
+    virtual Dimension spaceDimensionY() const;
+    virtual Dimension spaceDimensionZ() const;
 
 private:
     ProblemSolver *solver;
@@ -125,19 +142,17 @@ private:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM0HSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient, public IProjection, public IPrinter
+class PROBLEM0HSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient, public IProjection, public IPrinter, public R1Function
 {
 public:
     static void Main(int argc, char** argv);
 
     ProblemSolver();
+    ProblemSolver(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
     virtual ~ProblemSolver();
 
 private:
     ProblemSolver(const ProblemSolver &solver);
-
-    WaveEquationIBVP *forward;
-    WaveEquationFBVP *backward;
 
     static void compareGradients();
     static void checkingForwardProblem();
@@ -145,6 +160,7 @@ private:
 
 public:
     virtual auto fx(const DoubleVector &x) const -> double;
+    virtual auto fx(double t) const -> double;
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
 
     virtual auto project(DoubleVector &x, unsigned int index) -> void;
@@ -188,42 +204,37 @@ protected:
     Dimension _spaceDimensionY;
     Dimension _spaceDimensionZ;
 
-private:
-    double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
-    void calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-    void saveToExcel(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-    void saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-    void saveToTextF(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+public:
+    WaveEquationIBVP *forward;
+    WaveEquationFBVP *backward;
 
-    auto saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void;
+
+    double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    void frw_calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void frw_saveToExcel(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void frw_saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    void frw_saveToTextF(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+
+    auto bcw_saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void;
     auto bcw_saveToImage(const DoubleMatrix &p, const TimeNodePDE &) const -> void;
 
     bool f_saveToFileTxt = false;
     bool f_saveToFilePng = false;
 
-    double a = 1.0;
-    double gamma = 0.0;
+    ExternalSource externalSource;
 
-    double epsilon1 = 1.0;
-    double epsilon2 = 0.0;
+    double waveSpeed = 1.0;
+    double waveDissapation = 0.0;
 
-    //double alpha1 = 1.0;
-    //double alpha2 = 1.0;
-    //double alpha3 = 1.0;
-    SpacePoint ksi;
+    double eps1 = 1.0;
+    double esp2 = 0.0;
 
-    //DoubleMatrix U1;
-    //DoubleMatrix U2;
     DoubleMatrix u1;
     DoubleMatrix u2;
 
     DoubleMatrix uL0;
     DoubleMatrix uL1;
     DoubleMatrix uL2;
-
-    double p_sigmaX;
-    double p_sigmaY;
-    double p_sigmaT;
 
     unsigned int c_sigmaX;
     unsigned int c_sigmaY;

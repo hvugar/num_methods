@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "function.h"
+#include "vector2d.h"
 
 double MINIMUMSHARED_EXPORT Trapesium(R1Function* f, unsigned int N, double a, double b);
 double MINIMUMSHARED_EXPORT Trapesium(R2Function *f, unsigned int N1, unsigned int N2, double a1, double b1, double a2, double b2);
@@ -13,6 +14,8 @@ extern "C" {
 #endif
 
 double trapesium(R1Function* f, unsigned int N, double a, double b);
+
+double trapesium2D(const DoubleMatrix &m, double hx, double hy);
 
 #ifdef __cplusplus
 }

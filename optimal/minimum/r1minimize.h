@@ -18,6 +18,7 @@ double MINIMUMSHARED_EXPORT goldenSectionSearch2(double &a, double &b, double &x
 class MINIMUMSHARED_EXPORT R1FxMinimizer
 {
 public:
+
     struct MINIMUMSHARED_EXPORT Callback
     {
         friend class R1FxMinimizer;
@@ -43,6 +44,7 @@ public:
     };
 
     void setFunction(R1Function *function);
+
     R1Function* function() const;
 
     /**
