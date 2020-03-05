@@ -150,15 +150,17 @@ void ProblemSolver::compareGradients()
 
 void ProblemSolver::optimization()
 {
-    double a,b,fxa,fxb;
-    bool unimodal;
-    R1FxMinimizer r1min;
-    r1min.setFunction(new ProblemSolver);
-    //r1min.straightLineSearch(0.5, 0.1, a, b, fxa, fxb, unimodal);
-    double t = 1.0;
-    a = 1.0;
-    b = 5.0;
-    r1min.uniformLineSearch(t, a, b, 20);
+    (new ProblemSolver)->fx(4.0);
+
+//    double a,b,fxa,fxb;
+//    bool unimodal;
+//    R1FxMinimizer r1min;
+//    r1min.setFunction(new ProblemSolver);
+//    //r1min.straightLineSearch(0.5, 0.1, a, b, fxa, fxb, unimodal);
+//    double t = 1.0;
+//    a = 1.0;
+//    b = 21.0;
+//    r1min.uniformLineSearch(t, a, b, 100);
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -199,7 +201,7 @@ auto ProblemSolver::fx(double t) const -> double
 
     ProblemSolver fw1;
 
-    fw1.externalSource = {SpacePoint(0.25, 0.36), 0.05, 0.05, 0.05, 0.01};
+    fw1.externalSource = {SpacePoint(0.25, 0.36), 0.10, 0.05, 0.05, 0.01};
 
     fw1.source_number = 2;
 
@@ -381,10 +383,9 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
         const unsigned int ix = point_offset+2*sn+0;
         const unsigned int iy = point_offset+2*sn+1;
 
-        unsigned int ln = 0;
         g[ix] = 0.0;
         g[iy] = 0.0;
-        ln = 0;
+        unsigned int ln = 0;
         g[ix] += 0.5*optimalParameter.psi_dx[ln] * optimalParameter.pwr_vl[ln];
         g[iy] += 0.5*optimalParameter.psi_dy[ln] * optimalParameter.pwr_vl[ln];
         for (ln=2; ln<=2*(L-1); ln+=2)
@@ -435,7 +436,7 @@ auto ProblemSolver::print(unsigned int i, const DoubleVector &x, const DoubleVec
     const unsigned int L = static_cast<unsigned int>(time.size()-1);
     const unsigned int o = (2*L+1)*source_number;
 
-    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f | ", i, f, 0.0, 0.0, 0.0, 0.0, 0.0, alpha);
+    printf("I[%3d]: F:%.6f I:%.6f P:%.6f N:%.5f R:%.3f e:%.3f a:%10.6f | ", i, f, fx(x), 0.0, 0.0, 0.0, 0.0, alpha);
     printf("%12.8f %12.8f | %12.8f %12.8f | ", u1.min(), u1.max(), u2.min(), u2.max());
     printf("eta: %8.6f %8.6f %8.6f %8.6f\n", x[o+0], x[o+1], x[o+2], x[o+3]);
     //IPrinter::printSeperatorLine("-");
