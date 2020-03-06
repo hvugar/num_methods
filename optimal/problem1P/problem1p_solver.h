@@ -2,8 +2,8 @@
 #define PROBLEM1P_SOLVER_H
 
 #define SIGMA 0.5
-//#define EXAMPLE_LEFT_BORDER_ROBIN
-#define EXAMPLE_LEFT_BORDER_DIRICHLET
+#define EXAMPLE_LEFT_BORDER_ROBIN
+//#define EXAMPLE_LEFT_BORDER_DIRICHLET
 //#define EXAMPLE_FXT
 
 #include "problem1p_global.h"
@@ -26,20 +26,15 @@ class ProblemSolver;
 
 struct EquationParameters
 {
-    double thermalDiffusivity = 1.0;
-    double thermalConductivity0 = 0.001;
-    double thermalConductivity1 = 0.1;
-    double thermalConductivity2 = 0.01;
+
+
 
     unsigned int L;
     double *k;
     double *z;
     SpacePoint *eta;
 
-    double initialTemperature;
-    double environmentTemperature;
 
-    double *v;
 };
 
 class PROBLEM1PSHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
@@ -56,22 +51,10 @@ protected:
     virtual double weight() const { return SIGMA; }
 
 public:
-    virtual Dimension timeDimension() const { return _timeDimension; }
-    virtual Dimension spaceDimensionX() const { return _spaceDimensionX; }
-    virtual Dimension spaceDimensionY() const { return _spaceDimensionY; }
-    virtual Dimension spaceDimensionZ() const { return _spaceDimensionZ; }
-
-    void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
-    void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
-    void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
-
-    bool showLayers = false;
-
-private:
-    Dimension _timeDimension;
-    Dimension _spaceDimensionX;
-    Dimension _spaceDimensionY;
-    Dimension _spaceDimensionZ;    
+    virtual Dimension timeDimension() const;
+    virtual Dimension spaceDimensionX() const;
+    virtual Dimension spaceDimensionY() const;
+    virtual Dimension spaceDimensionZ() const;
 };
 
 class PROBLEM1PSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP
@@ -88,22 +71,10 @@ protected:
     virtual double weight() const { return SIGMA; }
 
 public:
-    virtual Dimension timeDimension() const { return _timeDimension; }
-    virtual Dimension spaceDimensionX() const { return _spaceDimensionX; }
-    virtual Dimension spaceDimensionY() const { return _spaceDimensionY; }
-    virtual Dimension spaceDimensionZ() const { return _spaceDimensionZ; }
-
-    void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
-    void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
-    void setSpaceDimensionY(const Dimension &spaceDimensionY) { this->_spaceDimensionY = spaceDimensionY; }
-
-    bool showLayers = false;
-
-private:
-    Dimension _timeDimension;
-    Dimension _spaceDimensionX;
-    Dimension _spaceDimensionY;
-    Dimension _spaceDimensionZ;
+    virtual Dimension timeDimension() const;
+    virtual Dimension spaceDimensionX() const;
+    virtual Dimension spaceDimensionY() const;
+    virtual Dimension spaceDimensionZ() const;
 };
 
 class PROBLEM1PSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient
@@ -116,7 +87,10 @@ public:
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     virtual double fx(const DoubleVector &x) const;
 
+    const Dimension &timeDimension() const { return _timeDimension; }
     void setTimeDimension(const Dimension &timeDimension);
+
+    const Dimension &spaceDimensionX() const { return _spaceDimensionX; }
     void setSpaceDimensionX(const Dimension &spaceDimensionX);
 
     virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
@@ -129,13 +103,24 @@ public:
     virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void bcw_layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
 
+    double integral(const DoubleVector &x) const;
+
 protected:
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;
 
+    double environmentTemperature = 0.0;
+    double initialTemperature = 0.5;
+
+    double thermalDiffusivity = 1.0;
+    double thermalConvection = 0.001;
+    double thermalConductivity1 = 0.1;
+    double thermalConductivity2 = 0.01;
+
+    double *heat_power = nullptr;
+
+
     EquationParameters params;
-    Dimension _timeDimension;
-    Dimension _spaceDimensionX;
 
     DoubleVector U;
     DoubleVector V;
@@ -143,6 +128,10 @@ protected:
     DoubleVector p0x;
 
     ProblemSolver *const_this;
+
+private:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
 
     friend class HeatEquationIBVP;
     friend class HeatEquationFBVP;
