@@ -25,6 +25,7 @@ double sgn(double x)
     return 0.0;
 }
 
+#include <stdio.h>
 void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g)
 {
     double h = step;

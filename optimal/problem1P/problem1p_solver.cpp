@@ -24,14 +24,15 @@ void ProblemSolver::Main(int argc, char* argv[])
     IGradient::Gradient(&solver, 0.01, x, ng);
 
     ag[0]   = ng[0]   = 0.0;
-    ag[100] = ng[100] = 0.0;
+    //    ag[100] = ng[100] = 0.0;
 
     IPrinter::printSeperatorLine("gradients", '=');
-    IPrinter::printVector(ag);
-    IPrinter::printVector(ng);
+    IPrinter::printVector(ag, "ag: ");
+    IPrinter::printVector(ng, "ng: ");
     IPrinter::printSeperatorLine("normolized", '=');
-    IPrinter::printVector(ag.EuclideanNormalize());
-    IPrinter::printVector(ng.EuclideanNormalize());
+    IPrinter::printVector(ag.EuclideanNormalize(), "ag: ");
+    IPrinter::printVector(ng.EuclideanNormalize(), "ng: ");
+    IPrinter::printSeperatorLine(nullptr, '=');
 }
 
 ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &spaceDimensionX)
@@ -65,6 +66,8 @@ void ProblemSolver::setTimeDimension(const Dimension &timeDimension)
     heat_power = new double[size];
 
     p0.resize(size);
+    p1.resize(size);
+    p2.resize(size);
     p0x.resize(size);
 }
 
@@ -92,8 +95,8 @@ void ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const
 #ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
     for (unsigned int i=0; i<length; i++) g[i] = -thermalDiffusivity*p0x[i];
 #endif
-//    g[0] = 0.0;
-//    g[length-1] = 0.0;
+    //    g[0] = 0.0;
+    //    g[length-1] = 0.0;
 }
 
 double ProblemSolver::fx(const DoubleVector &x) const
@@ -199,16 +202,39 @@ void ProblemSolver::bcw_layerInfo(const DoubleVector &p, const TimeNodePDE &tn) 
 
     auto const_solver = const_cast<ProblemSolver *>(this);
 #ifdef EXAMPLE_LEFT_BORDER_ROBIN
-    const_solver->p0[tn.i] = p[0];
-    printf("%4d %20.8f %20.8f\n", tn.i, p[0], p0[tn.i]);
+    if (tn.i==timeDimension().max())
+    {
+        const_solver->p0[tn.i] = 0.5*p[0];
+    }
+    else
+    {
+        const_solver->p0[tn.i+1] += 0.5*p[0];
+        const_solver->p0[tn.i+0]  = 0.5*p[0];
+    }
+    //const_solver->p0[tn.i] = p[0];
 #endif
 #ifdef EXAMPLE_LEFT_BORDER_DIRICHLET
     const double hx = _spaceDimensionX.step();
-    const_solver->p0x[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*hx);
-    if (timeDimension().max()==tn.i) const_solver->p0x[tn.i] = (4.0*p[1]-p[2])/(2.0*hx);
-    if (timeDimension().min()==tn.i) const_solver->p0x[tn.i] = (4.0*p[1]-p[2])/(2.0*hx);
-    printf("%4d %20.8f %20.8f %20.8f %20.8f\n", tn.i, p[0], p[1], p[2], p0x[tn.i]);
-//    const_solver->p0x[tn.i] = (p[1]-p[0])/hx;
+
+    if (tn.i==timeDimension().max())
+    {
+        const_solver->p0[tn.i] = 0.5*p[0];
+        const_solver->p1[tn.i] = 0.5*p[1];
+        const_solver->p2[tn.i] = 0.5*p[2];
+    }
+    else
+    {
+        const_solver->p0[tn.i+1] += 0.5*p[0];
+        const_solver->p1[tn.i+1] += 0.5*p[1];
+        const_solver->p2[tn.i+1] += 0.5*p[2];
+
+        const_solver->p0[tn.i] = 0.5*p[0];
+        const_solver->p1[tn.i] = 0.5*p[1];
+        const_solver->p2[tn.i] = 0.5*p[2];
+
+        const_solver->p0x[tn.i+1] = (-3.0*p0[tn.i+1]+4.0*p1[tn.i+1]-p2[tn.i+1])/(2.0*hx);
+    }
+    //const_solver->p0x[tn.i] = (-3.0*p[0]+4.0*p[1]-p[2])/(2.0*hx);
 #endif
 }
 

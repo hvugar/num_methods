@@ -119,12 +119,13 @@ protected:
 
     double *heat_power = nullptr;
 
-
     EquationParameters params;
 
     DoubleVector U;
     DoubleVector V;
     DoubleVector p0;
+    DoubleVector p1;
+    DoubleVector p2;
     DoubleVector p0x;
 
     ProblemSolver *const_this;

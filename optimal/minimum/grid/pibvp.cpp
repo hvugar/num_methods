@@ -178,6 +178,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double b14 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
     const double b15 = +((2.0*a*ht)/hx)*w2 - b*ht*w2;
     const double b16 = +((2.0*a*ht)/(hx*hx))*w2;
+    const double b19 = -((2.0*a*ht)/hx) + b*ht;
     const double b17 = -((2.0*a*ht)/hx)*w1 + b*ht*w1;
     const double b18 = -((2.0*a*ht)/hx)*w2 + b*ht*w2;
 
@@ -188,6 +189,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     const double b24 = +((2.0*a*ht)/(hx*hx))*w2;
     const double b25 = -((2.0*a*ht)/hx)*w2 - b*ht*w2;
     const double b26 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
+    const double b29 = +((2.0*a*ht)/hx) + b*ht;
     const double b27 = +((2.0*a*ht)/hx)*w1 + b*ht*w1;
     const double b28 = +((2.0*a*ht)/hx)*w2 + b*ht*w2;
 
@@ -236,7 +238,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         for (int n=xmin+1; n<=xmax-1; n++, i++)
         {
             sn.i = n; sn.x = n*hx;
-            dx[i] = k21*u0[i-1] + k22*u0[i] + k23*u0[i+1] + (ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0));
+            dx[i] = k21*u0[i-1] + k22*u0[i] + k23*u0[i+1];
+
+            dx[i] += ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0);
         }
 
         unsigned int s=0, e=N;
@@ -262,8 +266,10 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             ax[s]  = 0.0;
             bx[s]  = beta*b11;
             cx[s]  = beta*b13;
-            dx[s]  = beta*b14*u0[s] + beta*b16*u0[s+1]
-                   + beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0)) + gamma*(b17*value+b18*value0);
+            dx[s]  = beta*b14*u0[s] + beta*b16*u0[s+1];
+
+            dx[s] += beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0));
+            dx[s] += gamma*(b17*value+b18*value0);
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
@@ -271,8 +277,12 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             ax[s]  = 0.0;
             bx[s]  = beta*b11 + alpha*b12;
             cx[s]  = beta*b13;
-            dx[s]  = beta*b14*u0[s] + alpha*b15*u0[s] + beta*b16*u0[s+1]
-                   + beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0)) + gamma*(b17*value+b18*value0);
+            dx[s]  = beta*b14*u0[s] + alpha*b15*u0[s] + beta*b16*u0[s+1];
+
+            dx[s] += beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0));
+            //dx[s] += gamma*(b17*value+b18*value0);
+
+            dx[s] += gamma*b19*value;
         }
 
         sn.i = xmax; sn.x = xmax*hx;
@@ -294,8 +304,10 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             ax[e]  = beta*b21;
             bx[e]  = beta*b23;
             cx[e]  = 0.0;
-            dx[e]  = beta*b24*u0[e-1] + beta*b26*u0[e]
-                    + beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0)) + gamma*(b27*value+b28*value0);
+            dx[e]  = beta*b24*u0[e-1] + beta*b26*u0[e];
+
+            dx[e] += beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0));
+            dx[e] += gamma*(b27*value+b28*value0);
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
@@ -303,8 +315,12 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             ax[e]  = beta*b21;
             bx[e]  = alpha*b22 + beta*b23;
             cx[e]  = 0.0;
-            dx[e]  = beta*b24*u0[e-1] + alpha*b25*u0[e] + beta*b26*u0[e]
-                    + beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0)) + gamma*(b27*value+b28*value0);
+            dx[e]  = beta*b24*u0[e-1] + alpha*b25*u0[e] + beta*b26*u0[e];
+
+            dx[e]  += beta*(ht_w1*f(sn, tn1)+ht_w2*f(sn, tn0));
+            //dx[e] += gamma*(b27*value+b28*value0);
+
+            dx[e] += gamma*b29*value;
         }
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -1118,6 +1134,7 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
     const double b14 = -1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
     const double b15 = +((2.0*a*ht)/hx)*w2 - b*ht*w2;
     const double b16 = +((2.0*a*ht)/(hx*hx))*w2;
+    const double b19 = -((2.0*a*ht)/hx) + b*ht;
     const double b17 = -((2.0*a*ht)/hx)*w1 + b*ht*w1;
     const double b18 = -((2.0*a*ht)/hx)*w2 + b*ht*w2;
 
@@ -1128,6 +1145,7 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
     const double b24 = +((2.0*a*ht)/(hx*hx))*w2;
     const double b25 = -((2.0*a*ht)/hx)*w2 - b*ht*w2;
     const double b26 = -1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
+    const double b29 = +((2.0*a*ht)/hx) + b*ht;
     const double b27 = +((2.0*a*ht)/hx)*w1 + b*ht*w1;
     const double b28 = +((2.0*a*ht)/hx)*w2 + b*ht*w2;
 
@@ -1177,7 +1195,9 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
         for (int n=xmin+1; n<=xmax-1; n++, i++)
         {
             sn.i = n; sn.x = n*hx;
-            dx[i] = k21*u00[i-1] + k22*u00[i] + k23*u00[i+1] + (ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+            dx[i] = k21*u00[i-1] + k22*u00[i] + k23*u00[i+1];
+
+            dx[i] += ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00);
         }
 
         unsigned int s=0, e=N;
@@ -1203,8 +1223,10 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
             ax[s]  = 0.0;
             bx[s]  = beta*b11;
             cx[s]  = beta*b13;
-            dx[s]  = beta*b14*u00[s] + beta*b16*u00[s+1]
-                    + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b17*value+b18*value0);
+            dx[s]  = beta*b14*u00[s] + beta*b16*u00[s+1];
+
+            dx[s] += beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+            dx[s] += gamma*(b17*value+b18*value0);
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
@@ -1212,8 +1234,12 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
             ax[s]  = 0.0;
             bx[s]  = beta*b11 + alpha*b12;
             cx[s]  = beta*b13;
-            dx[s]  = beta*b14*u00[s] + alpha*b15*u00[s] + beta*b16*u00[s+1]
-                    + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b17*value+b18*value0);
+            dx[s]  = beta*b14*u00[s] + alpha*b15*u00[s] + beta*b16*u00[s+1];
+
+            dx[s] += beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+            //dx[s] +=  gamma*(b17*value+b18*value0);
+
+            dx[s] +=  gamma*b19*value;
         }
 
         sn.i = xmax; sn.x = xmax*hx;
@@ -1235,8 +1261,10 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
             ax[e]  = beta*b21;
             bx[e]  = beta*b23;
             cx[e]  = 0.0;
-            dx[e]  = beta*b24*u00[e-1] + beta*b26*u00[e]
-                    + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b27*value+b28*value0);
+            dx[e]  = beta*b24*u00[e-1] + beta*b26*u00[e];
+
+            dx[e] += beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+            dx[e] += gamma*(b27*value+b28*value0);
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
@@ -1244,8 +1272,12 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
             ax[e]  = beta*b21;
             bx[e]  = alpha*b22 + beta*b23;
             cx[e]  = 0.0;
-            dx[e]  = beta*b24*u00[e-1] + alpha*b25*u00[e] + beta*b26*u00[e]
-                    + beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00)) + gamma*(b27*value+b28*value0);
+            dx[e]  = beta*b24*u00[e-1] + alpha*b25*u00[e] + beta*b26*u00[e];
+
+            dx[e] += beta*(ht_w1*f(sn, tn10)+ht_w2*f(sn, tn00));
+            //dx[e] +=  gamma*(b27*value+b28*value0);
+
+            dx[e] +=  gamma*b29*value;
         }
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
