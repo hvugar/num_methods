@@ -35,7 +35,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //ConjugateGradinetTest::Main(argc, argv);
 
-    //FirstOrderLinearODEEx1::Main(argc, argv);
+    FirstOrderLinearODEEx1::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
@@ -50,7 +50,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 //    IPrinter::printSeperatorLine();
 
     //h0p::ProblemSolver::Main(argc, argv);
-    p1p::ProblemSolver::Main(argc, argv);
+    //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
 
     //return 0;
