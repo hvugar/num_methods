@@ -412,16 +412,30 @@ void tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const do
 void tomasAlgorithmRight2Left(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N)
 {
     const unsigned int M = N-1;
+
     double *alpha = (double*)malloc(sizeof(double)*N);
     double *betta = (double*)malloc(sizeof(double)*N);
     unsigned int i = 1;
     double m = 0.0;
 
     /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+    if (fabs(b[0]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6d b0=%20.8f\n", 0, fabs(b[0])); assert(!(fabs(b[0]) <= MY_EPSILON)); }
+    if (fabs(b[M]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6d bN=%20.8f\n", M, fabs(b[M])); assert(!(fabs(b[M]) <= MY_EPSILON)); }
+
+    if (fabs(c[0]) < MY_EPSILON) { fprintf(stderr, "ERROR: %6d c0=%20.8f<0.0\n", 0, fabs(c[0])); assert(!(fabs(c[0]) < MY_EPSILON)); }
+    if (fabs(a[M]) < MY_EPSILON) { fprintf(stderr, "ERROR: %6d aN=%20.8f<0.0\n", M, fabs(a[M])); assert(!(fabs(a[M]) < MY_EPSILON)); }
+
+    if (fabs(b[0]) < fabs(c[0])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[0]), fabs(c[0])); assert(!(fabs(b[0]) < fabs(c[0]))); }
+    if (fabs(b[M]) < fabs(a[M])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", M, fabs(b[M]), fabs(a[M])); assert(!(fabs(b[M]) < fabs(a[M]))); }
+
     alpha[M-1] = -a[M]/b[M];
     betta[M-1] = +d[M]/b[M];
     for (i=M-1; i>=1; i--)
     {
+        if (fabs(b[i]) < fabs(a[i])+fabs(c[i])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f %20.8f\n", i, fabs(a[i]), fabs(b[i]), fabs(c[i])); assert(!(fabs(b[i]) < fabs(a[i])+fabs(c[i]))); }
+        if (fabs(a[i]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(a[i])); assert(!(fabs(a[i]) <= MY_EPSILON)); }
+        if (fabs(c[i]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(c[i])); assert(!(fabs(c[i]) <= MY_EPSILON)); }
+
         m = b[i] + c[i]*alpha[i];
         alpha[i-1] = -a[i]/m;
         betta[i-1] = +(d[i]-c[i]*betta[i])/m;
@@ -454,10 +468,23 @@ void tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const do
     double m = 0.0;
 
     /* Прямой ход метода прогонки. Определение прогоночных коэффициентов. */
+//    if (fabs(b[0]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d b0=%20.8f\n", 0, fabs(b[0])); assert(fabs(b[0]) <= 0.0); }
+    if (fabs(b[M]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d bN=%20.8f\n", 0, fabs(b[M])); assert(fabs(b[M]) <= 0.0); }
+
+//    if (fabs(c[0]) < DBL_EPSILON) { fprintf(stderr, "ERROR: %6d c0=%20.8f<0.0\n", 0, fabs(c[0])); assert(fabs(c[0]) < 0.0); }
+    if (fabs(a[M]) < DBL_EPSILON) { fprintf(stderr, "ERROR: %6d aN=%20.8f<0.0\n", 0, fabs(a[M])); assert(fabs(a[M]) < 0.0); }
+
+//    if (fabs(b[0]) < fabs(c[0])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[0]), fabs(c[0])); assert(fabs(b[0]) < fabs(c[0])); }
+    if (fabs(b[M]) < fabs(a[M])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[M]), fabs(a[M])); assert(fabs(b[M]) < fabs(a[M])); }
+
     alpha[M-1] = -a[M]/b[M];
     betta[M-1] = +d[M]/b[M];
     for (i=M-1; i>=1; i--)
     {
+        if (fabs(b[i]) < fabs(a[i])+fabs(c[i])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f %20.8f\n", i, fabs(a[i]), fabs(b[i]), fabs(c[i])); assert(fabs(b[i]) < fabs(a[i])+fabs(c[i])); }
+        if (fabs(a[i]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(a[i])); assert(fabs(a[i]) <= 0.0); }
+        if (fabs(c[i]) <= DBL_EPSILON) { fprintf(stderr, "ERROR: %6d %20.8f\n", i, fabs(c[i])); assert(fabs(c[i]) <= 0.0); }
+
         m = b[i] + c[i]*alpha[i];
         alpha[i-1] = -a[i]/m;
         betta[i-1] = +(d[i]-c[i]*betta[i])/m;

@@ -1,20 +1,21 @@
 #ifndef PROBLEM1P_SOLVER_H
 #define PROBLEM1P_SOLVER_H
 
-#define SIGMA 0.5
-#define EXAMPLE_LEFT_BORDER_ROBIN
-//#define EXAMPLE_LEFT_BORDER_DIRICHLET
-//#define EXAMPLE_FXT
+#define WEIGHT 1.0
 
 #include "problem1p_global.h"
 #include <function.h>
 #include <gradient.h>
 #include <printer.h>
 #include <grid/pibvp.h>
+#include <projection.h>
+#include <gradient_cjt.h>
+#include <gradient_sd.h>
 
 #include <iostream>
 #include <functional>
 #include <memory>
+#include <cmath>
 
 using namespace std;
 using namespace std::placeholders;
@@ -23,19 +24,6 @@ namespace p1p
 {
 
 class ProblemSolver;
-
-struct EquationParameters
-{
-
-
-
-    unsigned int L;
-    double *k;
-    double *z;
-    SpacePoint *eta;
-
-
-};
 
 class PROBLEM1PSHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
 {
@@ -46,9 +34,10 @@ public:
     virtual void layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
 
     ProblemSolver *solver;
+    virtual void implicit_calculate_D1V1() const;
 
 protected:
-    virtual double weight() const { return SIGMA; }
+    virtual double weight() const { return WEIGHT; }
 
 public:
     virtual Dimension timeDimension() const;
@@ -66,9 +55,10 @@ public:
     virtual void layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const;
 
     ProblemSolver *solver;
+    virtual void implicit_calculate_D1V1() const;
 
 protected:
-    virtual double weight() const { return SIGMA; }
+    virtual double weight() const { return WEIGHT; }
 
 public:
     virtual Dimension timeDimension() const;
@@ -77,7 +67,7 @@ public:
     virtual Dimension spaceDimensionZ() const;
 };
 
-class PROBLEM1PSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient
+class PROBLEM1PSHARED_EXPORT ProblemSolver : public RnFunction, public IGradient, public IProjection, public IPrinter
 {
 public:
     static void Main(int argc, char* argv[]);
@@ -86,6 +76,8 @@ public:
 
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     virtual double fx(const DoubleVector &x) const;
+    virtual void project(DoubleVector &x, unsigned int index);
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
 
     const Dimension &timeDimension() const { return _timeDimension; }
     void setTimeDimension(const Dimension &timeDimension);
@@ -110,25 +102,27 @@ protected:
     HeatEquationFBVP backward;
 
     double environmentTemperature = 0.0;
-    double initialTemperature = 0.5;
+    double initialTemperature = 0.0;
 
     double thermalDiffusivity = 1.0;
-    double thermalConvection = 0.001;
+    double thermalConvection = 0.0001;
     double thermalConductivity1 = 0.1;
-    double thermalConductivity2 = 0.01;
+    double thermalConductivity2 = 0.001;
 
-    double *heat_power = nullptr;
+    DoubleVector p0;
+    unsigned int mPointCount = 4;
+    SpacePoint *mPoints;
+    double *k;
+    double *z;
 
-    EquationParameters params;
+    double **u_vl = nullptr;
+    double **u_dx = nullptr;
 
     DoubleVector U;
     DoubleVector V;
-    DoubleVector p0;
-    DoubleVector p1;
-    DoubleVector p2;
-    DoubleVector p0x;
 
     ProblemSolver *const_this;
+    double _weight = 0.5;
 
 private:
     Dimension _timeDimension;

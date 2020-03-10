@@ -76,7 +76,7 @@ void SteepestDescentGradient::calculate(DoubleVector &x)
             //double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
-            //if (m_projection != nullptr) m_projection->project(x, i);
+            if (m_projection != nullptr) m_projection->project(x, i);
 
             /**************************************************************************************
              * Calculating distance.
@@ -220,7 +220,7 @@ double SteepestDescentGradient::fx(double alpha) const
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] - alpha * g[i];
-        //if (m_projection != nullptr) m_projection->project(cx, i);
+        if (m_projection != nullptr) m_projection->project(cx, i);
     }
 
     if (m_projection != nullptr) m_projection->project(cx);

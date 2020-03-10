@@ -123,7 +123,7 @@ void ConjugateGradient::calculate(DoubleVector& x)
         for (unsigned int i=0; i<n; i++)
         {
             x[i] = x[i] + alpha * s[i];
-            //if (m_projection) m_projection->project(x, i);
+            if (m_projection) m_projection->project(x, i);
         }
         if (m_projection != nullptr) m_projection->project(x);
 
@@ -521,7 +521,7 @@ double ConjugateGradient::fx(double alpha) const
     for (unsigned int i=0; i<n; i++)
     {
         cx[i] = x[i] + alpha * s[i];
-        //if (m_projection) m_projection->project(cx, i);
+        if (m_projection) m_projection->project(cx, i);
     }
 
     if (m_projection != nullptr) m_projection->project(cx);
