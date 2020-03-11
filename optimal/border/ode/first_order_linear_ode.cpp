@@ -1,6 +1,6 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_15
+#define EXAMPLE_16
 
 #define _N 100
 #define _H 0.01
@@ -67,9 +67,17 @@ void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
 //    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
 //    IPrinter::printSeperatorLine();
 
+    const double epsilon = 0.0000001;
+    printf(">>>> %20.14f %20.14f %20.14f\n", nl.x(0.50-epsilon, 1), nl.x(0.50, 1), nl.x(0.50+epsilon, 1));
+    printf(">>>> %20.14f %20.14f %20.14f\n", nl.dt(0.50-epsilon, 1), nl.dt(0.50, 1), nl.dt(0.50+epsilon, 1));
+    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d2t(0.50-epsilon, 1), nl.d2t(0.50, 1), nl.d2t(0.50+epsilon, 1));
+    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d3t(0.50-epsilon, 1), nl.d3t(0.50, 1), nl.d3t(0.50+epsilon, 1));
+    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d4t(0.50-epsilon, 1), nl.d4t(0.50, 1), nl.d4t(0.50+epsilon, 1));
+//    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d5t(0.50-epsilon, 1), nl.d5t(0.50, 1), nl.d5t(0.50+epsilon, 1));
+
     puts("===== transferOfConditionN 4 0 =====");
     x.clear();
-    nl.transferOfConditionP(C, d, x, 2*, 1);
+    nl.transferOfConditionP(C, d, x, 4, 1);
     for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
@@ -99,7 +107,7 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     C_UNUSED(r);
     C_UNUSED(c);
 
-#if defined(EXAMPLE_11) || defined (EXAMPLE_13) || defined (EXAMPLE_14) || defined (EXAMPLE_15) || defined (EXAMPLE_31)
+#if defined(EXAMPLE_11) || defined (EXAMPLE_13) || defined (EXAMPLE_14) || defined (EXAMPLE_15) || defined (EXAMPLE_16) || defined (EXAMPLE_31)
     return -1.0;
 //    return 10.0*sin(4.0*M_PI*node.x*node.x);
 #endif
@@ -148,7 +156,7 @@ double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
 
 unsigned int FirstOrderLinearODEEx1::count() const
 {
-#if defined(EXAMPLE_11) || defined(EXAMPLE_12) || defined(EXAMPLE_13) || defined(EXAMPLE_14) || defined(EXAMPLE_15)
+#if defined(EXAMPLE_11) || defined(EXAMPLE_12) || defined(EXAMPLE_13) || defined(EXAMPLE_14) || defined(EXAMPLE_15) || defined(EXAMPLE_16)
     return 1;
 #endif
 #if defined(EXAMPLE_31) || defined(EXAMPLE_32)
@@ -191,6 +199,13 @@ double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED
         if (node.x  > 0.5) return 2.5*t*t*t + 6.25*t*t - 6.3125*t + 2.03125;
     }
 #endif
+#ifdef EXAMPLE_16
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return t*t*t*t + 3.0*t*t*t - 5.5*t*t + 0.5;
+        if (node.x  > 0.5) return 2.0*t*t*t*t + t*t*t - 4.0*t*t - 0.5*t + 0.5625;
+    }
+#endif
 #ifdef EXAMPLE_31
     if (r == 1) return t;
     if (r == 2) return t*t;
@@ -223,7 +238,7 @@ double FirstOrderLinearODEEx1::x(const PointNodeODE &node, unsigned int r UNUSED
     if (r == 1) return t;
 #endif
 
-    throw std::exception();
+    throw std::runtime_error("double FirstOrderLinearODEEx1::x");
 }
 
 double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
@@ -250,6 +265,13 @@ double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSE
     {
         if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
         if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+    }
+#endif
+#ifdef EXAMPLE_16
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 4.0*t*t*t + 9.0*t*t - 11.0*t;
+        if (node.x  > 0.5) return 8.0*t*t*t + 3.0*t*t - 8.0*t - 0.5;
     }
 #endif
 #ifdef EXAMPLE_31
@@ -285,6 +307,210 @@ double FirstOrderLinearODEEx1::dt(const PointNodeODE &node, unsigned int r UNUSE
 #endif
 
     throw std::exception();
+}
+
+double FirstOrderLinearODEEx1::d2t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+{
+    double t =  node.x;
+#ifdef EXAMPLE_11
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_12
+    if (r == 1) return -8.0*M_PI*sin(8.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_13
+    if (r == 1) return 5.0*fabs(t-0.5)*pow((t-0.5), 3.0);
+#endif
+#ifdef EXAMPLE_14
+    if (r == 1)
+    {
+        if (node.x <= 1.0) return -t*t*t + 3.0*t*t - t - 1.0;
+        if (node.x  > 1.0) return 2.0*t - 2.0;
+    }
+#endif
+#ifdef EXAMPLE_15
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
+        if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+    }
+#endif
+#ifdef EXAMPLE_16
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 12.0*t*t + 18.0*t - 11.0;
+        if (node.x  > 0.5) return 24.0*t*t + 6.0*t - 8.0;
+    }
+#endif
+#ifdef EXAMPLE_31
+    if (r == 1) return 1.0;
+    if (r == 2) return 2.0*t;
+    if (r == 3) return 2.0*t+1.0;
+#endif
+#ifdef EXAMPLE_32
+    if (r == 1) return +6.0*M_PI*cos(6.0*M_PI*t);
+    if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
+    if (r == 3) return -6.0*exp(-6.0*t);
+#endif
+#ifdef EXAMPLE_5
+    if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;
+    if (r == 2) return 2.4*cos(4.0*t) + exp(t) + 24.0*t*t*cos(10.0*t*t*t);
+    if (r == 3) return 9.6*t*cos(6.0*t*t);
+    if (r == 4) return 0.4*exp(t)*sin(12.0*t) + 4.8*exp(t)*cos(12.0*t);
+#endif
+#ifdef EXAMPLE_6
+    if (r == 1) return 16.0*M_PI*t*t*t*cos(4.0*M_PI*t*t*t*t) + 0.6*exp(t);
+#endif
+#ifdef EXAMPLE_7
+    if (r == 1) return 36.0*t*t*t*t*t - 15.0*t*t + 2.0*t;
+#endif
+#ifdef EXAMPLE_8
+    if (r == 1) return 6.0*t*t*t*t*t;
+#endif
+#ifdef EXAMPLE_9
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_10
+    if (r == 1) return 1.0;
+#endif
+
+    throw std::runtime_error("FirstOrderLinearODEEx1::d2t");
+}
+
+double FirstOrderLinearODEEx1::d3t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+{
+    double t =  node.x;
+#ifdef EXAMPLE_11
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_12
+    if (r == 1) return -8.0*M_PI*sin(8.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_13
+    if (r == 1) return 5.0*fabs(t-0.5)*pow((t-0.5), 3.0);
+#endif
+#ifdef EXAMPLE_14
+    if (r == 1)
+    {
+        if (node.x <= 1.0) return -t*t*t + 3.0*t*t - t - 1.0;
+        if (node.x  > 1.0) return 2.0*t - 2.0;
+    }
+#endif
+#ifdef EXAMPLE_15
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
+        if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+    }
+#endif
+#ifdef EXAMPLE_16
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 24.0*t + 18.0;
+        if (node.x  > 0.5) return 48.0*t + 6.0;
+    }
+#endif
+#ifdef EXAMPLE_31
+    if (r == 1) return 1.0;
+    if (r == 2) return 2.0*t;
+    if (r == 3) return 2.0*t+1.0;
+#endif
+#ifdef EXAMPLE_32
+    if (r == 1) return +6.0*M_PI*cos(6.0*M_PI*t);
+    if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
+    if (r == 3) return -6.0*exp(-6.0*t);
+#endif
+#ifdef EXAMPLE_5
+    if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;
+    if (r == 2) return 2.4*cos(4.0*t) + exp(t) + 24.0*t*t*cos(10.0*t*t*t);
+    if (r == 3) return 9.6*t*cos(6.0*t*t);
+    if (r == 4) return 0.4*exp(t)*sin(12.0*t) + 4.8*exp(t)*cos(12.0*t);
+#endif
+#ifdef EXAMPLE_6
+    if (r == 1) return 16.0*M_PI*t*t*t*cos(4.0*M_PI*t*t*t*t) + 0.6*exp(t);
+#endif
+#ifdef EXAMPLE_7
+    if (r == 1) return 36.0*t*t*t*t*t - 15.0*t*t + 2.0*t;
+#endif
+#ifdef EXAMPLE_8
+    if (r == 1) return 6.0*t*t*t*t*t;
+#endif
+#ifdef EXAMPLE_9
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_10
+    if (r == 1) return 1.0;
+#endif
+
+    throw std::runtime_error("FirstOrderLinearODEEx1::d3t");
+}
+
+double FirstOrderLinearODEEx1::d4t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+{
+    double t =  node.x;
+#ifdef EXAMPLE_11
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_12
+    if (r == 1) return -8.0*M_PI*sin(8.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_13
+    if (r == 1) return 5.0*fabs(t-0.5)*pow((t-0.5), 3.0);
+#endif
+#ifdef EXAMPLE_14
+    if (r == 1)
+    {
+        if (node.x <= 1.0) return -t*t*t + 3.0*t*t - t - 1.0;
+        if (node.x  > 1.0) return 2.0*t - 2.0;
+    }
+#endif
+#ifdef EXAMPLE_15
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
+        if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+    }
+#endif
+#ifdef EXAMPLE_16
+    if (r == 1)
+    {
+        if (node.x <= 0.5) return 24.0;
+        if (node.x  > 0.5) return 48.0;
+    }
+#endif
+#ifdef EXAMPLE_31
+    if (r == 1) return 1.0;
+    if (r == 2) return 2.0*t;
+    if (r == 3) return 2.0*t+1.0;
+#endif
+#ifdef EXAMPLE_32
+    if (r == 1) return +6.0*M_PI*cos(6.0*M_PI*t);
+    if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
+    if (r == 3) return -6.0*exp(-6.0*t);
+#endif
+#ifdef EXAMPLE_5
+    if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;
+    if (r == 2) return 2.4*cos(4.0*t) + exp(t) + 24.0*t*t*cos(10.0*t*t*t);
+    if (r == 3) return 9.6*t*cos(6.0*t*t);
+    if (r == 4) return 0.4*exp(t)*sin(12.0*t) + 4.8*exp(t)*cos(12.0*t);
+#endif
+#ifdef EXAMPLE_6
+    if (r == 1) return 16.0*M_PI*t*t*t*cos(4.0*M_PI*t*t*t*t) + 0.6*exp(t);
+#endif
+#ifdef EXAMPLE_7
+    if (r == 1) return 36.0*t*t*t*t*t - 15.0*t*t + 2.0*t;
+#endif
+#ifdef EXAMPLE_8
+    if (r == 1) return 6.0*t*t*t*t*t;
+#endif
+#ifdef EXAMPLE_9
+    if (r == 1) return 2.0*t;
+#endif
+#ifdef EXAMPLE_10
+    if (r == 1) return 1.0;
+#endif
+
+    throw std::runtime_error("FirstOrderLinearODEEx1::d4t");
 }
 
 auto FirstOrderLinearODEEx1::initial(InitialCondition, unsigned int r) const -> double

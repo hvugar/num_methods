@@ -25,6 +25,12 @@ protected:
 
     virtual double x(const PointNodeODE &node, unsigned int row = 0) const;
     virtual double dt(const PointNodeODE &node, unsigned int row = 0) const;
+    virtual double d2t(const PointNodeODE &node, unsigned int row = 0) const;
+    virtual double d3t(const PointNodeODE &node, unsigned int row = 0) const;
+    virtual double d4t(const PointNodeODE &node, unsigned int row = 0) const;
+    //virtual double d5t(const PointNodeODE &node, unsigned int row = 0) const;
+    //virtual double d6t(const PointNodeODE &node, unsigned int row = 0) const;
+
     void printNorms(std::vector<DoubleVector> &x) const;
 };
 
