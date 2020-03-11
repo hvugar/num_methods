@@ -1,6 +1,6 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_16
+#define EXAMPLE_15
 
 #define _N 100
 #define _H 0.01
@@ -331,8 +331,8 @@ double FirstOrderLinearODEEx1::d2t(const PointNodeODE &node, unsigned int r UNUS
 #ifdef EXAMPLE_15
     if (r == 1)
     {
-        if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
-        if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+        if (node.x <= 0.5) return 20.0*t*t*t - 30.0*t*t + 30.0*t + 10.0;
+        if (node.x  > 0.5) return 15.0*t + 12.5;
     }
 #endif
 #ifdef EXAMPLE_16
@@ -399,8 +399,8 @@ double FirstOrderLinearODEEx1::d3t(const PointNodeODE &node, unsigned int r UNUS
 #ifdef EXAMPLE_15
     if (r == 1)
     {
-        if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
-        if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+        if (node.x <= 0.5) return 60.0*t*t - 60.0*t + 30.0;
+        if (node.x  > 0.5) return 15.0;
     }
 #endif
 #ifdef EXAMPLE_16
@@ -467,8 +467,8 @@ double FirstOrderLinearODEEx1::d4t(const PointNodeODE &node, unsigned int r UNUS
 #ifdef EXAMPLE_15
     if (r == 1)
     {
-        if (node.x <= 0.5) return 5.0*t*t*t*t - 10.0*t*t*t + 15.0*t*t + + 10.0*t - 6.0;
-        if (node.x  > 0.5) return 7.5*t*t + 12.5*t - 6.3125;
+        if (node.x <= 0.5) return 120.0*t - 60.0;
+        if (node.x  > 0.5) return 0.0;
     }
 #endif
 #ifdef EXAMPLE_16
