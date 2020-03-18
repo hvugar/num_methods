@@ -2,7 +2,6 @@
 #define PARABOLIC_IBVP_H
 
 #include "ibvp.h"
-#include <float.h>
 
 /**
  * @brief The IParabolicIBVP class
@@ -113,7 +112,7 @@ protected:
     double _thermalConvection;      //
 
 public:
-    bool _userHalfValues = true;
+    bool _userHalfValues = false;
 };
 
 #endif // PARABOLIC_IBVP_H

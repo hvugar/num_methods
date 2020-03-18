@@ -59,6 +59,20 @@ DoubleMatrix::DoubleMatrix(const double* const data, unsigned int length, unsign
 
 }
 
+DoubleMatrix::DoubleMatrix(double** data, unsigned int rows, unsigned int cols)
+{
+    if (data == nullptr || rows == 0 || cols == 0) throw std::exception();
+
+    mRows = rows;
+    mCols = cols;
+    mData = static_cast<double**>(malloc(sizeof(double*)*mRows));
+    for (unsigned int r=0; r<rows; r++)
+    {
+        mData[r] = static_cast<double*>(malloc(sizeof(double)*mCols));
+        memcpy(mData[r], data[r], sizeof(double)*mCols);
+    }
+}
+
 DoubleMatrix::~DoubleMatrix()
 {
     clear();

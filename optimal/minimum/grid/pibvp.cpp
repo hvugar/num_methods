@@ -211,8 +211,8 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
-    DoubleVector u0(N+1);
-    DoubleVector u1(N+1);
+    double *u0 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *u1 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -224,7 +224,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         sn.i = n; sn.x = n*hx;
         u0[i] = initial(sn, InitialCondition::InitialValue);
     }
-    layerInfo(u0, TimeNodePDE(0, 0.0));
+    layerInfo(DoubleVector(u0, N+1), TimeNodePDE(0, 0.0));
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -359,15 +359,16 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         }
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        //memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
         for (unsigned int n=s; n<=e; n++) u1[n] = rx[n];
 
-        layerInfo(u1, tn1);
+        layerInfo(DoubleVector(u1, N+1), tn1);
 
-        u0 = u1;
+        double *tmp_u = u0; u0 = u1; u1 = tmp_u;
     }
 
-    u0.clear();
-    u1.clear();
+    free(u0);
+    free(u1);
 
     free(rx);
     free(dx);
@@ -664,9 +665,19 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
     }
     ay[0] = 0.0; cy[M] = 0.0;
 
-    DoubleMatrix u00(M+1, N+1);
-    DoubleMatrix u05(M+1, N+1);
-    DoubleMatrix u10(M+1, N+1);
+    //DoubleMatrix u00(M+1, N+1);
+    //DoubleMatrix u05(M+1, N+1);
+    //DoubleMatrix u10(M+1, N+1);
+
+    double **u00 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u05 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u10 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    for (unsigned int i=0; i<=M; i++)
+    {
+        u00[i] = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+        u05[i] = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+        u10[i] = static_cast<double*>(malloc(sizeof(double)*(M+1)));
+    }
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -686,7 +697,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
     }
 
     tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
-    layerInfo(u00, tn00);
+    //layerInfo(u00, tn00);
+    layerInfo( DoubleMatrix(u00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -782,7 +794,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
 
             tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-            for (unsigned int i=s; i<=e; i++) u05[j][i] = rx[i];
+            //for (unsigned int i=s; i<=e; i++) u05[j][i] = rx[i];
+            memcpy(u05[j]+s, rx+s, sizeof (double*)*(e-s+1));
         }
 
         for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
@@ -830,7 +843,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(u05, tn05);
+        //layerInfo(u05, tn05);
+        layerInfo( DoubleMatrix(u05, M+1, N+1), tn05);
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -921,6 +935,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
             tomasAlgorithmLeft2Right(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
             for (unsigned int j=s; j<=e; j++) u10[j][i] = ry[j];
+            //memcpy(u10[i]+s, ry+s, sizeof(double*)*(e-s+1));
         }
 
         for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
@@ -968,22 +983,27 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(u10, tn10);
+        //layerInfo(u10, tn10);
+        layerInfo( DoubleMatrix(u10, M+1, N+1), tn10);
 
         /**************************************************** y direction apprx ***************************************************/
 
-        for (unsigned int j=0; j<=M; j++)
-        {
-            for (unsigned int i=0; i<=N; i++)
-            {
-                u00[j][i] = u10[j][i];
-            }
-        }
+//        for (unsigned int j=0; j<=M; j++)
+//        {
+//            for (unsigned int i=0; i<=N; i++)
+//            {
+//                u00[j][i] = u10[j][i];
+//            }
+//        }
+
+        double **_tmp = u00; u00 = u10; u10 = _tmp;
     }
 
-    u00.clear();
-    u05.clear();
-    u10.clear();
+    for (unsigned int i=0; i<=M; i++) { free(u00[i]); free(u05[i]); free(u10[i]); }
+    free(u00); free(u05); free(u10);
+    //u00.clear();
+    //u05.clear();
+    //u10.clear();
 
     free(ry);
     free(dy);
@@ -1202,8 +1222,8 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
     }
     ax[0] = 0.0; cx[N] = 0.0;
 
-    DoubleVector u0(N+1);
-    DoubleVector u1(N+1);
+    double *u0 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *u1 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -1215,7 +1235,7 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
         sn.i = n; sn.x = sn.i*hx;
         u0[i] = final(sn, FinalCondition::FinalValue);
     }
-    layerInfo(u0, TimeNodePDE(M, M*ht));
+    layerInfo(DoubleVector(u0, N+1), TimeNodePDE(M, M*ht));
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -1351,15 +1371,16 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
         }
 
         tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        for (unsigned int n=s; n<=e; n++) u1[n] = rx[n];
+        memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
+        //for (unsigned int n=s; n<=e; n++) u1[n] = rx[n];
 
-        layerInfo(u1, tn1);
+        layerInfo(DoubleVector(u1, N+1), tn1);
 
-        u0 = u1;
+        double *tmp_u = u0; u0 = u1; u1 = tmp_u;
     }
 
-    u0.clear();
-    u1.clear();
+    free(u0);
+    free(u1);
 
     free(rx);
     free(dx);

@@ -4,15 +4,15 @@
 #define HEAT_QUADRATIC
 
 #if defined(HEAT_DIMENSION_1)
-//#define HEAT_LEFT_DIRICHLET
-//#define HEAT_RGHT_DIRICHLET
-#define HEAT_LEFT_ROBIN
-#define HEAT_RGHT_ROBIN
+#define HEAT_LEFT_DIRICHLET
+#define HEAT_RGHT_DIRICHLET
+//#define HEAT_LEFT_ROBIN
+//#define HEAT_RGHT_ROBIN
 #endif
 
 #if defined(HEAT_DIMENSION_2)
-//#define HEAT_NORM_DIRICHLET
-#define HEAT_NORM_ROBIN
+#define HEAT_NORM_DIRICHLET
+//#define HEAT_NORM_ROBIN
 #endif
 
 #if defined(HEAT_QUADRATIC)
@@ -153,7 +153,16 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double a = thermalDiffusivity();
     const double b = thermalConductivity();
     const double c = thermalConvection();
-    return ::u_fx(this,sn,tn,+1,-1,-1)-::u_fx(this,sn,tn,-1,+2,-1)*a-::u_fx(this,sn,tn,-1,+1,-1)*b-::u_fx(this,sn,tn,0,0,0)*c;
+
+    if (_userHalfValues) {
+        TimeNodePDE tn0; tn0.i = tn.i-1; tn0.t = tn0.i*0.010;
+        double f1 = ::u_fx(this,sn,tn0,+1,-1,-1)-::u_fx(this,sn,tn0,-1,+2,-1)*a-::u_fx(this,sn,tn0,-1,+1,-1)*b-::u_fx(this,sn,tn0,0,0,0)*c;
+        double f2 = ::u_fx(this,sn,tn,+1,-1,-1)-::u_fx(this,sn,tn,-1,+2,-1)*a-::u_fx(this,sn,tn,-1,+1,-1)*b-::u_fx(this,sn,tn,0,0,0)*c;
+        return (f1+f2)/2.0;
+    }
+    else {
+        return ::u_fx(this,sn,tn,+1,-1,-1)-::u_fx(this,sn,tn,-1,+2,-1)*a-::u_fx(this,sn,tn,-1,+1,-1)*b-::u_fx(this,sn,tn,0,0,0)*c;
+    }
 #endif
 
 #if defined(HEAT_DIMENSION_2)
@@ -208,6 +217,8 @@ void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 
 void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
+    return;
+
     C_UNUSED(u);
     C_UNUSED(tn);
 
@@ -218,35 +229,35 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     }
     return;
 
-    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
-    {
-        IPrinter::printMatrix(u);
-        IPrinter::printSeperatorLine();
-        if (tn.i%2==0) IPrinter::printSeperatorLine();
-    }
-    return;
+//    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
+//    {
+//        IPrinter::printMatrix(u);
+//        IPrinter::printSeperatorLine();
+//        if (tn.i%2==0) IPrinter::printSeperatorLine();
+//    }
+//    return;
 
-    if (tn.i==40000)
-    {
-        double norm = 0.0;
-        double max = 0.0;
-        TimeNodePDE tn; tn.t = 1.0;
-        SpaceNodePDE sn;
-        for (unsigned int j=0; j<=100; j++)
-        {
-            for (unsigned int i=0; i<=100; i++)
-            {
-                sn.x = i*0.01;
-                sn.y = j*0.01;
-                double k1 = 1.0; if (j==0 || j== 100) k1 = 0.5;
-                double k2 = 1.0; if (i==0 || i== 100) k2 = 0.5;
-                norm += 0.01*0.01*k1*k2*(u[j][i]-::u_fx(this,sn, tn))*(u[j][i]-::u_fx(this,sn, tn));
+//    if (tn.i==40000)
+//    {
+//        double norm = 0.0;
+//        double max = 0.0;
+//        TimeNodePDE tn; tn.t = 1.0;
+//        SpaceNodePDE sn;
+//        for (unsigned int j=0; j<=100; j++)
+//        {
+//            for (unsigned int i=0; i<=100; i++)
+//            {
+//                sn.x = i*0.01;
+//                sn.y = j*0.01;
+//                double k1 = 1.0; if (j==0 || j== 100) k1 = 0.5;
+//                double k2 = 1.0; if (i==0 || i== 100) k2 = 0.5;
+//                norm += 0.01*0.01*k1*k2*(u[j][i]-::u_fx(this,sn, tn))*(u[j][i]-::u_fx(this,sn, tn));
 
-                if (max < fabs(u[j][i]-::u_fx(this, sn, tn))) max = fabs(u[j][i]-::u_fx(this, sn, tn));
-            }
-        }
-        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
-    }
+//                if (max < fabs(u[j][i]-::u_fx(this, sn, tn))) max = fabs(u[j][i]-::u_fx(this, sn, tn));
+//            }
+//        }
+//        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
+//    }
 }
 
 //---------------------------------------------------------------------------------------------//
@@ -336,22 +347,22 @@ void HeatEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 
 void HeatEquationFBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    C_UNUSED(u);
-    C_UNUSED(tn);
+//    C_UNUSED(u);
+//    C_UNUSED(tn);
 
-    if (tn.i % (timeDimension().size() / 5) == 0)
-    {
-        IPrinter::printMatrix(16, 8, u);
-        IPrinter::printSeperatorLine();
-    }
-    return;
+//    if (tn.i % (timeDimension().size() / 5) == 0)
+//    {
+//        IPrinter::printMatrix(16, 8, u);
+//        IPrinter::printSeperatorLine();
+//    }
+//    return;
 
-    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
-    {
-        IPrinter::printMatrix(u);
-        IPrinter::printSeperatorLine();
-        if (tn.i%2==0) IPrinter::printSeperatorLine();
-    }
+//    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
+//    {
+//        IPrinter::printMatrix(u);
+//        IPrinter::printSeperatorLine();
+//        if (tn.i%2==0) IPrinter::printSeperatorLine();
+//    }
 }
 
 double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt, int dx, int dy)
