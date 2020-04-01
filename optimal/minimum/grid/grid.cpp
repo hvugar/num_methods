@@ -50,3 +50,27 @@ int Dimension::max() const { return _max; }
 void Dimension::setMax(int max) { _max = max; }
 
 unsigned int Dimension::size() const { return static_cast<unsigned int>(_max-_min+1); }
+
+Dimension& Dimension::incMax()
+{
+    _max++;
+    return *this;
+}
+
+Dimension& Dimension::decMax()
+{
+    _max--;
+    return *this;
+}
+
+Dimension& Dimension::addMinNode()
+{
+    _min++;
+    return *this;
+}
+
+Dimension& Dimension::delMinNode()
+{
+    _min--;
+    return *this;
+}

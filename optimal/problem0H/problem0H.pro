@@ -7,10 +7,12 @@ CONFIG  += shared
 CONFIG  += c++11
 
 DEFINES += PROBLEM0H_LIBRARY
+DEFINES += PROBLEM0H_LIBRARY_ML
 
 DESTDIR = ../bin
 
 #DEFINES += USE_LIB_IMAGING
+#DEFINES += USE_LIB_TEXT
 #DEFINES += USE_LIB_XLSX_WRITER
 #DEFINES += USE_LIB_ZLIB
 
@@ -107,11 +109,8 @@ HEADERS += problem0h_global.h
 HEADERS += problem0h_solver.h
 SOURCES += problem0h_solver.cpp
 
-HEADERS +=
-SOURCES +=
-
-#HEADERS += problem2h_exporter.h
-#SOURCES += problem2h_exporter.cpp
+HEADERS += problem0h_exporter.h
+SOURCES += problem0h_exporter.cpp
 
 
 #OTHER_FILES += matlab/*

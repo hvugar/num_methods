@@ -1,7 +1,7 @@
 #include "wave_equation_ibvp.h"
 
 #define WAVE_DIMENSION_2
-//#define WAVE_QUADRATIC
+#define WAVE_QUADRATIC
 
 #if defined(WAVE_DIMENSION_1)
 #define WAVE_LEFT_DIRICHLET
@@ -11,8 +11,8 @@
 #endif
 
 #if defined(WAVE_DIMENSION_2)
-//#define WAVE_NORM_DIRICHLET
-#define WAVE_NORM_ROBIN
+#define WAVE_NORM_DIRICHLET
+//#define WAVE_NORM_ROBIN
 #endif
 
 #if defined(WAVE_QUADRATIC)
@@ -31,10 +31,10 @@ const double fb = +0.0;   // must be minus or plus for forward -  some problems 
 const double fc = -0.0;   // must be minus for forward
 const double fd = +0.0;   // must be plus for forward
 
-const double ba = +1.0;   // must be plus for backward
-const double bb = -1.0;   // must be minus or plus for forward -  some problems on high values
-const double bc = -1.0;   // must be minus for backward
-const double bd = -1.0;   // must be minus for backward
+const double ba = +5.0;   // must be plus for backward
+const double bb = -0.0;   // must be minus or plus for forward -  some problems on high values
+const double bc = -0.0;   // must be minus for backward
+const double bd = -0.0;   // must be minus for backward
 
 void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -45,10 +45,10 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationIBVP w;
-    w.setTimeDimension(Dimension(0.001, 0, 1000));
-    w.setSpaceDimensionX(Dimension(0.001, 1000, 2000));
+    w.setTimeDimension(Dimension(0.001, 0, 10000));
+    w.setSpaceDimensionX(Dimension(0.01, 100, 200));
 #ifdef WAVE_DIMENSION_2
-    w.setSpaceDimensionY(Dimension(0.001, 2000, 3000));
+    w.setSpaceDimensionY(Dimension(0.01, 200, 300));
 #endif
 
     w.setWaveSpeed(fa);
@@ -63,7 +63,8 @@ void WaveEquationIBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //w.explicit_calculate_D1V1();
 #endif
 #ifdef WAVE_DIMENSION_2
-    w.implicit_calculate_D2V1();
+    //w.implicit_calculate_D2V1();
+    w.explicit_calculate_D2V1();
 #endif
     bm.tock();
     bm.printDuration();
@@ -78,7 +79,7 @@ void WaveEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     WaveEquationFBVP w;
-    w.setTimeDimension(Dimension(0.01, 0, 1000));
+    w.setTimeDimension(Dimension(0.001, 0, 10000));
     w.setSpaceDimensionX(Dimension(0.01, 100, 200));
 #ifdef WAVE_DIMENSION_2
     w.setSpaceDimensionY(Dimension(0.01, 200, 300));
@@ -96,7 +97,8 @@ void WaveEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //w.explicit_calculate_D1V1();
 #endif
 #ifdef WAVE_DIMENSION_2
-    w.implicit_calculate_D2V1();
+    //w.implicit_calculate_D2V1();
+    w.explicit_calculate_D2V1();
 #endif
     bm.tock();
     bm.printDuration();
@@ -646,7 +648,8 @@ void WaveEquationFBVP::layerInfo(const DoubleMatrix& p, const TimeNodePDE& tn) c
 {
     unsigned int L = timeDimension().max();
 
-    if (tn.i % (timeDimension().size() / 5) == 0 || tn.i==2*L || tn.i==2*L-1 || tn.i==2*L-2 || tn.i==2*L-3 || tn.i==L-4)
+    if (tn.i % (timeDimension().size() / 5) == 0 || tn.i==L || tn.i==L-1 || tn.i==L-2 || tn.i==L-3 || tn.i==L-4)
+    //if (tn.i % (timeDimension().size() / 5) == 0 || tn.i==2*L || tn.i==2*L-1 || tn.i==2*L-2 || tn.i==2*L-3 || tn.i==L-4)
     {
         (tn.i%2==0) ? IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '-') : IPrinter::printSeperatorLine(std::to_string(tn.i).data(), '=');
         IPrinter::printMatrix(16, 8, p);

@@ -462,7 +462,7 @@ void funcL(const double* a, const double *b, const double *c, const double *d, d
 void IHeatEquationIBVPEx::calculateN2L2RD(DoubleMatrix &u) const
 {
     Dimension _spaceDimensionX = spaceDimensionX();
-    Dimension _spaceDimensionY = spaceDimensionX();
+    Dimension _spaceDimensionY = spaceDimensionY();
     Dimension _timeDimension = timeDimension();
 
     double ht = _timeDimension.step();
@@ -1617,7 +1617,7 @@ void IHeatEquationFBVPEx::gridMethod(DoubleMatrix &p, SweepMethodDirection direc
 void NewtonHeatEquation::calculateGM1(DoubleVector &u, SweepMethodDirection direction)
 {
     const Dimension _spaceDimensionX = spaceDimensionX();
-    const Dimension _spaceDimensionY = spaceDimensionX();
+    const Dimension _spaceDimensionY = spaceDimensionY();
     const Dimension _timeDimension = timeDimension();
 
     typedef void (*t_algorithm)(const double*, const double*, const double*, const double*, double*, unsigned int);
@@ -1878,7 +1878,7 @@ void NewtonHeatEquation::calculateGM3(DoubleVector &u, SweepMethodDirection dire
     if (direction == BackwardSweep) algorithm = &tomasAlgorithmR2L;
 
     const Dimension _spaceDimensionX = spaceDimensionX();
-    const Dimension _spaceDimensionY = spaceDimensionX();
+    const Dimension _spaceDimensionY = spaceDimensionY();
     const Dimension _timeDimension = timeDimension();
 
     double ht = _timeDimension.step();

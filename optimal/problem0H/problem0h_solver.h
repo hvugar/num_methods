@@ -1,15 +1,7 @@
 #ifndef PROBLEM0H_SOLVER_H
 #define PROBLEM0H_SOLVER_H
 
-#include <float.h>
-#include <limits.h>
-#include <grid/hibvp.h>
-#include <benchmark.h>
-#include <function.h>
-#include <deltagrid.h>
 #include "problem0h_global.h"
-
-#include <functional>
 
 using namespace std;
 using namespace std::placeholders;
@@ -31,11 +23,11 @@ struct ExternalSource
     double sigmaT;
 };
 
-struct FunctionalParemeter
-{
-    double epsilon1;
-    double epsilon2;
-};
+//struct FunctionalParemeter
+//{
+//    double epsilon1;
+//    double epsilon2;
+//};
 
 struct Problem0HParameter
 {
@@ -52,41 +44,6 @@ struct Problem0HParameter
     void destroy();
     void distribute(const SpacePoint &p);
 };
-
-Problem0HParameter& Problem0HParameter::initialize(const Dimension &time, const Dimension &dimX, const Dimension &dimY)
-{
-    destroy();
-
-    deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()), dimX.step(), static_cast<unsigned int>(dimY.size()), dimY.step());
-
-    const unsigned int L = static_cast<unsigned int>(time.size());
-    const unsigned int length = 2*L-1;
-    pwr_vl.resize(length, 0.0);
-    psi_vl.resize(length, 0.0);
-    psi_dx.resize(length, 0.0);
-    psi_dy.resize(length, 0.0);
-    psi_x.resize(length, 0.0);
-    psi_y.resize(length, 0.0);
-
-    return *this;
-}
-
-void Problem0HParameter::destroy()
-{
-    deltaGrid.cleanGrid();
-    pwr_vl.clear();
-    psi_vl.clear();
-    psi_dx.clear();
-    psi_dy.clear();
-    psi_x.clear();
-    psi_y.clear();
-}
-
-void Problem0HParameter::distribute(const SpacePoint &p)
-{
-    this->p = p;
-    deltaGrid.distributeGauss(p, 1, 1);
-}
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -154,8 +111,6 @@ public:
 private:
     ProblemSolver(const ProblemSolver &solver);
 
-    static void compareGradients();
-    static void checkingForwardProblem();
     static void optimization();
 
 public:
@@ -183,11 +138,13 @@ public:
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    virtual void frw_calculate() const;
 
     virtual double bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const;
     virtual double bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void bcw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+    virtual void bcw_calculate() const;
 
     virtual void setTimeDimension(const Dimension &timeDimension) { this->_timeDimension = timeDimension; }
     virtual void setSpaceDimensionX(const Dimension &spaceDimensionX) { this->_spaceDimensionX = spaceDimensionX; }
@@ -205,9 +162,8 @@ protected:
     Dimension _spaceDimensionZ;
 
 public:
-    WaveEquationIBVP *forward;
-    WaveEquationFBVP *backward;
-
+    WaveEquationIBVP *forward = nullptr;
+    WaveEquationFBVP *backward = nullptr;
 
     double p(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     void frw_calculateU1U2(const DoubleMatrix &u, const TimeNodePDE &tn) const;
@@ -221,25 +177,14 @@ public:
     bool f_saveToFileTxt = false;
     bool f_saveToFilePng = false;
 
-    ExternalSource externalSource;
-
-    double waveSpeed = 1.0;
-    double waveDissapation = 0.0;
-
+    ExternalSource external_source;
     double eps1 = 1.0;
-    double esp2 = 0.0;
+    double eps2 = 1.0;
 
     DoubleMatrix u1;
     DoubleMatrix u2;
 
-    DoubleMatrix uL0;
-    DoubleMatrix uL1;
-    DoubleMatrix uL2;
-
-    unsigned int c_sigmaX;
-    unsigned int c_sigmaY;
-
-    unsigned int source_number;
+    unsigned int source_number = 0;
 
     std::vector<Problem0HParameter> optimalParameters;
 };

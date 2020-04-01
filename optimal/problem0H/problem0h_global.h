@@ -13,7 +13,10 @@
 
 #define SAVE_TO_IMG_
 
-#include <function.h>
+#include <cfloat>
+#include <climits>
+#include <functional>
+
 #include <gradient.h>
 #include <projection.h>
 #include <printer.h>
@@ -21,6 +24,11 @@
 #include <gradient_sd.h>
 #include <gradient_cs.h>
 #include <grid/hibvp.h>
+#include <grid/hibvp.h>
+#include <benchmark.h>
+#include <deltagrid.h>
+#include <r1minimize.h>
+#include <function.h>
 
 #ifdef USE_LIB_IMAGING
 #include <QPixmap>

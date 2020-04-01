@@ -27,6 +27,7 @@
 #include "test/delta_grid_2d_ext1.h"
 #include "test/nonlinear_equation_ex1.h"
 #include "conjugate_gradinet_test.h"
+#include <cmath>
 
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
@@ -39,9 +40,9 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    HeatEquationIBVP::Main(argc, argv);
-    IPrinter::printSeperatorLine();
-    HeatEquationFBVP::Main(argc, argv);
+    //HeatEquationIBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
+    //HeatEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
 
     //WaveEquationIBVP::Main(argc, argv);
@@ -49,7 +50,12 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //WaveEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
 
-    //h0p::ProblemSolver::Main(argc, argv);
+    //WaveEquationIBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
+    //WaveEquationFBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
+
+    h0p::ProblemSolver::Main(argc, argv);
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
 

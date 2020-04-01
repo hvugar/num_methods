@@ -1,4 +1,4 @@
-setenv('MW_MINGW64_LOC','E:\MinGW\5.3.0_x86_64');
+setenv('MW_MINGW64_LOC','E:\MinGW\7.3.0\x86_64');
 
 cd E:\project\hvugar\num_methods\trunk\optimal\problem2H\matlab\
 

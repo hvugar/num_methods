@@ -91,6 +91,11 @@ public:
     void setMax(int max);
     unsigned int size() const;
 
+    Dimension& incMax();
+    Dimension& decMax();
+    Dimension& addMinNode();
+    Dimension& delMinNode();
+
 protected:
     double _step;
     int _min;
