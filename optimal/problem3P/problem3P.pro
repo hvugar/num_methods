@@ -1,4 +1,4 @@
-TARGET   = problem0H
+TARGET   = problem3P
 TEMPLATE = lib
 CONFIG  += console
 CONFIG  -= app_bundle
@@ -10,7 +10,6 @@ DEFINES += PROBLEM3P_LIBRARY
 
 DESTDIR = ../bin
 
-#DEFINES += USE_LIB_IMAGING
 #DEFINES += USE_LIB_TEXT
 #DEFINES += USE_LIB_XLSX_WRITER
 #DEFINES += USE_LIB_ZLIB
@@ -36,13 +35,15 @@ win32-g++ {
 
         INCLUDEPATH += ../minimum
         LIBS        += -L../bin -lminimum
-
     }
     CONFIG(debug, debug|release) { }
 }
 
 win32-msvc* {
     CONFIG(release, debug|release) {
+
+        DEFINES += USE_LIB_IMAGING
+
         contains(DEFINES, USE_LIB_XLSX_WRITER) {
             INCLUDEPATH += ../../third-party/VC2015/x86_64/libxlsxwriter/include
             LIBS        += ../../third-party/VC2015/x86_64/libxlsxwriter/lib/xlsxwriter.lib

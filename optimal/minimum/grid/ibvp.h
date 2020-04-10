@@ -11,39 +11,30 @@ enum SweepMethodDirection
     Centered = 3
 };
 
-/**
- * @brief The InitialBoundaryValueProblemPDE class
- * @class InitialBoundaryValueProblemPDE
- * @see InitialValueProblemPDE
- * @see BoundaryValueProblemPDE
- * @copyright
- */
+class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemODE : public InitialValueProblemODE, public BoundaryValueProblemODE
+{
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(InitialBoundaryValueProblemODE);
+
+public:
+    virtual Dimension dimension() const = 0;
+};
+
 class MINIMUMSHARED_EXPORT InitialBoundaryValueProblemPDE : public InitialValueProblemPDE, public BoundaryValueProblemPDE
 {
-public:
-    InitialBoundaryValueProblemPDE();
-    InitialBoundaryValueProblemPDE(const InitialBoundaryValueProblemPDE &);
-    InitialBoundaryValueProblemPDE & operator= (const InitialBoundaryValueProblemPDE &);
-    virtual ~InitialBoundaryValueProblemPDE();
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(InitialBoundaryValueProblemPDE);
 
+public:
     virtual Dimension timeDimension() const = 0;
     virtual Dimension spaceDimensionX() const = 0;
     virtual Dimension spaceDimensionY() const = 0;
     virtual Dimension spaceDimensionZ() const = 0;
 };
 
-/**
- * @brief The InitialBoundaryValueProblemPDE class
- * @see ParabolicIBVP
- */
 class MINIMUMSHARED_EXPORT FinalBoundaryValueProblemPDE : public FinalValueProblemPDE, public BoundaryValueProblemPDE
 {
-public:
-    FinalBoundaryValueProblemPDE();
-    FinalBoundaryValueProblemPDE(const FinalBoundaryValueProblemPDE &);
-    FinalBoundaryValueProblemPDE & operator = (const FinalBoundaryValueProblemPDE &);
-    virtual ~FinalBoundaryValueProblemPDE();
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(FinalBoundaryValueProblemPDE);
 
+public:
     virtual Dimension timeDimension() const = 0;
     virtual Dimension spaceDimensionX() const = 0;
     virtual Dimension spaceDimensionY() const = 0;

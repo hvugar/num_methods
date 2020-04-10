@@ -6,6 +6,15 @@
 #include "../grid/grid.h"
 #include "../linearequation.h"
 
+enum class ODESolverMethod
+{
+    EULER,
+    EULER_MOD,
+    RUNGE_KUTTA_2,
+    RUNGE_KUTTA_4,
+    RUNGE_KUTTA_6
+};
+
 /**
  * @brief Дифференциа́льное уравне́ние
  * Дифференциа́льное уравне́ние — уравнение, в которое входят производные функции,
@@ -36,18 +45,7 @@ class MINIMUMSHARED_EXPORT DifferentialEquation {};
  */
 class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEquation
 {
-public:
-    OrdinaryDifferentialEquation();
-    virtual ~OrdinaryDifferentialEquation();
-
-    enum class ODESolverMethod
-    {
-        RUNGE_KUTTA_2,
-        RUNGE_KUTTA_4,
-        RUNGE_KUTTA_6,
-        EULER,
-        EULER_MOD
-    };
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(OrdinaryDifferentialEquation);
 
     enum Direction
     {
@@ -55,12 +53,8 @@ public:
         R2L  // Right to Left000
     };
 
-    auto dimension() const -> const Dimension&;
-    auto setDimension(const Dimension &dimension) -> void;
-
+    virtual auto dimension() const -> Dimension = 0;
     virtual auto count() const -> unsigned int = 0;
-private:
-    Dimension _dimension;
 };
 
 class MINIMUMSHARED_EXPORT CanonicalFormODE : public OrdinaryDifferentialEquation {};

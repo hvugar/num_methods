@@ -11,6 +11,9 @@
 #   define PROBLEM3P_SHARED_EXPORT
 #endif
 
+//#define NDEBUG
+#include <assert.h>
+
 #include <cfloat>
 #include <climits>
 #include <functional>

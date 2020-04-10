@@ -52,8 +52,7 @@ class MINIMUMSHARED_EXPORT BoundaryValueProblem {};
  */
 class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProblem
 {
-public:
-    virtual ~BoundaryValueProblemODE();
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(BoundaryValueProblemODE);
 
 protected:
     virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
@@ -64,8 +63,7 @@ protected:
  */
 class MINIMUMSHARED_EXPORT BoundaryValueProblemPDE : protected BoundaryValueProblem
 {
-public:
-    virtual ~BoundaryValueProblemPDE();
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(BoundaryValueProblemPDE);
 
 protected:
     virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const -> double = 0;

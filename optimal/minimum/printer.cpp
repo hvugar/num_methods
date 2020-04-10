@@ -318,6 +318,27 @@ void IPrinter::print(const double *v, unsigned int N, unsigned int width, unsign
     fflush(file);
 }
 
+void IPrinter::print(std::vector<DoubleVector> &rv, unsigned int k, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)
+{
+    char format[10] = {0};
+    int sz = sprintf(format, "%%%d.%df ", width, presicion);
+    format[sz] = '\0';
+
+    const auto size = rv.size();
+    const auto modN = size/N;
+
+    for (unsigned int row=0; row<k; row++)
+    {
+        for (unsigned int col=0; col<size; col++)
+        {
+            if (col%modN==0) fprintf_s(file, format, rv[col][row]);
+        }
+        fputs("\n", file);
+    }
+    fflush(file);
+}
+
+
 void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
 {
     int columns=10;

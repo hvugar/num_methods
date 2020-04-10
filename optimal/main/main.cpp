@@ -22,6 +22,7 @@
 #include "../problem2H/problem2h_solver.h"
 
 #include "../problem1P/problem1p_solver.h"
+#include "../problem3P/solver.h"
 #include "../problem1H/problem1h_solver.h"
 
 #include "test/delta_grid_2d_ext1.h"
@@ -55,9 +56,10 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //WaveEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
 
-    h0p::ProblemSolver::Main(argc, argv);
+    //h0p::ProblemSolver::Main(argc, argv);
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
+    p3p::Solver::Main(argc, argv);
 
     //return 0;
 

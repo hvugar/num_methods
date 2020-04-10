@@ -81,6 +81,9 @@ win32-g++ {
 
         INCLUDEPATH += ../problem1P
         LIBS += -L../bin -lproblem1P
+
+        INCLUDEPATH += ../problem3P
+        LIBS += -L../bin -lproblem3P
     }
     CONFIG(debug, debug|release) {
         OBJECTS_DIR = debug/.obj/win32-gcc
@@ -107,6 +110,9 @@ win32-msvc* {
 
         INCLUDEPATH += ../problem1P
         LIBS += ../bin/problem1P.lib
+
+        INCLUDEPATH += ../problem3P
+        LIBS += ../bin/problem3P.lib
     }
     CONFIG(debug, debug|release) {
         OBJECTS_DIR = debug/.obj/win32-msvc

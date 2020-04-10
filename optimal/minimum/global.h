@@ -52,6 +52,24 @@
 
 #include <assert.h>
 
+#define PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ClassName) \
+    public: \
+    ClassName(); \
+    ClassName(const ClassName &); \
+    ClassName & operator =(const ClassName &); \
+    virtual ~ClassName()
+
+#define PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR_IMPL(ClassName) \
+    ClassName::ClassName() {} \
+    ClassName::ClassName(const InitialConditionODE &) {} \
+    ClassName& ClassName::operator=(const ClassName &other) { \
+        if (this == &other) { return *this; } \
+        this->initialConditionType = other.initialConditionType; \
+        this->value = other.value; \
+        return *this; \
+    } \
+    InitialConditionODE::~InitialConditionODE() {}
+
 //#define NDEBUG
 
 #endif // GLOBAL

@@ -490,7 +490,7 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
     const double d  = waveDissipation();
 
     double ht_max = 1.0/sqrt((a1*a1)/(hx*hx)+(a2*a2)/(hy*hy));
-    if (ht > ht_max) { throw std::exception(); }
+    if (ht > ht_max) { throw std::runtime_error("Differential scheme is conditionally steady."); }
 
     // common parameters
     const double htht10 = ht*ht;
@@ -510,12 +510,22 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
     const double b1__20_0hx = (b1)/(2.0*hx);
     const double b2__20_0hy = (b2)/(2.0*hy);
 
-    DoubleMatrix u00(M+1, N+1);
-    DoubleMatrix u10(M+1, N+1);
-    DoubleMatrix u20(M+1, N+1);
+    double **u00 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u10 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u20 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    for (unsigned int i=0; i<=M; i++)
+    {
+        u00[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        u10[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        u20[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    }
 
-    auto calculate_border = [](SpaceNodePDE sn, TimeNodePDE tn, DoubleMatrix &u, unsigned int i, unsigned int j, const IWaveEquationIBVP* w)
-     {
+    //DoubleMatrix u00(M+1, N+1);
+    //DoubleMatrix u10(M+1, N+1);
+    //DoubleMatrix u20(M+1, N+1);
+
+    auto calculate_border = [&xmin, &ymin, &xmax, &ymax, &hx, &hy, &N, &M](SpaceNodePDE sn, TimeNodePDE tn, double **u, unsigned int i, unsigned int j, const IWaveEquationIBVP* w)
+    {
         BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
         value = w->boundary(sn, tn, condition);
@@ -529,11 +539,75 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
+            if (sn.i==xmin && sn.j==ymin)
+            {
+
+            }
+            else if (sn.i==xmin && sn.j==ymax)
+            {
+
+            }
+            else if (sn.i==xmax && sn.j==ymax)
+            {
+
+            }
+            else if (sn.i==xmax && sn.j==ymin)
+            {
+
+            }
+            else if (sn.i==xmin)
+            {
+                u[j][0] = (3.5*u[j][1] - 2.0*u[j][2] + 0.5*u[j][3] + hx*(gamma/beta)*value)/(2.0);
+            }
+            else if (sn.i==xmax)
+            {
+                u[j][N] = (3.5*u[j][N-1] - 2.0*u[j][N-2] + 0.5*u[j][N-3] + hx*(gamma/beta)*value)/(2.0);
+            }
+            else if (sn.j==ymin)
+            {
+                u[0][i] = (3.5*u[1][i] - 2.0*u[2][i] + 0.5*u[3][i] + hy*(gamma/beta)*value)/(2.0);
+            }
+            else if (sn.j==ymax)
+            {
+                u[M][i] = (3.5*u[M-1][i] - 2.0*u[M-2][i] + 0.5*u[M-3][i] + hy*(gamma/beta)*value)/(2.0);
+            }
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
+            if (sn.i==xmin && sn.j==ymin)
+            {
+
+            }
+            else if (sn.i==xmin && sn.j==ymax)
+            {
+
+            }
+            else if (sn.i==xmax && sn.j==ymax)
+            {
+
+            }
+            else if (sn.i==xmax && sn.j==ymin)
+            {
+
+            }
+            else if (sn.i==xmin)
+            {
+                u[j][0] = (3.5*u[j][1] - 2.0*u[j][2] + 0.5*u[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+            }
+            else if (sn.i==xmax)
+            {
+                u[j][N] = (3.5*u[j][N-1] - 2.0*u[j][N-2] + 0.5*u[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+            }
+            else if (sn.j==ymin)
+            {
+                u[0][i] = (3.5*u[1][i] - 2.0*u[2][i] + 0.5*u[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+            }
+            else if (sn.j==ymax)
+            {
+                u[M][i] = (3.5*u[M-1][i] - 2.0*u[M-2][i] + 0.5*u[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+            }
         }
-     };
+    };
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -554,7 +628,7 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
         }
     }
 
-    layerInfo(u00, tn00);
+    layerInfo(DoubleMatrix(u00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -604,7 +678,7 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
         }
     }
 
-    layerInfo(u10, tn10);
+    layerInfo(DoubleMatrix(u10, M+1, N+1), tn10);
 
     /***********************************************************************************************/
 
@@ -653,21 +727,27 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
 
         /**************************************************** border conditions ***************************************************/
 
-        layerInfo(u20, tn20);
+        layerInfo(DoubleMatrix(u20, M+1, N+1), tn20);
 
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                u00[m][n] = u10[m][n];
-                u10[m][n] = u20[m][n];
-            }
-        }
+        double **_tmp = u00; u00 = u10; u10 = u20; u20 = _tmp;
+
+        //        for (unsigned int m=0; m<=M; m++)
+        //        {
+        //            for (unsigned int n=0; n<=N; n++)
+        //            {
+        //                u00[m][n] = u10[m][n];
+        //                u10[m][n] = u20[m][n];
+        //            }
+        //        }
     }
 
-    u00.clear();
-    u10.clear();
-    u20.clear();
+
+    for (unsigned int i=0; i<=M; i++) { free(u00[i]); free(u10[i]); free(u20[i]); }
+    free(u00); free(u10); free(u20);
+
+    //u00.clear();
+    //u10.clear();
+    //u20.clear();
 }
 
 void IWaveEquationIBVP::implicit_calculate_D2V1() const
@@ -823,11 +903,25 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
     }
     ay[0] = 0.0; cy[M] = 0.0;
 
-    DoubleMatrix u00(M+1, N+1);
-    DoubleMatrix u05(M+1, N+1);
-    DoubleMatrix u10(M+1, N+1);
-    DoubleMatrix u15(M+1, N+1);
-    DoubleMatrix u20(M+1, N+1);
+    //    DoubleMatrix u00(M+1, N+1);
+    //    DoubleMatrix u05(M+1, N+1);
+    //    DoubleMatrix u10(M+1, N+1);
+    //    DoubleMatrix u15(M+1, N+1);
+    //    DoubleMatrix u20(M+1, N+1);
+
+    double **u00 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u05 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u10 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u15 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **u20 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    for (unsigned int i=0; i<=M; i++)
+    {
+        u00[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        u05[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        u10[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        u15[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        u20[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    }
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -849,7 +943,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
         }
     }
 
-    layerInfo(u00, tn00);
+    layerInfo(DoubleMatrix(u00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -900,8 +994,10 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
         }
     }
 
-    layerInfo(u05, tn05);
-    layerInfo(u10, tn10);
+    //layerInfo(u05, tn05);
+    //layerInfo(u10, tn10);
+    layerInfo(DoubleMatrix(u05, M+1, N+1), tn00);
+    layerInfo(DoubleMatrix(u10, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -1066,7 +1162,8 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(u15, tn15);
+        //layerInfo(u15, tn15);
+        layerInfo(DoubleMatrix(u15, M+1, N+1), tn00);
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -1225,26 +1322,32 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(u20, tn20);
+        //layerInfo(u20, tn20);
+        layerInfo(DoubleMatrix(u20, M+1, N+1), tn00);
 
         /**************************************************** y direction apprx ***************************************************/
 
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                u00[m][n] = u10[m][n];
-                u05[m][n] = u15[m][n];
-                u10[m][n] = u20[m][n];
-            }
-        }
+        //        for (unsigned int m=0; m<=M; m++)
+        //        {
+        //            for (unsigned int n=0; n<=N; n++)
+        //            {
+        //                u00[m][n] = u10[m][n];
+        //                u05[m][n] = u15[m][n];
+        //                u10[m][n] = u20[m][n];
+        //            }
+        //        }
+
+        u00 = u10; u05 = u15; u10 = u20;
     }
 
-    u00.clear();
-    u05.clear();
-    u10.clear();
-    u15.clear();
-    u20.clear();
+    for (unsigned int i=0; i<=M; i++) { free(u00[i]); free(u05[i]); free(u10[i]); free(u15[i]); free(u20[i]); }
+    free(u00); free(u05); free(u10); free(u15); free(u20);
+
+    //    u00.clear();
+    //    u05.clear();
+    //    u10.clear();
+    //    u15.clear();
+    //    u20.clear();
 
     free(ry);
     free(dy);
@@ -1627,12 +1730,22 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
     const double b1__20_0hx = ((b1)/(2.0*hx));
     const double b2__20_0hy = ((b2)/(2.0*hy));
 
-    DoubleMatrix p00(M+1, N+1);
-    DoubleMatrix p10(M+1, N+1);
-    DoubleMatrix p20(M+1, N+1);
+    //DoubleMatrix p00(M+1, N+1);
+    //DoubleMatrix p10(M+1, N+1);
+    //DoubleMatrix p20(M+1, N+1);
 
-    auto calculate_border = [](SpaceNodePDE sn, TimeNodePDE tn, DoubleMatrix &p, unsigned int i, unsigned int j, const IWaveEquationFBVP* w)
-     {
+    double **p00 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **p10 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **p20 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    for (unsigned int i=0; i<=M; i++)
+    {
+        p00[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        p10[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        p20[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    }
+
+    auto calculate_border = [](SpaceNodePDE sn, TimeNodePDE tn, double **p, unsigned int i, unsigned int j, const IWaveEquationFBVP* w)
+    {
         BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
         value = w->boundary(sn, tn, condition);
@@ -1650,7 +1763,7 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
         }
-     };
+    };
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -1670,7 +1783,8 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
             p00[j][i] = final(sn, FinalCondition::FinalValue);
         }
     }
-    layerInfo(p00, tn00);
+
+    layerInfo(DoubleMatrix(p00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -1719,7 +1833,8 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
         }
     }
 
-    layerInfo(p10, tn10);
+    //layerInfo(p10, tn10);
+    layerInfo(DoubleMatrix(p10, M+1, N+1), tn10);
 
     /***********************************************************************************************/
 
@@ -1768,21 +1883,26 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
 
         /**************************************************** border conditions ***************************************************/
 
-        layerInfo(p20, tn20);
+        layerInfo(DoubleMatrix(p20, M+1, N+1), tn20);
 
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                p00[m][n] = p10[m][n];
-                p10[m][n] = p20[m][n];
-            }
-        }
+        //        for (unsigned int m=0; m<=M; m++)
+        //        {
+        //            for (unsigned int n=0; n<=N; n++)
+        //            {
+        //                p00[m][n] = p10[m][n];
+        //                p10[m][n] = p20[m][n];
+        //            }
+        //        }
+
+        double **_tmp = p00; p00 = p10; p10 = p20; p20 = _tmp;
     }
 
-    p00.clear();
-    p10.clear();
-    p20.clear();
+    for (unsigned int i=0; i<=M; i++) { free(p00[i]); free(p10[i]); free(p20[i]); }
+    free(p00); free(p10); free(p20);
+
+    //p00.clear();
+    //p10.clear();
+    //p20.clear();
 }
 
 void IWaveEquationFBVP::implicit_calculate_D2V1() const
@@ -1938,11 +2058,25 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
     }
     ay[0] = 0.0; cy[M] = 0.0;
 
-    DoubleMatrix p00(M+1, N+1);
-    DoubleMatrix p05(M+1, N+1);
-    DoubleMatrix p10(M+1, N+1);
-    DoubleMatrix p15(M+1, N+1);
-    DoubleMatrix p20(M+1, N+1);
+    //DoubleMatrix p00(M+1, N+1);
+    //DoubleMatrix p05(M+1, N+1);
+    //DoubleMatrix p10(M+1, N+1);
+    //DoubleMatrix p15(M+1, N+1);
+    //DoubleMatrix p20(M+1, N+1);
+
+    double **p00 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **p05 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **p10 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **p15 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    double **p20 = static_cast<double**>(malloc(sizeof(double*)*(M+1)));
+    for (unsigned int i=0; i<=M; i++)
+    {
+        p00[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        p05[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        p10[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        p15[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        p20[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    }
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -1963,7 +2097,7 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
             p00[j][i] = final(sn, FinalCondition::FinalValue);
         }
     }
-    layerInfo(p00, tn00);
+    layerInfo(DoubleMatrix(p00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -2014,8 +2148,10 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
         }
     }
 
-    layerInfo(p05, tn05);
-    layerInfo(p10, tn10);
+    //layerInfo(p05, tn05);
+    //layerInfo(p10, tn10);
+    layerInfo(DoubleMatrix(p05, M+1, N+1), tn00);
+    layerInfo(DoubleMatrix(p10, M+1, N+1), tn00);
 
     /***********************************************************************************************/
 
@@ -2180,7 +2316,7 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(p15, tn15);
+        layerInfo(DoubleMatrix(p15, M+1, N+1), tn15);
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -2339,26 +2475,32 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
             }
         }
 
-        layerInfo(p20, tn20);
+        //layerInfo(p20, tn20);
+        layerInfo(DoubleMatrix(p20, M+1, N+1), tn15);
 
         /**************************************************** y direction apprx ***************************************************/
 
-        for (unsigned int m=0; m<=M; m++)
-        {
-            for (unsigned int n=0; n<=N; n++)
-            {
-                p00[m][n] = p10[m][n];
-                p05[m][n] = p15[m][n];
-                p10[m][n] = p20[m][n];
-            }
-        }
+        //        for (unsigned int m=0; m<=M; m++)
+        //        {
+        //            for (unsigned int n=0; n<=N; n++)
+        //            {
+        //                p00[m][n] = p10[m][n];
+        //                p05[m][n] = p15[m][n];
+        //                p10[m][n] = p20[m][n];
+        //            }
+        //        }
+
+        p00 = p10; p05 = p15; p10 = p20;
     }
 
-    p00.clear();
-    p05.clear();
-    p10.clear();
-    p15.clear();
-    p20.clear();
+    for (unsigned int i=0; i<=M; i++) { free(p00[i]); free(p05[i]); free(p10[i]); free(p15[i]); free(p20[i]); }
+    free(p00); free(p05); free(p10); free(p15); free(p20);
+
+    //    p00.clear();
+    //    p05.clear();
+    //    p10.clear();
+    //    p15.clear();
+    //    p20.clear();
 
     free(ry);
     free(dy);

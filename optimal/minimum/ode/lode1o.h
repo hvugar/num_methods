@@ -36,10 +36,9 @@ struct Condition
  * @brief Линейное дифференциальное уравнение первого порядка с переменными коэффициентами
  * The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
  */
-class MINIMUMSHARED_EXPORT FirstOrderLinearODE :
+class MINIMUMSHARED_EXPORT IFirstOrderLinearODE :
         virtual public LinearODE,
-        virtual public InitialValueProblemODE,
-        virtual public BoundaryValueProblemODE
+        virtual public InitialValueProblemODE
 {
 public:
     enum class AccuracyStep
@@ -49,9 +48,7 @@ public:
         Step_6 = 6
     };
 
-    //FirstOrderLinearODE();
-    //FirstOrderLinearODE(const FirstOrderLinearODE &ode);
-    virtual ~FirstOrderLinearODE();
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(IFirstOrderLinearODE);
 
     /**
      * @brief solve transfer of conditions
@@ -99,7 +96,6 @@ protected:
      */
     virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
 
-protected:
     /**
      * @brief initial
      * @param condition
@@ -107,15 +103,6 @@ protected:
      * @return
      */
     virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
-
-    /**
-     * @brief boundary
-     * @param node
-     * @param condition
-     * @param row
-     * @return
-     */
-    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
 
 protected:
     virtual auto count() const -> unsigned int = 0;
@@ -129,6 +116,51 @@ private:
     auto solveInitialValueProblemRK6(std::vector<DoubleVector> &rv) const -> void;
     auto solveInitialValueProblemEuler(std::vector<DoubleVector> &rv) const -> void;
     auto solveInitialValueProblemEulerMod(std::vector<DoubleVector> &rv) const -> void;
+};
+
+class MINIMUMSHARED_EXPORT IFirstOrderLinearODEFBVP :
+        virtual public LinearODE,
+        virtual public FinalValueProblemODE
+{
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(IFirstOrderLinearODEFBVP);
+
+public:
+    void solveFinalValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method = ODESolverMethod::EULER) const;
+
+protected:
+
+    /**
+     * @brief A  A nxn dimensional matrix-function
+     * @param node
+     * @param row <= n
+     * @param col <= n
+     * @return
+     */
+    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+
+    /**
+     * @brief B n dimensional vector-function
+     * @param node
+     * @param row
+     * @return
+     */
+    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+
+    /**
+     * @brief initial
+     * @param condition
+     * @param row
+     * @return
+     */
+    virtual auto final(FinalCondition condition, unsigned int row = 1) const -> double = 0;
+
+private:
+
+    auto solveFinalValueProblemEuler(std::vector<DoubleVector> &rv) const -> void;
+    auto solveFinalValueProblemEulerMod(std::vector<DoubleVector> &rv) const -> void;
+    auto solveFinalValueProblemRK2(std::vector<DoubleVector> &rv) const -> void;
+    auto solveFinalValueProblemRK4(std::vector<DoubleVector> &rv) const -> void;
+    auto solveFinalValueProblemRK6(std::vector<DoubleVector> &rv) const -> void;
 };
 
 

@@ -4,11 +4,21 @@ using namespace h0p;
 
 #define NEW_FORM
 #define ENABLE_COMPARE_GRADIENTS
-//#define ENABLE_OPTIMIZATION
+#define ENABLE_OPTIMIZATION
 //#define ENABLE_CHECK_FORWARD_PROBLEM
 
-void ProblemSolver::frw_calculate() const { forward->explicit_calculate_D2V1(); }
-void ProblemSolver::bcw_calculate() const { backward->explicit_calculate_D2V1(); }
+void ProblemSolver::frw_calculate() const
+{
+    //std::cout << "Forward calculating..." << std::endl;
+    forward->explicit_calculate_D2V1();
+    //std::cout << "Forward calculated." << std::endl;
+}
+void ProblemSolver::bcw_calculate() const
+{
+    //std::cout << "Backward calculating..." << std::endl;
+    backward->explicit_calculate_D2V1();
+    //std::cout << "Backward calculated." << std::endl;
+}
 
 void ProblemSolver::Main(int argc, char **argv)
 {
@@ -107,8 +117,8 @@ auto ProblemSolver::fx(double t) const -> double
     functional.optimalParameters[1].distribute(SpacePoint(0.729, 0.232));
 
 #ifdef NEW_FORM
-    for (unsigned int n=0; n<=time_max; n++) functional.optimalParameters[0].pwr_vl[n] = 0.01;
-    for (unsigned int n=0; n<=time_max; n++) functional.optimalParameters[1].pwr_vl[n] = 0.01;
+    for (unsigned int n=1; n<time_max; n++) functional.optimalParameters[0].pwr_vl[n] = 0.01;
+    for (unsigned int n=1; n<time_max; n++) functional.optimalParameters[1].pwr_vl[n] = 0.01;
 #else
     for (unsigned int n=0; n<201; n++) functional.optimalParameters[0].pwr_vl[n] = 0.1;//0.001*n;
     for (unsigned int n=0; n<201; n++) functional.optimalParameters[1].pwr_vl[n] = 0.2;//0.002*n;
@@ -218,6 +228,7 @@ auto ProblemSolver::fx(double t) const -> double
     return res;
 
 #endif
+    return 0.0;
 }
 
 auto ProblemSolver::integral1(const DoubleMatrix &) const -> double
@@ -312,6 +323,7 @@ auto ProblemSolver::penalty() const -> double { return 0.0; }
 
 auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
+    //std::cout << "Gradients calculating..." << std::endl;
     vectorToParameter(x);
 
     g.clear(); g.resize(x.length());
@@ -333,7 +345,7 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
         {
             g[offset+ln] = -optimalParameter.psi_vl[ln];
         }
-        g[offset+0] = g[offset+time_size-1] = 0.0;
+        //g[offset+0] = g[offset+time_size-1] = 0.0;
 
         //---------------------------------------------------------------------------//
 
@@ -414,6 +426,7 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
         g[iy] *= -ht;
     }
 #endif
+    //std::cout << "Gradients calculated." << std::endl;
 }
 
 auto ProblemSolver::project(DoubleVector &x, unsigned int index) -> void
@@ -977,7 +990,7 @@ Problem0HParameter& Problem0HParameter::initialize(const Dimension &time, const 
 {
 #ifdef NEW_FORM
     destroy();
-    deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()), dimX.step(), static_cast<unsigned int>(dimY.size()), dimY.step());
+    deltaGrid.initGrid(static_cast<unsigned int>(dimX.size()-1), dimX.step(), static_cast<unsigned int>(dimY.size()-1), dimY.step());
     const unsigned int time_size = time.size();
 
     pwr_vl.resize(time_size, 0.0);

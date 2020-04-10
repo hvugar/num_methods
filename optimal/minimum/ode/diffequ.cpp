@@ -2,27 +2,17 @@
 
 OrdinaryDifferentialEquation::OrdinaryDifferentialEquation() {}
 
+OrdinaryDifferentialEquation::OrdinaryDifferentialEquation(const OrdinaryDifferentialEquation &) {}
+
+OrdinaryDifferentialEquation& OrdinaryDifferentialEquation::operator=(const OrdinaryDifferentialEquation &other)
+{
+    if (this == &other) { return *this; }
+    return *this;
+}
+
 OrdinaryDifferentialEquation::~OrdinaryDifferentialEquation() {}
 
-const Dimension& OrdinaryDifferentialEquation::dimension() const
-{
-    return _dimension;
-}
-
-void OrdinaryDifferentialEquation::setDimension(const Dimension &dimension)
-{
-    _dimension = dimension;
-}
-
-//const Dimension& SystemDifferentialEquation::dimension() const
-//{
-//    return _dimension;
-//}
-
-//void SystemDifferentialEquation::setDimension(const Dimension &dimension)
-//{
-//    _dimension = dimension;
-//}
+/**************************************************************************************************************/
 
 ExceptionODE::ExceptionODE(unsigned int msgCode) NOEXCEPT : _msgCode(msgCode)  {}
 

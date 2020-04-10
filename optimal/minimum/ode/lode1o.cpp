@@ -21,9 +21,19 @@ NonLocalCondition::~NonLocalCondition()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FirstOrderLinearODE::~FirstOrderLinearODE() {}
+IFirstOrderLinearODE::IFirstOrderLinearODE() {}
 
-void FirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k) const
+IFirstOrderLinearODE::IFirstOrderLinearODE(const IFirstOrderLinearODE &) {}
+
+IFirstOrderLinearODE& IFirstOrderLinearODE::operator=(const IFirstOrderLinearODE &other)
+{
+    if (this == &other) { return *this; }
+    return *this;
+}
+
+IFirstOrderLinearODE::~IFirstOrderLinearODE() {}
+
+void IFirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k) const
 {
     const auto cnd_size = static_cast<unsigned int>( co.size() );
     const auto h = dimension().step();
@@ -113,7 +123,7 @@ void FirstOrderLinearODE::discritize(const std::vector<NonLocalCondition> &co, s
     }
 }
 
-void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+void IFirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
 {
     if (co.size() < 2) throw ExceptionODE(1);
 
@@ -440,7 +450,7 @@ void FirstOrderLinearODE::transferOfCondition(const std::vector<NonLocalConditio
     C.clear();
 }
 
-void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
+void IFirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
 {
     if (co.size() < 2) throw ExceptionODE(1);
 
@@ -998,7 +1008,7 @@ void FirstOrderLinearODE::transferOfConditionN(const std::vector<NonLocalConditi
     gamma.clear();
 }
 
-void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
+void IFirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const
 {
     const unsigned int size = dimension().size();
     const unsigned int M = count();
@@ -1009,10 +1019,10 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
 
     struct MyRnFunction : public RnFunction, public IGradient, public IPrinter
     {
-        MyRnFunction(const FirstOrderLinearODE &ode, const std::vector<NonLocalCondition> &C, const DoubleVector &d, unsigned int size, double h, unsigned int k, unsigned int M)
+        MyRnFunction(const IFirstOrderLinearODE &ode, const std::vector<NonLocalCondition> &C, const DoubleVector &d, unsigned int size, double h, unsigned int k, unsigned int M)
             : ode(ode), C(C), d(d), size(size), h(h), k(k), M(M) {  }
 
-        const FirstOrderLinearODE &ode;
+        const IFirstOrderLinearODE &ode;
         const std::vector<NonLocalCondition> &C;
         const DoubleVector d;
         unsigned int size;
@@ -1286,7 +1296,7 @@ void FirstOrderLinearODE::transferOfConditionM(const std::vector<NonLocalConditi
     for (unsigned int i=0; i<size; i++) x.push_back(X.mid(i*M, i*M+M));
 }
 
-void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
+void IFirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
 {
     if (co.size() < 2) throw ExceptionODE(1);
 
@@ -2098,7 +2108,7 @@ void FirstOrderLinearODE::transferOfConditionS(const std::vector<NonLocalConditi
     }
 }
 
-void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
+void IFirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalCondition> &co, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const
 {
     if (co.size() < 2) throw ExceptionODE(1);
 
@@ -2520,7 +2530,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
                 for (unsigned int c=0; c<M; c++)
                 {
                     x[i][eq] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c]
-                             + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
+                            + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
                 }
             }
             if (i%(N/5)==0) { printf("%6d : ", i); IPrinter::print(x[i], x[i].length(), 28, 8); }
@@ -2763,7 +2773,7 @@ void FirstOrderLinearODE::transferOfConditionP(const std::vector<NonLocalConditi
     // end cleanig memory
 }
 
-void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
+void IFirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
 {
     if (count() != 1) throw ExceptionODE(5);
 
@@ -2788,7 +2798,7 @@ void FirstOrderLinearODE::solveInitialValueProblem(DoubleVector &rv) const
     }
 }
 
-void FirstOrderLinearODE::solveInitialValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method) const
+void IFirstOrderLinearODE::solveInitialValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method) const
 {
     switch (method)
     {
@@ -2810,7 +2820,7 @@ void FirstOrderLinearODE::solveInitialValueProblem(std::vector<DoubleVector> &rv
     }
 }
 
-void FirstOrderLinearODE::solveInitialValueProblemEuler(std::vector<DoubleVector> &rv) const
+void IFirstOrderLinearODE::solveInitialValueProblemEuler(std::vector<DoubleVector> &rv) const
 {
     const Dimension &dim = dimension();
     const int min = dim.min();
@@ -2827,28 +2837,27 @@ void FirstOrderLinearODE::solveInitialValueProblemEuler(std::vector<DoubleVector
         rv0[row-1] = initial(InitialCondition::InitialValue, row);
     }
 
-    unsigned int ai = 1; // array index
-    DoubleMatrix _A(k, k, 0.0);
-    DoubleMatrix _B(k, 1, 0.0);
-    DoubleMatrix _I = DoubleMatrix::IdentityMatrix(k);
-    for (int i=min; i<max; i++, ai++)
+    unsigned int i=0;
+    PointNodeODE node;
+    for (int n=min; n<max; n++, i++)
     {
-        PointNodeODE node(static_cast<double>(i*h), i);
+        node.i = n; node.x = n*h;
+
+        DoubleVector v0 = rv[i];
 
         for (unsigned int row=1; row<=k; row++)
         {
+            double sum = h*B(node, row);
             for (unsigned int col=1; col<=k; col++)
             {
-                _A[row-1][col-1] = A(node, row, col);
+                sum += h*A(node, row, col)*rv[i][col-1];
             }
-            _B[row-1][0] = B(node, row);
+            rv[i+1][row-1] = rv[i][row-1] + sum;
         }
-
-        rv[ai] = (h*_A + _I)*rv[ai-1] + h*_B;
     }
 }
 
-void FirstOrderLinearODE::solveInitialValueProblemRK2(std::vector<DoubleVector> &rv) const
+void IFirstOrderLinearODE::solveInitialValueProblemRK2(std::vector<DoubleVector> &rv) const
 {
     const Dimension &dim = dimension();
     const int min = dim.min();
@@ -2932,11 +2941,106 @@ void FirstOrderLinearODE::solveInitialValueProblemRK2(std::vector<DoubleVector> 
     //    free(k1);
 }
 
-void FirstOrderLinearODE::solveInitialValueProblemRK4(std::vector<DoubleVector> &) const {}
+void IFirstOrderLinearODE::solveInitialValueProblemRK4(std::vector<DoubleVector> &rv) const
+{
+    const Dimension &dim = dimension();
+    const int min = dim.min();
+    const int max = dim.max();
+    const double h1 = dim.step();
+    const double h2 = h1/2.0;
+    const double h6 = h1/6.0;
+    const unsigned int size = static_cast<unsigned int>(max-min);
+    const unsigned int m = count();
 
-void FirstOrderLinearODE::solveInitialValueProblemRK6(std::vector<DoubleVector> &) const {}
+    rv.resize(size+1); for (unsigned int i=0; i<=size; i++) rv[i].resize(size+1);
 
-void FirstOrderLinearODE::solveInitialValueProblemEulerMod(std::vector<DoubleVector> &) const {}
+    double *k1 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k2 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k3 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k4 = static_cast<double*>( malloc( sizeof(double)*m ) );
+
+    for (unsigned int r=1; r<=m; r++)
+    {
+        rv[0][r-1] = initial(InitialCondition::InitialValue, r);
+    }
+    iterationInfo(rv[0], PointNodeODE(min*h1, min));
+
+    unsigned int i=0;
+    PointNodeODE node1, node2, node3, node4;
+    double *v1 = new double[m];
+    for (int n=min; n<max; n++, i++)
+    {
+        node1.i = n;   node1.x = node1.i*h1;
+        node2.i = n;   node2.x = n*h1+h2;
+        node3.i = n;   node3.x = n*h1+h2;
+        node4.i = n+1; node4.x = node4.i*h1;
+
+        DoubleVector v0 = rv[i];
+
+        // k1
+        for (unsigned int j=0; j<m; v1[j]=v0[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node1, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node1, row, col)*v1[j];
+            }
+            k1[row-1] = sum;
+        }
+
+        // k2
+        for (unsigned int j=0; j<m; v1[j]=v0[j]+h2*k1[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node2, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node2, row, col)*v1[j];
+            }
+            k2[row-1] = sum;
+        }
+
+        // k3
+        for (unsigned int j=0; j<m; v1[j]=v0[j]+h2*k2[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node3, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node3, row, col)*v1[j];
+            }
+            k3[row-1] = sum;
+        }
+
+        // k4
+        for (unsigned int j=0; j<m; v1[j]=v0[j]+h1*k3[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node4, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node4, row, col)*v1[j];
+            }
+            k4[row-1] = sum;
+        }
+
+        for (unsigned int j=0; j<m; j++)
+        {
+            rv[i+1][j] = rv[i][j] + h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+        }
+        iterationInfo(rv[i+1], node4);
+    }
+
+    free(k4);
+    free(k3);
+    free(k2);
+    free(k1);
+}
+
+void IFirstOrderLinearODE::solveInitialValueProblemRK6(std::vector<DoubleVector> &) const {}
+
+void IFirstOrderLinearODE::solveInitialValueProblemEulerMod(std::vector<DoubleVector> &) const {}
 
 //void LinearODE1stOrder::calculate(const std::vector<Condition> &nscs, const DoubleVector &bt, std::vector<DoubleVector> &x)
 //{
@@ -4446,3 +4550,178 @@ void FirstOrderLinearODE::solveInitialValueProblemEulerMod(std::vector<DoubleVec
 //        delete [] p;
 //    }
 //}
+
+IFirstOrderLinearODEFBVP::IFirstOrderLinearODEFBVP() {}
+
+IFirstOrderLinearODEFBVP::IFirstOrderLinearODEFBVP(const IFirstOrderLinearODEFBVP &) {}
+
+IFirstOrderLinearODEFBVP& IFirstOrderLinearODEFBVP::operator=(const IFirstOrderLinearODEFBVP &other)
+{
+    if (this == &other) { return *this; }
+    return *this;
+}
+
+IFirstOrderLinearODEFBVP::~IFirstOrderLinearODEFBVP() {}
+
+void IFirstOrderLinearODEFBVP::solveFinalValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method) const
+{
+    switch (method)
+    {
+    case ODESolverMethod::EULER:
+        solveFinalValueProblemEuler(rv);
+        break;
+    case ODESolverMethod::EULER_MOD:
+        solveFinalValueProblemEulerMod(rv);
+        break;
+    case ODESolverMethod::RUNGE_KUTTA_2:
+        solveFinalValueProblemRK2(rv);
+        break;
+    case ODESolverMethod::RUNGE_KUTTA_4:
+        solveFinalValueProblemRK4(rv);
+        break;
+    case ODESolverMethod::RUNGE_KUTTA_6:
+        solveFinalValueProblemRK6(rv);
+        break;
+    }
+}
+
+void IFirstOrderLinearODEFBVP::solveFinalValueProblemEuler(std::vector<DoubleVector> &rv) const
+{
+    const Dimension &dim = dimension();
+    const int min = dim.min();
+    const int max = dim.max();
+    const double h = dim.step();
+    const unsigned int size = static_cast<unsigned int>(max-min);
+    const unsigned int k = count();
+
+    rv.resize(size+1); for (unsigned int i=0; i<=size; i++) rv[i].resize(k);
+
+    DoubleVector &rv0 = rv[size];
+    for (unsigned int row=1; row<=k; row++)
+    {
+        rv0[row-1] = final(FinalCondition::FinalValue, row);
+    }
+
+    unsigned int i=size;//, j=0;
+    PointNodeODE node;
+    for (int n=max; n>min; n--, i--)
+    {
+        node.i = n; node.x = n*h;
+
+        DoubleVector v0 = rv[i];
+
+        for (unsigned int row=1; row<=k; row++)
+        {
+            double sum = h*B(node, row);
+            for (unsigned int col=1; col<=k; col++)
+            {
+                sum += h*A(node, row, col)*rv[i][col-1];
+            }
+            rv[i-1][row-1] = rv[i][row-1] - sum;
+        }
+    }
+}
+
+void IFirstOrderLinearODEFBVP::solveFinalValueProblemEulerMod(std::vector<DoubleVector> &rv) const { C_UNUSED(rv); }
+
+void IFirstOrderLinearODEFBVP::solveFinalValueProblemRK2(std::vector<DoubleVector> &rv) const { C_UNUSED(rv); }
+
+void IFirstOrderLinearODEFBVP::solveFinalValueProblemRK4(std::vector<DoubleVector> &rv) const
+{
+    const Dimension &dim = dimension();
+    const int min = dim.min();
+    const int max = dim.max();
+    const double h1 = dim.step();
+    const double h2 = h1/2.0;
+    const double h6 = h1/6.0;
+    const unsigned int size = static_cast<unsigned int>(max-min);
+    const unsigned int m = count();
+
+    rv.resize(size+1); for (unsigned int i=0; i<=size; i++) rv[i].resize(size+1);
+
+    double *k1 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k2 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k3 = static_cast<double*>( malloc( sizeof(double)*m ) );
+    double *k4 = static_cast<double*>( malloc( sizeof(double)*m ) );
+
+    for (unsigned int r=1; r<=m; r++)
+    {
+        rv[size][r-1] = final(FinalCondition::FinalValue, r);
+    }
+    iterationInfo(rv[size], PointNodeODE(max*h1, max));
+
+    unsigned int i=size;
+    PointNodeODE node1, node2, node3, node4;
+    double *v1 = new double[m];
+    for (int n=max; n>min; n--, i--)
+    {
+        node1.i = n;   node1.x = n*h1;
+        node2.i = n;   node2.x = n*h1-h2;
+        node3.i = n;   node3.x = n*h1-h2;
+        node4.i = n-1; node4.x = node4.i*h1;
+
+        const DoubleVector &v0 = rv[i];
+
+        // k1
+        for (unsigned int j=0; j<m; v1[j]=v0[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node1, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node1, row, col)*v1[j];
+            }
+            k1[row-1] = sum;
+        }
+
+        // k2
+        for (unsigned int j=0; j<m; v1[j]=v0[j]-h2*k1[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node2, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node2, row, col)*v1[j];
+            }
+            k2[row-1] = sum;
+        }
+
+        // k3
+        for (unsigned int j=0; j<m; v1[j]=v0[j]-h2*k2[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node3, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node3, row, col)*v1[j];
+            }
+            k3[row-1] = sum;
+        }
+
+        // k4
+        for (unsigned int j=0; j<m; v1[j]=v0[j]-h1*k3[j], j++);
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node4, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node4, row, col)*v1[j];
+            }
+            k4[row-1] = sum;
+        }
+
+        for (unsigned int j=0; j<m; j++)
+        {
+            rv[i-1][j] = rv[i][j] - h6 * (k1[j] + 2*k2[j] + 2*k3[j] + k4[j]);
+        }
+        iterationInfo(rv[i-1], node4);
+    }
+
+    free(k4);
+    free(k3);
+    free(k2);
+    free(k1);
+}
+
+void IFirstOrderLinearODEFBVP::solveFinalValueProblemRK6(std::vector<DoubleVector> &rv) const { C_UNUSED(rv); }
+
