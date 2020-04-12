@@ -22,6 +22,7 @@ public:
     auto reset() -> void;
     auto resetAll() -> void;
 
+    auto gaussWeight(const SpacePoint &sp, const SpacePoint &mu, double sigmaX, double sigmaY) const -> double;
     auto distributeGauss(const SpacePoint &sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
     auto lumpPointGauss(const DoubleMatrix &m) const -> double;
     auto lumpPointGauss(const DoubleMatrix &u, double &dx, double &dy) const -> double;

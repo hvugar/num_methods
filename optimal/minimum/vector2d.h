@@ -83,6 +83,7 @@ public:
 private:
     unsigned int mLength;
     double *mData;
+    static unsigned int instanceCount;
 };
 
 #endif // VECTOR2D_H

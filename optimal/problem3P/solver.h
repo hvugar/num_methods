@@ -6,7 +6,7 @@
 #include "global.h"
 
 #define TIME_MIN 0
-#define TIME_MAX 4000//1600//8000
+#define TIME_MAX 1000//1600//8000
 #define DIMX_MAX 200//100//400
 #define DIMY_MAX 200//100//400
 
@@ -16,52 +16,21 @@
 
 #define SIGMA_X 0.01
 #define SIGMA_Y 0.01
+#define NODE_PER_SIGMA_X 2
+#define NODE_PER_SIGMA_Y 2
 
 using namespace std;
 using namespace std::placeholders;
 
 namespace p3p
 {
-
-class Common;
 class WaveEquationIBVP;
 class WaveEquationFBVP;
 class Solver;
 
-struct ExternalSource
-{
-    SpacePoint point;
-    double power;
-    double sigmaX;
-    double sigmaY;
-    double sigmaT;
-};
-
-//struct FunctionalParemeter
-//{
-//    double epsilon1;
-//    double epsilon2;
-//};
-
-struct Problem0HParameter
-{
-    SpacePoint p;
-    std::vector<double> pwr_vl;
-    std::vector<double> psi_vl;
-    std::vector<double> psi_dx;
-    std::vector<double> psi_dy;
-    std::vector<double> psi_x;
-    std::vector<double> psi_y;
-    DeltaGrid2D deltaGrid;
-
-    Problem0HParameter& initialize(const Dimension &time, const Dimension &dimX, const Dimension &dimY);
-    void destroy();
-    void distribute(const SpacePoint &p);
-};
-
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public IFirstOrderLinearODE
+class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public IFirstOrderLinearODEIVP
 {
 public:
     HeatEquationIBVP(Solver *solver = nullptr);
@@ -91,7 +60,7 @@ public:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP, virtual public IFirstOrderLinearODEFBVP
+class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP, virtual public IFirstOrderLinearODEFVP
 {
 public:
     HeatEquationFBVP(Solver *solver);

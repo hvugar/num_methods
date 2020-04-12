@@ -2,44 +2,48 @@
 
 #define EXAMPLE_31
 
-void FirstOrderLinearODEEx1::Main(int argc UNUSED_PARAM, char **argv)
+void FirstOrderLinearODEIVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
-    C_UNUSED(argc);
-    C_UNUSED(argv);
-    //NonLocalConditionExample();
     CauchyProblemExample();
 }
 
-void FirstOrderLinearODEEx1::CauchyProblemExample()
+void FirstOrderLinearODEIVP::CauchyProblemExample()
 {
-    FirstOrderLinearODEEx1 fnl;
+    FirstOrderLinearODEIVP fnl;
+    fnl.mx.clear();
+    fnl.mx.resize(fnl.dimension().size());
 
     std::vector<DoubleVector> x1;
     fnl.solveInitialValueProblem(x1, ODESolverMethod::EULER);
     IPrinter::print(x1, fnl.count());
     IPrinter::printSeperatorLine();
 
+    fnl.solveInitialValueProblem(ODESolverMethod::EULER);
+    IPrinter::print(fnl.mx, fnl.count());
+    IPrinter::printSeperatorLine();
+
     std::vector<DoubleVector> x2;
-    fnl.solveInitialValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_4);
+    fnl.solveInitialValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_2);
     IPrinter::print(x2, fnl.count());
     IPrinter::printSeperatorLine();
 
-    FirstOrderLinearODEFBVP bnl;
+    fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
+    IPrinter::print(fnl.mx, fnl.count());
+    IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x3;
-    bnl.solveFinalValueProblem(x3, ODESolverMethod::EULER);
+    fnl.solveInitialValueProblem(x3, ODESolverMethod::RUNGE_KUTTA_4);
     IPrinter::print(x3, fnl.count());
     IPrinter::printSeperatorLine();
 
-    std::vector<DoubleVector> x4;
-    bnl.solveFinalValueProblem(x4, ODESolverMethod::RUNGE_KUTTA_4);
-    IPrinter::print(x4, fnl.count());
+    fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
+    IPrinter::print(fnl.mx, fnl.count());
     IPrinter::printSeperatorLine();
 }
 
-void FirstOrderLinearODEEx1::NonLocalConditionExample()
+void FirstOrderLinearODEIVP::NonLocalConditionExample()
 {
-    FirstOrderLinearODEEx1 nl;
+    FirstOrderLinearODEIVP nl;
 
     const unsigned int M = nl.count();
     const unsigned int N = TIME_MAX;
@@ -123,16 +127,50 @@ void FirstOrderLinearODEEx1::NonLocalConditionExample()
     //    IPrinter::printSeperatorLine();
 }
 
-FirstOrderLinearODEEx1::FirstOrderLinearODEEx1()
+/*****************************************************************************************************/
+
+void FirstOrderLinearODEFVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
+    CauchyProblemExample();
 }
 
-FirstOrderLinearODEEx1::~FirstOrderLinearODEEx1()
-{}
+void FirstOrderLinearODEFVP::CauchyProblemExample()
+{
+    FirstOrderLinearODEFVP bnl;
+    bnl.mx.clear();
+    bnl.mx.resize(bnl.dimension().size());
+
+    std::vector<DoubleVector> x1;
+    bnl.solveFinalValueProblem(x1, ODESolverMethod::EULER);
+    IPrinter::print(x1, bnl.count());
+    IPrinter::printSeperatorLine();
+
+    bnl.solveFinalValueProblem(ODESolverMethod::EULER);
+    IPrinter::print(bnl.mx, bnl.count());
+    IPrinter::printSeperatorLine();
+
+    std::vector<DoubleVector> x2;
+    bnl.solveFinalValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_2);
+    IPrinter::print(x2, bnl.count());
+    IPrinter::printSeperatorLine();
+
+    bnl.solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
+    IPrinter::print(bnl.mx, bnl.count());
+    IPrinter::printSeperatorLine();
+
+    std::vector<DoubleVector> x3;
+    bnl.solveFinalValueProblem(x3, ODESolverMethod::RUNGE_KUTTA_4);
+    IPrinter::print(x3, bnl.count());
+    IPrinter::printSeperatorLine();
+
+    bnl.solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
+    IPrinter::print(bnl.mx, bnl.count());
+    IPrinter::printSeperatorLine();
+}
 
 /*****************************************************************************************************/
 
-double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
+double FirstOrderLinearODEIVP::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
 {
     C_UNUSED(node);
     C_UNUSED(r);
@@ -177,7 +215,7 @@ double FirstOrderLinearODEEx1::A(const PointNodeODE &node, unsigned int r, unsig
     throw std::exception();
 }
 
-double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
+double FirstOrderLinearODEIVP::B(const PointNodeODE &node, unsigned int r) const
 {
     const unsigned int M = count();
     double result = dt(node, r);
@@ -185,7 +223,7 @@ double FirstOrderLinearODEEx1::B(const PointNodeODE &node, unsigned int r) const
     return result;
 }
 
-unsigned int FirstOrderLinearODEEx1::count() const
+unsigned int FirstOrderLinearODEIVP::count() const
 {
 #if defined(EXAMPLE_11) || defined(EXAMPLE_12) || defined(EXAMPLE_13) || defined(EXAMPLE_14) || defined(EXAMPLE_15) || defined(EXAMPLE_16)
     return 1;
@@ -203,19 +241,29 @@ unsigned int FirstOrderLinearODEEx1::count() const
     throw std::exception();
 }
 
-auto FirstOrderLinearODEEx1::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
+auto FirstOrderLinearODEIVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
 
-auto FirstOrderLinearODEFBVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
+auto FirstOrderLinearODEFVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
 
-auto FirstOrderLinearODEEx1::initial(InitialCondition, unsigned int r) const -> double
+auto FirstOrderLinearODEIVP::initial(InitialCondition, unsigned int r) const -> double
 {
     PointNodeODE node; node.i = 0; node.x = 0.0;
     return x(node, r);
 }
 
+void FirstOrderLinearODEIVP::iterationInfo(double y, const PointNodeODE &node) const
+{
+    //const_cast<FirstOrderLinearODEEx1*>(this)->mx[node.i] = v;
+}
+
+void FirstOrderLinearODEIVP::iterationInfo(const DoubleVector &v, const PointNodeODE &node) const
+{
+    const_cast<FirstOrderLinearODEIVP*>(this)->mx[node.i] = v;
+}
+
 /*****************************************************************************************************/
 
-double FirstOrderLinearODEFBVP::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
+double FirstOrderLinearODEFVP::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
 {
     C_UNUSED(node);
     C_UNUSED(r);
@@ -260,7 +308,7 @@ double FirstOrderLinearODEFBVP::A(const PointNodeODE &node, unsigned int r, unsi
     throw std::exception();
 }
 
-double FirstOrderLinearODEFBVP::B(const PointNodeODE &node, unsigned int r) const
+double FirstOrderLinearODEFVP::B(const PointNodeODE &node, unsigned int r) const
 {
     const unsigned int M = count();
     double result = dt(node, r);
@@ -268,7 +316,7 @@ double FirstOrderLinearODEFBVP::B(const PointNodeODE &node, unsigned int r) cons
     return result;
 }
 
-unsigned int FirstOrderLinearODEFBVP::count() const
+unsigned int FirstOrderLinearODEFVP::count() const
 {
 #if defined(EXAMPLE_11) || defined(EXAMPLE_12) || defined(EXAMPLE_13) || defined(EXAMPLE_14) || defined(EXAMPLE_15) || defined(EXAMPLE_16)
     return 1;
@@ -286,10 +334,20 @@ unsigned int FirstOrderLinearODEFBVP::count() const
     throw std::exception();
 }
 
-auto FirstOrderLinearODEFBVP::final(FinalCondition, unsigned int r) const -> double
+auto FirstOrderLinearODEFVP::final(FinalCondition, unsigned int r) const -> double
 {
     PointNodeODE node; node.i = dimension().max(); node.x = dimension().max()*dimension().step();
     return x(node, r);
+}
+
+auto FirstOrderLinearODEFVP::iterationInfo(double y, const PointNodeODE &node) const -> void
+{
+    //const_cast<FirstOrderLinearODEEx1*>(this)->mx[node.i] = v;
+}
+
+auto FirstOrderLinearODEFVP::iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void
+{
+    const_cast<FirstOrderLinearODEFVP*>(this)->mx[node.i] = v;
 }
 
 /*****************************************************************************************************/

@@ -26,38 +26,43 @@ public:
 
 /*****************************************************************************************************/
 
-class BORDERSHARED_EXPORT FirstOrderLinearODEEx1 : public IFirstOrderLinearODE, public FirstOrderLinearSample
+class BORDERSHARED_EXPORT FirstOrderLinearODEIVP : public IFirstOrderLinearODEIVP, public FirstOrderLinearSample
 {
 public:
-    FirstOrderLinearODEEx1();
-    virtual ~FirstOrderLinearODEEx1();
-
     static void Main(int argc, char** argv);
     static void NonLocalConditionExample();
     static void CauchyProblemExample();
 
+    std::vector<DoubleVector> mx;
+
 protected:
     virtual auto A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const -> double;
     virtual auto B(const PointNodeODE &node, unsigned int row = 0) const -> double;
     virtual auto count() const -> unsigned int;
     virtual auto dimension() const -> Dimension;
-
+    virtual void iterationInfo(double y, const PointNodeODE &node) const;
+    virtual void iterationInfo(const DoubleVector &v, const PointNodeODE &node) const;
     virtual auto initial(InitialCondition, unsigned int) const -> double;
-    virtual auto boundary(const PointNodeODE &, BoundaryConditionODE &, unsigned int) const -> double { return 0.0; }
 };
 
 /*****************************************************************************************************/
 
-class BORDERSHARED_EXPORT FirstOrderLinearODEFBVP : public IFirstOrderLinearODEFBVP, public FirstOrderLinearSample
+class BORDERSHARED_EXPORT FirstOrderLinearODEFVP : public IFirstOrderLinearODEFVP, public FirstOrderLinearSample
 {
+public:
+    static void Main(int argc, char** argv);
+    static void CauchyProblemExample();
+
+    std::vector<DoubleVector> mx;
+
 protected:
     virtual auto A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const -> double;
     virtual auto B(const PointNodeODE &node, unsigned int row = 0) const -> double;
     virtual auto count() const -> unsigned int;
     virtual auto dimension() const -> Dimension;
-
+    virtual auto iterationInfo(double y, const PointNodeODE &node) const -> void;
+    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void;
     virtual auto final(FinalCondition, unsigned int) const -> double;
-    virtual auto boundary(const PointNodeODE &, BoundaryConditionODE &, unsigned int) const -> double { return 0.0; }
 };
 
 #endif // FIRST_ORDER_LINEAR_ODE_EX1_H

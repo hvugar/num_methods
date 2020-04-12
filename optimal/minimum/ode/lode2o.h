@@ -8,9 +8,7 @@
  * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
  * The Linear ODE 2nd order in canonical (normal) form y"(x) = A(x)y'(x) + B(x)y(x) + C(x);
  */
-class MINIMUMSHARED_EXPORT SecondOrderLinearODE :
-        virtual public LinearODE,
-        virtual public InitialValueProblemODE,
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODEIBVP : virtual public ISecondOrderLinearODE, virtual public InitialValueProblemODE,
         virtual public BoundaryValueProblemODE
 {
 public:
@@ -40,34 +38,6 @@ public:
     void solveBoundaryValueProblem(std::vector<DoubleVector> &rv) const;
 
 protected:
-
-    /**
-     * @brief A
-     * @param node
-     * @param row
-     * @param col
-     * @return
-     */
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
-
-    /**
-     * @brief B
-     * @param node
-     * @param row
-     * @param col
-     * @return
-     */
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
-
-    /**
-     * @brief C
-     * @param node
-     * @param row
-     * @return
-     */
-    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
-
-protected:
     /**
      * @brief initial
      * @param condition
@@ -83,15 +53,7 @@ protected:
      * @param row
      * @return
      */
-    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
-
-protected:
-
-    /**
-     * @brief count
-     * @return
-     */
-    virtual auto count() const -> unsigned int = 0;
+    virtual auto boundary(const PointNodeODE &node, BoundaryConditionPDE &condition, unsigned int row = 1) const -> double = 0;
 };
 
 /**

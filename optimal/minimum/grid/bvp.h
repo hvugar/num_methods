@@ -11,18 +11,6 @@ enum class BoundaryCondition
 };
 
 /**
- * @brief The BoundaryConditionODE class
- */
-class MINIMUMSHARED_EXPORT BoundaryConditionODE
-{
-public:
-    BoundaryCondition boundaryConditionType;
-    DoubleMatrix a;
-    DoubleMatrix b;
-    double lambda;
-};
-
-/**
  * @brief The BoundaryConditionPDE class
  */
 class MINIMUMSHARED_EXPORT BoundaryConditionPDE
@@ -55,7 +43,7 @@ class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProb
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(BoundaryValueProblemODE);
 
 protected:
-    virtual auto boundary(const PointNodeODE &node, BoundaryConditionODE &condition, unsigned int row = 1) const -> double = 0;
+    virtual auto boundary(const PointNodeODE &node, BoundaryConditionPDE &condition, unsigned int row = 1) const -> double = 0;
 };
 
 /**

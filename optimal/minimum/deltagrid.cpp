@@ -110,6 +110,14 @@ auto DeltaGrid2D::resetAll() -> void
     }
 }
 
+auto DeltaGrid2D::gaussWeight(const SpacePoint &sp, const SpacePoint &mu, double sigmaX, double sigmaY) const -> double
+{
+    const double factor1 = 1.0/(2.0*M_PI*sigmaX*sigmaY);
+    const double sigmax2 = 1.0/(2.0*sigmaX*sigmaX);
+    const double sigmay2 = 1.0/(2.0*sigmaY*sigmaY);
+    return factor1 * exp(-(sigmax2*(sp.x-mu.x)*(sp.x-mu.x)+sigmay2*(sp.y-mu.y)*(sp.y-mu.y)));;
+}
+
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX, unsigned int nodeY_per_sigmaY) -> void
 {
     reset();

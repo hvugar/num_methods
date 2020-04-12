@@ -66,6 +66,57 @@ class MINIMUMSHARED_EXPORT CanonicalFormODE : public OrdinaryDifferentialEquatio
  */
 class MINIMUMSHARED_EXPORT LinearODE : public CanonicalFormODE {};
 
+class MINIMUMSHARED_EXPORT IFirstOrderLinearODE : public LinearODE
+{
+protected:
+    /**
+     * @brief A  A nxn dimensional matrix-function
+     * @param node
+     * @param row <= n
+     * @param col <= n
+     * @return
+     */
+    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+
+    /**
+     * @brief B n dimensional vector-function
+     * @param node
+     * @param row
+     * @return
+     */
+    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+};
+
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODE : public LinearODE
+{
+protected:
+    /**
+     * @brief A  A nxn dimensional matrix-function
+     * @param node
+     * @param row <= n
+     * @param col <= n
+     * @return
+     */
+    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+
+    /**
+     * @brief B B nxn dimensional matrix-function
+     * @param node
+     * @param row
+     * @return
+     */
+    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+
+    /**
+     * @brief C B nxn dimensional vector-function
+     * @param node
+     * @param row
+     * @return
+     */
+    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+};
+
+
 /**
  * @brief The NonLinearODE class
  * @see FirstOrderNonLinearODE

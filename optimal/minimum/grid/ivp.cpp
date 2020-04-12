@@ -1,39 +1,5 @@
 #include "ivp.h"
 
-//PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR_IMPL(InitialConditionODE);
-//PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR_IMPL(InitialConditionPDE);
-//PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR_IMPL(InitialValueProblem);
-
-//**********************************************************************************************//
-
-InitialConditionODE::InitialConditionODE() {}
-
-InitialConditionODE::InitialConditionODE(const InitialConditionODE &) {}
-
-InitialConditionODE& InitialConditionODE::operator=(const InitialConditionODE &other)
-{
-    if (this == &other) { return *this; }
-    this->initialConditionType = other.initialConditionType;
-    this->value = other.value;
-    return *this;
-}
-
-InitialConditionODE::~InitialConditionODE() {}
-
-//**********************************************************************************************//
-
-InitialConditionPDE::InitialConditionPDE() {}
-
-InitialConditionPDE::InitialConditionPDE(const InitialConditionPDE &) {}
-
-InitialConditionPDE & InitialConditionPDE::operator=(const InitialConditionPDE &other)
-{
-    if (this == &other) { return *this; }
-    return *this;
-}
-
-InitialConditionPDE::~InitialConditionPDE() {}
-
 //**********************************************************************************************//
 
 InitialValueProblem::InitialValueProblem() {}
@@ -76,9 +42,9 @@ InitialValueProblemODE& InitialValueProblemODE::operator=(const InitialValueProb
 
 InitialValueProblemODE::~InitialValueProblemODE() {}
 
-void InitialValueProblemODE::iterationInfo(double y, const PointNodeODE &node) {}
+void InitialValueProblemODE::iterationInfo(double, const PointNodeODE &) const {}
 
-void InitialValueProblemODE::iterationInfo(const DoubleVector &v, const PointNodeODE &node) const {}
+void InitialValueProblemODE::iterationInfo(const DoubleVector &, const PointNodeODE &) const {}
 
 //**********************************************************************************************//
 
@@ -108,7 +74,7 @@ FinalValueProblemODE& FinalValueProblemODE::operator=(const FinalValueProblemODE
 
 FinalValueProblemODE::~FinalValueProblemODE() {}
 
-void FinalValueProblemODE::iterationInfo(double, const PointNodeODE &) {}
+void FinalValueProblemODE::iterationInfo(double, const PointNodeODE &) const {}
 
 void FinalValueProblemODE::iterationInfo(const DoubleVector &, const PointNodeODE &) const {}
 

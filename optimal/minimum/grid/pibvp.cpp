@@ -771,7 +771,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 e = N;
                 ax[e]  = beta  * b121;
-                bx[e]  = beta  * b123 + alpha * b122;
+                bx[e]  = beta  * b123;
                 cx[e]  = 0.0;
                 dx[e]  = beta  * b124 * u00[j][e];
                 dx[e] += beta  * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));

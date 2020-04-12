@@ -5,12 +5,14 @@
 #include <math.h>
 #include <float.h>
 
+unsigned int DoubleVector::instanceCount = 0;
+
 DoubleVector::DoubleVector(unsigned int length, double val) : mLength(length), mData(nullptr)
 {
     if (length == 0) return;
 
-    mData = static_cast<double*>(malloc(sizeof(double)*mLength));
-    for (unsigned int i=0; i<mLength; i++) mData[i] = val;
+    mData = static_cast<double*>(malloc(sizeof(double)*length));
+    for (unsigned int i=0; i<length; i++) mData[i] = val;
 }
 
 DoubleVector::DoubleVector(const double* data, unsigned int length) : mLength(length), mData(nullptr)
