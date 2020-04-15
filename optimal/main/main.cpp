@@ -8,9 +8,8 @@
 #include <deltagrid.h>
 #include <r1minimize.h>
 
-#include <ode/nlode1o.h>
-#include <ode/lode1o.h>
 #include <ode/first_order_linear_ode.h>
+#include <ode/second_order_linear_ode.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
 #include <heat_equation_ibvp.h>
@@ -39,6 +38,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 
     //FirstOrderLinearODEIVP::Main(argc, argv);
     //FirstOrderLinearODEFVP::Main(argc, argv);
+    SecondOrderLinearODEIBVP::Main(argc, argv);
+    SecondOrderLinearODEFBVP::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
@@ -60,7 +61,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //h0p::ProblemSolver::Main(argc, argv);
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
-    p3p::Solver::Main(argc, argv);
+    //p3p::Solver::Main(argc, argv);
 
     //return 0;
 

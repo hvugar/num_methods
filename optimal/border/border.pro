@@ -103,6 +103,7 @@ HEADERS += border_global.h \
     heat_equation_ibvp.h \
     #ode/first_order_nonlinear_ode.h \
     ode/first_order_linear_ode.h \
+    ode/second_order_linear_ode.h \
     wave_equation_ibvp.h
 
 HEADERS += \
@@ -113,6 +114,7 @@ SOURCES += \
            newtonheatequationex1.cpp \
            #ode/first_order_nonlinear_ode.cpp \
            ode/first_order_linear_ode.cpp \
+           ode/second_order_linear_ode.cpp \
            wave_equation_ibvp.cpp
 
 

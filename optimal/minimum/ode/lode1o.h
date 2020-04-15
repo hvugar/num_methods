@@ -2,7 +2,6 @@
 #define FIRTS_ORDER_LINEAR_ODE_H
 
 #include "diffequ.h"
-#include "../grid/ibvp.h"
 
 struct MINIMUMSHARED_EXPORT NonLocalCondition
 {
@@ -41,25 +40,15 @@ class MINIMUMSHARED_EXPORT IFirstOrderLinearODEIVP : virtual public IFirstOrderL
 public:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(IFirstOrderLinearODEIVP);
 
+    void solveInitialValueProblem(DoubleVector &rv) const;
+    void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
+    void solveInitialValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method = ODESolverMethod::EULER) const;
+
     void transferOfCondition(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
     void transferOfConditionN(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const;
     void transferOfConditionM(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k) const;
     void transferOfConditionS(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const;
     void transferOfConditionP(const std::vector<NonLocalCondition> &C, const DoubleVector &d, std::vector<DoubleVector> &x, unsigned int k, unsigned int schema) const;
-
-    /**
-     * @brief solveInitialValueProblem
-     * @param rv
-     */
-    void solveInitialValueProblem(DoubleVector &rv) const;
-
-    /**
-     * @brief solveInitialValueProblem
-     * @param rv
-     */
-    void solveInitialValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method = ODESolverMethod::EULER) const;
-    void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
-
 private:
 
     auto discritize(const std::vector<NonLocalCondition> &co, std::vector<NonLocalCondition> &cn, unsigned int k = 4) const -> void;

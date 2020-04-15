@@ -4,6 +4,7 @@
 #include "../global.h"
 #include "../vector2d.h"
 #include "../grid/grid.h"
+#include "../grid/ibvp.h"
 #include "../linearequation.h"
 
 enum class ODESolverMethod
@@ -105,7 +106,7 @@ protected:
      * @param row
      * @return
      */
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+    virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
 
     /**
      * @brief C B nxn dimensional vector-function

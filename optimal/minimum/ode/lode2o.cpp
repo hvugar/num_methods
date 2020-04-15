@@ -1,4 +1,17 @@
 #include "lode2o.h"
+#include "lode1o.h"
+
+ISecondOrderLinearODEIBVP::ISecondOrderLinearODEIBVP() {}
+
+ISecondOrderLinearODEIBVP::ISecondOrderLinearODEIBVP(const ISecondOrderLinearODEIBVP &) {}
+
+ISecondOrderLinearODEIBVP& ISecondOrderLinearODEIBVP::operator=(const ISecondOrderLinearODEIBVP &other)
+{
+    if (this == &other) { return *this; }
+    return *this;
+}
+
+ISecondOrderLinearODEIBVP::~ISecondOrderLinearODEIBVP() {}
 
 void ISecondOrderLinearODEIBVP::solveInitialValueProblem(DoubleVector &rv) const
 {
@@ -8,150 +21,299 @@ void ISecondOrderLinearODEIBVP::solveInitialValueProblem(DoubleVector &rv) const
     int min = dim.min();
     int max = dim.max();
     double h = dim.step();
+    unsigned int size = static_cast<unsigned int>(max-min)+1;
 
-    unsigned int size = static_cast<unsigned int>(max-min);
-
-    rv.resize(size+1);
+    rv.resize(size);
 
     double value = initial(InitialCondition::InitialValue);
     double derivative = initial(InitialCondition::InitialFirstDerivative);
 
-    PointNodeODE node0(min*h, min);
+    PointNodeODE node(min*h, min);
     rv[0] = value;
-    rv[1] = value + h*derivative + 0.5*h*h*( A(node0)*derivative + B(node0)*value + C(node0) );
-    for (unsigned int i=2; i<=size; i++)
+    rv[1] = value + h*derivative + 0.5*h*h*( A(node)*derivative + B(node)*value + C(node) );
+    unsigned int j = 1;
+    for (int i=min+1; i<max; i++, j++)
     {
-        PointNodeODE node(static_cast<double>((i-1)*h), static_cast<int>(i-1));
+        PointNodeODE node(i*h, i);
         double an = A(node);
         double bn = B(node);
         double cn = C(node);
-        double mx = (1.0 - 0.5*h*an);
+        double mx = 1.0 - 0.5*h*an;
 
-        rv[i] = (2.0+h*h*bn)*rv[i-1] - (1.0+0.5*h*an)*rv[i-2] + h*h*cn;
-        rv[i] /= mx;
+        rv[j+1] = (2.0+h*h*bn)*rv[j] - (1.0+0.5*h*an)*rv[j-1] + h*h*cn;
+        rv[j+1] /= mx;
     }
+}
+
+void ISecondOrderLinearODEIBVP::solveInitialValueProblem(std::vector<DoubleVector> &rv) const
+{
+    const Dimension &dim = dimension();
+    int min = dim.min();
+    int max = dim.max();
+    double h = dim.step();
+    double h2 = h*h;
+    unsigned int size = static_cast<unsigned int>(max-min);
+    const unsigned int m = count();
+
+    rv.resize(size+1);  for (unsigned int i=0; i<=size; i++) rv[i].resize(m);
+
+    double *val = new double[m];
+    double *der = new double[m];
+    for (unsigned int row=1, j=0; row<=m; row++, j++)
+    {
+        val[j] = initial(InitialCondition::InitialValue, row);
+        der[j] = initial(InitialCondition::InitialFirstDerivative, row);
+    }
+
+    PointNodeODE node(min*h, min);
+
+    DoubleVector &rv0 = rv[0];
+    DoubleVector &rv1 = rv[1];
+    for (unsigned int row=1, i=0; row<=m; row++, i++)
+    {
+        rv0[i] = val[i];
+        rv1[i] = val[i] + h*der[i];
+        double sd = C(node, row);
+        for (unsigned int col=1; col<=m; col++)
+        {
+            sd += A(node, row, col)*der[col-1];
+            sd += B(node, row, col)*val[col-1];
+        }
+        rv1[i] += 0.5*h2*sd;
+    }
+
+    delete [] der;
+    delete [] val;
+
+//    unsigned int i = 1;
+//    for (int n=min+1; n<max; n++, i++)
+//    {
+//        node.i = n; node.x = node.i*h;
+
+//        for (unsigned int row=1; row<=m; row++)
+//        {
+//            double sum = C(node, row);
+//        }
+
+
+//        double an = A(node);
+//        double bn = B(node);
+//        double cn = C(node);
+//        double mx = 1.0 - 0.5*h*an;
+
+//        rv[j+1] = (2.0+h*h*bn)*rv[j] - (1.0+0.5*h*an)*rv[j-1] + h*h*cn;
+//        rv[j+1] /= mx;
+//    }
+}
+
+void ISecondOrderLinearODEIBVP::solveInitialValueProblem2(ODESolverMethod method) const
+{
+    class FirstOrderLinearODEIVP : public IFirstOrderLinearODEIVP
+    {
+    public:
+        FirstOrderLinearODEIVP(const ISecondOrderLinearODEIBVP& p, unsigned int m) : p(p), m(m) {}
+
+        virtual auto A(const PointNodeODE &node, unsigned int row, unsigned int col) const -> double
+        {
+            unsigned int rm = row-m;
+            unsigned int cm = col-m;
+            return row <= m ? ((col <= m) ? 0.0 : 1.0) :
+                               (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
+        }
+        virtual auto B(const PointNodeODE &node, unsigned int row) const -> double
+        {
+            unsigned int rm = row-m;
+            return row <= m ? 0.0 : p.C(node, rm);
+        }
+
+        virtual auto initial(InitialCondition, unsigned int row) const -> double
+        {
+            unsigned int rm = row-m;
+            return row <= m ? p.initial(InitialCondition::InitialValue, row)
+                            : p.initial(InitialCondition::InitialFirstDerivative, rm);
+        }
+        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
+        virtual auto dimension() const -> Dimension { return p.dimension(); }
+        virtual auto count() const -> unsigned int { return 2*m; }
+
+        const ISecondOrderLinearODEIBVP &p;
+        unsigned int m;
+    };
+
+    FirstOrderLinearODEIVP flode(*this, count());
+    flode.solveInitialValueProblem(method);
 }
 
 void ISecondOrderLinearODEIBVP::solveBoundaryValueProblem(DoubleVector &rv) const
 {
-//    if (count() != 1) throw ExceptionODE(5);
+    //    if (count() != 1) throw ExceptionODE(5);
 
-//    const Dimension &dim = dimension();
-//    int min = dim.min();
-//    int max = dim.max();
-//    double h = dim.step();
-//    unsigned int size = static_cast<unsigned int>(max-min);
-//    rv.resize(size+1);
+    //    const Dimension &dim = dimension();
+    //    int min = dim.min();
+    //    int max = dim.max();
+    //    double h = dim.step();
+    //    unsigned int size = static_cast<unsigned int>(max-min);
+    //    rv.resize(size+1);
 
-//    PointNodeODE leftNode(static_cast<double>(min*h), min);
-//    BoundaryConditionPDE leftCondition;
-//    double leftValue = boundary(leftNode, leftCondition);
-//    BoundaryCondition leftConditionType = leftCondition.boundaryConditionType;
-//    double leftLambda = leftCondition.lambda;
+    //    PointNodeODE leftNode(static_cast<double>(min*h), min);
+    //    BoundaryConditionPDE leftCondition;
+    //    double leftValue = boundary(leftNode, leftCondition);
+    //    BoundaryCondition leftConditionType = leftCondition.boundaryConditionType;
+    //    double leftLambda = leftCondition.lambda;
 
-//    PointNodeODE rightNode(static_cast<double>(max*h), max);
-//    BoundaryConditionODE rightCondition;
-//    double rightValue = boundary(rightNode, rightCondition);
-//    BoundaryCondition rightConditionType = rightCondition.boundaryConditionType;
-//    double rightLambda = rightCondition.lambda;
+    //    PointNodeODE rightNode(static_cast<double>(max*h), max);
+    //    BoundaryConditionODE rightCondition;
+    //    double rightValue = boundary(rightNode, rightCondition);
+    //    BoundaryCondition rightConditionType = rightCondition.boundaryConditionType;
+    //    double rightLambda = rightCondition.lambda;
 
-//    unsigned int N = size - 1;
-//    unsigned int start=0;
-//    unsigned int end=N;
+    //    unsigned int N = size - 1;
+    //    unsigned int start=0;
+    //    unsigned int end=N;
 
-//    if (leftConditionType == BoundaryCondition::Dirichlet)
-//    {
-//        start = 1;
-//    }
-//    else
-//    {
-//        N++;
-//        start = 0;
-//    }
+    //    if (leftConditionType == BoundaryCondition::Dirichlet)
+    //    {
+    //        start = 1;
+    //    }
+    //    else
+    //    {
+    //        N++;
+    //        start = 0;
+    //    }
 
-//    if (rightConditionType == BoundaryCondition::Dirichlet)
-//    {
-//        end = N-1;
-//    }
-//    else
-//    {
-//        N++;
-//        end = N-2;
-//    }
+    //    if (rightConditionType == BoundaryCondition::Dirichlet)
+    //    {
+    //        end = N-1;
+    //    }
+    //    else
+    //    {
+    //        N++;
+    //        end = N-2;
+    //    }
 
-//    double *a = static_cast<double*>(malloc(sizeof(double)*N));
-//    double *b = static_cast<double*>(malloc(sizeof(double)*N));
-//    double *c = static_cast<double*>(malloc(sizeof(double)*N));
-//    double *d = static_cast<double*>(malloc(sizeof(double)*N));
-//    double *x = static_cast<double*>(malloc(sizeof(double)*N));
+    //    double *a = static_cast<double*>(malloc(sizeof(double)*N));
+    //    double *b = static_cast<double*>(malloc(sizeof(double)*N));
+    //    double *c = static_cast<double*>(malloc(sizeof(double)*N));
+    //    double *d = static_cast<double*>(malloc(sizeof(double)*N));
+    //    double *x = static_cast<double*>(malloc(sizeof(double)*N));
 
-//    a[0] = 0;
-//    if (leftCondition.boundaryConditionType == BoundaryCondition::Dirichlet)
-//    {
-//        rv[0] = leftValue;
-//        PointNodeODE node((min+1)*h, min+1);
+    //    a[0] = 0;
+    //    if (leftCondition.boundaryConditionType == BoundaryCondition::Dirichlet)
+    //    {
+    //        rv[0] = leftValue;
+    //        PointNodeODE node((min+1)*h, min+1);
 
-//        b[0] = -2.0 - h*h*B(node);
-//        c[0] = +1.0 - 0.5*h*A(node);
-//        d[0] = h*h*C(node) - (1.0 + 0.5*h*A(node))*rv[0];
-//    }
-//    else
-//    {
-//        PointNodeODE node(min*h, min);
-//        b[0] = -2.0 - h*h*B(node) - 2.0*h*leftLambda*(1.0+0.5*h*A(node));
-//        c[0] = +2.0;
-//        d[0] = h*h*C(node) + 2.0*h*leftValue*(1.0+0.5*h*A(node));
-//    }
+    //        b[0] = -2.0 - h*h*B(node);
+    //        c[0] = +1.0 - 0.5*h*A(node);
+    //        d[0] = h*h*C(node) - (1.0 + 0.5*h*A(node))*rv[0];
+    //    }
+    //    else
+    //    {
+    //        PointNodeODE node(min*h, min);
+    //        b[0] = -2.0 - h*h*B(node) - 2.0*h*leftLambda*(1.0+0.5*h*A(node));
+    //        c[0] = +2.0;
+    //        d[0] = h*h*C(node) + 2.0*h*leftValue*(1.0+0.5*h*A(node));
+    //    }
 
-//    c[N-1] = 0;
-//    if (rightCondition.boundaryConditionType == BoundaryCondition::Dirichlet)
-//    {
-//        rv[size] = rightValue;
-//        PointNodeODE node((max-1)*h, static_cast<int>(max-1));
+    //    c[N-1] = 0;
+    //    if (rightCondition.boundaryConditionType == BoundaryCondition::Dirichlet)
+    //    {
+    //        rv[size] = rightValue;
+    //        PointNodeODE node((max-1)*h, static_cast<int>(max-1));
 
-//        a[N-1] = +1.0 + 0.5*h*A(node);
-//        b[N-1] = -2.0 - h*h*B(node);
-//        d[N-1] = h*h*C(node) - (1.0 - 0.5*h*A(node))*rv[size];
-//    }
-//    else
-//    {
-//        PointNodeODE node(max*h, max);
-//        a[N-1] = +2.0;
-//        b[N-1] = -2.0 - h*h*B(node) + 2.0*h*rightLambda*(1.0-0.5*h*A(node));
-//        d[N-1] = h*h*C(node) - 2.0*h*rightValue*(1.0-0.5*h*A(node));
-//    }
+    //        a[N-1] = +1.0 + 0.5*h*A(node);
+    //        b[N-1] = -2.0 - h*h*B(node);
+    //        d[N-1] = h*h*C(node) - (1.0 - 0.5*h*A(node))*rv[size];
+    //    }
+    //    else
+    //    {
+    //        PointNodeODE node(max*h, max);
+    //        a[N-1] = +2.0;
+    //        b[N-1] = -2.0 - h*h*B(node) + 2.0*h*rightLambda*(1.0-0.5*h*A(node));
+    //        d[N-1] = h*h*C(node) - 2.0*h*rightValue*(1.0-0.5*h*A(node));
+    //    }
 
-//    unsigned int j=1;
-//    for (unsigned int i=start+1; i<=end; i++)
-//    {
-//        unsigned int mi = static_cast<unsigned int>(min)+i;
-//        PointNodeODE node(mi*h, static_cast<int>(mi));
+    //    unsigned int j=1;
+    //    for (unsigned int i=start+1; i<=end; i++)
+    //    {
+    //        unsigned int mi = static_cast<unsigned int>(min)+i;
+    //        PointNodeODE node(mi*h, static_cast<int>(mi));
 
-//        a[j] = +1.0 + 0.5*h*A(node);
-//        b[j] = -2.0 - h*h*B(node);
-//        c[j] = +1.0 - 0.5*h*A(node);
-//        d[j] = h*h*C(node);
-//        j++;
-//    }
+    //        a[j] = +1.0 + 0.5*h*A(node);
+    //        b[j] = -2.0 - h*h*B(node);
+    //        c[j] = +1.0 - 0.5*h*A(node);
+    //        d[j] = h*h*C(node);
+    //        j++;
+    //    }
 
-//    printf("%d\n", N);
-//    IPrinter::print(a, N);
-//    IPrinter::print(b, N);
-//    IPrinter::print(c, N);
-//    IPrinter::print(d, N);
+    //    printf("%d\n", N);
+    //    IPrinter::print(a, N);
+    //    IPrinter::print(b, N);
+    //    IPrinter::print(c, N);
+    //    IPrinter::print(d, N);
 
-//    tomasAlgorithm(a, b, c, d, x, N);
+    //    tomasAlgorithm(a, b, c, d, x, N);
 
-//    j=1;
-//    for (unsigned int i=0; i<N; i++) rv[start+i] = x[i];
+    //    j=1;
+    //    for (unsigned int i=0; i<N; i++) rv[start+i] = x[i];
 
-//    IPrinter::print(x, N);
+    //    IPrinter::print(x, N);
 
-//    free(x);
-//    free(d);
-//    free(c);
-//    free(b);
-//    free(a);
+    //    free(x);
+    //    free(d);
+    //    free(c);
+    //    free(b);
+    //    free(a);
+}
+
+ISecondOrderLinearODEFBVP::ISecondOrderLinearODEFBVP() {}
+
+ISecondOrderLinearODEFBVP::ISecondOrderLinearODEFBVP(const ISecondOrderLinearODEFBVP &) {}
+
+ISecondOrderLinearODEFBVP& ISecondOrderLinearODEFBVP::operator=(const ISecondOrderLinearODEFBVP &other)
+{
+    if (this == &other) { return *this; }
+    return *this;
+}
+
+ISecondOrderLinearODEFBVP::~ISecondOrderLinearODEFBVP() {}
+
+void ISecondOrderLinearODEFBVP::solveInitialValueProblem2(ODESolverMethod method) const
+{
+    class FirstOrderLinearODEFVP : public IFirstOrderLinearODEFVP
+    {
+    public:
+        FirstOrderLinearODEFVP(const ISecondOrderLinearODEFBVP& p, unsigned int m) : p(p), m(m) {}
+
+        virtual auto A(const PointNodeODE &node, unsigned int row, unsigned int col) const -> double
+        {
+            unsigned int rm = row-m;
+            unsigned int cm = col-m;
+            return row <= m ? ((col <= m) ? 0.0 : 1.0) :
+                               (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
+        }
+        virtual auto B(const PointNodeODE &node, unsigned int row) const -> double
+        {
+            unsigned int rm = row-m;
+            return row <= m ? 0.0 : p.C(node, rm);
+        }
+
+        virtual auto final(FinalCondition, unsigned int row) const -> double
+        {
+            unsigned int rm = row-m;
+            return row <= m ? p.final(FinalCondition::FinalValue, row)
+                            : p.final(FinalCondition::FinalFirstDerivative, rm);
+        }
+        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
+        virtual auto dimension() const -> Dimension { return p.dimension(); }
+        virtual auto count() const -> unsigned int { return 2*m; }
+
+        const ISecondOrderLinearODEFBVP &p;
+        unsigned int m;
+    };
+
+    FirstOrderLinearODEFVP flode(*this, count());
+    flode.solveFinalValueProblem(method);
 }
 
 double U(unsigned int i, double h)
@@ -766,9 +928,9 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     b[0] = f(2) - (-2.0*alpha + betta)*x.at(0);
 
     printf("%4d %18.14f %18.14f\n", 2, b[0], A[0][0]*U(1,h)
-                                     +A[0][1]*U(2,h)
-                                     +A[0][2]*U(3,h)
-                                     +A[0][3]*U(4,h));
+            +A[0][1]*U(2,h)
+            +A[0][2]*U(3,h)
+            +A[0][3]*U(4,h));
 
     A[0][1] /= A[0][0];
     A[0][2] /= A[0][0];
@@ -782,9 +944,9 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     ems[0][3] = b[0];
 
     printf("%4d %18.14f %18.14f\n", 2, b[0], A[0][0]*U(1,h)
-                                     +A[0][1]*U(2,h)
-                                     +A[0][2]*U(3,h)
-                                     +A[0][3]*U(4,h));
+            +A[0][1]*U(2,h)
+            +A[0][2]*U(3,h)
+            +A[0][3]*U(4,h));
 
 
     for (unsigned int n=3; n<=N-3; n++)
@@ -823,15 +985,15 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
         ems[n-2][3] = b[0];
 
         printf("%4d %14.10f %14.10f\n", n, b[0], A[0][0]*U(n-1,h)
-                                         +A[0][1]*U(n+0,h)
-                                         +A[0][2]*U(n+1,h)
-                                         +A[0][3]*U(n+2,h));
+                +A[0][1]*U(n+0,h)
+                +A[0][2]*U(n+1,h)
+                +A[0][3]*U(n+2,h));
     }
 
     printf("%4d %18.14f %18.14f\n", 97, b[0], A[0][0]*U(96,h)
-                                     +A[0][1]*U(97,h)
-                                     +A[0][2]*U(98,h)
-                                     +A[0][3]*U(99,h));
+            +A[0][1]*U(97,h)
+            +A[0][2]*U(98,h)
+            +A[0][3]*U(99,h));
 
     alpha = r(N-2)*m2;
     betta = p(N-2)*m1;
@@ -841,16 +1003,16 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A[1][3] = +32.0*alpha + 8.0*betta;
     b[1]    = f(N-2) - (-2.0*alpha - betta)*x.at(N);
 
-//    A[1][1] /= A[1][0];
-//    A[1][2] /= A[1][0];
-//    A[1][3] /= A[1][0];
-//    b[1]    /= A[1][0];
-//    A[1][0] = 1.0;
+    //    A[1][1] /= A[1][0];
+    //    A[1][2] /= A[1][0];
+    //    A[1][3] /= A[1][0];
+    //    b[1]    /= A[1][0];
+    //    A[1][0] = 1.0;
 
     printf("%4d %18.14f %18.14f\n", 98, b[1], A[1][0]*U(96,h)
-                                             +A[1][1]*U(97,h)
-                                             +A[1][2]*U(98,h)
-                                             +A[1][3]*U(99,h));
+            +A[1][1]*U(97,h)
+            +A[1][2]*U(98,h)
+            +A[1][3]*U(99,h));
 
     alpha = r(N-1)*m2;
     betta = p(N-1)*m1;
@@ -860,17 +1022,17 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A[2][3] = -40.0*alpha + 10.0*betta + q(N-1);
     b[2]    = f(N-1) - (22.0*alpha + 3.0*betta)*x.at(N);
 
-//    A[2][1] /= A[2][0];
-//    A[2][2] /= A[2][0];
-//    A[2][3] /= A[2][0];
-//    b[2]    /= A[2][0];
-//    A[2][0] = 1.0;
+    //    A[2][1] /= A[2][0];
+    //    A[2][2] /= A[2][0];
+    //    A[2][3] /= A[2][0];
+    //    b[2]    /= A[2][0];
+    //    A[2][0] = 1.0;
 
 
     printf("%4d %18.14f %18.14f\n", 99, b[2], A[2][0]*U(96,h)
-                                             +A[2][1]*U(97,h)
-                                             +A[2][2]*U(98,h)
-                                             +A[2][3]*U(99,h));
+            +A[2][1]*U(97,h)
+            +A[2][2]*U(98,h)
+            +A[2][3]*U(99,h));
 
     alpha = r(N-3)*m2;
     betta = p(N-3)*m1;
@@ -880,17 +1042,17 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     A[3][3] =  +8.0*alpha - 6.0*betta;
     b[3]    = f(N-3) - (-2.0*alpha + betta)*x.at(N);
 
-//    A[3][1] /= A[3][0];
-//    A[3][2] /= A[3][0];
-//    A[3][3] /= A[3][0];
-//    b[3]    /= A[3][0];
-//    A[3][0] = 1.0;
+    //    A[3][1] /= A[3][0];
+    //    A[3][2] /= A[3][0];
+    //    A[3][3] /= A[3][0];
+    //    b[3]    /= A[3][0];
+    //    A[3][0] = 1.0;
 
 
     printf("%4d %18.14f %18.14f\n", 100, b[3], A[3][0]*U(96,h)
-                                             +A[3][1]*U(97,h)
-                                             +A[3][2]*U(98,h)
-                                             +A[3][3]*U(99,h));
+            +A[3][1]*U(97,h)
+            +A[3][2]*U(98,h)
+            +A[3][3]*U(99,h));
 
     LinearEquation::GaussianElimination(A, b, z);
 
@@ -903,9 +1065,9 @@ void LinearBoundaryValueProblemODE::calculateN4CNTR(DoubleVector &x, double h, u
     for (unsigned int n=N-4; n>=1; n--)
     {
         x.at(n) = -ems.at(n-1,0)*x.at(n+1)
-                  -ems.at(n-1,1)*x.at(n+2)
-                  -ems.at(n-1,2)*x.at(n+3)
-                  +ems.at(n-1,3);
+                -ems.at(n-1,1)*x.at(n+2)
+                -ems.at(n-1,2)*x.at(n+3)
+                +ems.at(n-1,3);
     }
     /*
         for (unsigned int n=N-(k+1); n>=1; n--)

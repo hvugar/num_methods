@@ -2788,13 +2788,13 @@ void IFirstOrderLinearODEIVP::solveInitialValueProblem(DoubleVector &rv) const
     double value = initial(InitialCondition::InitialValue);
 
     rv[0] = value;
-    unsigned int ai = 1; // array index
-    for (int i=min; i<max; i++, ai++)
+    unsigned int j = 1;
+    for (int i=min; i<max; i++, j++)
     {
         PointNodeODE node(static_cast<double>(i*h), i);
         double an = A(node)*h + 1.0;
         double bn = B(node)*h;
-        rv[ai] = an*rv[ai-1] + bn;
+        rv[j] = an*rv[j-1] + bn;
     }
 }
 
@@ -2997,12 +2997,12 @@ void IFirstOrderLinearODEIVP::solveInitialValueProblemEuler(std::vector<DoubleVe
     const int max = dim.max();
     const double h = dim.step();
     const unsigned int size = static_cast<unsigned int>(max-min);
-    const unsigned int k = count();
+    const unsigned int m = count();
 
-    rv.resize(size+1); for (unsigned int i=0; i<=size; i++) rv[i].resize(k);
+    rv.resize(size+1); for (unsigned int i=0; i<=size; i++) rv[i].resize(m);
 
     DoubleVector &rv0 = rv[0];
-    for (unsigned int row=1; row<=k; row++)
+    for (unsigned int row=1; row<=m; row++)
     {
         rv0[row-1] = initial(InitialCondition::InitialValue, row);
     }
@@ -3015,10 +3015,10 @@ void IFirstOrderLinearODEIVP::solveInitialValueProblemEuler(std::vector<DoubleVe
 
         DoubleVector v0 = rv[i];
 
-        for (unsigned int row=1; row<=k; row++)
+        for (unsigned int row=1; row<=m; row++)
         {
             double sum = h*B(node, row);
-            for (unsigned int col=1; col<=k; col++)
+            for (unsigned int col=1; col<=m; col++)
             {
                 sum += h*A(node, row, col)*rv[i][col-1];
             }

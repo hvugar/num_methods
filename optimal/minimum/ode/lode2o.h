@@ -2,7 +2,6 @@
 #define SECOND_ORDER_LINEAR_ODE_H
 
 #include "diffequ.h"
-#include "../grid/ibvp.h"
 
 /**
  * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
@@ -12,48 +11,24 @@ class MINIMUMSHARED_EXPORT ISecondOrderLinearODEIBVP : virtual public ISecondOrd
         virtual public BoundaryValueProblemODE
 {
 public:
-    /**
-     * @brief solveInitialValueProblem
-     * @param rv
-     */
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ISecondOrderLinearODEIBVP);
+
     void solveInitialValueProblem(DoubleVector &rv) const;
-
-    /**
-     * @brief solveBoundaryValueProblem
-     * @param rv
-     */
     void solveBoundaryValueProblem(DoubleVector &rv) const;
-
-    /**
-     * @brief solveInitialValueProblem
-     * @param rv
-     */
-
     void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
-
-    /**
-     * @brief solveBoundaryValueProblem
-     * @param rv
-     */
     void solveBoundaryValueProblem(std::vector<DoubleVector> &rv) const;
+    void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
 
-protected:
-    /**
-     * @brief initial
-     * @param condition
-     * @param row
-     * @return
-     */
-    virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
+    void solveInitialValueProblem2(ODESolverMethod method = ODESolverMethod::EULER) const;
+};
 
-    /**
-     * @brief boundary
-     * @param node
-     * @param condition
-     * @param row
-     * @return
-     */
-    virtual auto boundary(const PointNodeODE &node, BoundaryConditionPDE &condition, unsigned int row = 1) const -> double = 0;
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODEFBVP : virtual public ISecondOrderLinearODE, virtual public FinalValueProblemODE,
+        virtual public BoundaryValueProblemODE
+{
+public:
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ISecondOrderLinearODEFBVP);
+
+    void solveInitialValueProblem2(ODESolverMethod method = ODESolverMethod::EULER) const;
 };
 
 /**
