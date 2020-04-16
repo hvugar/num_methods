@@ -32,14 +32,15 @@
 int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 {
     std::cout << "__cplusplus: " << __cplusplus << std::endl;
+    //throw std::runtime_error("main");
     //srand(static_cast<unsigned int>(time(nullptr)));
 
     //ConjugateGradinetTest::Main(argc, argv);
 
     //FirstOrderLinearODEIVP::Main(argc, argv);
     //FirstOrderLinearODEFVP::Main(argc, argv);
-    SecondOrderLinearODEIBVP::Main(argc, argv);
-    SecondOrderLinearODEFBVP::Main(argc, argv);
+    //SecondOrderLinearODEIBVP::Main(argc, argv);
+    //SecondOrderLinearODEFBVP::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
@@ -61,7 +62,7 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //h0p::ProblemSolver::Main(argc, argv);
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
-    //p3p::Solver::Main(argc, argv);
+    p3p::Solver::Main(argc, argv);
 
     //return 0;
 

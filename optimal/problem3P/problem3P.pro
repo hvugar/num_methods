@@ -42,7 +42,7 @@ win32-g++ {
 win32-msvc* {
     CONFIG(release, debug|release) {
 
-#        DEFINES += USE_LIB_IMAGING
+        //DEFINES += USE_LIB_IMAGING
 
         contains(DEFINES, USE_LIB_XLSX_WRITER) {
             INCLUDEPATH += ../../third-party/VC2015/x86_64/libxlsxwriter/include

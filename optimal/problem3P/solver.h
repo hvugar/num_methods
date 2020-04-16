@@ -5,19 +5,22 @@
 
 #include "global.h"
 
-#define TIME_MIN 0
-#define TIME_MAX 1000//1600//8000
-#define DIMX_MAX 200//100//400
-#define DIMY_MAX 200//100//400
+//#define VARIANT_1
+#define VARIANT_2
 
-#define TIME_STEP 0.0010//0.0025//0.0005
-#define DIMX_STEP 0.005//0.01//0.0025
-#define DIMY_STEP 0.005//0.01//0.0025
+#define TIME_MIN 0
+#define TIME_MAX 400//8000
+#define DIMX_MAX 100//100//400
+#define DIMY_MAX 100//100//400
+
+#define TIME_STEP 0.0025//0.0005
+#define DIMX_STEP 0.01//0.0025
+#define DIMY_STEP 0.01//0.0025
 
 #define SIGMA_X 0.01
 #define SIGMA_Y 0.01
-#define NODE_PER_SIGMA_X 2
-#define NODE_PER_SIGMA_Y 2
+#define NODE_PER_SIGMA_X 1
+#define NODE_PER_SIGMA_Y 1
 
 using namespace std;
 using namespace std::placeholders;
@@ -30,7 +33,7 @@ class Solver;
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public IFirstOrderLinearODEIVP
+class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP//, virtual public IFirstOrderLinearODEIVP
 {
 public:
     HeatEquationIBVP(Solver *solver = nullptr);
@@ -46,13 +49,13 @@ public:
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
 
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const  -> double override;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const  -> double override;
-    virtual auto initial(InitialCondition condition, unsigned int row = 1) const  -> double override;
-    virtual auto count() const  -> unsigned int override;
-    virtual auto dimension() const -> Dimension override;
-    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
-    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double;
+//    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const  -> double override;
+//    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const  -> double override;
+//    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double;
+//    virtual auto initial(InitialCondition condition, unsigned int row = 1) const  -> double override;
+//    virtual auto count() const  -> unsigned int override;
+//    virtual auto dimension() const -> Dimension override;
+//    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
 public:
     Solver *solver;
@@ -60,7 +63,7 @@ public:
 
 //--------------------------------------------------------------------------------------------------------------//
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP, virtual public IFirstOrderLinearODEFVP
+class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP//, virtual public IFirstOrderLinearODEFVP
 {
 public:
     HeatEquationFBVP(Solver *solver);
@@ -76,12 +79,12 @@ public:
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
 
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double override;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double override;
-    virtual auto final(FinalCondition condition, unsigned int row = 1) const -> double override;
-    virtual auto count() const  -> unsigned int override;
-    virtual auto dimension() const -> Dimension override;
-    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
+//    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double override;
+//    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double override;
+//    virtual auto final(FinalCondition condition, unsigned int row = 1) const -> double override;
+//    virtual auto count() const  -> unsigned int override;
+//    virtual auto dimension() const -> Dimension override;
+//    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
 private:
     Solver *solver;
@@ -173,10 +176,10 @@ public:
     double epsilon = 1.0;
 
     std::vector<double> mq;
-    DoubleVector mv;
-    std::vector<SpacePoint> psi;
+    //DoubleVector mv;
     std::vector<SpacePoint> mz;
-    std::vector<SpacePoint> phi;
+    std::vector<SpacePoint> psi;
+    //std::vector<SpacePoint> phi;
 
 private:
     DoubleMatrix U;
