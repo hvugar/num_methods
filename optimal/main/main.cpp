@@ -1,39 +1,42 @@
 #include <float.h>
 #include <time.h>
-#include <cmethods.h>
-#include <grid/pibvp.h>
-#include <grid/hibvp.h>
-#include <utils/matrix.h>
-#include <utils/random.h>
-#include <deltagrid.h>
-#include <r1minimize.h>
+#include <cmath>
+#include <iostream>
+
+//#include <cmethods.h>
+//#include <grid/pibvp.h>
+//#include <grid/hibvp.h>
+//#include <utils/matrix.h>
+//#include <utils/random.h>
+//#include <deltagrid.h>
+//#include <r1minimize.h>
 
 #include <ode/first_order_linear_ode.h>
-#include <ode/second_order_linear_ode.h>
+//#include <ode/second_order_linear_ode.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
 #include <heat_equation_ibvp.h>
-#include <wave_equation_ibvp.h>
+//#include <wave_equation_ibvp.h>
 
-#include "../problem0H/problem0h_solver.h"
-#include "../problem1H/problem1h_example.h"
-#include "../problem2P/problem2p_solver.h"
-#include "../problem2H/problem2h_solver.h"
+//#include "../problem0H/problem0h_solver.h"
+//#include "../problem1H/problem1h_example.h"
+//#include "../problem2P/problem2p_solver.h"
+//#include "../problem2H/problem2h_solver.h"
 
-#include "../problem1P/problem1p_solver.h"
+//#include "../problem1P/problem1p_solver.h"
+//#include "../problem1H/problem1h_solver.h"
 #include "../problem3P/solver.h"
-#include "../problem1H/problem1h_solver.h"
+#include "../problem3P/heat_equation_ibvp.h"
 
 #include "test/delta_grid_2d_ext1.h"
-#include "test/nonlinear_equation_ex1.h"
-#include "conjugate_gradinet_test.h"
-#include <cmath>
+//#include "test/nonlinear_equation_ex1.h"
+//#include "conjugate_gradinet_test.h"
+#include <QGuiApplication>
 
-int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
+int main(int argc, char *argv[])
 {
-    std::cout << "__cplusplus: " << __cplusplus << std::endl;
-    //throw std::runtime_error("main");
     //srand(static_cast<unsigned int>(time(nullptr)));
+    QGuiApplication app(argc, argv);
 
     //ConjugateGradinetTest::Main(argc, argv);
 
@@ -44,8 +47,8 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    //HeatEquationIBVP::Main(argc, argv);
-    //IPrinter::printSeperatorLine();
+    HeatEquationIBVP::Main(argc, argv);
+    IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
 
@@ -62,13 +65,14 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //h0p::ProblemSolver::Main(argc, argv);
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
-    p3p::Solver::Main(argc, argv);
+    //p3p::Solver::Main(argc, argv);
+    //p3p::HeatEquationIBVP1::Main(argc, argv);
 
     //return 0;
 
-    //DeltaGrid2DExt1::Main(argc, argv);
-    //puts("-------------------------");
     //DeltaGrid1DExt1::Main(argc, argv);
+    //puts("-------------------------");
+    //DeltaGrid2DExt1::Main(argc, argv);
     //puts("-------------------------");
 
     //return 0;
@@ -99,6 +103,6 @@ int main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
     //BorderHyperbolic2DN::Main(argc, argv);
     //srand(time(NULL));
 
-    puts("Program finished successfully.");
+    std::cout << "Program finished successfully." << std::endl;
     return 0;
 }

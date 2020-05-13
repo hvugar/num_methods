@@ -3053,9 +3053,8 @@ void IFirstOrderLinearODEIVP::solveInitialValueProblemRK2() const
     }
     iterationInfo(DoubleVector(v0, m), PointNodeODE(min*h1, min));
 
-    unsigned int i=0;
     PointNodeODE node1, node2;
-    for (int n=min; n<max; n++, i++)
+    for (int n=min; n<max; n++)
     {
         node1.i = n+0; node1.x = node1.i*h1;
         node2.i = n+1; node2.x = node2.i*h1;
@@ -3129,8 +3128,8 @@ void IFirstOrderLinearODEIVP::solveInitialValueProblemRK4() const
     for (int n=min; n<max; n++, i++)
     {
         node1.i = n;   node1.x = node1.i*h1;
-        node2.i = n;   node2.x = n*h1+h2;
-        node3.i = n;   node3.x = n*h1+h2;
+        node2.i = n;   node2.x = node2.i*h1+h2;
+        node3.i = n;   node3.x = node3.i*h1+h2;
         node4.i = n+1; node4.x = node4.i*h1;
 
         memcpy(v1, v0, sizeof (double) * m);
@@ -4820,7 +4819,7 @@ void IFirstOrderLinearODEFVP::solveFinalValueProblemRK2(std::vector<DoubleVector
                 sum += A(node1, row, col)*v0[j];
             }
             k1[row-1] = sum;
-            v1[j]=v0[j]+h1*k1[j];
+            v1[j]=v0[j]-h1*k1[j];
         }
 
         // k2
@@ -4999,7 +4998,69 @@ void IFirstOrderLinearODEFVP::solveFinalValueProblem(ODESolverMethod method) con
     }
 }
 
-void IFirstOrderLinearODEFVP::solveFinalValueProblemRK2() const {}
+void IFirstOrderLinearODEFVP::solveFinalValueProblemRK2() const
+{
+    const Dimension &dim = dimension();
+    const int min = dim.min();
+    const int max = dim.max();
+    const double h1 = dim.step();
+    const double h2 = 0.5*h1;
+    const unsigned int m = count();
+
+    double *k1 = new double[m];
+    double *k2 = new double[m];
+
+    double *v0 = new double[m];
+    double *v1 = new double[m];
+
+    for (unsigned int r=1; r<=m; r++)
+    {
+        v0[r-1] = final(FinalCondition::FinalValue, r);
+    }
+    iterationInfo(DoubleVector(v0, m), PointNodeODE(max*h1, max));
+
+    PointNodeODE node1, node2;
+    for (int n=max; n>min; n--)
+    {
+        node1.i = n+0; node1.x = node1.i*h1;
+        node2.i = n-1; node2.x = node2.i*h1;
+
+        // k1
+        for (unsigned int row=1, j=0; row<=m; row++, j++)
+        {
+            double sum = B(node1, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node1, row, col)*v0[j];
+            }
+            k1[row-1] = sum;
+            v1[j]=v0[j]-h1*k1[j];
+        }
+
+        // k2
+        for (unsigned int row=1; row<=m; row++)
+        {
+            double sum = B(node2, row);
+            for (unsigned int col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node2, row, col)*v1[j];
+            }
+            k2[row-1] = sum;
+        }
+
+        for (unsigned int j=0; j<m; j++)
+        {
+            v0[j] = v0[j] - h2 * (k1[j] + k2[j]);
+        }
+        iterationInfo(DoubleVector(v0, m), node2);
+    }
+
+    delete [] v0;
+    delete [] v1;
+
+    delete [] k2;
+    delete [] k1;
+}
 
 void IFirstOrderLinearODEFVP::solveFinalValueProblemRK4() const
 {
@@ -5029,9 +5090,9 @@ void IFirstOrderLinearODEFVP::solveFinalValueProblemRK4() const
     PointNodeODE node1, node2, node3, node4;
     for (int n=max; n>min; n--, i--)
     {
-        node1.i = n;   node1.x = n*h1;
-        node2.i = n;   node2.x = n*h1-h2;
-        node3.i = n;   node3.x = n*h1-h2;
+        node1.i = n;   node1.x = node1.i*h1;
+        node2.i = n;   node2.x = node2.i*h1-h2;
+        node3.i = n;   node3.x = node3.i*h1-h2;
         node4.i = n-1; node4.x = node4.i*h1;
 
         memcpy(v1, v0, sizeof (double) * m);

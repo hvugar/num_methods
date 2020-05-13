@@ -17,6 +17,7 @@
 #include <cfloat>
 #include <climits>
 #include <functional>
+#include <ctime>
 
 #include <gradient.h>
 #include <projection.h>
@@ -25,18 +26,19 @@
 #include <gradient_sd.h>
 #include <gradient_cs.h>
 #include <grid/pibvp.h>
+#include <grid/hibvp.h>
 #include <ode/lode1o.h>
 #include <ode/lode2o.h>
 #include <benchmark.h>
 #include <deltagrid.h>
 #include <r1minimize.h>
 #include <function.h>
+#include <stdexcept>
+#include <matrix2d.h>
+#include <benchmark.h>
 
 #ifdef USE_LIB_IMAGING
-#include <QPixmap>
 #include <QGuiApplication>
-#include <QFile>
-#include <QDir>
 #include <imaging.h>
 #endif
 

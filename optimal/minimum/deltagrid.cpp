@@ -115,7 +115,7 @@ auto DeltaGrid2D::gaussWeight(const SpacePoint &sp, const SpacePoint &mu, double
     const double factor1 = 1.0/(2.0*M_PI*sigmaX*sigmaY);
     const double sigmax2 = 1.0/(2.0*sigmaX*sigmaX);
     const double sigmay2 = 1.0/(2.0*sigmaY*sigmaY);
-    return factor1 * exp(-(sigmax2*(sp.x-mu.x)*(sp.x-mu.x)+sigmay2*(sp.y-mu.y)*(sp.y-mu.y)));;
+    return factor1 * exp(-(sigmax2*(sp.x-mu.x)*(sp.x-mu.x)+sigmay2*(sp.y-mu.y)*(sp.y-mu.y)));
 }
 
 auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_sigmaX, unsigned int nodeY_per_sigmaY) -> void
@@ -160,6 +160,64 @@ auto DeltaGrid2D::distributeGauss(const SpacePoint& sp, unsigned int nodeX_per_s
     double sigma = (sumX*sumY) / (2.0*M_PI);
     double factor = 1.0/(2.0*M_PI*sigma);
     //factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
+
+    SpaceNodePDE sn;
+    for (unsigned int m=_minY; m<=_maxY; m++)
+    {
+        sn.j = static_cast<int>(m); sn.y = m*_hy;
+        for (unsigned int n=_minX; n<=_maxX; n++)
+        {
+            sn.i = static_cast<int>(n); sn.x = n*_hx;
+            m_nodes[m][n] = factor*exp(-(((sn.x-sp.x)*(sn.x-sp.x))/(2.0*sigmaX*sigmaX) +
+                                         ((sn.y-sp.y)*(sn.y-sp.y))/(2.0*sigmaY*sigmaY)));
+            m_der_x[m][n] =  m_nodes[m][n] * (-(sn.x-sp.x)/(sigmaX*sigmaX));
+            m_der_y[m][n] =  m_nodes[m][n] * (-(sn.y-sp.y)/(sigmaY*sigmaY));
+        }
+    }
+}
+
+auto DeltaGrid2D::distributeGauss1(const SpacePoint& sp, unsigned int nodeX_per_sigmaX, unsigned int nodeY_per_sigmaY) -> void
+{
+    reset();
+
+    const unsigned int sigma_count = 4;
+    const unsigned int kx = sigma_count * nodeX_per_sigmaX;
+    const unsigned int ky = sigma_count * nodeY_per_sigmaY;
+    const double sigmaX = _hx * nodeX_per_sigmaX;
+    const double sigmaY = _hy * nodeY_per_sigmaY;
+
+    _rx = static_cast<unsigned int>( round(sp.x*_N) );
+    _ry = static_cast<unsigned int>( round(sp.y*_M) );
+
+    if (_rx < kx || _ry < ky || _rx > _N-kx || _ry > _M-ky)
+        throw delta_grid_exception(std::string("Point:["+std::to_string(sp.x)+","+std::to_string(sp.y)+"]"));
+
+    _p = sp;
+
+    _minX = _rx - kx; _maxX = _rx + kx;
+    _minY = _ry - ky; _maxY = _ry + ky;
+
+    double sumX = 0.0;
+    for (unsigned int n=_minX; n<=_maxX; n++)
+    {
+        double k = 1.0;
+        //if (n==_minX || n==_maxX) k = 0.5;
+        sumX += k * exp(-((n*_hx-sp.x)*(n*_hx-sp.x))/(2.0*sigmaX*sigmaX));
+    }
+    sumX *= _hx;
+
+    double sumY = 0.0;
+    for (unsigned int m=_minY; m<=_maxY; m++)
+    {
+        double k = 1.0;
+        //if (m==_minY || m==_maxY) k = 0.5;
+        sumY += k * exp(-((m*_hy-sp.y)*(m*_hy-sp.y))/(2.0*sigmaY*sigmaY));
+    }
+    sumY *= _hy;
+
+    //double sigma = (sumX*sumY) / (2.0*M_PI);
+    //double factor = 1.0/(2.0*M_PI*sigma);
+    double factor = 1.0/(2.0*M_PI*sigmaX*sigmaY);
 
     SpaceNodePDE sn;
     for (unsigned int m=_minY; m<=_maxY; m++)
@@ -824,3 +882,323 @@ auto DeltaGrid1D::minX() const -> unsigned int { return _minX; }
 auto DeltaGrid1D::maxX() const -> unsigned int { return _maxX; }
 
 auto DeltaGrid1D::hx() const -> double { return _hx; }
+
+auto DeltaGrid1D::onFlyWeight(const SpaceNodePDE &sn, const SpacePoint &mu, size_t n) const -> double
+{
+    //const size_t N = _N;
+    const double h = _hx;
+    const double sigma = h*n;
+    const size_t k = 20;
+    const size_t kn1 = k*n;
+    const size_t kn2 = k*n*2;
+    const double lmb = k*n*h;
+
+    const double a = 0.0*h;
+    const double b = _N*h;
+    const double m = mu.x;
+
+    if (fabs(a-m) >= lmb && fabs(b-m) >= lmb)
+    {
+        double x = mu.x-lmb, sum = 0.0;
+        sum += 0.5*exp(-(((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma)));
+        for (size_t i=1; i<kn2; i++)
+        {
+            x += h;
+            sum += exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        }
+        x += h;
+        sum += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+
+        double factor = 1.0/(sum*h);
+
+        return factor*exp(-((sn.x-mu.x)*(sn.x-mu.x))/(2.0*sigma*sigma));
+    }
+
+    if (fabs(a-m) < lmb)
+    {
+        double x = mu.x, sum0 = 0.0, sum1 = 0.0, sum2 = 0.0;
+
+        size_t s = static_cast<size_t>(floor(fabs(a-m)/h));
+        double d = fabs(a-m)-s*h;
+        double e = a+d;
+
+        if (d>=0.0)
+        {
+            sum0 += exp(-((a-mu.x)*(a-mu.x))/(2.0*sigma*sigma));
+            sum0 += exp(-((e-mu.x)*(e-mu.x))/(2.0*sigma*sigma));
+            sum0 *= 0.5*d;
+        }
+
+        if (s>0)
+        {
+            x = mu.x;
+
+            sum1 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+            for (size_t i=1; i<s; i++)
+            {
+                x -= h;
+                sum1 += exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+            }
+            x -= h;
+            sum1 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        }
+
+        x = mu.x;
+        sum2 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        for (size_t i=1; i<kn1; i++)
+        {
+            x += h;
+            sum2 += exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        }
+        x += h;
+        sum2 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        //printf("x: %f\n", x);
+
+        //printf(">> %f %f %f %d %f %f %14.10f %14.10f %14.10f\n", m, lmb, sn.x, s, d, e, sum0, sum1, sum2);
+
+        double factor = 1.0/((sum1*h)+(sum2*h)+sum0);
+
+        return factor*exp(-((sn.x-mu.x)*(sn.x-mu.x))/(2.0*sigma*sigma));
+    }
+
+    if (fabs(b-m) < lmb)
+    {
+        double x = mu.x, sum0 = 0.0, sum1 = 0.0, sum2 = 0.0;
+
+        size_t s = static_cast<size_t>(fabs(b-m)/h);
+        double d = fabs(b-m)-s*h;
+
+        double e = b-d;
+        if (d>=0.0)
+        {
+            sum0 += exp(-((b-mu.x)*(b-mu.x))/(2.0*sigma*sigma));
+            sum0 += exp(-((e-mu.x)*(e-mu.x))/(2.0*sigma*sigma));
+            sum0 *= 0.5*d;
+        }
+
+        if (s>0)
+        {
+            x = mu.x;
+
+            sum1 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+            for (size_t i=1; i<s; i++)
+            {
+                x += h;
+                sum1 += exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+            }
+            x += h;
+            sum1 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        }
+
+        x = mu.x;
+        sum2 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        for (size_t i=1; i<kn1; i++)
+        {
+            x -= h;
+            sum2 += exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+        }
+        x -= h;
+        sum2 += 0.5*exp(-((x-mu.x)*(x-mu.x))/(2.0*sigma*sigma));
+
+        //printf(">> %f %f %f %d %f %f %14.10f %14.10f %14.10f\n", m, lmb, sn.x, s, d, e, sum0, sum1, sum2);
+
+        double factor = 1.0/((sum1*h)+(sum2*h)+sum0);
+
+        return factor*exp(-((sn.x-mu.x)*(sn.x-mu.x))/(2.0*sigma*sigma));
+    }
+
+    return 0.0;
+}
+
+auto DeltaGrid2D::onFlyWeight(const SpacePoint &sp, const SpacePoint &mu, size_t n) const -> double
+{
+    const double hx = _hx;
+    const double hy = _hy;
+    const size_t Nx = _N;
+    const size_t Ny = _M;
+    const double sigmaX = hx*n;
+    const double sigmaY = hy*n;
+    const size_t k = 2;
+    const double lmbX = k*sigmaX;
+    const double lmbY = k*sigmaY;
+
+    const double minX = 0.0*hx;
+    const double maxX = Nx*hx;
+    const double minY = 0.0*hx;
+    const double maxY = Ny*hx;
+    const double muX = mu.x;
+    const double muY = mu.y;
+    const size_t kn2 = k*n*2;
+
+    if (fabs(minX-muX) >= lmbX && fabs(maxX-muX) >= lmbX && fabs(minY-muY) >= lmbY && fabs(maxY-muY) >= lmbY)
+    {
+        double sum = 0.0;
+        double x = muX-lmbX;
+        double y = muY-lmbY;
+
+        sum += 0.25*exp(-(((lmbX)*(lmbX))/(2.0*sigmaX*sigmaX)+((lmbY)*(lmbY))/(2.0*sigmaY*sigmaY)));
+        sum += 0.25*exp(-(((lmbX)*(lmbX))/(2.0*sigmaX*sigmaX)+((lmbY)*(lmbY))/(2.0*sigmaY*sigmaY)));
+        sum += 0.25*exp(-(((lmbX)*(lmbX))/(2.0*sigmaX*sigmaX)+((lmbY)*(lmbY))/(2.0*sigmaY*sigmaY)));
+        sum += 0.25*exp(-(((lmbX)*(lmbX))/(2.0*sigmaX*sigmaX)+((lmbY)*(lmbY))/(2.0*sigmaY*sigmaY)));
+
+        x = muX-lmbX;
+        for (unsigned int i=1; i<kn2; i++)
+        {
+            x += hx;
+            sum += 0.5*exp(-(((x-muX)*(x-muX))/(2.0*sigmaX*sigmaX)+((lmbY)*(lmbY))/(2.0*sigmaY*sigmaY)));
+            sum += 0.5*exp(-(((x-muX)*(x-muX))/(2.0*sigmaX*sigmaX)+((lmbY)*(lmbY))/(2.0*sigmaY*sigmaY)));
+        }
+
+        y = muY-lmbY;
+        for (unsigned int j=1; j<kn2; j++)
+        {
+            y += hy;
+            sum += 0.5*exp(-(((lmbX)*(lmbX))/(2.0*sigmaX*sigmaX)+((y-muY)*(y-muY))/(2.0*sigmaY*sigmaY)));
+            sum += 0.5*exp(-(((lmbX)*(lmbX))/(2.0*sigmaX*sigmaX)+((y-muY)*(y-muY))/(2.0*sigmaY*sigmaY)));
+        }
+
+        x = muX-lmbX;
+        for (unsigned int i=1; i<kn2; i++)
+        {
+            x += hx;
+            y = muY-lmbY;
+            for (unsigned int j=1; j<kn2; j++)
+            {
+                y += hy;
+                sum += exp(-(((x-muX)*(x-muX))/(2.0*sigmaX*sigmaX)+((y-muY)*(y-muY))/(2.0*sigmaY*sigmaY)));
+            }
+        }
+
+        double factor = 1.0/(sum*hx*hy);
+
+        return factor*exp(-(((sp.x-muX)*(sp.x-muX))/(2.0*sigmaX*sigmaX)+((sp.y-muY)*(sp.y-muY))/(2.0*sigmaY*sigmaY)));
+    }
+
+    return 0.0;
+}
+
+double DeltaFunction::gaussian(double p, double m, double sigma)
+{
+    const double factor = 1.0/(sqrt(2.0*M_PI)*sigma);
+    const double sigma2 = 1.0/(2.0*sigma*sigma);
+    return factor * exp(-(sigma2*(p-m)*(p-m)));
+}
+
+double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma)
+{
+    const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);
+    const double sigmax2 = 1.0/(2.0*sigma.x*sigma.x);
+    const double sigmay2 = 1.0/(2.0*sigma.y*sigma.y);
+    return factor1 * exp(-(sigmax2*(p.x-m.x)*(p.x-m.x)+sigmay2*(p.y-m.y)*(p.y-m.y)));
+}
+
+double DeltaFunction::gaussian(double p, double m, double sigma, size_t k)
+{
+    const double a = m-k*sigma;
+    const double b = m+k*sigma;
+    const double sigma2 = 1.0/(2.0*sigma*sigma);
+    const size_t N = 1000;
+
+    struct F { static double fx(double x, double m, double b) { return exp(-((x-m)*(x-m))*b); } };
+
+    double A = 0.0;
+    {
+        double sum = 0.0;
+        double h1= fabs(b-a)/N;
+
+        /** Trapezoidal rule **/
+        //        sum += 0.5*F::fx(a,m,sigma2);
+        //        for (size_t i=1; i<=999; i++)
+        //        {
+        //            const double x = a+i*h1;
+        //            sum += F::fx(x, m, sigma2);
+        //        }
+        //        sum += 0.5*F::fx(b,m,sigma2);
+        //        sum *= h1;
+
+        /** Simpson's rule **/
+        for (size_t i=1; i<N; i+=2)
+        {
+            double x = a+i*h1;
+            sum += (F::fx(x-h1, m, sigma2) + 4.0*F::fx(x, m, sigma2) + F::fx(x+h1, m, sigma2));
+        }
+        sum *= (h1/3.0);
+
+        A = 1.0/sum;
+    }
+
+    return A * F::fx(p, m, sigma2);
+}
+
+double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, size_t k)
+{
+    const double ax = m.x-k*sigma.x;
+    const double bx = m.x+k*sigma.x;
+    const double ay = m.y-k*sigma.y;
+    const double by = m.y+k*sigma.y;
+    const double sigmaX2 = 1.0/(2.0*sigma.x*sigma.x);
+    const double sigmaY2 = 1.0/(2.0*sigma.y*sigma.y);
+    const size_t N = 1000;
+
+    struct F { static inline double fx(double x, double y, double mx, double my, double c2x, double c2y)
+        { return exp(-((x-mx)*(x-mx)*c2x + (y-my)*(y-my)*c2y)); } };
+
+    double A = 0.0;
+    {
+        double sum = 0.0;
+        double hx= fabs(bx-ax)/N;
+        double hy= fabs(by-ay)/N;
+
+        /** Trapezoidal rule **/
+        //        sum += 0.25*F::fx(ax,ay,m.x,m.y,sigmaX2,sigmaY2);
+        //        sum += 0.25*F::fx(ax,by,m.x,m.y,sigmaX2,sigmaY2);
+        //        sum += 0.25*F::fx(bx,by,m.x,m.y,sigmaX2,sigmaY2);
+        //        sum += 0.25*F::fx(bx,ay,m.x,m.y,sigmaX2,sigmaY2);
+
+        //        for (size_t i=1; i<N; i++)
+        //        {
+        //            double x = ax+i*hx;
+        //            sum += 0.5*F::fx(x,ay,m.x,m.y,sigmaX2,sigmaY2);
+        //            sum += 0.5*F::fx(x,by,m.x,m.y,sigmaX2,sigmaY2);
+        //        }
+        //        for (size_t j=1; j<N; j++)
+        //        {
+        //            double y = ay+j*hy;
+        //            sum += 0.5*F::fx(ax,y,m.x,m.y,sigmaX2,sigmaY2);
+        //            sum += 0.5*F::fx(bx,y,m.x,m.y,sigmaX2,sigmaY2);
+        //        }
+        //        for (size_t i=1; i<N; i++)
+        //        {
+        //            double x = ax+i*hx;
+        //            for (size_t j=1; j<N; j++)
+        //            {
+        //                double y = ay+j*hy;
+        //                sum += F::fx(x,y,m.x,m.y,sigmaX2,sigmaY2);
+        //            }
+        //        }
+        //        sum *= hx*hy;
+
+        /** Simpson's rule **/
+        for (size_t i=0; i<=N; i++)
+        {
+            double x = ax+i*hx;
+            for (size_t j=0; j<=N; j++)
+            {
+                double y = ay+j*hy;
+                double fx = F::fx(x,y,m.x,m.y,sigmaX2,sigmaY2);
+                if (i==0 || i==N) { fx *= 1.0; } else if (i%2==1) { fx *= 4.0; } else { fx *= 2.0; }
+                if (j==0 || j==N) { fx *= 1.0; } else if (j%2==1) { fx *= 4.0; } else { fx *= 2.0; }
+                sum += fx;
+            }
+        }
+        sum *= ((hx*hy)/9.0);
+
+        A = 1.0/sum;
+    }
+
+    return A * F::fx(p.x, p.y, m.x, m.y, sigmaX2, sigmaY2);
+}
+
+double DeltaFunction::sinusoid(double p) { return 0.0; }
+
+double DeltaFunction::sinusoid(const SpacePoint &p) { return 0.0; }

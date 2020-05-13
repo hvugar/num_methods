@@ -78,35 +78,111 @@ double trapesium(R1Function *f, unsigned int N, double a, double b)
 
 double trapesium2D(const DoubleMatrix &m, double hx, double hy)
 {
-//    unsigned int rows = m.rows();
-//    unsigned int cols = m.cols();
+    //    unsigned int rows = m.rows();
+    //    unsigned int cols = m.cols();
 
     double sum = 0.0;
-//    sum += 0.25 * m[0][0];
-//    udiff = u1[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
-//    udiff = u1[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
-//    udiff = u1[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
+    //    sum += 0.25 * m[0][0];
+    //    udiff = u1[0][N]; usum += 0.25 * udiff * udiff;// * mu(N, 0);
+    //    udiff = u1[M][0]; usum += 0.25 * udiff * udiff;// * mu(0, M);
+    //    udiff = u1[M][N]; usum += 0.25 * udiff * udiff;// * mu(N, M);
 
-//    for (unsigned int n=1; n<=N-1; n++)
-//    {
-//        udiff = u1[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
-//        udiff = u1[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
-//    }
+    //    for (unsigned int n=1; n<=N-1; n++)
+    //    {
+    //        udiff = u1[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+    //        udiff = u1[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+    //    }
 
-//    for (unsigned int m=1; m<=M-1; m++)
-//    {
-//        udiff = u1[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
-//        udiff = u1[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
-//    }
+    //    for (unsigned int m=1; m<=M-1; m++)
+    //    {
+    //        udiff = u1[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+    //        udiff = u1[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+    //    }
 
-//    for (unsigned int m=1; m<=M-1; m++)
-//    {
-//        for (unsigned int n=1; n<=N-1; n++)
-//        {
-//            udiff = u1[m][n]; usum += udiff * udiff;// * mu(n, m);
-//        }
-//    }
+    //    for (unsigned int m=1; m<=M-1; m++)
+    //    {
+    //        for (unsigned int n=1; n<=N-1; n++)
+    //        {
+    //            udiff = u1[m][n]; usum += udiff * udiff;// * mu(n, m);
+    //        }
+    //    }
 
+
+    return sum;
+}
+
+double Integral::rectangle(const DoubleVector &v)
+{
+    return 0.0;
+}
+
+double Integral::trapezoidal(const DoubleVector &v)
+{
+    return 0.0;
+}
+
+double Integral::simpsons(const DoubleVector &v)
+{
+    return 0.0;
+}
+
+double Integral::rectangle(const DoubleMatrix &m)
+{
+    return 0.0;
+}
+
+double Integral::trapezoidal(const DoubleMatrix &m, double hx, double hy)
+{
+    unsigned int M = m.rows() - 1;
+    unsigned int N = m.cols() - 1;
+
+    double sum = 0.0;
+
+    sum += 0.25*m[0][0];
+    sum += 0.25*m[M][0];
+    sum += 0.25*m[M][N];
+    sum += 0.25*m[0][N];
+
+    for (unsigned int i=0; i<=N; i++)
+    {
+        sum += 0.5*m[0][i];
+        sum += 0.5*m[M][i];
+    }
+
+    for (unsigned int j=0; j<=M; j++)
+    {
+        sum += 0.5*m[j][0];
+        sum += 0.5*m[j][N];
+    }
+
+    for (unsigned int j=1; j<M; j++)
+    {
+        for (unsigned int i=0; i<N; i++)
+        {
+            sum += m[j][i];
+        }
+    }
+
+    return sum*hx*hy;
+}
+
+double Integral::simpsons(const DoubleMatrix &m, double hx, double hy)
+{
+    unsigned int M = m.rows() - 1;
+    unsigned int N = m.cols() - 1;
+
+    double sum = 0.0;
+    for (unsigned int j=0; j<=M; j++)
+    {
+        for (unsigned int i=0; i<=N; i++)
+        {
+            double fx = m[j][i];
+            if (i==0 || i==N) { fx *= 1.0; } else { if (i%2==1) { fx *= 4.0; } else { fx *= 2.0; } }
+            if (j==0 || j==M) { fx *= 1.0; } else { if (j%2==1) { fx *= 4.0; } else { fx *= 2.0; } }
+            sum += fx;
+        }
+    }
+    sum *= ((hx*hy)/9.0);
 
     return sum;
 }

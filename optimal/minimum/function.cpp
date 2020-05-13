@@ -1,5 +1,13 @@
 #include "function.h"
 
+double sgn(double x)
+{
+    if (x < 0.0) return -1.0;
+    else if (x > 0.0) return +1.0;
+    return 0.0;
+}
+
+
 R1Function::~R1Function() {}
 
 R2Function::~R2Function() {}
@@ -18,14 +26,6 @@ MatrixRnFunction::~MatrixRnFunction() {}
 
 IGradient::~IGradient() {}
 
-double sgn(double x)
-{
-    if (x < 0.0) return -1.0;
-    else if (x > 0.0) return +1.0;
-    return 0.0;
-}
-
-#include <stdio.h>
 void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g)
 {
     double h = step;

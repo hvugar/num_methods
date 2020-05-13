@@ -24,6 +24,7 @@ public:
 
     auto gaussWeight(const SpacePoint &sp, const SpacePoint &mu, double sigmaX, double sigmaY) const -> double;
     auto distributeGauss(const SpacePoint &sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
+    auto distributeGauss1(const SpacePoint &sp, unsigned int nodeX_per_sigmaX = 1, unsigned int nodeY_per_sigmaY = 1) -> void;
     auto lumpPointGauss(const DoubleMatrix &m) const -> double;
     auto lumpPointGauss(const DoubleMatrix &u, double &dx, double &dy) const -> double;
     auto lumpPointGauss1(const DoubleMatrix &u, double &dx, double &dy) const -> double;
@@ -63,6 +64,8 @@ public:
 
     double **der_x() const { return m_der_x; }
     double **der_y() const { return m_der_y; }
+
+    double onFlyWeight(const SpacePoint &sp, const SpacePoint &mu, size_t n) const;
 
 private:
 
@@ -134,6 +137,8 @@ public:
 
     auto hx() const -> double;
 
+    double onFlyWeight(const SpaceNodePDE &sn, const SpacePoint &mu, size_t n) const;
+
 private:
     unsigned int _N;
     double _hx;
@@ -144,6 +149,17 @@ private:
     unsigned int _rx;
     unsigned int _minX;
     unsigned int _maxX;
+};
+
+class MINIMUMSHARED_EXPORT DeltaFunction
+{
+public:
+    static double gaussian(double p, double m, double sigma);
+    static double gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma);
+    static double gaussian(double p, double m, double sigma, size_t k);
+    static double gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, size_t k);
+    static double sinusoid(double p);
+    static double sinusoid(const SpacePoint &p);
 };
 
 #endif // DELTA_GRID_H

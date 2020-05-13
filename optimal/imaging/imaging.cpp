@@ -31,9 +31,9 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
 {
     C_UNUSED(w);
     C_UNUSED(h);
-
     unsigned int rows = m.rows();
     unsigned int cols = m.cols();
+
     img = QPixmap(static_cast<int>(cols), static_cast<int>(rows));
     img.fill(Qt::transparent);
     QPainter painter(&img);
@@ -50,7 +50,8 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
             int g = 255 - b - r;
             QColor c(r, g, b);
             painter.setPen(c);
-            painter.drawPoint(static_cast<int>(i), static_cast<int>(rows-j-1));
+            QPoint pnt(static_cast<int>(i), static_cast<int>(rows-j-1));
+            painter.drawPoint(pnt);
         }
     }
 }

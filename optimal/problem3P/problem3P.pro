@@ -10,12 +10,16 @@ DEFINES += PROBLEM3P_LIBRARY
 
 DESTDIR = ../bin
 
+#DEFINES += USE_LIB_IMAGING
 #DEFINES += USE_LIB_TEXT
 #DEFINES += USE_LIB_XLSX_WRITER
 #DEFINES += USE_LIB_ZLIB
 
 win32-g++ {
     CONFIG(release, debug|release) {
+        OBJECTS_DIR = release/.obj/win32-gcc
+        MOC_DIR     = release/.moc/win32-gcc
+
         contains(DEFINES, USE_LIB_XLSX_WRITER) {
             INCLUDEPATH += ../../third-party/MinGW/x86_64/libxlsxwriter/include
             LIBS        += -L../../third-party/MinGW/x86_64/libxlsxwriter/lib -lxlsxwriter
@@ -30,8 +34,6 @@ win32-g++ {
             INCLUDEPATH += ../imaging
             LIBS        += -L../bin -limaging
         }
-        OBJECTS_DIR = release/.obj/win32-gcc
-        MOC_DIR     = release/.moc/win32-gcc
 
         INCLUDEPATH += ../minimum
         LIBS        += -L../bin -lminimum
@@ -41,8 +43,6 @@ win32-g++ {
 
 win32-msvc* {
     CONFIG(release, debug|release) {
-
-        //DEFINES += USE_LIB_IMAGING
 
         contains(DEFINES, USE_LIB_XLSX_WRITER) {
             INCLUDEPATH += ../../third-party/VC2015/x86_64/libxlsxwriter/include
@@ -96,17 +96,16 @@ macx-clang {
             INCLUDEPATH += ../../third-party/macx-clang/x86_64/zlib/include
             LIBS        += -L../../third-party/macx-clang/x86_64/zlib/lib -lzlibstatic
         }
-
     }
     CONFIG(debug, debug|release) { }
 }
 
 HEADERS += global.h
+
 HEADERS += solver.h
 SOURCES += solver.cpp
 
-#HEADERS += problem0h_exporter.h
-#SOURCES += problem0h_exporter.cpp
-
+HEADERS += heat_equation_ibvp.h
+SOURCES += heat_equation_ibvp.cpp
 
 #OTHER_FILES += matlab/*

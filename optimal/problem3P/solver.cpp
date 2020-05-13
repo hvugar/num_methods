@@ -5,7 +5,14 @@ using namespace p3p;
 void Solver::frw_calculate() const
 {
     //puts("forward->solveInitialValueProblem...");
-    //forward->solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].q); puts("");
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].v); puts("");
+    forward->solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
+//    for (unsigned int i=0; i<=TIME_MAX; i++)
+//        printf("%u %14.10f %14.10f\n", i, externalSource[i].z.x, externalSource[i].z.y);
+
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].z.x); puts("");
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].z.y); puts("");
     //puts("forward->solveInitialValueProblem.");
     //puts("forward->implicit_calculate_D2V...");
     forward->implicit_calculate_D2V1();
@@ -14,87 +21,103 @@ void Solver::frw_calculate() const
 
 void Solver::bcw_calculate() const
 {
-    //puts("backward->implicit_calculate_D2V1.");
-    backward->implicit_calculate_D2V1();
     //puts("backward->implicit_calculate_D2V1...");
+    backward->implicit_calculate_D2V1();
+    //puts("backward->implicit_calculate_D2V1.");
     //puts("backward->solveFinalValueProblem...");
-    //backward->solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
+    backward->solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
     //puts("backward->solveFinalValueProblem.");
 }
 
 void Solver::Main(int argc, char **argv)
 {
-#ifdef USE_LIB_IMAGING
-    QGuiApplication app(argc, argv);
-#endif
+    const unsigned int time_size = TIME_MAX+1;
+    const double ht = TIME_STEP;
+
     Solver solver(Dimension(TIME_STEP, 0, TIME_MAX), Dimension(DIMX_STEP, 0, DIMX_MAX), Dimension(DIMY_STEP, 0, DIMX_MAX));
 //    for (unsigned int i=0; i<=TIME_MAX; i++)
 //    {
-//        solver.mq[i] = 1.0;
+//        double t = i*ht;
+//        solver.externalSource[i].z.x = 0.8*t*t+0.1;
+//        solver.externalSource[i].z.y = 0.8*t*t+0.1;
+//        //solver.externalSource[i].q = 1.0;
 //    }
-//    solver.frw_calculate();
-//    return;
+//        solver.frw_calculate();
+    //    return;
 
-    int time_max = TIME_MAX;
-    unsigned int time_size = TIME_MAX+1;
-    double ht = TIME_STEP;
-
-    DoubleVector x(time_size);
-    solver.mz.resize(TIME_MAX+1);
+    //solver.e = SpacePoint(0.2, 0.3);
+    DoubleVector x(2*time_size);
     for (unsigned int i=0; i<=TIME_MAX; i++)
     {
-        x[0*time_size+i] = 1.0;
-        double t = i*TIME_STEP;
-        solver.mz[i].x = 0.8*t*t + 0.1;
-        solver.mz[i].y = 0.8*t*t + 0.1;
-        //solver.mv[1*time_size+i] = 1.6;
-        //x[1*time_size+i] = 1.0;//solver.v(PointNodeODE(i*TIME_STEP, static_cast<int>(i)));
+        x[i] = 100.2;
+        x[i+time_size] = 1.6;
     }
 
+    unsigned int s1 = 0, f1 = TIME_MAX, s2 = TIME_MAX+1, f2 = 2*TIME_MAX+1;
+    IPrinter::printVector(8, 4, x.mid(s1, f1));
+    IPrinter::printVector(8, 4, x.mid(s2, f2));
     IPrinter::printSeperatorLine();
 
     // printing analitic gradients
     DoubleVector ga;
+//    solver.vectorToParameter(x);
+//    solver.frw_calculate();
+//    return;
     solver.gradient(x, ga);
-    //DoubleVector ga1(11);
-    //DoubleVector ga1(time_size);
-    //DoubleVector ga2(11);
-    //for (unsigned int i=0*time_size, j=0; i<1*time_size; i++) { if ((i-0)%((TIME_MAX)/10)==0) { ga1[j] = ga[i]; j++; } }
-    //for (unsigned int i=0; i<time_size; i++) { ga1[i] = ga[i]; }
-    //for (unsigned int i=0*time_size, j=0; i<2*time_size; i++) { if ((i-1)%((TIME_MAX)/10)==0) { ga2[j] = ga[i]; j++; } }
-    //ga1[00] = ga1[10] = 0.0;
-    ga[0] = ga[time_max] = 0.0;
-    //ga2[00] = ga2[10] = 0.0;
-    IPrinter::printVector(14, 10, ga.EuclideanNormalize());
-    //IPrinter::printVector(14, 10, ga2.EuclideanNormalize());
-    IPrinter::printSeperatorLine();
-
-    // printing numerical gradients
+    ga[s1] = 0.0;
+    ga[f1] = 0.0;
+    ga[s2] = 0.0;
+    ga[f2] = 0.0;
     DoubleVector gn(x.length());
-    IGradient::Gradient(&solver, 0.010, x, gn);
-//    DoubleVector gn1(11);
-    //DoubleVector gn2(11);
-//    for (unsigned int i=0*time_size, j=0; i<1*time_size; i++)
-//    {
-//        //if ((i-0)%((TIME_MAX)/10)==0)
-//        {
-//            IGradient::Gradient(&solver, 0.0010, x, gn, i, i); gn1[j] = gn[i]; j++;
-//        }
-//    }
-//    for (unsigned int i=1*time_size, j=0; i<2*time_size; i++)
-//    {
-//        if ((i-0)%((TIME_MAX)/10)==0)
-//        {
-//            IGradient::Gradient(&solver, 0.010, x, gn, i, i); gn2[j] = gn[i]; j++;
-//        }
-//    }
-    //gn1[00] = gn1[10] = 0.0;
-    //gn2[00] = gn2[10] = 0.0;
-    gn[0] = gn[time_max] = 0.0;
-    IPrinter::printVector(14, 10, gn.EuclideanNormalize());
-    //IPrinter::printVector(14, 10, gn1.EuclideanNormalize());
-    //IPrinter::printVector(14, 10, gn2.EuclideanNormalize());
-    IPrinter::printSeperatorLine();
+    IPrinter::printVector(10, 4, ga.mid(s1, f1)/*.EuclideanNormalize()*/);
+    IGradient::Gradient(&solver, 0.010, x, gn, s1, f1);
+    gn[s1] = 0.0;
+    gn[f1] = 0.0;
+    IPrinter::printVector(10, 4, gn.mid(s1, f1)/*.EuclideanNormalize()*/);
+
+    IPrinter::printVector(10, 4, ga.mid(s2, f2)/*.EuclideanNormalize()*/);
+    IGradient::Gradient(&solver, 0.01, x, gn, s2, f2);
+    gn[s2] = 0.0;
+    gn[f2] = 0.0;
+    IPrinter::printVector(10, 4, gn.mid(s2, f2)/*.EuclideanNormalize()*/);
+
+    //    DoubleVector ga1(11);
+    //    //DoubleVector ga2(11);
+    //    for (unsigned int i=0*time_size, j=0; i<1*time_size; i++) { if ((i-0)%((TIME_MAX)/10)==0) { ga1[j] = ga[i]; j++; } }
+    //    //for (unsigned int i=0*time_size, j=0; i<2*time_size; i++) { if ((i-1)%((TIME_MAX)/10)==0) { ga2[j] = ga[i]; j++; } }
+    //    ga1[00] = 0.0;
+    //    ga1[10] = 0.0;
+    //    //ga2[00] = ga2[10] = 0.0;
+    //    IPrinter::printVector(14, 10, ga1.EuclideanNormalize());
+    //    //IPrinter::printVector(14, 10, ga2.EuclideanNormalize());
+    //    IPrinter::printSeperatorLine();
+
+    //    // printing numerical gradients
+    //    DoubleVector gn(x.length());
+    //    IGradient::Gradient(&solver, 0.010, x, gn);
+    //    DoubleVector gn1(11);
+    ////    DoubleVector gn2(11);
+    //    for (unsigned int i=0*time_size, j=0; i<1*time_size; i++)
+    //    {
+    //        if ((i-0)%((TIME_MAX)/10)==0)
+    //        {
+    //            IGradient::Gradient(&solver, 0.010, x, gn, i, i); gn1[j] = gn[i]; j++;
+    //        }
+    //    }
+    ////    for (unsigned int i=1*time_size, j=0; i<2*time_size; i++)
+    ////    {
+    ////        if ((i-0)%((TIME_MAX)/10)==0)
+    ////        {
+    ////            IGradient::Gradient(&solver, 0.010, x, gn, i, i); gn2[j] = gn[i]; j++;
+    ////        }
+    ////    }
+    //    gn1[00] = 0.0;
+    //    gn1[10] = 0.0;
+    //    //gn2[00] = gn2[10] = 0.0;
+    //    //IPrinter::printVector(14, 10, gn.EuclideanNormalize());
+    //    IPrinter::printVector(14, 10, gn1.EuclideanNormalize());
+    //    //IPrinter::printVector(14, 10, gn2.EuclideanNormalize());
+    //    IPrinter::printSeperatorLine();
 }
 
 void Solver::example1()
@@ -173,10 +196,6 @@ void Solver::example1()
     //    IPrinter::printSeperatorLine();
 }
 
-Solver::Solver()
-{
-}
-
 Solver::Solver(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY)
 {
     setDimension(timeDimension, spaceDimensionX, spaceDimensionY);
@@ -184,13 +203,18 @@ Solver::Solver(const Dimension &timeDimension, const Dimension &spaceDimensionX,
     forward = new HeatEquationIBVP(this);
     backward = new HeatEquationFBVP(this);
 
-    forward->setThermalDiffusivity(1.0);
+    forward->setThermalDiffusivity(0.1);
     forward->setThermalConvection(0.0);
     forward->setThermalConductivity(0.0);
 
-    backward->setThermalDiffusivity(-1.0);
+    backward->setThermalDiffusivity(-0.1);
     backward->setThermalConvection(0.0);
     backward->setThermalConductivity(0.0);
+
+    measurePoints[0] = {0.25, 0.25, 0.0};
+    measurePoints[1] = {0.25, 0.75, 0.0};
+    measurePoints[2] = {0.75, 0.75, 0.0};
+    measurePoints[3] = {0.75, 0.75, 0.0};
 }
 
 void Solver::setTimeDimension(const Dimension &timeDimension)
@@ -213,20 +237,28 @@ void Solver::setSpaceDimensionY(const Dimension &spaceDimensionY)
 
 void Solver::validate()
 {
-    mq.clear(); mq.resize(timeDimension().size());
-    mz.clear(); mz.resize(timeDimension().size());
+    externalSource.resize(timeDimension().size());
 
-    V.clear(); V.resize(spaceDimensionX().size(), spaceDimensionY().size(), 2.5);
+    V.clear(); V.resize(spaceDimensionX().size(), spaceDimensionY().size(), 8.5);
     U.clear(); U.resize(spaceDimensionX().size(), spaceDimensionY().size(), 0.0);
 
     deltaZ.cleanGrid();
     deltaZ.initGrid(spaceDimensionX(), spaceDimensionY());
     deltaZ.resetAll();
 
-    psi.resize(timeDimension().size());
-    //phi.resize(timeDimension().size());
+    if (measurePoints) delete [] measurePoints;
+    measurePoints = new SpacePoint[measurePointNumber];
 
-    //mv.resize(timeDimension().size());
+    for (SpacePoint* route : heatSourceRoutes) {
+        if (route) delete route;
+    }
+    heatSourceRoutes.clear();
+
+    for (size_t i=0; i<heatSourceNumber; i++)
+    {
+        SpacePoint* route = new SpacePoint[timeDimension().size()];
+        heatSourceRoutes.push_back(route);
+    }
 }
 
 Solver::Solver(const Solver &)
@@ -240,9 +272,9 @@ Solver::~Solver()
 
 auto Solver::setDimension(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY) -> void
 {
-    _timeDimension = timeDimension;
-    _spaceDimensionX = spaceDimensionX;
-    _spaceDimensionY = spaceDimensionY;
+    this->_timeDimension = timeDimension;
+    this->_spaceDimensionX = spaceDimensionX;
+    this->_spaceDimensionY = spaceDimensionY;
     validate();
 }
 
@@ -260,15 +292,12 @@ auto Solver::fx(const DoubleVector &x) const -> double
 
 auto Solver::integral(const DoubleMatrix &) const -> double
 {
-    //const Dimension &time = Problem0HForward::timeDimension();
-    const Dimension &dimX = spaceDimensionX();
-    const Dimension &dimY = spaceDimensionY();
-    //const unsigned int L = static_cast<unsigned int> ( time.size() );
-    const unsigned int N = static_cast<unsigned int> ( dimX.size()-1 );
-    const unsigned int M = static_cast<unsigned int> ( dimY.size()-1 );
-    //const double ht = time.step();
-    const double hx = dimX.step();
-    const double hy = dimY.step();
+    const Dimension &dimensionX = spaceDimensionX();
+    const Dimension &dimensionY = spaceDimensionY();
+    const unsigned int N = static_cast<unsigned int> ( dimensionX.size()-1 );
+    const unsigned int M = static_cast<unsigned int> ( dimensionY.size()-1 );
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
 
     double udiff = 0.0;
     double usum = 0.0;
@@ -309,20 +338,26 @@ auto Solver::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
     vectorToParameter(x);
 
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].q); puts("");
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].v); puts("");
+
     g.clear(); g.resize(x.length());
 
     frw_calculate();
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].z.x); puts("");
+    //for (unsigned int i=0; i<=TIME_MAX; i++) printf("%4.2f ", externalSource[i].z.y); puts("");
     bcw_calculate();
 
     const Dimension &time = timeDimension();
     const unsigned int time_size = time.size();
     const double ht = time.step();
 
-    for (unsigned int i=0; i<time_size; i++)
+    for (unsigned int ln=0; ln<time_size; ln++)
     {
-        PointNodeODE node(i*ht, i);
-        g[0*time_size+i] = -psi[i].z;
-        //g[1*time_size+i] = -mq[i] * ( phi[i].x*forward->C(node, 1) + phi[i].y*forward->C(node, 2) );
+        PointNodeODE node(ln*ht, ln);
+        const ExternalSource &es = externalSource[ln];
+        g[ln] = -es.psi.z;
+        g[ln+time_size] = -( es.phi.x*forward->C(node, 1) + es.phi.y*forward->C(node, 2) );
     }
 }
 
@@ -373,6 +408,7 @@ double Solver::frw_initial(const SpaceNodePDE &, InitialCondition) const { retur
 
 double Solver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE & cn) const
 {
+    //cn = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 1.0);
     cn = BoundaryConditionPDE(BoundaryCondition::Neumann, 0.0, 1.0, 1.0);
     return 0.0;
 }
@@ -380,14 +416,54 @@ double Solver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryC
 auto Solver::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     unsigned int ln = static_cast<unsigned int>(tn.i) / 2;
-    return mq[ln]*deltaZ.gaussWeight(sn, mz[ln], SIGMA_X, SIGMA_Y);
+    double q = externalSource[ln].q;
+    const SpacePoint &z = externalSource[ln].z;
+    return q * deltaZ.gaussWeight(sn, z, SIGMA_X, SIGMA_Y);
+
+    //    const Dimension &dimensionX = spaceDimensionX();
+    //    const Dimension &dimensionY = spaceDimensionY();
+    //    const double hx = dimensionX.step();
+    //    const double hy = dimensionY.step();
+
+    //    if (sn.i==50 && sn.j==50)
+    //        return mq[ln]*(1.0/(hx*hy));
+    //    else
+    //        return 0.0;
+
 }
 
 void Solver::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    if (tn.i/2 == timeDimension().max()) { const_cast<Solver*>(this)->U = u; }
+    int ln = tn.i / 2;
+    if (ln == timeDimension().max())
+    {
+        const_cast<Solver*>(this)->U = u;
+        //IPrinter::printSeperatorLine(std::to_string(ln).data(), '-');
+        //IPrinter::printMatrix(9, 5, U);
+        //IPrinter::printSeperatorLine();
+        //printf("min: %14.8f max: %14.8f\n", U.min(), U.max());
+    }
 
     frw_saveToImage(u, tn);
+}
+
+void Solver::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+{
+#ifdef USE_LIB_IMAGING
+    static double MIN = +10000.0;
+    static double MAX = -10000.0;
+    if (u.max()>MAX) MAX = u.max();
+    if (u.min()<MIN) MIN = u.min();
+    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i/2, u.min(), u.max(), MIN, MAX);
+
+    //if (tn.i%10==0)
+    {
+        QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i/2, 8, 10, QChar('0'));
+        QPixmap pixmap;
+        visualizeMatrixHeat(u, 0.0, 6.052, pixmap, DIMX_MAX+1, DIMY_MAX+1);
+        pixmap.save(filename);
+    }
+#endif
 }
 
 void Solver::frw_saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -451,25 +527,6 @@ void Solver::frw_saveToExcel(const DoubleMatrix &u UNUSED_PARAM, const TimeNodeP
 #endif
 }
 
-void Solver::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
-{
-#ifdef USE_LIB_IMAGING
-    static double MIN = +10000.0;
-    static double MAX = -10000.0;
-    if (u.max()>MAX) MAX = u.max();
-    if (u.min()<MIN) MIN = u.min();
-    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i/2, u.min(), u.max(), MIN, MAX);
-
-    if (tn.i%10==0)
-    {
-        QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i/10, 8, 10, QChar('0'));
-        QPixmap pixmap;
-        visualizeMatrixHeat(u, 0.0, 1.870274, pixmap, DIMX_MAX+1, DIMY_MAX+1);
-        pixmap.save(filename);
-    }
-#endif
-}
-
 void Solver::frw_saveToTextF(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn) const
 {
 #ifdef USE_LIB_TEXT
@@ -496,6 +553,7 @@ double Solver::bcw_final(const SpaceNodePDE &sn, FinalCondition) const
 
 double Solver::bcw_boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &cn) const
 {
+    //cn = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 1.0);
     cn = BoundaryConditionPDE(BoundaryCondition::Neumann, 0.0, 1.0, 1.0);
     return 0.0;
 }
@@ -505,7 +563,7 @@ double Solver::bcw_f(const SpaceNodePDE&, const TimeNodePDE&) const { return 0.0
 void Solver::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
     bcw_saveBackwardInformarion(p, tn);
-    bcw_saveToImage(p, tn);
+    //bcw_saveToImage(p, tn);
 }
 
 void Solver::bcw_saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePDE &tn) const
@@ -513,22 +571,23 @@ void Solver::bcw_saveBackwardInformarion(const DoubleMatrix &p, const TimeNodePD
     Solver* const_this = const_cast<Solver*>(this);
     unsigned int ln = static_cast<unsigned int>(tn.i) / 2;
 
-    double psi_vl, psi_dx, psi_dy;
+    const SpacePoint &z = externalSource[ln].z;
+    double psi_vl =0.0, psi_dx = 0.0, psi_dy = 0.0;
 
-//    unsigned int rx = static_cast<unsigned int>(round(mz[ln].x/(spaceDimensionX().step())));
-//    unsigned int ry = static_cast<unsigned int>(round(mz[ln].y/(spaceDimensionY().step())));
-//    psi_vl = p[ry][rx];
+//    unsigned int rx = static_cast<unsigned int>(round(z.x/(spaceDimensionX().step())));
+//    unsigned int ry = static_cast<unsigned int>(round(z.y/(spaceDimensionY().step())));
+//    printf(">>> %d %d\n", rx, ry);
 //    psi_dx = (p[ry][rx+1]-p[ry][rx-1])/(2.0*spaceDimensionX().step());
 //    psi_dy = (p[ry+1][rx]-p[ry-1][rx])/(2.0*spaceDimensionY().step());
-    psi_dx = 0.0;
-    psi_dy = 0.0;
+//    psi_vl = p[ry][rx];
 
+    //const_this->deltaZ.p() = z;
 
-    const_this->deltaZ.reset();
-    const_this->deltaZ.distributeGauss(mz[ln], NODE_PER_SIGMA_X, NODE_PER_SIGMA_Y);
-    psi_vl = const_this->deltaZ.lumpPointGauss(p);
-    printf("%4d %14.8f %14.8f %14.8f\n", ln, mz[ln].x, mz[ln].y, psi_vl);
-    const_this->psi[ln].z = psi_vl;// = SpacePoint(psi_dx, psi_dy, psi_vl);
+    //psi_vl = const_this->deltaZ.consentrateInPoint(p, psi_dx, psi_dy, 5);
+
+    const_this->deltaZ.distributeGauss(z, NODE_PER_SIGMA_X, NODE_PER_SIGMA_Y);
+    psi_vl = const_this->deltaZ.lumpPointGauss(p, psi_dx, psi_dy);
+    const_this->externalSource[ln].psi = SpacePoint(psi_dx, psi_dy, psi_vl);
 }
 
 void Solver::bcw_saveToImage(const DoubleMatrix &p, const TimeNodePDE &tn) const
@@ -565,7 +624,7 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const-> 
 
 auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void { return solver->frw_layerInfo(u, tn); }
 
-auto HeatEquationIBVP::weight() const -> double { return 0.5; }
+auto HeatEquationIBVP::weight() const -> double { throw std::runtime_error(""); }
 
 auto HeatEquationIBVP::timeDimension() const -> Dimension { return solver->timeDimension(); }
 
@@ -573,88 +632,124 @@ auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return solver->spa
 
 auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return solver->spaceDimensionY(); }
 
-auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { return Dimension(DIMY_STEP, 0, DIMY_MAX); }
+auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime_error(""); }
 
 //--------------------------------------------------------------------------------------------------------------//
 
-//auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
-//{
-//#ifdef VARIANT_1
-//    const double mx[2][2] = {
-//        {-3.0, -2.0}, {-4.0, -5.0}
-//    };
-//    return mx[row-1][col-1];
-//#endif
-//#ifdef VARIANT_2
-//    const double mx[4][4] = {
-//        {+0.0, +0.0, +1.0, +0.0},
-//        {+0.0, +0.0, +0.0, +1.0},
-//        {+0.0, +0.0, +0.0, +0.0},
-//        {+0.0, +0.0, +0.0, +0.0},
-//    };
-//    return mx[row-1][col-1];
-//#endif
-//}
+auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
+{
+#ifdef VARIANT_1
+    const double mx[2][2] = {
+        {-3.0, -2.0}, {-4.0, -5.0}
+    };
+    return mx[row-1][col-1];
+#endif
+#ifdef VARIANT_2
+    const double vl[4][4] = {
+        {+0.0, +0.0, +1.0, +0.0},
+        {+0.0, +0.0, +0.0, +1.0},
+        {+0.0, +0.0, +0.0, +0.0},
+        {+0.0, +0.0, +0.0, +0.0},
+    };
+    return vl[row-1][col-1];
+#endif
+#ifdef VARIANT_3
+    const double vl[2][2] = { {+0.0, +0.0}, {+0.0, +0.0} };
+    return vl[row-1][col-1];
+#endif
+}
 
-//auto HeatEquationIBVP::B(const PointNodeODE &node, unsigned int row) const -> double
-//{
-//    //return solver->zt(node, row)
-//    //        - (A(node, row, 1)*solver->z(node, 1)+A(node, row, 2)*solver->z(node, 2))
-//    //        - C(node, row)*solver->v(node)
-//    //        + C(node, row)*solver->mv[node.i];
+auto HeatEquationIBVP::B(const PointNodeODE &node, unsigned int row) const -> double
+{
+    //return solver->zt(node, row)
+    //        - (A(node, row, 1)*solver->z(node, 1)+A(node, row, 2)*solver->z(node, 2))
+    //        - C(node, row)*solver->v(node)
+    //        + C(node, row)*solver->mv[node.i];
 
-//    double t = node.x;
-//#ifdef VARIANT_1
-//    double v = solver->v(node);
-//    return (row == 1) ?
-//                0.4*M_PI*sin(2.0*M_PI*t) - 1.8*M_PI*t*sin(4.0*M_PI*t*t)
-//                + 3.0*(0.40*sin(1.0*M_PI*t)*sin(1.0*M_PI*t)+0.45*cos(2.0*M_PI*t*t)*cos(2.0*M_PI*t*t)+0.05)
-//                + 2.0*(0.30*sin(4.0*M_PI*t)*sin(4.0*M_PI*t)+0.45*cos(3.0*M_PI*t*t)*cos(3.0*M_PI*t*t)+0.05) - 5.0*sin(2.0*M_PI*t*t) + 5.0*v:
-//                1.2*M_PI*sin(8.0*M_PI*t) - 2.7*M_PI*t*sin(6.0*M_PI*t*t)
-//                + 4.0*(0.40*sin(1.0*M_PI*t)*sin(1.0*M_PI*t)+0.45*cos(2.0*M_PI*t*t)*cos(2.0*M_PI*t*t)+0.05)
-//                + 5.0*(0.30*sin(4.0*M_PI*t)*sin(4.0*M_PI*t)+0.45*cos(3.0*M_PI*t*t)*cos(3.0*M_PI*t*t)+0.05) - 4.0*sin(2.0*M_PI*t*t) + 4.0*v;
-//#endif
-//#ifdef VARIANT_2
-//    const double mx[4] = {+0.0, +0.0, +1.0, +1.0};
-//    return mx[row-1];//*solver->mv[node.i];
-//#endif
-//}
+    double t = node.x;
+#ifdef VARIANT_1
+    double v = solver->v(node);
+    return (row == 1) ?
+                0.4*M_PI*sin(2.0*M_PI*t) - 1.8*M_PI*t*sin(4.0*M_PI*t*t)
+                + 3.0*(0.40*sin(1.0*M_PI*t)*sin(1.0*M_PI*t)+0.45*cos(2.0*M_PI*t*t)*cos(2.0*M_PI*t*t)+0.05)
+                + 2.0*(0.30*sin(4.0*M_PI*t)*sin(4.0*M_PI*t)+0.45*cos(3.0*M_PI*t*t)*cos(3.0*M_PI*t*t)+0.05) - 5.0*sin(2.0*M_PI*t*t) + 5.0*v:
+                1.2*M_PI*sin(8.0*M_PI*t) - 2.7*M_PI*t*sin(6.0*M_PI*t*t)
+                + 4.0*(0.40*sin(1.0*M_PI*t)*sin(1.0*M_PI*t)+0.45*cos(2.0*M_PI*t*t)*cos(2.0*M_PI*t*t)+0.05)
+                + 5.0*(0.30*sin(4.0*M_PI*t)*sin(4.0*M_PI*t)+0.45*cos(3.0*M_PI*t*t)*cos(3.0*M_PI*t*t)+0.05) - 4.0*sin(2.0*M_PI*t*t) + 4.0*v;
+#endif
+#ifdef VARIANT_2
+    puts("B1");
+    //const double mx[4] = {+0.0, +0.0, +1.0, +1.0};
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    double aa = C(node, row-1);//*solver->externalSource[ln].v;
+    puts("B1");
+    return aa;
+#endif
+#ifdef VARIANT_3
+    const double vl[2] = {+0.0, +0.0};
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    double ret = C(node, row)*solver->externalSource[ln].v + vl[row-1];
+    return ret;
+#endif
+}
 
-//auto HeatEquationIBVP::C(const PointNodeODE &, unsigned int row) const -> double
-//{
-//    const double c[2] = { +5.0, +4.0 };
-//    return c[row-1];
-//}
+auto HeatEquationIBVP::C(const PointNodeODE &node, unsigned int row) const -> double
+{
+#ifdef VARIANT_1
+    const double c[2] = { +5.0, +4.0 };
+    return c[row-1];
+#endif
+#ifdef VARIANT_2
+    puts("C1");
+    const double vl[4] = { +0.0, +0.0, +1.0, +1.0 };
+    double bb = 0.0;//vl[row-1];
+    printf("%f row %d\n", bb, row);
+    return bb;
+#endif
+#ifdef VARIANT_3
+    const double vl[2] = {+1.0, +1.0};
+    return vl[row-1]*node.x;
+#endif
+}
 
-//auto HeatEquationIBVP::initial(InitialCondition, unsigned int row) const -> double
-//{
-//#ifdef VARIANT_1
-//    const double val[2] = { 0.50, 0.50 };
-//    return val[row-1];
-//#endif
-//#ifdef VARIANT_2
-//    const double val[4] = { 0.10, 0.10, 0.00, 0.00 };
-//    return val[row-1];
-//#endif
-//}
+auto HeatEquationIBVP::initial(InitialCondition, unsigned int row) const -> double
+{
+#ifdef VARIANT_1
+    const double val[2] = { 0.50, 0.50 };
+    return val[row-1];
+#endif
+#ifdef VARIANT_2
+    const double val[4] = { 0.10, 0.10, 0.00, 0.00 };
+    return val[row-1];
+#endif
+#ifdef VARIANT_3
+    const double val[2] = { 0.10, 0.10 };
+    return val[row-1];
+#endif
+}
 
-//auto HeatEquationIBVP::count() const -> unsigned int
-//{
-//#ifdef VARIANT_1
-//    return 2;
-//#endif
-//#ifdef VARIANT_2
-//    return 4;
-//#endif
-//}
+auto HeatEquationIBVP::count() const -> unsigned int
+{
+#ifdef VARIANT_1
+    return 2;
+#endif
+#ifdef VARIANT_2
+    return 4;
+#endif
+#ifdef VARIANT_3
+    return 2;
+#endif
+}
 
-//auto HeatEquationIBVP::dimension() const -> Dimension { return solver->timeDimension(); }
+auto HeatEquationIBVP::dimension() const -> Dimension { return solver->timeDimension(); }
 
-//auto HeatEquationIBVP::iterationInfo(const DoubleVector &z, const PointNodeODE &node) const -> void
-//{
-//    const_cast<HeatEquationIBVP*>(this)->solver->mz[static_cast<unsigned int>(node.i)].x = z[0];
-//    const_cast<HeatEquationIBVP*>(this)->solver->mz[static_cast<unsigned int>(node.i)].y = z[1];
-//}
+auto HeatEquationIBVP::iterationInfo(const DoubleVector &z, const PointNodeODE &node) const -> void
+{
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
+    es.z.x = z[0];
+    es.z.y = z[1];
+}
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -670,7 +765,7 @@ auto HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
 auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void { return solver->bcw_layerInfo(p, tn); }
 
-auto HeatEquationFBVP::weight() const -> double { return 0.5; }
+auto HeatEquationFBVP::weight() const -> double { throw std::runtime_error(""); }
 
 auto HeatEquationFBVP::timeDimension() const -> Dimension { return solver->timeDimension(); }
 
@@ -678,61 +773,81 @@ auto HeatEquationFBVP::spaceDimensionX() const -> Dimension { return solver->spa
 
 auto HeatEquationFBVP::spaceDimensionY() const -> Dimension { return solver->spaceDimensionY(); }
 
-auto HeatEquationFBVP::spaceDimensionZ() const -> Dimension { return Dimension(DIMY_STEP, 0, DIMY_MAX); }
+auto HeatEquationFBVP::spaceDimensionZ() const -> Dimension { throw std::runtime_error(""); }
 
 //--------------------------------------------------------------------------------------------------------------//
 
-//auto HeatEquationFBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
-//{
-//#ifdef VARIANT_1
-//    const double mx[2][2] = { {+3.0, +2.0}, { +4.0, +5.0 } };
-//    return mx[row-1][col-1];
-//#endif
-//#ifdef VARIANT_2
-//    const double mx[4][4] = {
-//        {+0.0, +0.0, -1.0, +0.0},
-//        {+0.0, +0.0, +0.0, -1.0},
-//        {+0.0, +0.0, +0.0, +0.0},
-//        {+0.0, +0.0, +0.0, +0.0},
-//    };
-//    return mx[row-1][col-1];
-//#endif
-//}
+auto HeatEquationFBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
+{
+#ifdef VARIANT_1
+    const double mx[2][2] = { {+3.0, +2.0}, { +4.0, +5.0 } };
+    return mx[row-1][col-1];
+#endif
+#ifdef VARIANT_2
+    const double mx[4][4] = {
+        {+0.0, +0.0, +0.0, +0.0},
+        {+0.0, +0.0, +0.0, +0.0},
+        {+0.0, +0.0, +0.0, +0.0},
+        {+0.0, +0.0, +0.0, +0.0},
+    };
+    return mx[row-1][col-1];
+#endif
+#ifdef VARIANT_3
+    const double vl[2][2] = { {+0.0, +0.0}, {+0.0, +0.0} };
+    return -vl[row-1][col-1];
+#endif
+}
 
-//auto HeatEquationFBVP::B(const PointNodeODE &node, unsigned int row) const -> double
-//{
-//#ifdef VARIANT_1
-//    unsigned int i = static_cast<unsigned int>(node.i);
-//    return -solver->mq[i] * (row == 1 ? solver->psi[i].x : solver->psi[i].y);
-//#endif
-//#ifdef VARIANT_2
-//    unsigned int i = static_cast<unsigned int>(node.i);
-//    return -solver->mq[i] * (row == 1 ? solver->psi[i].x : solver->psi[i].y);
-//#endif
-//}
+auto HeatEquationFBVP::B(const PointNodeODE &node, unsigned int row) const -> double
+{
+#ifdef VARIANT_1
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
+    return -es.q * (row == 1 ? es.psi.x : es.psi.y);
+#endif
+#ifdef VARIANT_2
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
+    return - es.q * (row == 1 ? es.psi.x : row == 2 ? es.psi.y : 0.0);
+#endif
+#ifdef VARIANT_3
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
+    if (row == 1) return -es.q * es.psi.x;
+    if (row == 2) return -es.q * es.psi.y;
+    throw std::runtime_error("OK");
+#endif
+}
 
-//auto HeatEquationFBVP::final(FinalCondition, unsigned int) const -> double
-//{
-//    return 0.0;
-//}
+auto HeatEquationFBVP::final(FinalCondition, unsigned int) const -> double
+{
+    return 0.0;
+}
 
-//auto HeatEquationFBVP::count() const -> unsigned int
-//{
-//#ifdef VARIANT_1
-//    return 2;
-//#endif
-//#ifdef VARIANT_2
-//    return 4;
-//#endif
-//}
+auto HeatEquationFBVP::count() const -> unsigned int
+{
+#ifdef VARIANT_1
+    return 2;
+#endif
+#ifdef VARIANT_2
+    return 4;
+#endif
+#ifdef VARIANT_3
+    return 2;
+#endif
+}
 
-//auto HeatEquationFBVP::dimension() const -> Dimension { return solver->timeDimension(); }
+auto HeatEquationFBVP::dimension() const -> Dimension { return solver->timeDimension(); }
 
-//auto HeatEquationFBVP::iterationInfo(const DoubleVector &phi, const PointNodeODE &node) const -> void
-//{
-//    //const_cast<HeatEquationFBVP*>(this)->solver->phi[static_cast<unsigned int>(node.i)].x = phi[0];
-//    //const_cast<HeatEquationFBVP*>(this)->solver->phi[static_cast<unsigned int>(node.i)].y = phi[1];
-//}
+auto HeatEquationFBVP::iterationInfo(const DoubleVector &phi, const PointNodeODE &node) const -> void
+{
+    unsigned int ln = static_cast<unsigned int>(node.i);
+    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
+    es.phi.x = phi[0];
+    es.phi.y = phi[1];
+    //if (node.i == 100) { es.psi.x = es.psi.y = 0.0; es.phi.x = es.phi.y = 0.0; }
+    //printf("%4d %10.6f %10.6f %10.6f %10.6f\n", ln, es.phi.x, es.phi.y, es.psi.x, es.psi.y);
+}
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -740,10 +855,10 @@ auto Solver::vectorToParameter(const DoubleVector &x) const -> void
 {
     const Dimension &time = timeDimension();
     const unsigned int time_size = time.size();
-    for (unsigned int i=0; i<time_size; i++)
+    for (unsigned int ln=0; ln<time_size; ln++)
     {
-        const_cast<Solver*>(this)->mq[i] = x[0*time_size+i];
-        //const_cast<Solver*>(this)->mv[i] = x[1*time_size+i];
+        const_cast<Solver*>(this)->externalSource[ln].q = x[ln];
+        const_cast<Solver*>(this)->externalSource[ln].v = x[ln+time_size];
     }
 }
 
@@ -752,12 +867,12 @@ auto Solver::parameterToVector(DoubleVector &x) const -> void
     const Dimension &time = timeDimension();
     const unsigned int time_size = time.size();
     x.clear();
-    x.resize(time_size);
-    //x.resize(2*time_size);
-    for (unsigned int i=0; i<time_size; i++)
+    //x.resize(time_size);
+    x.resize(2*time_size);
+    for (unsigned int ln=0; ln<time_size; ln++)
     {
-        x[0*time_size+i] = mq[i];
-        //x[1*time_size+i] = mv[i];
+        x[ln] = externalSource[ln].q;
+        x[ln+time_size] = externalSource[ln].v;
     }
 }
 

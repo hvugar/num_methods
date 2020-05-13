@@ -1,9 +1,10 @@
+TARGET   = main
 TEMPLATE = app
 CONFIG  += console
 CONFIG  -= app_bundle
 #CONFIG  -= qt
+CONFIG  += qt
 QT      += core gui widgets
-TARGET  = main
 CONFIG  += c++11
 
 #QMAKE_CXXFLAGS += -O2
@@ -20,9 +21,6 @@ CONFIG  += c++11
 
 DESTDIR = ../bin
 
-INCLUDEPATH += ../border
-LIBS += -L../bin -lborder
-
 #INCLUDEPATH += ../hyperbolic
 #LIBS += -L../bin -lhyperbolic
 
@@ -31,9 +29,6 @@ LIBS += -L../bin -lborder
 
 #INCLUDEPATH += ../rnfunction
 #LIBS += -L../bin -lrnfunction
-
-#INCLUDEPATH += ../imaging
-#LIBS += -L../bin -limaging
 
 #INCLUDEPATH += ../problem2P
 #LIBS += -L../bin -lproblem2P
@@ -48,16 +43,16 @@ LIBS += -L../bin -lborder
 #include(problem5/problem5.pri)
 #include(load_sys/load_sys.pri)
 
-SOURCES += main.cpp \
-    conjugate_gradinet_test.cpp \
-    test/delta_grid_2d_ext1.cpp \
-    test/nonlinear_equation_ex1.cpp
+SOURCES += main.cpp
 
-SOURCES +=
-HEADERS += \
-    conjugate_gradinet_test.h \
-    test/delta_grid_2d_ext1.h \
-    test/nonlinear_equation_ex1.h
+SOURCES += test/delta_grid_2d_ext1.cpp
+HEADERS += test/delta_grid_2d_ext1.h
+
+#    conjugate_gradinet_test.cpp \
+#    test/nonlinear_equation_ex1.cpp
+
+#conjugate_gradinet_test.h
+#    test/nonlinear_equation_ex1.h
 
 SOURCES +=
 HEADERS +=
@@ -70,17 +65,23 @@ win32-g++ {
         INCLUDEPATH += ../minimum
         LIBS += -L../bin -lminimum
 
-        INCLUDEPATH += ../problem0H
-        LIBS += -L../bin -lproblem0H
+        INCLUDEPATH += ../imaging
+        LIBS += -L../bin -limaging
 
-        INCLUDEPATH += ../problem1H
-        LIBS += -L../bin -lproblem1H
+        INCLUDEPATH += ../border
+        LIBS += -L../bin -lborder
+
+#        INCLUDEPATH += ../problem0H
+#        LIBS += -L../bin -lproblem0H
+
+#        INCLUDEPATH += ../problem1H
+#        LIBS += -L../bin -lproblem1H
 
 #        INCLUDEPATH += ../problem2H
 #        LIBS += -L../bin -lproblem2H
 
-        INCLUDEPATH += ../problem1P
-        LIBS += -L../bin -lproblem1P
+#        INCLUDEPATH += ../problem1P
+#        LIBS += -L../bin -lproblem1P
 
         INCLUDEPATH += ../problem3P
         LIBS += -L../bin -lproblem3P
@@ -99,17 +100,24 @@ win32-msvc* {
         INCLUDEPATH += ../minimum
         LIBS += ../bin/minimum.lib
 
-        INCLUDEPATH += ../problem0H
-        LIBS += ../bin/problem0H.lib
+        INCLUDEPATH += ../imaging
+        LIBS += ../bin/imaging.lib
 
-        INCLUDEPATH += ../problem1H
-        LIBS += ../bin/problem1H.lib
+        INCLUDEPATH += ../border
+        LIBS += ../bin/border.lib
+
+
+#        INCLUDEPATH += ../problem0H
+#        LIBS += ../bin/problem0H.lib
+
+#        INCLUDEPATH += ../problem1H
+#        LIBS += ../bin/problem1H.lib
 
         #INCLUDEPATH += ../problem2H
         #LIBS += ../bin/problem2H.lib
 
-        INCLUDEPATH += ../problem1P
-        LIBS += ../bin/problem1P.lib
+#        INCLUDEPATH += ../problem1P
+#        LIBS += ../bin/problem1P.lib
 
         INCLUDEPATH += ../problem3P
         LIBS += ../bin/problem3P.lib
@@ -120,34 +128,34 @@ win32-msvc* {
     }
 }
 
-unix {
-    CONFIG(release, debug|release) {}
-    CONFIG(debug, debug|release) {}
-}
+#unix {
+#    CONFIG(release, debug|release) {}
+#    CONFIG(debug, debug|release) {}
+#}
 
-macx-clang{
-    CONFIG(release, debug|release) {
-        OBJECTS_DIR = release/.obj/macx-clang
-        MOC_DIR     = release/.moc/macx-clang
+#macx-clang{
+#    CONFIG(release, debug|release) {
+#        OBJECTS_DIR = release/.obj/macx-clang
+#        MOC_DIR     = release/.moc/macx-clang
 
-        INCLUDEPATH += ../minimum
-        LIBS += -L../bin -lminimum
+#        INCLUDEPATH += ../minimum
+#        LIBS += -L../bin -lminimum
 
-        INCLUDEPATH += ../problem0H
-        LIBS += -L../bin -lproblem0H
+#        INCLUDEPATH += ../problem0H
+#        LIBS += -L../bin -lproblem0H
 
-#        INCLUDEPATH += ../problem2H
-#        LIBS += -L../bin -lproblem2H
+##        INCLUDEPATH += ../problem2H
+##        LIBS += -L../bin -lproblem2H
 
-        INCLUDEPATH += ../problem1H
-        LIBS += -L../bin -lproblem1H
+#        INCLUDEPATH += ../problem1H
+#        LIBS += -L../bin -lproblem1H
 
-        INCLUDEPATH += ../problem1P
-        LIBS += -L../bin -lproblem1P
-    }
+#        INCLUDEPATH += ../problem1P
+#        LIBS += -L../bin -lproblem1P
+#    }
 
-    CONFIG(debug, debug|release) {
-        OBJECTS_DIR = debug/.obj/macx-clang
-        MOC_DIR     = debug/.moc/macx-clang
-    }
-}
+#    CONFIG(debug, debug|release) {
+#        OBJECTS_DIR = debug/.obj/macx-clang
+#        MOC_DIR     = debug/.moc/macx-clang
+#    }
+#}

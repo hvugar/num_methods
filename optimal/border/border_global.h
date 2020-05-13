@@ -17,13 +17,13 @@
 #include <imaging.h>
 #endif
 
+#include <time.h>
+#include <stdexcept>
 #include <grid/hibvp.h>
 #include <grid/pibvp.h>
 #include <grid/pibvpX.h>
 #include <matrix2d.h>
 #include <benchmark.h>
-#include <time.h>
-#include <stdexcept>
-
+#include <deltagrid.h>
 
 #endif // BORDER_GLOBAL_H

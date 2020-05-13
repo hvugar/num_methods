@@ -21,12 +21,12 @@ public:
     double& at (unsigned int n);
     const double& at (unsigned int n) const;
     unsigned int length() const;
-    void append(double *data, unsigned int length);
-    void append(const DoubleVector &v);
+    DoubleVector& append(const double *data, unsigned int length);
+    DoubleVector& append(const DoubleVector &v);
 
     /********************************************************************
-     *                      NORM
-     *******************************************************************/
+     *                               NORM
+     ********************************************************************/
 
     double EuclideanNorm() const;
     double L1Norm() const;
@@ -39,8 +39,8 @@ public:
     DoubleVector& L2Normalize();
 
     /********************************************************************
-     *                      NORM
-     *******************************************************************/
+     *                               NORM
+     ********************************************************************/
 
     double min() const;
     double max() const;
@@ -52,8 +52,8 @@ public:
     const double* data() const NOEXCEPT;
 
     /********************************************************************
-     *                      OPERATORS
-     *******************************************************************/
+     *                             OPERATORS
+     ********************************************************************/
 
     double& operator [](unsigned int n);
     double operator [](unsigned int n) const;

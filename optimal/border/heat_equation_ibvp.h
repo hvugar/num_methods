@@ -36,6 +36,7 @@ private:
     Dimension _spaceDimensionX;
     Dimension _spaceDimensionY;
     Dimension _spaceDimensionZ;
+    DeltaGrid2D deltaGrid;
 };
 
 class BORDERSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP

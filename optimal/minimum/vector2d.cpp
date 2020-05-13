@@ -101,9 +101,9 @@ unsigned int DoubleVector::length() const
     return mLength;
 }
 
-void DoubleVector::append(double *data, unsigned int length)
+DoubleVector& DoubleVector::append(const double *data, unsigned int length)
 {
-    if (length == 0 || data == nullptr) return;
+    if (length == 0 || data == nullptr) return *this;
 
     if (mLength == 0)
     {
@@ -117,10 +117,15 @@ void DoubleVector::append(double *data, unsigned int length)
         memcpy(mData+mLength, data, sizeof(double)*length);
         mLength += length;
     }
+
+    return *this;
 }
 
-void DoubleVector::append(const DoubleVector &)
-{}
+DoubleVector& DoubleVector::append(const DoubleVector &v)
+{
+    this->append(v.data(), v.length());
+    return *this;
+}
 
 /********************************************************************
  *                      NORM
