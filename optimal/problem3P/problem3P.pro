@@ -100,10 +100,12 @@ macx-clang {
     CONFIG(debug, debug|release) { }
 }
 
-HEADERS += global.h
+HEADERS += global.h \
+    solver1.h
 
 HEADERS += solver.h
-SOURCES += solver.cpp
+SOURCES += solver.cpp \
+    solver1.cpp
 
 HEADERS += heat_equation_ibvp.h
 SOURCES += heat_equation_ibvp.cpp

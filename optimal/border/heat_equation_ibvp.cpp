@@ -252,6 +252,7 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     C_UNUSED(tn);
 
     if (tn.i % ((timeDimension().size())/10) == 0)
+    //if (tn.i == 0 || tn.i == 1)
     {
         std::string msg = std::string("time: ") + std::to_string(tn.t) +
                           std::string(", min: ") + std::to_string(u.min()) +

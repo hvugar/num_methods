@@ -160,6 +160,12 @@ public:
     static double gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, size_t k);
     static double sinusoid(double p);
     static double sinusoid(const SpacePoint &p);
+
+    static double lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
+    static double lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
+    static double lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
+    static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny,
+                               const SpacePoint &m, unsigned int nps, size_t k);
 };
 
 #endif // DELTA_GRID_H

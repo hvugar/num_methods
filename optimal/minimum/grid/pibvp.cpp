@@ -1132,7 +1132,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
     /***********************************************************************************************/
     /***********************************************************************************************/
 
-    TimeNodePDE tn00, tn05, tn10;
+    TimeNodePDE tn00, tn10;
     SpaceNodePDE sn;
     unsigned int i=0, j=0, s=0, e=N;
     int n = 0, m = 0;
@@ -1146,7 +1146,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
         }
     }
 
-    tn00.i = 0; tn00.t = 0.5*tn00.i*ht;
+    tn00.i = 0; tn00.t = tn00.i*ht;
     layerInfo(DoubleMatrix(u00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
@@ -1166,17 +1166,13 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
 
             sn.i = xmin; sn.x = xmin*hx;
-            //value = boundary(sn, tn05, condition);
-            value = boundary(sn, tn00, condition);
+            value = 0.5*(boundary(sn, tn00, condition) + boundary(sn, tn10, condition));
             alpha = condition.alpha();
             beta  = condition.beta();
             gamma = condition.gamma();
-            value += boundary(sn, tn10, condition);
-            value /= 2.0;
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                throw std::runtime_error("error");
                 s = 1;
                 u05[j][0] = (gamma/alpha)*value;
                 dx[1] -= k11 * u05[j][0];
@@ -1184,7 +1180,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::runtime_error("error");
                 s = 0;
                 ax[s]  = 0.0;
                 bx[s]  = beta  * b111;
@@ -1209,14 +1204,13 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
 
             sn.i = xmax; sn.x = xmax*hx;
-            value = boundary(sn, tn05, condition);
+            value = 0.5*(boundary(sn, tn00, condition) + boundary(sn, tn10, condition));
             alpha = condition.alpha();
             beta  = condition.beta();
             gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                throw std::runtime_error("error");
                 e = N-1;
                 u05[j][N] = (gamma/alpha)*value;
                 dx[N-1] -= k13 * u05[j][N];
@@ -1224,7 +1218,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::runtime_error("error");
                 e = N;
                 ax[e]  = beta  * b121;
                 bx[e]  = beta  * b123;
@@ -1251,6 +1244,51 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
             //for (unsigned int i=s; i<=e; i++) u05[j][i] = rx[i];
             memcpy(u05[j]+s, rx+s, sizeof (double*)*(e-s+1));
+        }
+
+        for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
+        {
+            sn.j = ymin; sn.y = ymin*hy;
+            value = 0.5*(boundary(sn, tn00, condition) + boundary(sn, tn10, condition));
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                u05[0][i] = (gamma/alpha)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                //u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*(gamma/beta)*value)/(2.0);
+                u05[0][i] = u05[1][i] + hy*(gamma/beta)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                //u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                u05[0][i] = (u05[1][i] + hy*(gamma/beta)*value)/(1.0+hy*(alpha/beta));
+            }
+
+            sn.j = ymax; sn.y = ymax*hy;
+            value = 0.5*(boundary(sn, tn00, condition) + boundary(sn, tn10, condition));
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            gamma = condition.gamma();
+
+            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+            {
+                u05[M][i] = (gamma/alpha)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+            {
+                //u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(gamma/beta)*value)/(2.0);
+                u05[M][i] = u05[M-1][i] + hy*(gamma/beta)*value;
+            }
+            if (condition.boundaryCondition() == BoundaryCondition::Robin)
+            {
+                //u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                u05[M][i] = (u05[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+            }
         }
 
         /**************************************************** x direction apprx ***************************************************/
@@ -1359,13 +1397,13 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0);
-                //u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value);
+                //u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0);
+                u10[j][0] = u10[j][1] + hx*(gamma/beta)*value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
-                //u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
+                //u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
             }
 
             sn.i = xmax; sn.x = xmax*hx;
@@ -1380,13 +1418,13 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0);
-                //u10[j][N] = (u10[j][N-1] + hx*(gamma/beta)*value);
+                //u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0);
+                u10[j][N] = u10[j][N-1] + hx*(gamma/beta)*value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
-                //u10[j][N] = (u10[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+                //u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                u10[j][N] = (u10[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
             }
         }
 
