@@ -26,7 +26,7 @@
 //#include "../problem1P/problem1p_solver.h"
 //#include "../problem1H/problem1h_solver.h"
 #include "../problem3P/solver.h"
-#include "../problem3P/heat_equation_ibvp.h"
+//#include "../problem3P/heat_equation_ibvp.h"
 
 #include "test/delta_grid_2d_ext1.h"
 //#include "test/nonlinear_equation_ex1.h"

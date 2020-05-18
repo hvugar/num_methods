@@ -1293,13 +1293,14 @@ double DeltaFunction::lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, d
     return pu;
 }
 
-double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny,
-                                   const SpacePoint &m, unsigned int nps, size_t k)
+double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, unsigned int nps, size_t k)
 {
+    const double hx = dimensionX.step(), hy = dimensionY.step();
+    const unsigned int Nx = dimensionX.size()-1, Ny = dimensionY.size()-1;
     const double lx = hx*Nx;
     const double ly = hy*Ny;
-    const double px = p.x;
-    const double py = p.y;
+    const double px = m.x;
+    const double py = m.y;
     const unsigned int rx = static_cast<unsigned int>(round((px/hx)*lx));
     const unsigned int ry = static_cast<unsigned int>(round((py/hy)*ly));
 
@@ -1309,16 +1310,27 @@ double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &p, d
     const unsigned int maxY = static_cast<unsigned int>(ry + nps*k);
     const SpacePoint sigma = { nps*hx, nps*hy };
 
-    double pu = 0.0, ux = 0.0, uy = 0.0;
-    for (uint32_t m=minY; m<=maxY; m++)
+    double uv = 0.0, ux = 0.0, uy = 0.0;
+    SpacePoint p;
+    for (uint32_t j=minY; j<=maxY; j++)
     {
-        for (uint32_t n=minX; n<=maxX; n++)
+        p.y = j*hy;
+
+        for (uint32_t i=minX; i<=maxX; i++)
         {
+            p.x = i*hx;
+
             double w = gaussian(p, m, sigma, k);
-            pu += w * hx * hy * u[m][n];
-            //ux += w * hx * hy * (u[m][n+1]-u[m][n-1])/(2.0*_hx);
-            //uy += w * hx * hy * (u[m+1][n]-u[m-1][n])/(2.0*_hy);
+            if (i==minX || i==minX) { w *= 1.0; } else if (i%2==1) { w *= 4.0; } else { w *= 2.0; }
+            if (j==minY || j==maxY) { w *= 1.0; } else if (j%2==1) { w *= 4.0; } else { w *= 2.0; }
+            uv += w * u[j][i];
+            ux += w * (u[j][i+1]-u[j][i-1])/(2.0*hx);
+            uy += w * (u[j+1][i]-u[j-1][i])/(2.0*hy);
         }
     }
-    return pu;
+    uv *= ((hx*hy)/9.0);
+    ux *= ((hx*hy)/9.0);
+    uy *= ((hx*hy)/9.0);
+
+    return uv;
 }

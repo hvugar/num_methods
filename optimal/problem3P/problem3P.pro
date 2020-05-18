@@ -107,7 +107,7 @@ HEADERS += solver.h
 SOURCES += solver.cpp \
     solver1.cpp
 
-HEADERS += heat_equation_ibvp.h
-SOURCES += heat_equation_ibvp.cpp
+#HEADERS += heat_equation_ibvp.h
+#SOURCES += heat_equation_ibvp.cpp
 
 #OTHER_FILES += matlab/*

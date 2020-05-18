@@ -164,8 +164,7 @@ public:
     static double lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
     static double lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
     static double lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
-    static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny,
-                               const SpacePoint &m, unsigned int nps, size_t k);
+    static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, unsigned int nps, size_t k);
 };
 
 #endif // DELTA_GRID_H

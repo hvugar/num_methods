@@ -68,6 +68,15 @@ public:
     double *betta1 = new double[heatSourceNumber*measurePointNumber];
     double *betta2 = new double[heatSourceNumber*measurePointNumber];
     double *betta3 = new double[heatSourceNumber*measurePointNumber];
+    double *uij = new double[heatSourceNumber*measurePointNumber];
+
+    double *q = new double[heatSourceNumber];
+    double *v = new double[heatSourceNumber];
+
+protected:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    Dimension _spaceDimensionY;
 };
 
 }

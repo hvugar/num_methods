@@ -39,16 +39,40 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
 void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
     unsigned int ln = tn.i;
+    Solver1* solver = const_cast<Solver1*>(this);
 
     for (unsigned int j=0; j<measurePointNumber; j++)
     {
-        DeltaFunction::gaussian()
+        const SpacePoint& measurePoint = measurePoints[j];
+        solver->measurePointValues[j].z = DeltaFunction::lumpedPointG(u, measurePoint, _spaceDimensionX, _spaceDimensionY, 1, 4);
     }
 
-    double q = externalSource[ln].q;
-    const SpacePoint &z = externalSource[ln].z;
-    return q * deltaZ.gaussWeight(sn, z, SIGMA_X, SIGMA_Y);
+    for (unsigned int i=0; i<heatSourceNumber; i++)
+    {
+        q[i] = v[i] = 0.0;
+        SpacePoint* heatSourceRoute = heatSourceRoutes[i];
+        const SpacePoint& zi = heatSourceRoute[tn.i];
 
+        for (unsigned int j=0; j<measurePointNumber; j++)
+        {
+            double _alpha1 = alpha1[i*heatSourceNumber+j];
+            double _alpha2 = alpha2[i*heatSourceNumber+j];
+            double _alpha3 = alpha3[i*heatSourceNumber+j];
+            double _betta1 = betta1[i*heatSourceNumber+j];
+            double _betta2 = betta2[i*heatSourceNumber+j];
+            double _betta3 = betta3[i*heatSourceNumber+j];
+            double _uij = uij[i*heatSourceNumber+j];
+            const SpacePoint& mp = measurePoints[j];
+
+            double distance = (zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y);
+
+
+            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - uij );
+            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - uij );
+        }
+    }
+
+    return 0.0;
 }
 
 //--------------------------------------------------------------------------------------------------------------//
