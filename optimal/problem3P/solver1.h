@@ -6,13 +6,21 @@
 namespace p3p
 {
 
+struct HeatSourceParams
+{
+    double *v1 = nullptr;
+    double *v2 = nullptr;
+    double *q1 = nullptr;
+    double *q2 = nullptr;
+};
+
 class Solver1;
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public IFirstOrderLinearODEIVP
+class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public ISecondOrderLinearODEIBVP
 {
 public:
     HeatEquationIBVP(Solver1 *solver = nullptr);
-    virtual ~HeatEquationIBVP();
+    virtual ~HeatEquationIBVP() override;
 
     virtual auto initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double override;
     virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const -> double override;
@@ -25,14 +33,17 @@ public:
     virtual auto spaceDimensionZ() const -> Dimension override;
 
     virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const  -> double override;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const  -> double override;
-    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double;
+    virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const  -> double override;
+    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const  -> double override;
+    virtual auto D(const PointNodeODE &node, unsigned int row = 1) const -> double;
     virtual auto initial(InitialCondition condition, unsigned int row = 1) const  -> double override;
+    virtual auto boundary(const PointNodeODE &, BoundaryConditionPDE &, unsigned int) const -> double override { return 0.0; }
     virtual auto count() const  -> unsigned int override;
     virtual auto dimension() const -> Dimension override;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
     unsigned int i;
+
     DoubleMatrix lastLayerU;
 
 public:

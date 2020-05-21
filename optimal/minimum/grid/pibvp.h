@@ -62,6 +62,9 @@ public:
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// COMPLETED
 
+    void init() const;
+    void next() const;
+
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
@@ -74,6 +77,9 @@ protected:
 
 public:
     bool _userHalfValues = true;
+
+private:
+    void *initParams;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//

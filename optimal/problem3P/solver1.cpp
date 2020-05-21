@@ -51,7 +51,7 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
     {
         q[i] = v[i] = 0.0;
         SpacePoint* heatSourceRoute = heatSourceRoutes[i];
-        const SpacePoint& zi = heatSourceRoute[tn.i];
+        const SpacePoint& zi = heatSourceRoute[ln];
 
         for (unsigned int j=0; j<measurePointNumber; j++)
         {
@@ -66,13 +66,10 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
             double distance = (zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y);
 
-
-            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - uij );
-            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - uij );
+            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - _uij );
+            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - _uij );
         }
     }
-
-    return 0.0;
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -105,109 +102,36 @@ auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
+auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int, unsigned int) const -> double
 {
-#ifdef VARIANT_1
-    const double mx[2][2] = {
-        {-3.0, -2.0}, {-4.0, -5.0}
-    };
-    return mx[row-1][col-1];
-#endif
-#ifdef VARIANT_2
-    const double vl[4][4] = {
-        {+0.0, +0.0, +1.0, +0.0},
-        {+0.0, +0.0, +0.0, +1.0},
-        {+0.0, +0.0, +0.0, +0.0},
-        {+0.0, +0.0, +0.0, +0.0},
-    };
-    return vl[row-1][col-1];
-#endif
-#ifdef VARIANT_3
-    const double vl[2][2] = { {+0.0, +0.0}, {+0.0, +0.0} };
-    return vl[row-1][col-1];
-#endif
+    return 0.0;
 }
 
-auto HeatEquationIBVP::B(const PointNodeODE &node, unsigned int row) const -> double
+auto HeatEquationIBVP::B(const PointNodeODE &, unsigned int, unsigned int) const -> double
 {
-    //return solver->zt(node, row)
-    //        - (A(node, row, 1)*solver->z(node, 1)+A(node, row, 2)*solver->z(node, 2))
-    //        - C(node, row)*solver->v(node)
-    //        + C(node, row)*solver->mv[node.i];
-
-    double t = node.x;
-#ifdef VARIANT_1
-    double v = solver->v(node);
-    return (row == 1) ?
-                0.4*M_PI*sin(2.0*M_PI*t) - 1.8*M_PI*t*sin(4.0*M_PI*t*t)
-                + 3.0*(0.40*sin(1.0*M_PI*t)*sin(1.0*M_PI*t)+0.45*cos(2.0*M_PI*t*t)*cos(2.0*M_PI*t*t)+0.05)
-                + 2.0*(0.30*sin(4.0*M_PI*t)*sin(4.0*M_PI*t)+0.45*cos(3.0*M_PI*t*t)*cos(3.0*M_PI*t*t)+0.05) - 5.0*sin(2.0*M_PI*t*t) + 5.0*v:
-                1.2*M_PI*sin(8.0*M_PI*t) - 2.7*M_PI*t*sin(6.0*M_PI*t*t)
-                + 4.0*(0.40*sin(1.0*M_PI*t)*sin(1.0*M_PI*t)+0.45*cos(2.0*M_PI*t*t)*cos(2.0*M_PI*t*t)+0.05)
-                + 5.0*(0.30*sin(4.0*M_PI*t)*sin(4.0*M_PI*t)+0.45*cos(3.0*M_PI*t*t)*cos(3.0*M_PI*t*t)+0.05) - 4.0*sin(2.0*M_PI*t*t) + 4.0*v;
-#endif
-#ifdef VARIANT_2
-    puts("B1");
-    //const double mx[4] = {+0.0, +0.0, +1.0, +1.0};
-    unsigned int ln = static_cast<unsigned int>(node.i);
-    double aa = C(node, row-1);//*solver->externalSource[ln].v;
-    puts("B1");
-    return aa;
-#endif
-#ifdef VARIANT_3
-    const double vl[2] = {+0.0, +0.0};
-    unsigned int ln = static_cast<unsigned int>(node.i);
-    double ret = C(node, row)*solver->externalSource[ln].v + vl[row-1];
-    return ret;
-#endif
+    return 0.0;
 }
 
 auto HeatEquationIBVP::C(const PointNodeODE &node, unsigned int row) const -> double
 {
-#ifdef VARIANT_1
-    const double c[2] = { +5.0, +4.0 };
-    return c[row-1];
-#endif
-#ifdef VARIANT_2
-    puts("C1");
-    const double vl[4] = { +0.0, +0.0, +1.0, +1.0 };
-    double bb = 0.0;//vl[row-1];
-    printf("%f row %d\n", bb, row);
-    return bb;
-#endif
-#ifdef VARIANT_3
+    return 0.0 + D(node, row);
+}
+
+auto HeatEquationIBVP::D(const PointNodeODE &node, unsigned int row) const -> double
+{
     const double vl[2] = {+1.0, +1.0};
     return vl[row-1]*node.x;
-#endif
 }
 
 auto HeatEquationIBVP::initial(InitialCondition, unsigned int row) const -> double
 {
-#ifdef VARIANT_1
-    const double val[2] = { 0.50, 0.50 };
-    return val[row-1];
-#endif
-#ifdef VARIANT_2
-    const double val[4] = { 0.10, 0.10, 0.00, 0.00 };
-    return val[row-1];
-#endif
-#ifdef VARIANT_3
     const double val[2] = { 0.10, 0.10 };
     return val[row-1];
-#endif
 }
 
 auto HeatEquationIBVP::count() const -> unsigned int
 {
-#ifdef VARIANT_1
     return 2;
-#endif
-#ifdef VARIANT_2
-    return 4;
-#endif
-#ifdef VARIANT_3
-    return 2;
-#endif
 }
 
 auto HeatEquationIBVP::dimension() const -> Dimension { return solver->timeDimension(); }
