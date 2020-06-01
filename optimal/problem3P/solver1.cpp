@@ -1,6 +1,6 @@
 #include "solver1.h"
 
-using namespace p3p;
+using namespace p3p1;
 
 void Solver1::Main(int argc, char **argv)
 {}
@@ -8,6 +8,21 @@ void Solver1::Main(int argc, char **argv)
 Solver1::Solver1() {}
 
 Solver1::~Solver1() {}
+
+void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
+{
+    this->heatSourceNumber = heatSourceNumber;
+    this->measrPointNumber = measrPointNumber;
+
+    alpha1.resize(heatSourceNumber, measrPointNumber);
+    alpha2.resize(heatSourceNumber, measrPointNumber);
+    alpha3.resize(heatSourceNumber, measrPointNumber);
+    betta1.resize(heatSourceNumber, measrPointNumber);
+    DoubleMatrix betta2;
+    DoubleMatrix betta3;
+    DoubleMatrix nominU;
+
+}
 
 double Solver1::frw_initial(const SpaceNodePDE &, InitialCondition) const { return 0.0; }
 
@@ -19,10 +34,10 @@ double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, Boundary
 
 auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    unsigned int ln = static_cast<unsigned int>(tn.i) / 2;
-    double q = externalSource[ln].q;
-    const SpacePoint &z = externalSource[ln].z;
-    return q * deltaZ.gaussWeight(sn, z, SIGMA_X, SIGMA_Y);
+    //unsigned int ln = static_cast<unsigned int>(tn.i) / 2;
+    //double q = externalSource[ln].q;
+    //const SpacePoint &z = externalSource[ln].z;
+    //return q * deltaZ.gaussWeight(sn, z, SIGMA_X, SIGMA_Y);
 
     //    const Dimension &dimensionX = spaceDimensionX();
     //    const Dimension &dimensionY = spaceDimensionY();
@@ -33,43 +48,73 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
     //        return mq[ln]*(1.0/(hx*hy));
     //    else
     //        return 0.0;
-
+    return 0.0;
 }
 
 void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    unsigned int ln = tn.i;
-    Solver1* solver = const_cast<Solver1*>(this);
+//    unsigned int ln = tn.i;
+//    Solver1* solver = const_cast<Solver1*>(this);
 
-    for (unsigned int j=0; j<measurePointNumber; j++)
+//    for (unsigned int j=0; j<measrPointNumber; j++)
+//    {
+//        const SpacePoint& measurePoint = measurePoints[j];
+//        solver->measurePointValues[j].z = DeltaFunction::lumpedPointG(u, measurePoint, _spaceDimensionX, _spaceDimensionY, 1, 4);
+//    }
+
+<<<<<<< .mine
+//    for (unsigned int i=0; i<heatSourceNumber; i++)
+//    {
+//        q[i] = v[i] = 0.0;
+//        SpacePoint* heatSourceRoute = heatSourceRoutes[i];
+//        const SpacePoint& zi = heatSourceRoute[tn.i];
+||||||| .r1701
+    for (unsigned int i=0; i<heatSourceNumber; i++)
     {
-        const SpacePoint& measurePoint = measurePoints[j];
-        solver->measurePointValues[j].z = DeltaFunction::lumpedPointG(u, measurePoint, _spaceDimensionX, _spaceDimensionY, 1, 4);
-    }
-
+        q[i] = v[i] = 0.0;
+        SpacePoint* heatSourceRoute = heatSourceRoutes[i];
+        const SpacePoint& zi = heatSourceRoute[tn.i];
+=======
     for (unsigned int i=0; i<heatSourceNumber; i++)
     {
         q[i] = v[i] = 0.0;
         SpacePoint* heatSourceRoute = heatSourceRoutes[i];
         const SpacePoint& zi = heatSourceRoute[ln];
+>>>>>>> .r1702
 
-        for (unsigned int j=0; j<measurePointNumber; j++)
-        {
-            double _alpha1 = alpha1[i*heatSourceNumber+j];
-            double _alpha2 = alpha2[i*heatSourceNumber+j];
-            double _alpha3 = alpha3[i*heatSourceNumber+j];
-            double _betta1 = betta1[i*heatSourceNumber+j];
-            double _betta2 = betta2[i*heatSourceNumber+j];
-            double _betta3 = betta3[i*heatSourceNumber+j];
-            double _uij = uij[i*heatSourceNumber+j];
-            const SpacePoint& mp = measurePoints[j];
+//        for (unsigned int j=0; j<measrPointNumber; j++)
+//        {
+////            double _alpha1 = alpha1[i*heatSourceNumber+j];
+////            double _alpha2 = alpha2[i*heatSourceNumber+j];
+////            double _alpha3 = alpha3[i*heatSourceNumber+j];
+////            double _betta1 = betta1[i*heatSourceNumber+j];
+////            double _betta2 = betta2[i*heatSourceNumber+j];
+////            double _betta3 = betta3[i*heatSourceNumber+j];
+////            double _uij = uij[i*heatSourceNumber+j];
+//            const SpacePoint& mp = measurePoints[j];
 
-            double distance = (zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y);
+//            double distance = (zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y);
 
+<<<<<<< .mine
+
+////            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j] - uij );
+////            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j] - uij );
+//        }
+//    }
+||||||| .r1701
+
+            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - uij );
+            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - uij );
+        }
+    }
+
+    return 0.0;
+=======
             q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - _uij );
             v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - _uij );
         }
     }
+>>>>>>> .r1702
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -78,11 +123,11 @@ HeatEquationIBVP::HeatEquationIBVP(Solver1 *solver) { this->solver = solver; }
 
 HeatEquationIBVP::~HeatEquationIBVP() {}
 
-auto HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition cn) const -> double { return solver1->frw_initial(sn, cn); }
+auto HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition cn) const -> double { return solver->frw_initial(sn, cn); }
 
 auto HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &cn) const -> double { return solver->frw_boundary(sn, tn, cn); }
 
-auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const-> double { return solver1->frw_f(sn, tn); }
+auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const-> double { return solver->frw_f(sn, tn); }
 
 auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
@@ -92,11 +137,11 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 
 auto HeatEquationIBVP::weight() const -> double { throw std::runtime_error(""); }
 
-auto HeatEquationIBVP::timeDimension() const -> Dimension { return solver1->timeDimension(); }
+auto HeatEquationIBVP::timeDimension() const -> Dimension { return solver->timeDimension(); }
 
-auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return solver1->spaceDimensionX(); }
+auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return solver->spaceDimensionX(); }
 
-auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return solver1->spaceDimensionY(); }
+auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return solver->spaceDimensionY(); }
 
 auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime_error(""); }
 
@@ -138,10 +183,10 @@ auto HeatEquationIBVP::dimension() const -> Dimension { return solver->timeDimen
 
 auto HeatEquationIBVP::iterationInfo(const DoubleVector &z, const PointNodeODE &node) const -> void
 {
-    unsigned int ln = static_cast<unsigned int>(node.i);
-    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
-    es.z.x = z[0];
-    es.z.y = z[1];
+//    unsigned int ln = static_cast<unsigned int>(node.i);
+//    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
+//    es.z.x = z[0];
+//    es.z.y = z[1];
 }
 
 //--------------------------------------------------------------------------------------------------------------//

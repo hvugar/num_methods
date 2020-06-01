@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-namespace p3p
+namespace p3p1
 {
 
 struct HeatSourceParams
@@ -59,30 +59,36 @@ public:
     Solver1();
     virtual ~Solver1();
 
+    void setPointNumber(size_t heatSourceNumber, size_t measrPointNumber);
+
     virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void frw_layerInfo(const DoubleMatrix &U, const TimeNodePDE &tn) const;
-    virtual void frw_calculate() const;
+    //virtual void frw_calculate() const;
 
-    const size_t heatSourceNumber = 2;
+    size_t heatSourceNumber = 2;
+    size_t measrPointNumber = 4;
     std::vector<SpacePoint*> heatSourceRoutes;
-    const size_t measurePointNumber = 4;
-    SpacePoint *measurePoints = new SpacePoint[measurePointNumber];
-    SpacePoint *measurePointValues = new SpacePoint[measurePointNumber];
+    SpacePoint *measurePoints = new SpacePoint[measrPointNumber];
+    SpacePoint *measurePointValues = new SpacePoint[measrPointNumber];
     double environmentTemperature = 0.0;
     double lambda0 = 0.001;
 
-    double *alpha1 = new double[heatSourceNumber*measurePointNumber];
-    double *alpha2 = new double[heatSourceNumber*measurePointNumber];
-    double *alpha3 = new double[heatSourceNumber*measurePointNumber];
-    double *betta1 = new double[heatSourceNumber*measurePointNumber];
-    double *betta2 = new double[heatSourceNumber*measurePointNumber];
-    double *betta3 = new double[heatSourceNumber*measurePointNumber];
-    double *uij = new double[heatSourceNumber*measurePointNumber];
+    DoubleMatrix alpha1;
+    DoubleMatrix alpha2;
+    DoubleMatrix alpha3;
+    DoubleMatrix betta1;
+    DoubleMatrix betta2;
+    DoubleMatrix betta3;
+    DoubleMatrix nominU;
 
     double *q = new double[heatSourceNumber];
     double *v = new double[heatSourceNumber];
+
+    virtual const Dimension& timeDimension() const { return _timeDimension; }
+    virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
+    virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
 
 protected:
     Dimension _timeDimension;

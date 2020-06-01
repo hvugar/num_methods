@@ -35,8 +35,11 @@
 
 int main(int argc, char *argv[])
 {
+    printf("size of size_t: %d unsigned int: %d\n", sizeof(size_t), sizeof(unsigned int));
+
     //srand(static_cast<unsigned int>(time(nullptr)));
     QGuiApplication app(argc, argv);
+
 
     //ConjugateGradinetTest::Main(argc, argv);
 
