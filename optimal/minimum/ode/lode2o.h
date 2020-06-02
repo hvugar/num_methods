@@ -7,28 +7,53 @@
  * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
  * The Linear ODE 2nd order in canonical (normal) form y"(x) = A(x)y'(x) + B(x)y(x) + C(x);
  */
-class MINIMUMSHARED_EXPORT ISecondOrderLinearODEIBVP : virtual public ISecondOrderLinearODE, virtual public InitialValueProblemODE,
-        virtual public BoundaryValueProblemODE
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODEIVP : virtual public ISecondOrderLinearODE, virtual public InitialValueProblemODE
+{
+public:
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ISecondOrderLinearODEIVP);
+
+    void solveInitialValueProblem(DoubleVector &rv) const;
+    void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
+    void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
+
+
+    void start(DoubleVector &x, PointNodeODE &n);
+    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n);
+};
+
+/**
+ * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
+ * The Linear ODE 2nd order in canonical (normal) form y"(x) = A(x)y'(x) + B(x)y(x) + C(x);
+ */
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODEIBVP : virtual public ISecondOrderLinearODEIVP, virtual public BoundaryValueProblemODE
 {
 public:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ISecondOrderLinearODEIBVP);
 
-    void solveInitialValueProblem(DoubleVector &rv) const;
     void solveBoundaryValueProblem(DoubleVector &rv) const;
-    void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
     void solveBoundaryValueProblem(std::vector<DoubleVector> &rv) const;
-    void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
+};
+
+/**
+ * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
+ * The Linear ODE 2nd order in canonical (normal) form y"(x) = A(x)y'(x) + B(x)y(x) + C(x);
+ */
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODEFVP : virtual public ISecondOrderLinearODE, virtual public FinalValueProblemODE
+{
+public:
+    PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ISecondOrderLinearODEFVP);
 
     void solveInitialValueProblem2(ODESolverMethod method = ODESolverMethod::EULER) const;
 };
 
-class MINIMUMSHARED_EXPORT ISecondOrderLinearODEFBVP : virtual public ISecondOrderLinearODE, virtual public FinalValueProblemODE,
-        virtual public BoundaryValueProblemODE
+/**
+ * @brief Линейное дифференциальное уравнение второго порядка с переменными коэффициентами
+ * The Linear ODE 2nd order in canonical (normal) form y"(x) = A(x)y'(x) + B(x)y(x) + C(x);
+ */
+class MINIMUMSHARED_EXPORT ISecondOrderLinearODEFBVP : virtual public ISecondOrderLinearODEFVP, virtual public BoundaryValueProblemODE
 {
 public:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(ISecondOrderLinearODEFBVP);
-
-    void solveInitialValueProblem2(ODESolverMethod method = ODESolverMethod::EULER) const;
 };
 
 /**

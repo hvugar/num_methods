@@ -59,11 +59,11 @@ public:
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
 
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const  -> double override;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const  -> double override;
-    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double;
-    virtual auto initial(InitialCondition condition, unsigned int row = 1) const  -> double override;
-    virtual auto count() const  -> unsigned int override;
+    virtual auto A(const PointNodeODE &node, size_t row = 1, size_t col = 1) const  -> double override;
+    virtual auto B(const PointNodeODE &node, size_t row = 1) const  -> double override;
+    virtual auto C(const PointNodeODE &node, size_t row = 1) const -> double;
+    virtual auto initial(InitialCondition condition, size_t row = 1) const  -> double override;
+    virtual auto count() const  -> size_t override;
     virtual auto dimension() const -> Dimension override;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
@@ -89,10 +89,10 @@ public:
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
 
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double override;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double override;
-    virtual auto final(FinalCondition condition, unsigned int row = 1) const -> double override;
-    virtual auto count() const  -> unsigned int override;
+    virtual auto A(const PointNodeODE &node, size_t row = 1, size_t col = 1) const -> double override;
+    virtual auto B(const PointNodeODE &node, size_t row = 1) const -> double override;
+    virtual auto final(FinalCondition condition, size_t row = 1) const -> double override;
+    virtual auto count() const  -> size_t override;
     virtual auto dimension() const -> Dimension override;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
@@ -155,8 +155,8 @@ public:
     virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
     virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
 
-    auto z(const PointNodeODE& node, unsigned int row) const -> double;
-    auto zt(const PointNodeODE& node, unsigned int row) const -> double;
+    auto z(const PointNodeODE& node, size_t row) const -> double;
+    auto zt(const PointNodeODE& node, size_t row) const -> double;
     auto v(const PointNodeODE &node) const -> double;
 
     void validate();

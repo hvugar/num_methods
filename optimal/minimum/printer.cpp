@@ -318,7 +318,7 @@ void IPrinter::print(const double *v, unsigned int N, unsigned int width, unsign
     fflush(file);
 }
 
-void IPrinter::print(std::vector<DoubleVector> &rv, unsigned int k, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)
+void IPrinter::print(std::vector<DoubleVector> &rv, size_t k, size_t N, size_t width, size_t presicion, FILE *file)
 {
     char format[10] = {0};
     int sz = sprintf(format, "%%%d.%df ", width, presicion);

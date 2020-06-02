@@ -9,19 +9,19 @@ class IVectorNormalizer;
 class MINIMUMSHARED_EXPORT DoubleVector
 {
 public:
-    explicit DoubleVector(unsigned int length = 0, double value = 0.0);
-    explicit DoubleVector(const double* data, unsigned int length);
+    explicit DoubleVector(size_t length = 0, double value = 0.0);
+    explicit DoubleVector(const double* data, size_t length);
     DoubleVector(const DoubleVector &vector);
     DoubleVector(const DoubleMatrix &matrix);
     virtual ~DoubleVector();
 
     void clear();
-    void resize(unsigned int length, double value = 0.0);
+    void resize(size_t length, double value = 0.0);
     bool empty() const;
-    double& at (unsigned int n);
-    const double& at (unsigned int n) const;
-    unsigned int length() const;
-    DoubleVector& append(const double *data, unsigned int length);
+    double& at (size_t n);
+    const double& at (size_t n) const;
+    size_t length() const;
+    DoubleVector& append(const double *data, size_t length);
     DoubleVector& append(const DoubleVector &v);
 
     /********************************************************************
@@ -31,7 +31,7 @@ public:
     double EuclideanNorm() const;
     double L1Norm() const;
     double L2Norm() const;
-    double LpNorm(unsigned int p) const;
+    double LpNorm(size_t p) const;
     double LInfNorm() const;
 
     DoubleVector& EuclideanNormalize();
@@ -44,7 +44,7 @@ public:
 
     double min() const;
     double max() const;
-    DoubleVector mid(unsigned int s, unsigned int e) const;
+    DoubleVector mid(size_t s, size_t e) const;
 
     double EuclideanDistance(const DoubleVector&) const;
 
@@ -55,8 +55,8 @@ public:
      *                             OPERATORS
      ********************************************************************/
 
-    double& operator [](unsigned int n);
-    double operator [](unsigned int n) const;
+    double& operator [](size_t n);
+    double operator [](size_t n) const;
 
     DoubleVector& operator =(const DoubleVector& vector);
     DoubleVector& operator +=(const DoubleVector& vector);
@@ -81,9 +81,8 @@ public:
     friend class DoubleMatrix;
     friend class IVectorNormalizer;
 private:
-    unsigned int mLength;
+    size_t mLength;
     double *mData;
-    static unsigned int instanceCount;
 };
 
 #endif // VECTOR2D_H

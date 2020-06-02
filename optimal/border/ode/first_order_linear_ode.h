@@ -13,15 +13,15 @@
 class FirstOrderLinearSample
 {
 public:
-    double x(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const;
-    double dt(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const;
-    double d2t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const;
-    double d3t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const;
-    double d4t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const;
-    //virtual double d5t(const PointNodeODE &node, unsigned int row = 0) const;
-    //virtual double d6t(const PointNodeODE &node, unsigned int row = 0) const;
+    double x(const PointNodeODE &node, size_t r UNUSED_PARAM) const;
+    double dt(const PointNodeODE &node, size_t r UNUSED_PARAM) const;
+    double d2t(const PointNodeODE &node, size_t r UNUSED_PARAM) const;
+    double d3t(const PointNodeODE &node, size_t r UNUSED_PARAM) const;
+    double d4t(const PointNodeODE &node, size_t r UNUSED_PARAM) const;
+    //virtual double d5t(const PointNodeODE &node, size_t row = 0) const;
+    //virtual double d6t(const PointNodeODE &node, size_t row = 0) const;
 
-    void printNorms(std::vector<DoubleVector> &x, unsigned int k) const;
+    void printNorms(std::vector<DoubleVector> &x, size_t k) const;
 };
 
 /*****************************************************************************************************/
@@ -36,13 +36,13 @@ public:
     std::vector<DoubleVector> mx;
 
 protected:
-    virtual auto A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const -> double;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 0) const -> double;
-    virtual auto count() const -> unsigned int;
+    virtual auto A(const PointNodeODE &node, size_t row = 0, size_t col = 0) const -> double;
+    virtual auto B(const PointNodeODE &node, size_t row = 0) const -> double;
+    virtual auto count() const -> size_t;
     virtual auto dimension() const -> Dimension;
     virtual void iterationInfo(double y, const PointNodeODE &node) const;
     virtual void iterationInfo(const DoubleVector &v, const PointNodeODE &node) const;
-    virtual auto initial(InitialCondition, unsigned int) const -> double;
+    virtual auto initial(InitialCondition, size_t) const -> double;
 };
 
 /*****************************************************************************************************/
@@ -56,13 +56,13 @@ public:
     std::vector<DoubleVector> mx;
 
 protected:
-    virtual auto A(const PointNodeODE &node, unsigned int row = 0, unsigned int col = 0) const -> double;
-    virtual auto B(const PointNodeODE &node, unsigned int row = 0) const -> double;
-    virtual auto count() const -> unsigned int;
+    virtual auto A(const PointNodeODE &node, size_t row = 0, size_t col = 0) const -> double;
+    virtual auto B(const PointNodeODE &node, size_t row = 0) const -> double;
+    virtual auto count() const -> size_t;
     virtual auto dimension() const -> Dimension;
     virtual auto iterationInfo(double y, const PointNodeODE &node) const -> void;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void;
-    virtual auto final(FinalCondition, unsigned int) const -> double;
+    virtual auto final(FinalCondition, size_t) const -> double;
 };
 
 #endif // FIRST_ORDER_LINEAR_ODE_EX1_H

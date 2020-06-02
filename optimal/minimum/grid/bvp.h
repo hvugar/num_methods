@@ -43,7 +43,7 @@ class MINIMUMSHARED_EXPORT BoundaryValueProblemODE : protected BoundaryValueProb
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(BoundaryValueProblemODE);
 
 protected:
-    virtual auto boundary(const PointNodeODE &node, BoundaryConditionPDE &condition, unsigned int row = 1) const -> double = 0;
+    virtual auto boundary(const PointNodeODE &node, BoundaryConditionPDE &condition, size_t row = 1) const -> double = 0;
 };
 
 /**

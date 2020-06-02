@@ -8,33 +8,33 @@ class MINIMUMSHARED_EXPORT DoubleMatrix
 {
 public:
     static DoubleMatrix DiagonalMatrix(const DoubleVector& vector);
-    static DoubleMatrix IdentityMatrix(unsigned int n);
-    static DoubleMatrix ZeroMatrix(unsigned int rows, unsigned int cols);
-    static DoubleMatrix HilbertMatrix(unsigned int rows, unsigned int cols);
+    static DoubleMatrix IdentityMatrix(size_t n);
+    static DoubleMatrix ZeroMatrix(size_t rows, size_t cols);
+    static DoubleMatrix HilbertMatrix(size_t rows, size_t cols);
 
-    explicit DoubleMatrix(unsigned int rows=0, unsigned int cols=0, double value=0.0);
+    explicit DoubleMatrix(size_t rows=0, size_t cols=0, double value=0.0);
     DoubleMatrix(const DoubleMatrix &matrix);
     DoubleMatrix(const DoubleVector &vector);
-    DoubleMatrix(const double* const data, unsigned int length, unsigned int rows, unsigned int cols);
-    DoubleMatrix(double** data, unsigned int rows, unsigned int cols);
+    DoubleMatrix(const double* const data, size_t length, size_t rows, size_t cols);
+    DoubleMatrix(double** data, size_t rows, size_t cols);
     virtual ~DoubleMatrix();
 
-    unsigned int rows() const;
-    unsigned int cols() const;
+    size_t rows() const;
+    size_t cols() const;
 
     bool empty() const;
     void clear();
-    void resize(unsigned int rows, unsigned int cols, double value=0.0);
+    void resize(size_t rows, size_t cols, double value=0.0);
     void reset(double value=0.0);
 
-    double& at(unsigned int row, unsigned int col);
-    const double& at(unsigned int row, unsigned int col) const;
+    double& at(size_t row, size_t col);
+    const double& at(size_t row, size_t col) const;
 
-    DoubleVector row(unsigned int r) const;
-    DoubleVector col(unsigned int c) const;
+    DoubleVector row(size_t r) const;
+    DoubleVector col(size_t c) const;
 
-    void setColumn(unsigned int c, const DoubleVector& col);
-    void setRow(unsigned int r, const DoubleVector& row);
+    void setColumn(size_t c, const DoubleVector& col);
+    void setRow(size_t r, const DoubleVector& row);
 
     bool dioqonalMatrix() const;
     bool identityMatrix() const;
@@ -77,19 +77,19 @@ public:
     double determinant() const;
     void transpose();
     void inverse();
-    DoubleMatrix minor(unsigned int row, unsigned int col) const;
+    DoubleMatrix minor(size_t row, size_t col) const;
 
     double** data() const;
     double** data();
 
-    void switchRows(unsigned int row1, unsigned int row2);
-    void switchCols(unsigned int col1, unsigned int col2);
+    void switchRows(size_t row1, size_t row2);
+    void switchCols(size_t col1, size_t col2);
 
-    double* operator [](unsigned int row) const;
-    double* operator [](unsigned int row);
+    double* operator [](size_t row) const;
+    double* operator [](size_t row);
 
-    double& operator ()(unsigned int row, unsigned int col);
-    const double& operator ()(unsigned int row, unsigned int col) const;
+    double& operator ()(size_t row, size_t col);
+    const double& operator ()(size_t row, size_t col) const;
 
     DoubleMatrix& operator =(const DoubleMatrix& m);
     DoubleMatrix& operator =(const DoubleVector& m);
@@ -114,8 +114,8 @@ public:
 
     friend class DoubleVector;
 private:
-    unsigned int mRows;
-    unsigned int mCols;
+    size_t mRows;
+    size_t mCols;
     double **mData;
 };
 

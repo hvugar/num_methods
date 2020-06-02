@@ -43,15 +43,15 @@ int main(int argc, char *argv[])
 
     //ConjugateGradinetTest::Main(argc, argv);
 
-    //FirstOrderLinearODEIVP::Main(argc, argv);
+    FirstOrderLinearODEIVP::Main(argc, argv);
     //FirstOrderLinearODEFVP::Main(argc, argv);
     //SecondOrderLinearODEIBVP::Main(argc, argv);
     //SecondOrderLinearODEFBVP::Main(argc, argv);
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    HeatEquationIBVP::Main(argc, argv);
-    IPrinter::printSeperatorLine();
+    //HeatEquationIBVP::Main(argc, argv);
+    //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
 

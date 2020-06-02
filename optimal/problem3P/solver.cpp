@@ -636,7 +636,7 @@ auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
+auto HeatEquationIBVP::A(const PointNodeODE &, size_t row, size_t col) const -> double
 {
 #ifdef VARIANT_1
     const double mx[2][2] = {
@@ -659,7 +659,7 @@ auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int row, unsigned int co
 #endif
 }
 
-auto HeatEquationIBVP::B(const PointNodeODE &node, unsigned int row) const -> double
+auto HeatEquationIBVP::B(const PointNodeODE &node, size_t row) const -> double
 {
     //return solver->zt(node, row)
     //        - (A(node, row, 1)*solver->z(node, 1)+A(node, row, 2)*solver->z(node, 2))
@@ -680,20 +680,20 @@ auto HeatEquationIBVP::B(const PointNodeODE &node, unsigned int row) const -> do
 #ifdef VARIANT_2
     puts("B1");
     //const double mx[4] = {+0.0, +0.0, +1.0, +1.0};
-    unsigned int ln = static_cast<unsigned int>(node.i);
+    size_t ln = static_cast<size_t>(node.i);
     double aa = C(node, row-1);//*solver->externalSource[ln].v;
     puts("B1");
     return aa;
 #endif
 #ifdef VARIANT_3
     const double vl[2] = {+0.0, +0.0};
-    unsigned int ln = static_cast<unsigned int>(node.i);
+    size_t ln = static_cast<size_t>(node.i);
     double ret = C(node, row)*solver->externalSource[ln].v + vl[row-1];
     return ret;
 #endif
 }
 
-auto HeatEquationIBVP::C(const PointNodeODE &node, unsigned int row) const -> double
+auto HeatEquationIBVP::C(const PointNodeODE &node, size_t row) const -> double
 {
 #ifdef VARIANT_1
     const double c[2] = { +5.0, +4.0 };
@@ -712,7 +712,7 @@ auto HeatEquationIBVP::C(const PointNodeODE &node, unsigned int row) const -> do
 #endif
 }
 
-auto HeatEquationIBVP::initial(InitialCondition, unsigned int row) const -> double
+auto HeatEquationIBVP::initial(InitialCondition, size_t row) const -> double
 {
 #ifdef VARIANT_1
     const double val[2] = { 0.50, 0.50 };
@@ -728,7 +728,7 @@ auto HeatEquationIBVP::initial(InitialCondition, unsigned int row) const -> doub
 #endif
 }
 
-auto HeatEquationIBVP::count() const -> unsigned int
+auto HeatEquationIBVP::count() const -> size_t
 {
 #ifdef VARIANT_1
     return 2;
@@ -777,7 +777,7 @@ auto HeatEquationFBVP::spaceDimensionZ() const -> Dimension { throw std::runtime
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto HeatEquationFBVP::A(const PointNodeODE &, unsigned int row, unsigned int col) const -> double
+auto HeatEquationFBVP::A(const PointNodeODE &, size_t row, size_t col) const -> double
 {
 #ifdef VARIANT_1
     const double mx[2][2] = { {+3.0, +2.0}, { +4.0, +5.0 } };
@@ -798,7 +798,7 @@ auto HeatEquationFBVP::A(const PointNodeODE &, unsigned int row, unsigned int co
 #endif
 }
 
-auto HeatEquationFBVP::B(const PointNodeODE &node, unsigned int row) const -> double
+auto HeatEquationFBVP::B(const PointNodeODE &node, size_t row) const -> double
 {
 #ifdef VARIANT_1
     unsigned int ln = static_cast<unsigned int>(node.i);
@@ -819,12 +819,12 @@ auto HeatEquationFBVP::B(const PointNodeODE &node, unsigned int row) const -> do
 #endif
 }
 
-auto HeatEquationFBVP::final(FinalCondition, unsigned int) const -> double
+auto HeatEquationFBVP::final(FinalCondition, size_t) const -> double
 {
     return 0.0;
 }
 
-auto HeatEquationFBVP::count() const -> unsigned int
+auto HeatEquationFBVP::count() const -> size_t
 {
 #ifdef VARIANT_1
     return 2;
@@ -841,7 +841,7 @@ auto HeatEquationFBVP::dimension() const -> Dimension { return solver->timeDimen
 
 auto HeatEquationFBVP::iterationInfo(const DoubleVector &phi, const PointNodeODE &node) const -> void
 {
-    unsigned int ln = static_cast<unsigned int>(node.i);
+    size_t ln = static_cast<size_t>(node.i);
     ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
     es.phi.x = phi[0];
     es.phi.y = phi[1];
@@ -854,8 +854,8 @@ auto HeatEquationFBVP::iterationInfo(const DoubleVector &phi, const PointNodeODE
 auto Solver::vectorToParameter(const DoubleVector &x) const -> void
 {
     const Dimension &time = timeDimension();
-    const unsigned int time_size = time.size();
-    for (unsigned int ln=0; ln<time_size; ln++)
+    const size_t time_size = time.size();
+    for (size_t ln=0; ln<time_size; ln++)
     {
         const_cast<Solver*>(this)->externalSource[ln].q = x[ln];
         const_cast<Solver*>(this)->externalSource[ln].v = x[ln+time_size];
@@ -881,7 +881,7 @@ auto Solver::v(const PointNodeODE &node) const -> double
     return sin(2.0*M_PI*node.x*node.x);
 }
 
-auto Solver::zt(const PointNodeODE &node, unsigned int row) const -> double
+auto Solver::zt(const PointNodeODE &node, size_t row) const -> double
 {
     const double t1 = node.x, t2 = node.x*node.x;
     const double res[2] = { 0.40*M_PI*sin(2.0*M_PI*t1) - 1.80*M_PI*sin(4.0*M_PI*t2)*t1,
@@ -889,7 +889,7 @@ auto Solver::zt(const PointNodeODE &node, unsigned int row) const -> double
     return res[row-1];
 }
 
-auto Solver::z(const PointNodeODE &node, unsigned int row) const -> double
+auto Solver::z(const PointNodeODE &node, size_t row) const -> double
 {
     const double t1 = node.x, t2 = node.x*node.x;
     const double res[2] = { 0.40*sin(1.0*M_PI*t1)*sin(1.0*M_PI*t1) + 0.45*cos(2.0*M_PI*t2)*cos(2.0*M_PI*t2) + 0.05,

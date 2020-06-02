@@ -39,16 +39,32 @@ void FirstOrderLinearODEIVP::CauchyProblemExample()
     fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
     IPrinter::print(fnl.mx, fnl.count());
     IPrinter::printSeperatorLine();
+
+    DoubleVector x0(fnl.count()); PointNodeODE n0;
+    DoubleVector x4(fnl.count()); PointNodeODE n4;
+
+    fnl.start(x0, n0);
+    fnl.mx[0] = x0;
+
+    for (size_t i=1; i<fnl.dimension().size(); i++)
+    {
+        fnl.next(x0, n0, x4, n4);
+        fnl.mx[i] = x4;
+        x0 = x4;
+        n0 = n4;
+    }
+    IPrinter::print(fnl.mx, fnl.count());
+    IPrinter::printSeperatorLine();
 }
 
 void FirstOrderLinearODEIVP::NonLocalConditionExample()
 {
     FirstOrderLinearODEIVP nl;
 
-    const unsigned int M = nl.count();
-    const unsigned int N = TIME_MAX;
+    const size_t M = nl.count();
+    const size_t N = TIME_MAX;
     const double h = TIME_STEP;
-    //const unsigned int order = 2;
+    //const size_t order = 2;
 
     double p1 = N*h;
     int p2 = N/100;
@@ -60,11 +76,11 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     C.push_back(NonLocalCondition(1, PointNodeODE(1.00*p1,  100*p2), DoubleMatrix(M,M,+3.4)));
     DoubleVector d(M, 0.0);
 
-    for (unsigned int s=0; s<C.size(); s++)
+    for (size_t s=0; s<C.size(); s++)
     {
         Random::fillMatrix(C[s].m, 0, 10, 2);
 
-        DoubleVector x; for (unsigned int m=1; m<=M; m++) x << nl.x(C[s].n, m);
+        DoubleVector x; for (size_t m=1; m<=M; m++) x << nl.x(C[s].n, m);
         d += C[s].m*x;
     }
     IPrinter::printVector(d, nullptr, d.length());
@@ -73,9 +89,9 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     std::vector<DoubleVector> x;
     //nl.setDimension(Dimension(h, 0, static_cast<int>(N)));
 
-    for (unsigned int m=0; m<M; m++)
+    for (size_t m=0; m<M; m++)
     {
-        for (unsigned int n=0; n<=N; n++)
+        for (size_t n=0; n<=N; n++)
         {
             //if (n%(N/100)==0) printf("%14.10f ", nl.x(n*h, m+1));
             if (n%(N/10)==0) printf("%14.8f ", nl.x(n*h, m+1));
@@ -91,13 +107,13 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     //    puts("===== transferOfCondition =====");
     //    x.clear();
     //    nl.transferOfCondition(C, d, x, 4);
-    //    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    //    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     //    IPrinter::printSeperatorLine();
 
     //    puts("===== transferOfConditionN 2 0 =====");
     //    x.clear();
     //    nl.transferOfConditionN(C, d, x, 2, 0);
-    //    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    //    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     //    IPrinter::printSeperatorLine();
 
     const double epsilon = 0.0000001;
@@ -111,19 +127,19 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     puts("===== transferOfConditionN 4 0 =====");
     x.clear();
     nl.transferOfConditionP(C, d, x, 4, 1);
-    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
     //    puts("===== transferOfConditionN 4 1 =====");
     //    x.clear();
     //    nl.transferOfConditionN(C, d, x, 4, 1);
-    //    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    //    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     //    IPrinter::printSeperatorLine();
 
     //    puts("===== transferOfConditionM4 =====");
     //    x.clear();
     //    nl.transferOfConditionM(C, d, x, 4);
-    //    for (unsigned int m=0; m<M; m++) { for (unsigned int n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    //    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     //    IPrinter::printSeperatorLine();
 }
 
@@ -170,7 +186,7 @@ void FirstOrderLinearODEFVP::CauchyProblemExample()
 
 /*****************************************************************************************************/
 
-double FirstOrderLinearODEIVP::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
+double FirstOrderLinearODEIVP::A(const PointNodeODE &node, size_t r, size_t c) const
 {
     C_UNUSED(node);
     C_UNUSED(r);
@@ -215,15 +231,15 @@ double FirstOrderLinearODEIVP::A(const PointNodeODE &node, unsigned int r, unsig
     throw std::exception();
 }
 
-double FirstOrderLinearODEIVP::B(const PointNodeODE &node, unsigned int r) const
+double FirstOrderLinearODEIVP::B(const PointNodeODE &node, size_t r) const
 {
-    const unsigned int M = count();
+    const size_t M = count();
     double result = dt(node, r);
-    for (unsigned int c=1; c<=M; c++) result -= A(node,r,c)*x(node,c);
+    for (size_t c=1; c<=M; c++) result -= A(node,r,c)*x(node,c);
     return result;
 }
 
-unsigned int FirstOrderLinearODEIVP::count() const
+size_t FirstOrderLinearODEIVP::count() const
 {
 #if defined(EXAMPLE_11) || defined(EXAMPLE_12) || defined(EXAMPLE_13) || defined(EXAMPLE_14) || defined(EXAMPLE_15) || defined(EXAMPLE_16)
     return 1;
@@ -245,7 +261,7 @@ auto FirstOrderLinearODEIVP::dimension() const -> Dimension { return Dimension(T
 
 auto FirstOrderLinearODEFVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
 
-auto FirstOrderLinearODEIVP::initial(InitialCondition, unsigned int r) const -> double
+auto FirstOrderLinearODEIVP::initial(InitialCondition, size_t r) const -> double
 {
     PointNodeODE node; node.i = 0; node.x = 0.0;
     return x(node, r);
@@ -263,7 +279,7 @@ void FirstOrderLinearODEIVP::iterationInfo(const DoubleVector &v, const PointNod
 
 /*****************************************************************************************************/
 
-double FirstOrderLinearODEFVP::A(const PointNodeODE &node, unsigned int r, unsigned int c) const
+double FirstOrderLinearODEFVP::A(const PointNodeODE &node, size_t r, size_t c) const
 {
     C_UNUSED(node);
     C_UNUSED(r);
@@ -308,15 +324,15 @@ double FirstOrderLinearODEFVP::A(const PointNodeODE &node, unsigned int r, unsig
     throw std::exception();
 }
 
-double FirstOrderLinearODEFVP::B(const PointNodeODE &node, unsigned int r) const
+double FirstOrderLinearODEFVP::B(const PointNodeODE &node, size_t r) const
 {
-    const unsigned int M = count();
+    const size_t M = count();
     double result = dt(node, r);
-    for (unsigned int c=1; c<=M; c++) result -= A(node,r,c)*x(node,c);
+    for (size_t c=1; c<=M; c++) result -= A(node,r,c)*x(node,c);
     return result;
 }
 
-unsigned int FirstOrderLinearODEFVP::count() const
+size_t FirstOrderLinearODEFVP::count() const
 {
 #if defined(EXAMPLE_11) || defined(EXAMPLE_12) || defined(EXAMPLE_13) || defined(EXAMPLE_14) || defined(EXAMPLE_15) || defined(EXAMPLE_16)
     return 1;
@@ -334,7 +350,7 @@ unsigned int FirstOrderLinearODEFVP::count() const
     throw std::exception();
 }
 
-auto FirstOrderLinearODEFVP::final(FinalCondition, unsigned int r) const -> double
+auto FirstOrderLinearODEFVP::final(FinalCondition, size_t r) const -> double
 {
     PointNodeODE node; node.i = dimension().max(); node.x = dimension().max()*dimension().step();
     return x(node, r);
@@ -352,7 +368,7 @@ auto FirstOrderLinearODEFVP::iterationInfo(const DoubleVector &v, const PointNod
 
 /*****************************************************************************************************/
 
-double FirstOrderLinearSample::x(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+double FirstOrderLinearSample::x(const PointNodeODE &node, size_t r UNUSED_PARAM) const
 {
     double t =  node.x;
 
@@ -421,7 +437,7 @@ double FirstOrderLinearSample::x(const PointNodeODE &node, unsigned int r UNUSED
     throw std::runtime_error("double FirstOrderLinearODEEx1::x");
 }
 
-double FirstOrderLinearSample::dt(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+double FirstOrderLinearSample::dt(const PointNodeODE &node, size_t r UNUSED_PARAM) const
 {
     double t =  node.x;
 #ifdef EXAMPLE_11
@@ -489,7 +505,7 @@ double FirstOrderLinearSample::dt(const PointNodeODE &node, unsigned int r UNUSE
     throw std::exception();
 }
 
-double FirstOrderLinearSample::d2t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+double FirstOrderLinearSample::d2t(const PointNodeODE &node, size_t r UNUSED_PARAM) const
 {
     double t =  node.x;
 #ifdef EXAMPLE_11
@@ -557,7 +573,7 @@ double FirstOrderLinearSample::d2t(const PointNodeODE &node, unsigned int r UNUS
     throw std::runtime_error("FirstOrderLinearODEEx1::d2t");
 }
 
-double FirstOrderLinearSample::d3t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+double FirstOrderLinearSample::d3t(const PointNodeODE &node, size_t r UNUSED_PARAM) const
 {
     double t =  node.x;
 #ifdef EXAMPLE_11
@@ -625,7 +641,7 @@ double FirstOrderLinearSample::d3t(const PointNodeODE &node, unsigned int r UNUS
     throw std::runtime_error("FirstOrderLinearODEEx1::d3t");
 }
 
-double FirstOrderLinearSample::d4t(const PointNodeODE &node, unsigned int r UNUSED_PARAM) const
+double FirstOrderLinearSample::d4t(const PointNodeODE &node, size_t r UNUSED_PARAM) const
 {
     double t =  node.x;
 #ifdef EXAMPLE_11
@@ -693,17 +709,17 @@ double FirstOrderLinearSample::d4t(const PointNodeODE &node, unsigned int r UNUS
     throw std::runtime_error("FirstOrderLinearODEEx1::d4t");
 }
 
-void FirstOrderLinearSample::printNorms(std::vector<DoubleVector> &_x, unsigned int k) const
+void FirstOrderLinearSample::printNorms(std::vector<DoubleVector> &_x, size_t k) const
 {
-    const unsigned int M = k;
-    const unsigned int N = TIME_MAX;
+    const size_t M = k;
+    const size_t N = TIME_MAX;
     const double h = TIME_STEP;
 
     printf("Norms: ");
-    for (unsigned int m=0; m<M; m++)
+    for (size_t m=0; m<M; m++)
     {
         double norm = 0.0;
-        for (unsigned int n=0; n<=N; n++)
+        for (size_t n=0; n<=N; n++)
         {
             norm += (_x[n][m]-x(n*h, m+1))*(_x[n][m]-x(n*h, m+1));
         }

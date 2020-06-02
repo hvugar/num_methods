@@ -33,7 +33,7 @@ class MINIMUMSHARED_EXPORT InitialValueProblemODE : public InitialValueProblem
 {
 protected:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(InitialValueProblemODE);
-    virtual auto initial(InitialCondition condition, unsigned int row = 1) const -> double = 0;
+    virtual auto initial(InitialCondition condition, size_t row = 1) const -> double = 0;
     virtual auto iterationInfo(double y, const PointNodeODE &node) const -> void;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void;
 };
@@ -49,7 +49,7 @@ class MINIMUMSHARED_EXPORT FinalValueProblemODE : public FinalValueProblem
 {
 protected:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(FinalValueProblemODE);
-    virtual auto final(FinalCondition condition, unsigned int row = 1) const -> double = 0;
+    virtual auto final(FinalCondition condition, size_t row = 1) const -> double = 0;
     virtual auto iterationInfo(double y, const PointNodeODE &node) const -> void;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void;
 };

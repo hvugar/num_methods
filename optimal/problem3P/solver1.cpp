@@ -21,10 +21,9 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     DoubleMatrix betta2;
     DoubleMatrix betta3;
     DoubleMatrix nominU;
-
 }
 
-double Solver1::frw_initial(const SpaceNodePDE &, InitialCondition) const { return 0.0; }
+double Solver1::frw_initial(const SpaceNodePDE &, InitialCondition) const { return _initialValue; }
 
 double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
@@ -34,7 +33,18 @@ double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, Boundary
 
 auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    //unsigned int ln = static_cast<unsigned int>(tn.i) / 2;
+    size_t ln = static_cast<size_t>(tn.i);
+
+    double fx = 0.0;
+
+//    for (size_t i=0; i<heatSourceNumber; i++)
+//    {
+//        double *qi = q[i];
+//        double *vi = v[i];
+//        SpacePoint *zi = z[i];
+//        fx +=
+//    }
+
     //double q = externalSource[ln].q;
     //const SpacePoint &z = externalSource[ln].z;
     //return q * deltaZ.gaussWeight(sn, z, SIGMA_X, SIGMA_Y);
@@ -53,34 +63,21 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
 
 void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-//    unsigned int ln = tn.i;
-//    Solver1* solver = const_cast<Solver1*>(this);
+    unsigned int ln = tn.i;
+    Solver1* solver = const_cast<Solver1*>(this);
 
-//    for (unsigned int j=0; j<measrPointNumber; j++)
-//    {
-//        const SpacePoint& measurePoint = measurePoints[j];
-//        solver->measurePointValues[j].z = DeltaFunction::lumpedPointG(u, measurePoint, _spaceDimensionX, _spaceDimensionY, 1, 4);
-//    }
+    for (size_t j=0; j<measrPointNumber; j++)
+    {
+        const SpacePoint& measurePoint = measurePoints[j];
+        solver->measurePointValues[j].z = DeltaFunction::lumpedPointG(u, measurePoint, spaceDimensionX(), spaceDimensionY(), 1, 4);
+    }
 
-<<<<<<< .mine
-//    for (unsigned int i=0; i<heatSourceNumber; i++)
+//    for (size_t i=0; i<heatSourceNumber; i++)
 //    {
 //        q[i] = v[i] = 0.0;
-//        SpacePoint* heatSourceRoute = heatSourceRoutes[i];
-//        const SpacePoint& zi = heatSourceRoute[tn.i];
-||||||| .r1701
-    for (unsigned int i=0; i<heatSourceNumber; i++)
-    {
-        q[i] = v[i] = 0.0;
-        SpacePoint* heatSourceRoute = heatSourceRoutes[i];
-        const SpacePoint& zi = heatSourceRoute[tn.i];
-=======
-    for (unsigned int i=0; i<heatSourceNumber; i++)
-    {
-        q[i] = v[i] = 0.0;
-        SpacePoint* heatSourceRoute = heatSourceRoutes[i];
-        const SpacePoint& zi = heatSourceRoute[ln];
->>>>>>> .r1702
+//        SpacePoint* heatSourceRoute = z[i];
+//        const SpacePoint& zi = heatSourceRoute[ln];
+//    }
 
 //        for (unsigned int j=0; j<measrPointNumber; j++)
 //        {
@@ -95,26 +92,13 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
 //            double distance = (zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y);
 
-<<<<<<< .mine
-
 ////            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j] - uij );
 ////            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j] - uij );
 //        }
 //    }
-||||||| .r1701
-
-            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - uij );
-            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - uij );
-        }
-    }
-
-    return 0.0;
-=======
-            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - _uij );
-            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - _uij );
-        }
-    }
->>>>>>> .r1702
+//            q[i] += (_alpha1*distance*distance + _alpha2*distance + _alpha3) * ( solver->measurePointValues[j].z - uij );
+//            v[i] += (_betta1*distance*distance + _betta2*distance + _betta3) * ( solver->measurePointValues[j].z - uij );
+//        }
 }
 
 //--------------------------------------------------------------------------------------------------------------//
@@ -131,6 +115,11 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const-> 
 
 auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
+    if (tn.i==0)
+    {
+
+    }
+
     const_cast<HeatEquationIBVP*>(this)->lastLayerU = u;
     solver->frw_layerInfo(u, tn);
 }
@@ -147,34 +136,34 @@ auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime
 
 //--------------------------------------------------------------------------------------------------------------//
 
-auto HeatEquationIBVP::A(const PointNodeODE &, unsigned int, unsigned int) const -> double
+auto HeatEquationIBVP::A(const PointNodeODE &, size_t, size_t) const -> double
 {
     return 0.0;
 }
 
-auto HeatEquationIBVP::B(const PointNodeODE &, unsigned int, unsigned int) const -> double
+auto HeatEquationIBVP::B(const PointNodeODE &, size_t, size_t) const -> double
 {
     return 0.0;
 }
 
-auto HeatEquationIBVP::C(const PointNodeODE &node, unsigned int row) const -> double
+auto HeatEquationIBVP::C(const PointNodeODE &node, size_t row) const -> double
 {
     return 0.0 + D(node, row);
 }
 
-auto HeatEquationIBVP::D(const PointNodeODE &node, unsigned int row) const -> double
+auto HeatEquationIBVP::D(const PointNodeODE &node, size_t row) const -> double
 {
     const double vl[2] = {+1.0, +1.0};
     return vl[row-1]*node.x;
 }
 
-auto HeatEquationIBVP::initial(InitialCondition, unsigned int row) const -> double
+auto HeatEquationIBVP::initial(InitialCondition, size_t row) const -> double
 {
     const double val[2] = { 0.10, 0.10 };
     return val[row-1];
 }
 
-auto HeatEquationIBVP::count() const -> unsigned int
+auto HeatEquationIBVP::count() const -> size_t
 {
     return 2;
 }

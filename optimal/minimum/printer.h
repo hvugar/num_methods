@@ -31,7 +31,7 @@ public:
     static void print(const DoubleVector &v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
     static void print(const double *v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
 
-    static void print(std::vector<DoubleVector> &rv, unsigned int k, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
+    static void print(std::vector<DoubleVector> &rv, size_t k, size_t N=10, size_t width=14, size_t presicion=10, FILE *file=stdout);
 
     static void printCube(const DoubleVector& x, unsigned int M, unsigned int N2, unsigned int N1, FILE *file = stdout);
     static void printDateTime(FILE *file = stdout);

@@ -14,33 +14,33 @@ void SecondOrderLinearODEIBVP::Main(int argc, char **argv)
 void SecondOrderLinearODEIBVP::CauchyProblemExample()
 {
     SecondOrderLinearODEIBVP fnl;
-    fnl.solveInitialValueProblem2(ODESolverMethod::RUNGE_KUTTA_4);
+    fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
     IPrinter::printSeperatorLine();
 }
 
-double SecondOrderLinearODEIBVP::A(const PointNodeODE &, unsigned int, unsigned int) const
+double SecondOrderLinearODEIBVP::A(const PointNodeODE &, size_t, size_t) const
 {
     return -2.0;
 }
 
-double SecondOrderLinearODEIBVP::B(const PointNodeODE &, unsigned int, unsigned int) const
+double SecondOrderLinearODEIBVP::B(const PointNodeODE &, size_t, size_t) const
 {
     return -3.0;
 }
 
-double SecondOrderLinearODEIBVP::C(const PointNodeODE &node, unsigned int r) const
+double SecondOrderLinearODEIBVP::C(const PointNodeODE &node, size_t r) const
 {
     return 2.0 - A(node, 1, 1) * (2.0*node.x+1) - B(node, 1, 1) * (node.x*node.x+node.x);
 }
 
-unsigned int SecondOrderLinearODEIBVP::count() const
+size_t SecondOrderLinearODEIBVP::count() const
 {
     return 1;
 }
 
 auto SecondOrderLinearODEIBVP::dimension() const -> Dimension { return Dimension(SO_TIME_STP, SO_TIME_MIN, SO_TIME_MAX); }
 
-auto SecondOrderLinearODEIBVP::initial(InitialCondition c, unsigned int r) const -> double
+auto SecondOrderLinearODEIBVP::initial(InitialCondition c, size_t r) const -> double
 {
     return c == InitialCondition::InitialValue ? 0.0 : 1.0;
 }
@@ -50,7 +50,7 @@ void SecondOrderLinearODEIBVP::iterationInfo(const DoubleVector &v, const PointN
     if (node.i%((dimension().size()-1)/10)==0) { printf("%6d: ", node.i); IPrinter::print(v, v.length()); }
 }
 
-auto SecondOrderLinearODEIBVP::boundary(const PointNodeODE &, BoundaryConditionPDE &, unsigned int) const -> double
+auto SecondOrderLinearODEIBVP::boundary(const PointNodeODE &, BoundaryConditionPDE &, size_t) const -> double
 {
     throw runtime_error("");
 }
@@ -71,29 +71,29 @@ void SecondOrderLinearODEFBVP::CauchyProblemExample()
     IPrinter::printSeperatorLine();
 }
 
-double SecondOrderLinearODEFBVP::A(const PointNodeODE &, unsigned int, unsigned int) const
+double SecondOrderLinearODEFBVP::A(const PointNodeODE &, size_t, size_t) const
 {
     return +2.0;
 }
 
-double SecondOrderLinearODEFBVP::B(const PointNodeODE &, unsigned int, unsigned int) const
+double SecondOrderLinearODEFBVP::B(const PointNodeODE &, size_t, size_t) const
 {
     return +3.0;
 }
 
-double SecondOrderLinearODEFBVP::C(const PointNodeODE &node, unsigned int r) const
+double SecondOrderLinearODEFBVP::C(const PointNodeODE &node, size_t r) const
 {
     return 2.0 - A(node, 1, 1) * (2.0*node.x+1) - B(node, 1, 1) * (node.x*node.x+node.x);
 }
 
-unsigned int SecondOrderLinearODEFBVP::count() const
+size_t SecondOrderLinearODEFBVP::count() const
 {
     return 1;
 }
 
 auto SecondOrderLinearODEFBVP::dimension() const -> Dimension { return Dimension(SO_TIME_STP, SO_TIME_MIN, SO_TIME_MAX); }
 
-auto SecondOrderLinearODEFBVP::final(FinalCondition c, unsigned int r) const -> double
+auto SecondOrderLinearODEFBVP::final(FinalCondition c, size_t r) const -> double
 {
     return c == FinalCondition::FinalValue ? 2.0 : 3.0;
 }
@@ -103,7 +103,7 @@ void SecondOrderLinearODEFBVP::iterationInfo(const DoubleVector &v, const PointN
     if (node.i%((dimension().size()-1)/10)==0) { printf("%6d: ", node.i); IPrinter::print(v, v.length()); }
 }
 
-auto SecondOrderLinearODEFBVP::boundary(const PointNodeODE &, BoundaryConditionPDE &, unsigned int) const -> double
+auto SecondOrderLinearODEFBVP::boundary(const PointNodeODE &, BoundaryConditionPDE &, size_t) const -> double
 {
     throw runtime_error("");
 }

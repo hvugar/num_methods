@@ -55,7 +55,7 @@ class MINIMUMSHARED_EXPORT OrdinaryDifferentialEquation : public DifferentialEqu
     };
 
     virtual auto dimension() const -> Dimension = 0;
-    virtual auto count() const -> unsigned int = 0;
+    virtual auto count() const -> size_t = 0;
 };
 
 class MINIMUMSHARED_EXPORT CanonicalFormODE : public OrdinaryDifferentialEquation {};
@@ -77,7 +77,7 @@ protected:
      * @param col <= n
      * @return
      */
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+    virtual auto A(const PointNodeODE &node, size_t row = 1,size_t col = 1) const -> double = 0;
 
     /**
      * @brief B n dimensional vector-function
@@ -85,7 +85,7 @@ protected:
      * @param row
      * @return
      */
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+    virtual auto B(const PointNodeODE &node, size_t row = 1) const -> double = 0;
 };
 
 class MINIMUMSHARED_EXPORT ISecondOrderLinearODE : public LinearODE
@@ -98,7 +98,7 @@ protected:
      * @param col <= n
      * @return
      */
-    virtual auto A(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+    virtual auto A(const PointNodeODE &node, size_t row = 1, size_t col = 1) const -> double = 0;
 
     /**
      * @brief B B nxn dimensional matrix-function
@@ -106,7 +106,7 @@ protected:
      * @param row
      * @return
      */
-    virtual auto B(const PointNodeODE &node, unsigned int row = 1, unsigned int col = 1) const -> double = 0;
+    virtual auto B(const PointNodeODE &node, size_t row = 1, size_t col = 1) const -> double = 0;
 
     /**
      * @brief C B nxn dimensional vector-function
@@ -114,7 +114,7 @@ protected:
      * @param row
      * @return
      */
-    virtual auto C(const PointNodeODE &node, unsigned int row = 1) const -> double = 0;
+    virtual auto C(const PointNodeODE &node, size_t row = 1) const -> double = 0;
 };
 
 
