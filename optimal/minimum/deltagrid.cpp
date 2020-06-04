@@ -1203,6 +1203,11 @@ double DeltaFunction::sinusoid(double p) { return 0.0; }
 
 double DeltaFunction::sinusoid(const SpacePoint &p) { return 0.0; }
 
+double DeltaFunction::lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    return DeltaFunction::lumpedPoint2(m, p, dimensionX.step(), dimensionY.step(), dimensionX.size()-1, dimensionY.size()-1);
+}
+
 double DeltaFunction::lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny)
 {
     const double lx = hx*Nx;
@@ -1226,6 +1231,11 @@ double DeltaFunction::lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, d
     pu += (Ly0/Ly00) * ( (Lx0/Lx00)*m[ry+0][rx+0] + (Lx1/Lx11)*m[ry+0][rx+1] );
     pu += (Ly1/Ly11) * ( (Lx0/Lx00)*m[ry+1][rx+0] + (Lx1/Lx11)*m[ry+1][rx+1] );
     return pu;
+}
+
+double DeltaFunction::lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    return DeltaFunction::lumpedPoint3(m, p, dimensionX.step(), dimensionY.step(), dimensionX.size()-1, dimensionY.size()-1);
 }
 
 double DeltaFunction::lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny)
@@ -1256,6 +1266,11 @@ double DeltaFunction::lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, d
     pu += (Ly1/Ly11) * ( (Lx0/Lx00)*m[ry+0][rx-1] + (Lx1/Lx11)*m[ry+0][rx+0] + (Lx2/Lx22)*m[ry+0][rx+1] );
     pu += (Ly2/Ly22) * ( (Lx0/Lx00)*m[ry+1][rx-1] + (Lx1/Lx11)*m[ry+1][rx+0] + (Lx2/Lx22)*m[ry+1][rx+1] );
     return pu;
+}
+
+double DeltaFunction::lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY)
+{
+    return DeltaFunction::lumpedPoint4(m, p, dimensionX.step(), dimensionY.step(), dimensionX.size()-1, dimensionY.size()-1);
 }
 
 double DeltaFunction::lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny)

@@ -161,8 +161,11 @@ public:
     static double sinusoid(double p);
     static double sinusoid(const SpacePoint &p);
 
+    static double lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY);
     static double lumpedPoint2(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
+    static double lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY);
     static double lumpedPoint3(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
+    static double lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY);
     static double lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
     static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, unsigned int nps, size_t k);
 };

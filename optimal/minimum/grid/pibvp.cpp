@@ -1488,7 +1488,7 @@ void IHeatEquationIBVP::init() const
     for (unsigned int i=0; i<=M; i++) { free(u00[i]); } free(u00);
 }
 
-void IHeatEquationIBVP::next() const
+void IHeatEquationIBVP::next1() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
     const unsigned int M = static_cast<unsigned int>(spaceDimensionY().size()) - 1;
