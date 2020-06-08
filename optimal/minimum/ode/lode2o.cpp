@@ -97,11 +97,14 @@ void ISecondOrderLinearODEIVP::next(const DoubleVector &x0, const PointNodeODE &
     protected:
         virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
         {
+//            printf("A: %d %d %12.8f\n", row, col, row <= m ? ((col <= m) ? 0.0 : ((row+m == col) ? 1.0 : 0.0) ) :
+//                                                         ((col <= m) ? p.B(node, row-m, col) : p.A(node, row-m, col-m)));
             return row <= m ? ((col <= m) ? 0.0 : ((row+m == col) ? 1.0 : 0.0) ) :
                               ((col <= m) ? p.B(node, row-m, col) : p.A(node, row-m, col-m));
         }
         virtual auto B(const PointNodeODE &node, size_t row) const -> double
         {
+//            printf("========= B: %d %12.8f\n", row, row <= m ? 0.0 : p.C(node, row-m));
             return row <= m ? 0.0 : p.C(node, row-m);
         }
 

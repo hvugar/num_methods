@@ -19,6 +19,7 @@ struct HeatSourceParam
     double q;
     double v;
     SpacePoint z;
+    SpacePoint zt;
 };
 
 struct HeatSourceParamArray
