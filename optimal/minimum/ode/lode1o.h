@@ -35,7 +35,8 @@ struct Condition
  * @brief Линейное дифференциальное уравнение первого порядка с переменными коэффициентами
  * The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
  */
-class MINIMUMSHARED_EXPORT IFirstOrderLinearODEIVP : virtual public IFirstOrderLinearODE, virtual public InitialValueProblemODE
+class MINIMUMSHARED_EXPORT IFirstOrderLinearODEIVP : virtual public IFirstOrderLinearODE,
+                                                     virtual public InitialValueProblemODE
 {
 public:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(IFirstOrderLinearODEIVP);
@@ -70,13 +71,22 @@ private:
 
 };
 
-class MINIMUMSHARED_EXPORT IFirstOrderLinearODEFVP : virtual public IFirstOrderLinearODE, virtual public FinalValueProblemODE
+/**
+ * @brief Линейное дифференциальное уравнение первого порядка с переменными коэффициентами
+ * The Linear ODE 1st order in canonical (normal) form y'(x) = A(x)y(x) + B(x);
+ */
+class MINIMUMSHARED_EXPORT IFirstOrderLinearODEFVP : virtual public IFirstOrderLinearODE,
+                                                     virtual public FinalValueProblemODE
 {
 public:
     PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR(IFirstOrderLinearODEFVP);
-public:
+
+    void solveFinalValueProblem(DoubleVector &rv) const;
     void solveFinalValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
     void solveFinalValueProblem(std::vector<DoubleVector> &rv, ODESolverMethod method = ODESolverMethod::EULER) const;
+
+    void start(DoubleVector &x, PointNodeODE &n) const;
+    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method = ODESolverMethod::EULER) const;
 
 private:
 

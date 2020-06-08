@@ -12,7 +12,7 @@
 //#include <r1minimize.h>
 
 #include <ode/first_order_linear_ode.h>
-//#include <ode/second_order_linear_ode.h>
+#include <ode/second_order_linear_ode.h>
 //#include <ode/firstordernonlinearodeex1.h>
 //#include <ode/secondorderlinearodeex1.h>
 #include <heat_equation_ibvp.h>
@@ -26,6 +26,7 @@
 //#include "../problem1P/problem1p_solver.h"
 //#include "../problem1H/problem1h_solver.h"
 #include "../problem3P/solver.h"
+#include "../problem3P/solver1.h"
 //#include "../problem3P/heat_equation_ibvp.h"
 
 #include "test/delta_grid_2d_ext1.h"
@@ -35,15 +36,13 @@
 
 int main(int argc, char *argv[])
 {
-    printf("size of size_t: %d unsigned int: %d\n", sizeof(size_t), sizeof(unsigned int));
-
     //srand(static_cast<unsigned int>(time(nullptr)));
     QGuiApplication app(argc, argv);
 
 
     //ConjugateGradinetTest::Main(argc, argv);
 
-    FirstOrderLinearODEIVP::Main(argc, argv);
+    //FirstOrderLinearODEIVP::Main(argc, argv);
     //FirstOrderLinearODEFVP::Main(argc, argv);
     //SecondOrderLinearODEIBVP::Main(argc, argv);
     //SecondOrderLinearODEFBVP::Main(argc, argv);
@@ -69,6 +68,7 @@ int main(int argc, char *argv[])
     //p1p::ProblemSolver::Main(argc, argv);
     //h1p::ProblemSolver::Main(argc, argv);
     //p3p::Solver::Main(argc, argv);
+    p3p1::Solver1::Main(argc, argv);
     //p3p::HeatEquationIBVP1::Main(argc, argv);
 
     //return 0;

@@ -21,35 +21,105 @@ void ISecondOrderLinearODEIVP::solveInitialValueProblem(ODESolverMethod method) 
     public:
         FirstOrderLinearODEIVP(const ISecondOrderLinearODEIVP& p, size_t m) : p(p), m(m) {}
 
+    protected:
         virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
         {
-            size_t rm = row-m;
-            size_t cm = col-m;
-            return row <= m ? ((col <= m) ? 0.0 : 1.0) :
-                               (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
+            return row <= m ? ((col <= m) ? 0.0 : ((row+m == col) ? 1.0 : 0.0) ) :
+                              ((col <= m) ? p.B(node, row-m, col) : p.A(node, row-m, col-m));
         }
         virtual auto B(const PointNodeODE &node, size_t row) const -> double
         {
-            size_t rm = row-m;
-            return row <= m ? 0.0 : p.C(node, rm);
+            return row <= m ? 0.0 : p.C(node, row-m);
         }
 
         virtual auto initial(InitialCondition, size_t row) const -> double
         {
-            size_t rm = row-m;
             return row <= m ? p.initial(InitialCondition::InitialValue, row)
-                            : p.initial(InitialCondition::InitialFirstDerivative, rm);
+                            : p.initial(InitialCondition::InitialFirstDerivative, row-m);
         }
         virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
         virtual auto dimension() const -> Dimension { return p.dimension(); }
         virtual auto count() const -> size_t { return 2*m; }
 
+    private:
         const ISecondOrderLinearODEIVP &p;
         size_t m;
     };
 
     FirstOrderLinearODEIVP flode(*this, count());
     flode.solveInitialValueProblem(method);
+}
+
+void ISecondOrderLinearODEIVP::start(DoubleVector &x, PointNodeODE &n)
+{
+    /* Normalized form of second order differential equation */
+    class FirstOrderLinearODEIVP : public IFirstOrderLinearODEIVP
+    {
+    public:
+        FirstOrderLinearODEIVP(const ISecondOrderLinearODEIVP& p, size_t m) : p(p), m(m) {}
+
+    protected:
+        virtual auto A(const PointNodeODE &, size_t, size_t) const -> double
+        {
+            throw std::runtime_error("Not supported...");
+        }
+        virtual auto B(const PointNodeODE &, size_t) const -> double
+        {
+            throw std::runtime_error("Not supported...");
+        }
+
+        virtual auto initial(InitialCondition, size_t row) const -> double
+        {
+            return row <= m ? p.initial(InitialCondition::InitialValue, row)
+                            : p.initial(InitialCondition::InitialFirstDerivative, row-m);
+        }
+        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
+        virtual auto dimension() const -> Dimension { return p.dimension(); }
+        virtual auto count() const -> size_t { return 2*m; }
+
+    private:
+        const ISecondOrderLinearODEIVP &p;
+        size_t m;
+    };
+
+    FirstOrderLinearODEIVP flode(*this, count());
+    flode.start(x, n);
+}
+
+void ISecondOrderLinearODEIVP::next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method)
+{
+    /* Normalized form of second order differential equation */
+    class FirstOrderLinearODEIVP : public IFirstOrderLinearODEIVP
+    {
+    public:
+        FirstOrderLinearODEIVP(const ISecondOrderLinearODEIVP& p, size_t m) : p(p), m(m) {}
+
+    protected:
+        virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
+        {
+            return row <= m ? ((col <= m) ? 0.0 : ((row+m == col) ? 1.0 : 0.0) ) :
+                              ((col <= m) ? p.B(node, row-m, col) : p.A(node, row-m, col-m));
+        }
+        virtual auto B(const PointNodeODE &node, size_t row) const -> double
+        {
+            return row <= m ? 0.0 : p.C(node, row-m);
+        }
+
+        virtual auto initial(InitialCondition, size_t) const -> double
+        {
+            throw std::runtime_error("Not supported...");
+        }
+        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
+        virtual auto dimension() const -> Dimension { return p.dimension(); }
+        virtual auto count() const -> size_t { return 2*m; }
+
+    private:
+        const ISecondOrderLinearODEIVP &p;
+        size_t m;
+    };
+
+    FirstOrderLinearODEIVP flode(*this, count());
+    flode.next(x0, n0, x, n, method);
 }
 
 void ISecondOrderLinearODEIVP::solveInitialValueProblem(DoubleVector &rv) const
@@ -124,103 +194,25 @@ void ISecondOrderLinearODEIVP::solveInitialValueProblem(std::vector<DoubleVector
     delete [] der;
     delete [] val;
 
-//    unsigned int i = 1;
-//    for (int n=min+1; n<max; n++, i++)
-//    {
-//        node.i = n; node.x = node.i*h;
+    //    unsigned int i = 1;
+    //    for (int n=min+1; n<max; n++, i++)
+    //    {
+    //        node.i = n; node.x = node.i*h;
 
-//        for (unsigned int row=1; row<=m; row++)
-//        {
-//            double sum = C(node, row);
-//        }
+    //        for (unsigned int row=1; row<=m; row++)
+    //        {
+    //            double sum = C(node, row);
+    //        }
 
 
-//        double an = A(node);
-//        double bn = B(node);
-//        double cn = C(node);
-//        double mx = 1.0 - 0.5*h*an;
+    //        double an = A(node);
+    //        double bn = B(node);
+    //        double cn = C(node);
+    //        double mx = 1.0 - 0.5*h*an;
 
-//        rv[j+1] = (2.0+h*h*bn)*rv[j] - (1.0+0.5*h*an)*rv[j-1] + h*h*cn;
-//        rv[j+1] /= mx;
-//    }
-}
-
-void ISecondOrderLinearODEIVP::start(DoubleVector &x, PointNodeODE &n)
-{
-    /* Normalized form of second order differential equation */
-    class FirstOrderLinearODEIVP : public IFirstOrderLinearODEIVP
-    {
-    public:
-        FirstOrderLinearODEIVP(const ISecondOrderLinearODEIVP& p, size_t m) : p(p), m(m) {}
-
-        virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
-        {
-            size_t rm = row-m;
-            size_t cm = col-m;
-            return row <= m ? ((col <= m) ? 0.0 : 1.0) :
-                               (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
-        }
-        virtual auto B(const PointNodeODE &node, size_t row) const -> double
-        {
-            size_t rm = row-m;
-            return row <= m ? 0.0 : p.C(node, rm);
-        }
-
-        virtual auto initial(InitialCondition, size_t row) const -> double
-        {
-            size_t rm = row-m;
-            return row <= m ? p.initial(InitialCondition::InitialValue, row)
-                            : p.initial(InitialCondition::InitialFirstDerivative, rm);
-        }
-        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
-        virtual auto dimension() const -> Dimension { return p.dimension(); }
-        virtual auto count() const -> size_t { return 2*m; }
-
-        const ISecondOrderLinearODEIVP &p;
-        size_t m;
-    };
-
-    FirstOrderLinearODEIVP flode(*this, count());
-    flode.start(x, n);
-}
-
-void ISecondOrderLinearODEIVP::next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n)
-{
-    /* Normalized form of second order differential equation */
-    class FirstOrderLinearODEIVP : public IFirstOrderLinearODEIVP
-    {
-    public:
-        FirstOrderLinearODEIVP(const ISecondOrderLinearODEIVP& p, size_t m) : p(p), m(m) {}
-
-        virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
-        {
-            size_t rm = row-m;
-            size_t cm = col-m;
-            return row <= m ? ((col <= m) ? 0.0 : 1.0) :
-                               (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
-        }
-        virtual auto B(const PointNodeODE &node, size_t row) const -> double
-        {
-            size_t rm = row-m;
-            return row <= m ? 0.0 : p.C(node, rm);
-        }
-
-        virtual auto initial(InitialCondition, size_t row) const -> double
-        {
-            size_t rm = row-m;
-            return row <= m ? p.initial(InitialCondition::InitialValue, row)
-                            : p.initial(InitialCondition::InitialFirstDerivative, rm);
-        }
-        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
-        virtual auto dimension() const -> Dimension { return p.dimension(); }
-        virtual auto count() const -> size_t { return 2*m; }
-
-        const ISecondOrderLinearODEIVP &p;
-        size_t m;
-    };
-
-    FirstOrderLinearODEIVP flode(*this, count());
-    flode.next(x0, n0, x, n);
+    //        rv[j+1] = (2.0+h*h*bn)*rv[j] - (1.0+0.5*h*an)*rv[j-1] + h*h*cn;
+    //        rv[j+1] /= mx;
+    //    }
 }
 
 ISecondOrderLinearODEIBVP::ISecondOrderLinearODEIBVP() {}
@@ -369,19 +361,56 @@ ISecondOrderLinearODEFVP& ISecondOrderLinearODEFVP::operator=(const ISecondOrder
 
 ISecondOrderLinearODEFVP::~ISecondOrderLinearODEFVP() {}
 
-void ISecondOrderLinearODEFVP::solveInitialValueProblem2(ODESolverMethod method) const
+void ISecondOrderLinearODEFVP::solveInitialValueProblem(ODESolverMethod method) const
 {
+    /* Normalized form of second order differential equation */
     class FirstOrderLinearODEFVP : public IFirstOrderLinearODEFVP
     {
     public:
-        FirstOrderLinearODEFVP(const ISecondOrderLinearODEFVP& p, unsigned int m) : p(p), m(m) {}
+        FirstOrderLinearODEFVP(const ISecondOrderLinearODEFVP& p, size_t m) : p(p), m(m) {}
+
+        virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
+        {
+            return row <= m ? ((col <= m) ? 0.0 : ((row+m == col) ? 1.0 : 0.0) ) :
+                              ((col <= m) ? p.B(node, row-m, col) : p.A(node, row-m, col-m));
+        }
+        virtual auto B(const PointNodeODE &node, size_t row) const -> double
+        {
+            return row <= m ? 0.0 : p.C(node, row-m);
+        }
+
+        virtual auto final(FinalCondition, size_t row) const -> double
+        {
+            return row <= m ? p.final(FinalCondition::FinalValue, row)
+                            : p.final(FinalCondition::FinalFirstDerivative, row-m);
+        }
+        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
+        virtual auto dimension() const -> Dimension { return p.dimension(); }
+        virtual auto count() const -> size_t { return 2*m; }
+
+    private:
+        const ISecondOrderLinearODEFVP &p;
+        size_t m;
+    };
+
+    FirstOrderLinearODEFVP flode(*this, count());
+    flode.solveFinalValueProblem(method);
+}
+
+void ISecondOrderLinearODEFVP::start(DoubleVector &x, PointNodeODE &n)
+{
+    /* Normalized form of second order differential equation */
+    class FirstOrderLinearODEFVP : public IFirstOrderLinearODEFVP
+    {
+    public:
+        FirstOrderLinearODEFVP(const ISecondOrderLinearODEFVP& p, size_t m) : p(p), m(m) {}
 
         virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
         {
             size_t rm = row-m;
             size_t cm = col-m;
             return row <= m ? ((col <= m) ? 0.0 : 1.0) :
-                               (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
+                              (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
         }
         virtual auto B(const PointNodeODE &node, size_t row) const -> double
         {
@@ -404,7 +433,46 @@ void ISecondOrderLinearODEFVP::solveInitialValueProblem2(ODESolverMethod method)
     };
 
     FirstOrderLinearODEFVP flode(*this, count());
-    flode.solveFinalValueProblem(method);
+    flode.start(x, n);
+}
+
+void ISecondOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n)
+{
+    /* Normalized form of second order differential equation */
+    class FirstOrderLinearODEFVP : public IFirstOrderLinearODEFVP
+    {
+    public:
+        FirstOrderLinearODEFVP(const ISecondOrderLinearODEFVP& p, size_t m) : p(p), m(m) {}
+
+        virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double
+        {
+            size_t rm = row-m;
+            size_t cm = col-m;
+            return row <= m ? ((col <= m) ? 0.0 : 1.0) :
+                              (col <= m ? p.B(node, rm, cm) : p.A(node, rm, cm));
+        }
+        virtual auto B(const PointNodeODE &node, size_t row) const -> double
+        {
+            size_t rm = row-m;
+            return row <= m ? 0.0 : p.C(node, rm);
+        }
+
+        virtual auto final(FinalCondition, size_t row) const -> double
+        {
+            size_t rm = row-m;
+            return row <= m ? p.final(FinalCondition::FinalValue, row)
+                            : p.final(FinalCondition::FinalFirstDerivative, rm);
+        }
+        virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void { p.iterationInfo(v, node); }
+        virtual auto dimension() const -> Dimension { return p.dimension(); }
+        virtual auto count() const -> size_t { return 2*m; }
+
+        const ISecondOrderLinearODEFVP &p;
+        size_t m;
+    };
+
+    FirstOrderLinearODEFVP flode(*this, count());
+    flode.next(x0, n0, x, n);
 }
 
 ISecondOrderLinearODEFBVP::ISecondOrderLinearODEFBVP() {}

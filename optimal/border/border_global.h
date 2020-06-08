@@ -21,9 +21,15 @@
 #include <stdexcept>
 #include <grid/hibvp.h>
 #include <grid/pibvp.h>
+#include <ode/lode1o.h>
+#include <ode/lode2o.h>
 #include <grid/pibvpX.h>
 #include <matrix2d.h>
 #include <benchmark.h>
 #include <deltagrid.h>
+#include <utils/random.h>
+#include <float.h>
+#include <math.h>
+
 
 #endif // BORDER_GLOBAL_H

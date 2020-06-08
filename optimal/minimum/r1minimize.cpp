@@ -159,7 +159,7 @@ void R1FxMinimizer::swann(double x, double step, double &a, double &b, double &f
     unsigned int iteration = 0;
     unsigned int fx_count = 0;
 
-    if ( mfunction == NULL )
+    if ( mfunction == nullptr )
     {
         std::string msg = "in function \"swann\" function pointer is null.";
         throw std::runtime_error(msg);
@@ -726,7 +726,7 @@ R1Function* R1FxMinimizer::Callback::function() const
  */
 void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f)
 {
-    if ( f == NULL )
+    if ( f == nullptr )
     {
         std::string msg = "in function \"stranghLineSearch\" function pointer is null.";
         throw std::runtime_error(msg);

@@ -1136,7 +1136,6 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
     SpaceNodePDE sn;
     unsigned int i=0, j=0, s=0, e=N;
     int n = 0, m = 0;
-    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
     for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
     {
@@ -1150,6 +1149,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
     layerInfo(DoubleMatrix(u00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
+    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
     for (unsigned int ln=1; ln<=L; ln++)
     {

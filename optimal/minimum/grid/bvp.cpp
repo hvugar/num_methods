@@ -40,6 +40,21 @@ BoundaryConditionPDE::BoundaryConditionPDE(BoundaryCondition condition, double a
     this->_gamma = gamma;
 }
 
+BoundaryConditionPDE BoundaryConditionPDE::Dirichlet(double alpha, double beta, double gamma)
+{
+    return BoundaryConditionPDE(BoundaryCondition::Dirichlet, alpha, beta, gamma);
+}
+
+BoundaryConditionPDE BoundaryConditionPDE::Neumann(double alpha, double beta, double gamma)
+{
+    return BoundaryConditionPDE(BoundaryCondition::Neumann, alpha, beta, gamma);
+}
+
+BoundaryConditionPDE BoundaryConditionPDE::Robin(double alpha, double beta, double gamma)
+{
+    return BoundaryConditionPDE(BoundaryCondition::Robin, alpha, beta, gamma);
+}
+
 BoundaryCondition BoundaryConditionPDE::boundaryCondition() const { return _boundaryCondition; }
 
 double BoundaryConditionPDE::alpha() const { return _alpha; }

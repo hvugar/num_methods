@@ -1,10 +1,6 @@
 #ifndef FIRST_ORDER_LINEAR_ODE_EX1_H
 #define FIRST_ORDER_LINEAR_ODE_EX1_H
 
-#include <ode/lode1o.h>
-#include <utils/random.h>
-#include <float.h>
-#include <math.h>
 #include "../border_global.h"
 
 #define TIME_MAX 100
@@ -30,14 +26,14 @@ class BORDERSHARED_EXPORT FirstOrderLinearODEIVP : public IFirstOrderLinearODEIV
 {
 public:
     static void Main(int argc, char** argv);
-    static void NonLocalConditionExample();
     static void CauchyProblemExample();
+    static void NonLocalConditionExample();
 
     std::vector<DoubleVector> mx;
 
 protected:
-    virtual auto A(const PointNodeODE &node, size_t row = 0, size_t col = 0) const -> double;
-    virtual auto B(const PointNodeODE &node, size_t row = 0) const -> double;
+    virtual auto A(const PointNodeODE &node, size_t row = 1, size_t col = 1) const -> double;
+    virtual auto B(const PointNodeODE &node, size_t row = 1) const -> double;
     virtual auto count() const -> size_t;
     virtual auto dimension() const -> Dimension;
     virtual void iterationInfo(double y, const PointNodeODE &node) const;

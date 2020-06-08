@@ -33,6 +33,8 @@ class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBV
 {
 public:
     HeatEquationIBVP(Solver1 *solver = nullptr);
+    HeatEquationIBVP(const HeatEquationIBVP &);
+    HeatEquationIBVP & operator =(const HeatEquationIBVP &);
     virtual ~HeatEquationIBVP() override;
 
 protected:
@@ -59,16 +61,17 @@ public:
     virtual auto dimension() const -> Dimension override;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
-    size_t i;
-
 public:
     Solver1 *solver;
+    size_t i;
 };
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP, virtual public ISecondOrderLinearODEFVP
 {
 public:
     HeatEquationFBVP(Solver1 *solver = nullptr);
+    HeatEquationFBVP(const HeatEquationFBVP &);
+    HeatEquationFBVP & operator =(const HeatEquationFBVP &);
     virtual ~HeatEquationFBVP() override;
 
 protected:
@@ -95,19 +98,19 @@ public:
     virtual auto dimension() const -> Dimension override;
     virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
-    size_t i;
-
 public:
     Solver1 *solver;
+    size_t i;
 };
 
-class Solver1
+class PROBLEM3P_SHARED_EXPORT Solver1
 {
 public:
     static void Main(int argc, char** argv);
 
 public:
-    Solver1();
+    Solver1(const Dimension &timeDimension,
+            const Dimension &spaceDimensionX, const Dimension &spaceDimensionY);
     virtual ~Solver1();
 
     void setPointNumber(size_t heatSourceNumber, size_t measrPointNumber);
@@ -116,13 +119,19 @@ public:
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void frw_layerInfo(const DoubleMatrix &U, const TimeNodePDE &tn) const;
-    //virtual void frw_calculate() const;
+    virtual void frw_saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+
+    virtual double bcw_final(const SpaceNodePDE &sn, FinalCondition condition) const;
+    virtual double bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+    virtual void bcw_layerInfo(const DoubleMatrix &U, const TimeNodePDE &tn) const;
 
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
-    SpacePoint *measurePoints = new SpacePoint[measrPointNumber];
-    SpacePoint *measurePointValues = new SpacePoint[measrPointNumber];
+    SpacePoint *measurePoints;
+    SpacePoint *measurePointValues;
     double lambda0 = 0.001;
+    double lambda = 0.01;
 
     DoubleMatrix alpha1;
     DoubleMatrix alpha2;
@@ -140,14 +149,21 @@ public:
     virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
     virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
 
+    DoubleMatrix *A;
+    DoubleMatrix *B;
+    DoubleVector *C;
+
+    DoubleMatrix V, U;
+
 protected:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
     Dimension _spaceDimensionY;
 
 private:
-    double _initialValue = 0.0;
-    double _environmentTemperature = 0.0;
+    double frw_initialValue = 1.0;
+    double environmentTemperature = 2.0;
+
 };
 
 }

@@ -13,48 +13,57 @@ void FirstOrderLinearODEIVP::CauchyProblemExample()
     fnl.mx.clear();
     fnl.mx.resize(fnl.dimension().size());
 
-    std::vector<DoubleVector> x1;
-    fnl.solveInitialValueProblem(x1, ODESolverMethod::EULER);
-    IPrinter::print(x1, fnl.count());
-    IPrinter::printSeperatorLine();
-
-    fnl.solveInitialValueProblem(ODESolverMethod::EULER);
-    IPrinter::print(fnl.mx, fnl.count());
-    IPrinter::printSeperatorLine();
-
-    std::vector<DoubleVector> x2;
-    fnl.solveInitialValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_2);
-    IPrinter::print(x2, fnl.count());
-    IPrinter::printSeperatorLine();
-
-    fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
-    IPrinter::print(fnl.mx, fnl.count());
-    IPrinter::printSeperatorLine();
-
-    std::vector<DoubleVector> x3;
-    fnl.solveInitialValueProblem(x3, ODESolverMethod::RUNGE_KUTTA_4);
-    IPrinter::print(x3, fnl.count());
-    IPrinter::printSeperatorLine();
-
-    fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
-    IPrinter::print(fnl.mx, fnl.count());
-    IPrinter::printSeperatorLine();
-
-    DoubleVector x0(fnl.count()); PointNodeODE n0;
-    DoubleVector x4(fnl.count()); PointNodeODE n4;
-
-    fnl.start(x0, n0);
-    fnl.mx[0] = x0;
-
-    for (size_t i=1; i<fnl.dimension().size(); i++)
     {
-        fnl.next(x0, n0, x4, n4);
-        fnl.mx[i] = x4;
-        x0 = x4;
-        n0 = n4;
+        IPrinter::printSeperatorLine("EULER");
+        std::vector<DoubleVector> x1;
+        fnl.solveInitialValueProblem(x1, ODESolverMethod::EULER);
+        IPrinter::print(x1, fnl.count());
+
+        IPrinter::printSeperatorLine();
+        fnl.solveInitialValueProblem(ODESolverMethod::EULER);
+        IPrinter::print(fnl.mx, fnl.count());
     }
-    IPrinter::print(fnl.mx, fnl.count());
-    IPrinter::printSeperatorLine();
+
+    {
+        IPrinter::printSeperatorLine("RUNGE_KUTTA_2");
+        std::vector<DoubleVector> x2;
+        fnl.solveInitialValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_2);
+        IPrinter::print(x2, fnl.count());
+
+        IPrinter::printSeperatorLine();
+        fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
+        IPrinter::print(fnl.mx, fnl.count());
+    }
+
+    {
+        IPrinter::printSeperatorLine("RUNGE_KUTTA_4");
+        std::vector<DoubleVector> x3;
+        fnl.solveInitialValueProblem(x3, ODESolverMethod::RUNGE_KUTTA_4);
+        IPrinter::print(x3, fnl.count());
+
+        IPrinter::printSeperatorLine();
+        fnl.solveInitialValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
+        IPrinter::print(fnl.mx, fnl.count());
+    }
+
+    {
+        IPrinter::printSeperatorLine("STEP");
+        DoubleVector x0(fnl.count()); PointNodeODE n0;
+        DoubleVector x4(fnl.count()); PointNodeODE n4;
+
+        fnl.start(x0, n0);
+        fnl.mx[0] = x0;
+
+        for (size_t i=1, sz=fnl.dimension().size(); i<sz; i++)
+        {
+            fnl.next(x0, n0, x4, n4);
+            fnl.mx[i] = x4;
+            x0 = x4;
+            n0 = n4;
+        }
+        IPrinter::print(fnl.mx, fnl.count());
+        IPrinter::printSeperatorLine();
+    }
 }
 
 void FirstOrderLinearODEIVP::NonLocalConditionExample()
@@ -156,32 +165,58 @@ void FirstOrderLinearODEFVP::CauchyProblemExample()
     bnl.mx.clear();
     bnl.mx.resize(bnl.dimension().size());
 
-    std::vector<DoubleVector> x1;
-    bnl.solveFinalValueProblem(x1, ODESolverMethod::EULER);
-    IPrinter::print(x1, bnl.count());
-    IPrinter::printSeperatorLine();
+    {
+        IPrinter::printSeperatorLine("EULER");
+        std::vector<DoubleVector> x1;
+        bnl.solveFinalValueProblem(x1, ODESolverMethod::EULER);
+        IPrinter::print(x1, bnl.count());
 
-    bnl.solveFinalValueProblem(ODESolverMethod::EULER);
-    IPrinter::print(bnl.mx, bnl.count());
-    IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
+        bnl.solveFinalValueProblem(ODESolverMethod::EULER);
+        IPrinter::print(bnl.mx, bnl.count());
+    }
 
-    std::vector<DoubleVector> x2;
-    bnl.solveFinalValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_2);
-    IPrinter::print(x2, bnl.count());
-    IPrinter::printSeperatorLine();
+    {
+        IPrinter::printSeperatorLine("RUNGE_KUTTA_2");
+        std::vector<DoubleVector> x2;
+        bnl.solveFinalValueProblem(x2, ODESolverMethod::RUNGE_KUTTA_2);
+        IPrinter::print(x2, bnl.count());
 
-    bnl.solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
-    IPrinter::print(bnl.mx, bnl.count());
-    IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
+        bnl.solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_2);
+        IPrinter::print(bnl.mx, bnl.count());
+    }
 
-    std::vector<DoubleVector> x3;
-    bnl.solveFinalValueProblem(x3, ODESolverMethod::RUNGE_KUTTA_4);
-    IPrinter::print(x3, bnl.count());
-    IPrinter::printSeperatorLine();
+    {
+        IPrinter::printSeperatorLine("RUNGE_KUTTA_4");
+        std::vector<DoubleVector> x3;
+        bnl.solveFinalValueProblem(x3, ODESolverMethod::RUNGE_KUTTA_4);
+        IPrinter::print(x3, bnl.count());
 
-    bnl.solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
-    IPrinter::print(bnl.mx, bnl.count());
-    IPrinter::printSeperatorLine();
+        IPrinter::printSeperatorLine();
+        bnl.solveFinalValueProblem(ODESolverMethod::RUNGE_KUTTA_4);
+        IPrinter::print(bnl.mx, bnl.count());
+    }
+
+    {
+        IPrinter::printSeperatorLine("STEP");
+        DoubleVector x0(bnl.count()); PointNodeODE n0;
+        DoubleVector x4(bnl.count()); PointNodeODE n4;
+
+        size_t sz = bnl.dimension().size()-1;
+        bnl.start(x0, n0);
+        bnl.mx[sz] = x0;
+
+        for (size_t i=sz-1; i<sz; i--)
+        {
+            bnl.next(x0, n0, x4, n4, ODESolverMethod::EULER);
+            bnl.mx[i] = x4;
+            x0 = x4;
+            n0 = n4;
+        }
+        IPrinter::print(bnl.mx, bnl.count());
+        IPrinter::printSeperatorLine();
+    }
 }
 
 /*****************************************************************************************************/

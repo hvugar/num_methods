@@ -75,7 +75,7 @@ public:
     friend MINIMUMSHARED_EXPORT bool operator ==(const DoubleVector& v1, const DoubleVector& v2);
     friend MINIMUMSHARED_EXPORT bool operator !=(const DoubleVector& v1, const DoubleVector& v2);
 
-    DoubleVector& operator <<(double value);
+    DoubleVector& operator << (double value);
     //friend MINIMUMSHARED_EXPORT std::ostream& operator <<(std::ostream& os, const DoubleVector& v);
 
     friend class DoubleMatrix;

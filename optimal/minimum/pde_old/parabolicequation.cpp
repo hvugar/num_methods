@@ -1981,68 +1981,68 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
 
 void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
 {
-    u.clear();
+//    u.clear();
 
-    u.resize(M+1, N+1);
-    for (unsigned int j=0; j<=M; j++)
-    {
-        //u[j].resize(N+1);
-        u[j][0] = boundary(Left, j);
-        u[j][N] = boundary(Right, j);
-    }
-    for (unsigned int i=0; i<=N; i++) u[0][i] = initial(i);
+//    u.resize(M+1, N+1);
+//    for (unsigned int j=0; j<=M; j++)
+//    {
+//        //u[j].resize(N+1);
+//        u[j][0] = boundary(Left, j);
+//        u[j][N] = boundary(Right, j);
+//    }
+//    for (unsigned int i=0; i<=N; i++) u[0][i] = initial(i);
 
-    double betta = (a*a)/(hx*hx);
-    double alpha = -2.0*betta;
+//    double betta = (a*a)/(hx*hx);
+//    double alpha = -2.0*betta;
 
-    class A : public CauchyProblem2
-    {
-    public:
-        virtual double f(double t, const DoubleVector &y) const
-        {
-            unsigned int j=(unsigned int)(t/ht);
-            if (i==0)          { return bt * (p->boundary(Left, j) - 2.0*y[i] + y[i+1])        + p->f(i+1, j); }
-            else if (i==(N-2)) { return bt * (y[i-1]       - 2.0*y[i] + p->boundary(Right, j)) + p->f(i+1, j); }
-            else               { return bt * (y[i-1]       - 2.0*y[i] + y[i+1])                + p->f(i+1, j); }
-        }
-        unsigned int i;
-        double al;
-        double bt;
-        double ht;
-        double hx;
-        double a;
-        unsigned int N;
-        const IParabolicEquation *p;
-    };
+//    class A : public CauchyProblem2
+//    {
+//    public:
+//        virtual double f(double t, const DoubleVector &y) const
+//        {
+//            unsigned int j=(unsigned int)(t/ht);
+//            if (i==0)          { return bt * (p->boundary(Left, j) - 2.0*y[i] + y[i+1])        + p->f(i+1, j); }
+//            else if (i==(N-2)) { return bt * (y[i-1]       - 2.0*y[i] + p->boundary(Right, j)) + p->f(i+1, j); }
+//            else               { return bt * (y[i-1]       - 2.0*y[i] + y[i+1])                + p->f(i+1, j); }
+//        }
+//        unsigned int i;
+//        double al;
+//        double bt;
+//        double ht;
+//        double hx;
+//        double a;
+//        unsigned int N;
+//        const IParabolicEquation *p;
+//    };
 
-    std::vector<CauchyProblem2*> cps;
-    cps.resize(N-1);
-    for (unsigned int i=1; i<=N-1; i++)
-    {
-        A *cp = new A;
-        cp->al = alpha;
-        cp->bt = betta;
-        cp->N = N;
-        cp->i = i-1;
-        cp->x0 = 0.0;
-        cp->y0 = u[0][i];
-        cp->p = this;
-        //cp->u = &u;
-        cp->ht = ht;
-        cp->hx = hx;
-        cp->a = a;
-        cps[i-1] = cp;
-    }
+//    std::vector<CauchyProblem2*> cps;
+//    cps.resize(N-1);
+//    for (unsigned int i=1; i<=N-1; i++)
+//    {
+//        A *cp = new A;
+//        cp->al = alpha;
+//        cp->bt = betta;
+//        cp->N = N;
+//        cp->i = i-1;
+//        cp->x0 = 0.0;
+//        cp->y0 = u[0][i];
+//        cp->p = this;
+//        //cp->u = &u;
+//        cp->ht = ht;
+//        cp->hx = hx;
+//        cp->a = a;
+//        cps[i-1] = cp;
+//    }
 
-    DoubleMatrix m;
-    CauchyProblem2::rungeKutta(cps, 0.0, ht, M, m);
-    for (unsigned int j=1; j<=M; j++)
-    {
-        for (unsigned int i=1; i<=N-1; i++)
-        {
-            u[j][i] = m[i-1][j-1];
-        }
-    }
+//    DoubleMatrix m;
+//    CauchyProblem2::rungeKutta(cps, 0.0, ht, M, m);
+//    for (unsigned int j=1; j<=M; j++)
+//    {
+//        for (unsigned int i=1; i<=N-1; i++)
+//        {
+//            u[j][i] = m[i-1][j-1];
+//        }
+//    }
 }
 
 void IParabolicEquation::calculateN1(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
