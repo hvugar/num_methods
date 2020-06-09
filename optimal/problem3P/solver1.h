@@ -6,26 +6,19 @@
 namespace p3p1
 {
 
-struct HeatSourceParams
+struct ProblemParams
 {
-    double *v1 = nullptr;
-    double *v2 = nullptr;
-    double *q1 = nullptr;
-    double *q2 = nullptr;
-};
+    double *q;
+    double *v;
+    SpacePoint *z;
+    SpacePoint *zt;
+    SpacePoint u1;
+    SpacePoint u2;
+    SpacePoint u3;
+    SpacePoint u4;
+    SpacePoint p1;
+    SpacePoint p2;
 
-struct HeatSourceParam
-{
-    double q;
-    double v;
-    SpacePoint z;
-    SpacePoint zt;
-};
-
-struct HeatSourceParamArray
-{
-    size_t size;
-    HeatSourceParam *heatSourceParamArray;
 };
 
 class Solver1;
@@ -127,6 +120,11 @@ public:
     virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void bcw_layerInfo(const DoubleMatrix &U, const TimeNodePDE &tn) const;
 
+    virtual double A1(const PointNodeODE &node, size_t row, size_t col, size_t i) const;
+    virtual double A2(const PointNodeODE &node, size_t row, size_t col, size_t i) const;
+    virtual double A3(const PointNodeODE &node, size_t row, size_t i) const;
+    virtual double A4(const PointNodeODE &node, size_t row, size_t i) const;
+
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
     SpacePoint *measurePoints;
@@ -142,9 +140,9 @@ public:
     DoubleMatrix betta2;
     DoubleMatrix betta3;
 
-    DoubleMatrix nominU;
+    DoubleMatrix nU;
 
-    HeatSourceParam **sourceParams = nullptr;
+    ProblemParams *sourceParams = nullptr;
 
     virtual const Dimension& timeDimension() const { return _timeDimension; }
     virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
@@ -156,6 +154,9 @@ public:
 
     DoubleMatrix V, U;
 
+    HeatEquationIBVP forward;
+    HeatEquationFBVP backward;
+
 protected:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
@@ -164,7 +165,6 @@ protected:
 private:
     double frw_initialValue = 1.0;
     double environmentTemperature = 1.0;
-
 };
 
 }
