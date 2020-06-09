@@ -5,11 +5,11 @@ using namespace p3p1;
 void Solver1::Main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
-    Solver1 s(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    Solver1 s(Dimension(0.002, 0, 500), Dimension(0.005, 0, 200), Dimension(0.005, 0, 200));
     s.setPointNumber(2, 4);
 
     HeatEquationIBVP forward(&s);
-    forward.setThermalDiffusivity(1.0);
+    forward.setThermalDiffusivity(0.01);
     forward.setThermalConvection(0.0);
     forward.setThermalConductivity(0.0);
     forward.implicit_calculate_D2V1();
@@ -29,31 +29,31 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     this->heatSourceNumber = heatSourceNumber;
     this->measrPointNumber = measrPointNumber;
 
-    alpha1.resize(heatSourceNumber, measrPointNumber, 0.100);
-    alpha2.resize(heatSourceNumber, measrPointNumber, 0.150);
-    alpha3.resize(heatSourceNumber, measrPointNumber, 0.175);
+    alpha1.resize(heatSourceNumber, measrPointNumber, 0.200);
+    alpha2.resize(heatSourceNumber, measrPointNumber, 0.250);
+    alpha3.resize(heatSourceNumber, measrPointNumber, 0.275);
     betta1.resize(heatSourceNumber, measrPointNumber, 0.200);
     betta2.resize(heatSourceNumber, measrPointNumber, 0.250);
     betta3.resize(heatSourceNumber, measrPointNumber, 0.275);
 
     this->measurePoints = new SpacePoint[measrPointNumber];
     this->measurePointValues = new SpacePoint[measrPointNumber];
-    this->measurePoints[0] = SpacePoint(0.35, 0.72);
-    this->measurePoints[1] = SpacePoint(0.68, 0.12);
-    this->measurePoints[2] = SpacePoint(0.28, 0.84);
-    this->measurePoints[3] = SpacePoint(0.55, 0.62);
+    this->measurePoints[0] = SpacePoint(0.50, 0.20);
+    this->measurePoints[1] = SpacePoint(0.20, 0.50);
+    this->measurePoints[2] = SpacePoint(0.50, 0.80);
+    this->measurePoints[3] = SpacePoint(0.80, 0.50);
 
     A = new DoubleMatrix[heatSourceNumber];
-    A[0].resize(2, 2); A[0][0][0] = 0.1; A[0][0][1] = 0.0; A[0][1][0] = 0.0; A[0][1][1] = 0.2;
-    A[1].resize(2, 2); A[1][0][0] = 0.3; A[1][0][1] = 0.0; A[1][1][0] = 0.0; A[1][1][1] = 0.3;
+    A[0].resize(2, 2); A[0][0][0] = +0.24; A[0][0][1] = 0.0; A[0][1][0] = 0.0; A[0][1][1] = +0.35;
+    A[1].resize(2, 2); A[1][0][0] = -0.12; A[1][0][1] = 0.0; A[1][1][0] = 0.0; A[1][1][1] = -0.19;
 
     B = new DoubleMatrix[heatSourceNumber];
-    B[0].resize(2, 2); B[0][0][0] = 0.0; B[0][0][1] = 0.0; B[0][1][0] = 0.0; B[0][1][1] = 0.0;
-    B[1].resize(2, 2); B[1][0][0] = 0.0; B[1][0][1] = 0.0; B[1][1][0] = 0.0; B[1][1][1] = 0.0;
+    B[0].resize(2, 2); B[0][0][0] = +0.00; B[0][0][1] = 0.0; B[0][1][0] = 0.0; B[0][1][1] = +0.00;
+    B[1].resize(2, 2); B[1][0][0] = +0.00; B[1][0][1] = 0.0; B[1][1][0] = 0.0; B[1][1][1] = +0.00;
 
     C = new DoubleVector[heatSourceNumber];
-    C[0].resize(2); C[0][0] = 0.1; C[0][1] = 0.2;
-    C[1].resize(2); C[1][0] = 0.3; C[1][1] = 0.1;
+    C[0].resize(2); C[0][0] = +0.79; C[0][1] = +0.60;
+    C[1].resize(2); C[1][0] = -0.84; C[1][1] = +0.83;
 
     DoubleMatrix nominU(heatSourceNumber, measrPointNumber, 0.0);
 
@@ -66,10 +66,10 @@ double Solver1::frw_initial(const SpaceNodePDE &, InitialCondition) const { retu
 
 double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
-    cn = BoundaryConditionPDE::Dirichlet(1.0, 0.0, 1.0);
-    return environmentTemperature;
-//    cn = BoundaryConditionPDE::Robin(lambda, -1.0, lambda);
-//    return environmentTemperature;
+    //cn = BoundaryConditionPDE::Robin(lambda, -1.0, lambda);
+    //return environmentTemperature;
+    cn = BoundaryConditionPDE::Neumann(1.0, 0.0);
+    return 0.0;
 }
 
 void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -86,7 +86,7 @@ void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNode
         QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
         QPixmap pixmap;
         //visualizeMatrixHeat(u, 0.0, 46.052, pixmap, 101, 101);
-        visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 101, 101);
+        visualizeMatrixHeat(u, 1.0, 78.0, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
         pixmap.save(filename);
     }
 #endif
@@ -101,7 +101,7 @@ double Solver1::bcw_final(const SpaceNodePDE &sn, FinalCondition condition) cons
 
 double Solver1::bcw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
-    cn = BoundaryConditionPDE(BoundaryCondition::Robin, 1.0, 0.0, 0.0);
+    cn = BoundaryConditionPDE(BoundaryCondition::Neumann, 1.0, 0.0, 0.0);
     return 0.0;
 }
 
@@ -132,10 +132,9 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const-> 
 
 auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
-    puts("layerInfo...");
     HeatEquationIBVP *const_this = const_cast<HeatEquationIBVP*>(this);
     unsigned int ln = static_cast<unsigned int>(tn.i);
-    DoubleVector z0(2), z1(2);
+    DoubleVector z0(4), z1(4);
     PointNodeODE n0, n1;
 
     if (ln == timeDimension().min())
@@ -205,42 +204,37 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     }
 
     solver->frw_layerInfo(u, tn);
-    puts("layerInfo!");
 }
 
 auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    puts("frw_f...");
     double fx = lambda0*environmentTemperature;
     size_t ln = static_cast<size_t>(tn.i);
 
     for (size_t i=0; i<heatSourceNumber; i++)
     {
         const SpacePoint &z = sourceParams[i][ln].z;
-        printf("frw_f: tn: %4d i:%4d s.x:%12.8f s.y:%12.8f z.x:%12.8f z.y:%12.8f\n", tn.i, i, sn.x, sn.y, z.x, z.y);
         //if (0.05 <= z.x <= 0.95 && 0.05 <= z.y <= 0.95)
             fx += sourceParams[i][ln].q * DeltaFunction::gaussian(sn, z, SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
     }
-    puts("frw_f!");
     return fx ;
 }
 
 void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    puts("frw_layerInfo...");
-//    unsigned int ln = static_cast<unsigned int>(tn.i);
-//    std::string msg = "[ " + std::to_string(tn.i+1) + " ]";
-//    msg += " [ " + std::to_string(sourceParams[0][tn.i].z.x) + ", " + std::to_string(sourceParams[0][tn.i].z.y) + " ]";
-//    msg += " [ " + std::to_string(sourceParams[1][tn.i].z.x) + ", " + std::to_string(sourceParams[1][tn.i].z.y) + " ]";
-//    msg += " [ " + std::to_string(sourceParams[0][tn.i].v) + ", " + std::to_string(sourceParams[0][tn.i].v) + " ]";
-//    msg += " [ " + std::to_string(sourceParams[1][tn.i].v) + ", " + std::to_string(sourceParams[1][tn.i].v) + " ]";
-//    msg += " [ " + std::to_string(sourceParams[0][tn.i].q) + ", " + std::to_string(sourceParams[0][tn.i].q) + " ]";
-//    msg += " [ " + std::to_string(sourceParams[1][tn.i].q) + ", " + std::to_string(sourceParams[1][tn.i].q) + " ]";
+    unsigned int ln = static_cast<unsigned int>(tn.i);
+    std::string msg = "[ " + std::to_string(tn.i+1) + " ]";
+    msg += " [ " + std::to_string(sourceParams[0][tn.i].z.x) + ", " + std::to_string(sourceParams[0][tn.i].z.y) + " ]";
+    msg += " [ " + std::to_string(sourceParams[1][tn.i].z.x) + ", " + std::to_string(sourceParams[1][tn.i].z.y) + " ]";
+    msg += " [ " + std::to_string(sourceParams[0][tn.i].v) + ", " + std::to_string(sourceParams[0][tn.i].v) + " ]";
+    msg += " [ " + std::to_string(sourceParams[1][tn.i].v) + ", " + std::to_string(sourceParams[1][tn.i].v) + " ]";
+    msg += " [ " + std::to_string(sourceParams[0][tn.i].q) + ", " + std::to_string(sourceParams[0][tn.i].q) + " ]";
+    msg += " [ " + std::to_string(sourceParams[1][tn.i].q) + ", " + std::to_string(sourceParams[1][tn.i].q) + " ]";
+    msg += " [ " + std::to_string(u.min()) + ", " + std::to_string(u.max()) + " ]";
 
-//    IPrinter::printSeperatorLine(msg.data());
+    IPrinter::printSeperatorLine(msg.data());
 //    IPrinter::printMatrix(u);
-//    frw_saveToImage(u, tn);
-    puts("frw_layerInfo!");
+    frw_saveToImage(u, tn);
 }
 
 auto HeatEquationIBVP::timeDimension() const -> Dimension { return solver->timeDimension(); }
@@ -249,7 +243,7 @@ auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return solver->spa
 
 auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return solver->spaceDimensionY(); }
 
-auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime_error(""); }
+auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime_error("Not supportted..."); }
 
 //--------------------------------------------------------------------------------------------------------------//
 
@@ -286,12 +280,7 @@ auto HeatEquationIBVP::count() const -> size_t { return 2; }
 auto HeatEquationIBVP::dimension() const -> Dimension { return solver->timeDimension(); }
 
 auto HeatEquationIBVP::iterationInfo(const DoubleVector &z, const PointNodeODE &node) const -> void
-{
-    //    unsigned int ln = static_cast<unsigned int>(node.i);
-    //    ExternalSource &es = const_cast<Solver*>(solver)->externalSource[ln];
-    //    es.z.x = z[0];
-    //    es.z.y = z[1];
-}
+{}
 
 //--------------------------------------------------------------------------------------------------------------//
 

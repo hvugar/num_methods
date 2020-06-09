@@ -163,7 +163,7 @@ protected:
 
 private:
     double frw_initialValue = 1.0;
-    double environmentTemperature = 2.0;
+    double environmentTemperature = 1.0;
 
 };
 
