@@ -12,12 +12,9 @@ struct ProblemParams
     double *v;
     SpacePoint *z;
     SpacePoint *zt;
-    SpacePoint u1;
-    SpacePoint u2;
-    SpacePoint u3;
-    SpacePoint u4;
-    SpacePoint p1;
-    SpacePoint p2;
+    SpacePoint *u;
+    SpacePoint *p;
+    SpacePoint *f;
 
 };
 
@@ -127,30 +124,23 @@ public:
 
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
-    SpacePoint *measurePoints;
-    SpacePoint *measurePointValues;
     double lambda0 = 0.001;
     double lambda = 0.01;
 
     DoubleMatrix alpha1;
     DoubleMatrix alpha2;
     DoubleMatrix alpha3;
-
     DoubleMatrix betta1;
     DoubleMatrix betta2;
     DoubleMatrix betta3;
-
     DoubleMatrix nU;
+    SpacePoint *measurePoints;
 
     ProblemParams *sourceParams = nullptr;
 
     virtual const Dimension& timeDimension() const { return _timeDimension; }
     virtual const Dimension& spaceDimensionX() const { return _spaceDimensionX; }
     virtual const Dimension& spaceDimensionY() const { return _spaceDimensionY; }
-
-    DoubleMatrix *A;
-    DoubleMatrix *B;
-    DoubleVector *C;
 
     DoubleMatrix V, U;
 
