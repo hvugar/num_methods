@@ -50,7 +50,7 @@ public:
     void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
 
     void start(DoubleVector &x, PointNodeODE &n);
-    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n);
+    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method = ODESolverMethod::EULER);
 };
 
 /**

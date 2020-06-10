@@ -15,7 +15,8 @@ struct ProblemParams
     SpacePoint *u;
     SpacePoint *p;
     SpacePoint *f;
-
+    SpacePoint *ft;
+    SpacePoint *bc;
 };
 
 class Solver1;
@@ -87,7 +88,7 @@ protected:
 
 public:
     virtual auto dimension() const -> Dimension override;
-    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
+    //virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
 
 public:
     Solver1 *solver;
@@ -116,6 +117,7 @@ public:
     virtual double bcw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void bcw_layerInfo(const DoubleMatrix &U, const TimeNodePDE &tn) const;
+    virtual void bcw_saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
 
     virtual double A1(const PointNodeODE &node, size_t row, size_t col, size_t i) const;
     virtual double A2(const PointNodeODE &node, size_t row, size_t col, size_t i) const;

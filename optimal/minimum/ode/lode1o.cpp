@@ -5187,22 +5187,23 @@ void IFirstOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n
     const Dimension &dim = dimension();
     const double h = dim.step();
     const size_t m = count();
-
     n1.i = n0.i - 1; n1.x = n1.i*h;
+
+    if (x1.length() != m) x1.resize(m);
 
     if (method == ODESolverMethod::EULER)
     {
         for (size_t row=1; row<=m; row++)
         {
-            double sum = h*B(n0, row);
+            double sum = 0.0;
             for (size_t col=1; col<=m; col++)
             {
                 sum += h*A(n0, row, col)*x0[col-1];
             }
-            x1[row-1] = x0[row-1] - sum;
+            x1[row-1] = x0[row-1] - sum - h*B(n0, row);
         }
     }
-
+/*
     if (method == ODESolverMethod::EULER_MOD)
     {
     }
@@ -5296,7 +5297,7 @@ void IFirstOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n
     if (method == ODESolverMethod::RUNGE_KUTTA_6)
     {
     }
-
+*/
     iterationInfo(x1, n1);
 }
 
