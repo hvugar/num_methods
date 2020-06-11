@@ -359,7 +359,7 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
 
             size_t ln = 0;
-            PointNodeODE node; node.i  = ln; node.x = ln*ht;
+            PointNodeODE node; node.i = ln; node.x = ln*ht;
             g[0*size + i*heatSourceNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
             g[1*size + i*heatSourceNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
             g[2*size + i*heatSourceNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(sourceParams[ln].u[j].z-nU[i][j]);
@@ -369,7 +369,7 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
 
             for (size_t ln=1; ln<L; ln++)
             {
-                node; node.i  = ln; node.x = ln*ht;
+                node.i = ln; node.x = ln*ht;
                 g[0*size + i*heatSourceNumber  + j] += (A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
                 g[1*size + i*heatSourceNumber  + j] += (A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
                 g[2*size + i*heatSourceNumber  + j] += (A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(sourceParams[ln].u[j].z-nU[i][j]);
@@ -379,7 +379,7 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             }
 
             ln = L;
-            node; node.i  = ln; node.x = ln*ht;
+            node.i = ln; node.x = ln*ht;
             g[0*size + i*heatSourceNumber  + j] += 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
             g[1*size + i*heatSourceNumber  + j] += 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
             g[2*size + i*heatSourceNumber  + j] += 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(sourceParams[ln].u[j].z-nU[i][j]);
