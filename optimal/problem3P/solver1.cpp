@@ -13,13 +13,19 @@ void Solver1::Main(int argc, char **argv)
     s.forward.setThermalDiffusivity(0.01);
     s.forward.setThermalConductivity(0.0);
     s.forward.setThermalConvection(-s.lambda0);
-    //s.forward.implicit_calculate_D2V1();
+    s.forward.implicit_calculate_D2V1();
 
     puts("----");
     s.backward.setThermalDiffusivity(-0.01);
     s.backward.setThermalConductivity(0.0);
     s.backward.setThermalConvection(s.lambda0);
     s.backward.implicit_calculate_D2V1();
+
+    DoubleVector x;
+    s.parameterToVector(x);
+    DoubleVector g;
+    s.gradient(x, g);
+    IPrinter::print(g, g.length());
 }
 
 Solver1::Solver1(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY)
@@ -28,7 +34,6 @@ Solver1::Solver1(const Dimension &timeDimension, const Dimension &spaceDimension
     this->_spaceDimensionX = spaceDimensionX;
     this->_spaceDimensionY = spaceDimensionY;
 
-    U.resize(spaceDimensionX.size(), spaceDimensionY.size());
     V.resize(spaceDimensionX.size(), spaceDimensionY.size());
 }
 
@@ -41,9 +46,13 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
 
     alpha1.resize(heatSourceNumber, measrPointNumber, 0.200);
     alpha2.resize(heatSourceNumber, measrPointNumber, 0.250);
+//    alpha1.resize(heatSourceNumber, measrPointNumber, 0.000);
+//    alpha2.resize(heatSourceNumber, measrPointNumber, 0.000);
     alpha3.resize(heatSourceNumber, measrPointNumber, 0.275);
     betta1.resize(heatSourceNumber, measrPointNumber, 0.200);
     betta2.resize(heatSourceNumber, measrPointNumber, 0.250);
+//    betta1.resize(heatSourceNumber, measrPointNumber, 0.000);
+//    betta2.resize(heatSourceNumber, measrPointNumber, 0.000);
     betta3.resize(heatSourceNumber, measrPointNumber, 0.275);
 
     this->measurePoints = new SpacePoint[measrPointNumber];
@@ -107,14 +116,14 @@ void Solver1::bcw_saveToImage(const DoubleMatrix &p UNUSED_PARAM, const TimeNode
     static double MAX = -10000.0;
     if (p.max()>MAX) MAX = p.max();
     if (p.min()<MIN) MIN = p.min();
-//    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, u.min(), u.max(), MIN, MAX);
+    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, p.min(), p.max(), MIN, MAX);
 
     //if (tn.i%10==0)
     {
         QString filename = QString("data/problem3P/b/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
         QPixmap pixmap;
         //visualizeMatrixHeat(u, 0.0, 46.052, pixmap, 101, 101);
-        visualizeMatrixHeat(p, 1.0, 78.0, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+        visualizeMatrixHeat(p, p.min(), p.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
         pixmap.save(filename);
     }
 #endif
@@ -143,28 +152,31 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
 
     for (size_t j=0; j<measrPointNumber; j++)
     {
+        const SpacePoint &mp = measurePoints[j];
         double sum = 0.0;
         for (size_t i=0; i<heatSourceNumber; i++)
         {
-            sum += alpha3[i][j] * ( A4(node, 1, i+1)*pp.f[i].x + A4(node, 2, i+1)*pp.f[i].y );
-            sum += betta3[i][j] * ( pp.p[i].z );
+            const SpacePoint &zi = pp.z[i];
+            double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
+
+            sum += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * ( A4(node, 1, i+1)*pp.f[i].x + A4(node, 2, i+1)*pp.f[i].y );
+            sum += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * ( pp.p[i].z );
         }
-        //fx += sum * DeltaFunction::gaussian(sn, measurePoints[j],
-        //                                    SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
+        fx += sum * DeltaFunction::gaussian(sn, measurePoints[j],
+                                            SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
     }
     return fx;
 }
 
 void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
 {
-    unsigned int ln = static_cast<unsigned int>(tn.i);
-    ProblemParams &pp = sourceParams[ln];
-    std::string msg = "[ " + std::to_string(ln+1) + " ]";
-    msg += " [ " + std::to_string(pp.f[0].x) + ", " + std::to_string(pp.f[0].y) + " ]";
-    msg += " [ " + std::to_string(pp.f[1].x) + ", " + std::to_string(pp.f[1].y) + " ]";
-    msg += " [ " + std::to_string(p.min()) + ", " + std::to_string(p.max()) + " ]";
-
-    IPrinter::printSeperatorLine(msg.data());
+    //unsigned int ln = static_cast<unsigned int>(tn.i);
+    //ProblemParams &pp = sourceParams[ln];
+    //std::string msg = "[ " + std::to_string(ln+1) + " ]";
+    //msg += " [ " + std::to_string(pp.f[0].x) + ", " + std::to_string(pp.f[0].y) + " ]";
+    //msg += " [ " + std::to_string(pp.f[1].x) + ", " + std::to_string(pp.f[1].y) + " ]";
+    //msg += " [ " + std::to_string(p.min()) + ", " + std::to_string(p.max()) + " ]";
+    //IPrinter::printSeperatorLine(msg.data());
     //IPrinter::printMatrix(u);
     //bcw_saveToImage(p, tn);
 }
@@ -240,8 +252,9 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
             for (size_t j=0; j<solver->measrPointNumber; j++)
             {
                 double nominal = solver->nU.at(i, j);
-                param.u[j].z = DeltaFunction::lumpedPoint4(u, solver->measurePoints[j], spaceDimensionX(), spaceDimensionY());
-                param.u[j].x = param.u[j].y = 0.0;
+                SpacePoint d;
+                param.u[j].z = DeltaFunction::lumpedPoint4(u, solver->measurePoints[j], spaceDimensionX(), spaceDimensionY(), d);
+                param.u[j].x = d.x; param.u[j].y = d.y;
 
                 const SpacePoint &mp = solver->measurePoints[j];
                 double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
@@ -273,8 +286,9 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
             for (size_t j=0; j<solver->measrPointNumber; j++)
             {
                 double nominal = solver->nU.at(i, j);
-                pp1.u[j].z = DeltaFunction::lumpedPoint3(u, solver->measurePoints[j], spaceDimensionX(), spaceDimensionY());
-                pp1.u[j].x = pp0.u[j].y = 0.0;
+                SpacePoint d;
+                pp1.u[j].z = DeltaFunction::lumpedPoint4(u, solver->measurePoints[j], spaceDimensionX(), spaceDimensionY(), d);
+                pp1.u[j].x = d.x; pp1.u[j].y = d.y;
 
                 const SpacePoint &mp = solver->measurePoints[j];
                 double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
@@ -299,7 +313,7 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
     for (size_t i=0; i<heatSourceNumber; i++)
     {
         const SpacePoint &z = sourceParams[ln].z[i];
-        if (0.0 <= z.x <= 1.0 && 0.0 <= z.y <= 1.0)
+        if ( (0.0 <= z.x <= 1.0) && (0.0 <= z.y <= 1.0) )
         {
             fx += sourceParams[ln].q[i] * DeltaFunction::gaussian(sn, z,
                   SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
@@ -310,18 +324,124 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
 
 void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    unsigned int ln = static_cast<unsigned int>(tn.i);
-    ProblemParams &pp = sourceParams[ln];
-    std::string msg = "[ " + std::to_string(ln+1) + " ]";
-    msg += " [ " + std::to_string(pp.z[0].x) + ", " + std::to_string(pp.z[0].y) + " ]";
-    msg += " [ " + std::to_string(pp.z[1].x) + ", " + std::to_string(pp.z[1].y) + " ]";
-    msg += " [ " + std::to_string(pp.v[0]) + ", " + std::to_string(pp.v[1]) + " ]";
-    msg += " [ " + std::to_string(pp.q[0]) + ", " + std::to_string(pp.q[1]) + " ]";
-    msg += " [ " + std::to_string(u.min()) + ", " + std::to_string(u.max()) + " ]";
-
+    //unsigned int ln = static_cast<unsigned int>(tn.i);
+    //ProblemParams &pp = sourceParams[ln];
+    //std::string msg = "[ " + std::to_string(ln+1) + " ]";
+    //msg += " [ " + std::to_string(pp.z[0].x) + ", " + std::to_string(pp.z[0].y) + " ]";
+    //msg += " [ " + std::to_string(pp.z[1].x) + ", " + std::to_string(pp.z[1].y) + " ]";
+    //msg += " [ " + std::to_string(pp.v[0]) + ", " + std::to_string(pp.v[1]) + " ]";
+    //msg += " [ " + std::to_string(pp.q[0]) + ", " + std::to_string(pp.q[1]) + " ]";
+    //msg += " [ " + std::to_string(u.min()) + ", " + std::to_string(u.max()) + " ]";
     //IPrinter::printSeperatorLine(msg.data());
-    //    IPrinter::printMatrix(u);
+    //IPrinter::printMatrix(u);
     //frw_saveToImage(u, tn);
+}
+
+void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
+{
+    const_cast<Solver1*>(this)->vectorToParameter(x);
+    forward.implicit_calculate_D2V1();
+    backward.implicit_calculate_D2V1();
+
+    size_t L = timeDimension().size()-1;
+    double ht = timeDimension().step();
+
+    size_t size = heatSourceNumber*measrPointNumber;
+    g.clear();
+    g.resize(size*6);
+
+    for (size_t i=0; i<heatSourceNumber; i++)
+    {
+        for (size_t j=0; j<measrPointNumber; j++)
+        {
+            const SpacePoint &mp = measurePoints[j];
+            const SpacePoint &zi = sourceParams[0].z[i];
+            double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
+
+            size_t ln = 0;
+            PointNodeODE node; node.i  = ln; node.x = ln*ht;
+            g[0*size + i*heatSourceNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[1*size + i*heatSourceNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[2*size + i*heatSourceNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[3*size + i*heatSourceNumber  + j] = 0.5*(sourceParams[ln].p[i].z)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[4*size + i*heatSourceNumber  + j] = 0.5*(sourceParams[ln].p[i].z)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[5*size + i*heatSourceNumber  + j] = 0.5*(sourceParams[ln].p[i].z)*(sourceParams[ln].u[j].z-nU[i][j]);
+
+            for (size_t ln=1; ln<L; ln++)
+            {
+                node; node.i  = ln; node.x = ln*ht;
+                g[0*size + i*heatSourceNumber  + j] += (A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+                g[1*size + i*heatSourceNumber  + j] += (A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+                g[2*size + i*heatSourceNumber  + j] += (A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(sourceParams[ln].u[j].z-nU[i][j]);
+                g[3*size + i*heatSourceNumber  + j] += (sourceParams[ln].p[i].z)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+                g[4*size + i*heatSourceNumber  + j] += (sourceParams[ln].p[i].z)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+                g[5*size + i*heatSourceNumber  + j] += (sourceParams[ln].p[i].z)*(sourceParams[ln].u[j].z-nU[i][j]);
+            }
+
+            ln = L;
+            node; node.i  = ln; node.x = ln*ht;
+            g[0*size + i*heatSourceNumber  + j] += 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[1*size + i*heatSourceNumber  + j] += 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[2*size + i*heatSourceNumber  + j] += 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[3*size + i*heatSourceNumber  + j] += 0.5*(sourceParams[ln].p[i].z)*(dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[4*size + i*heatSourceNumber  + j] += 0.5*(sourceParams[ln].p[i].z)*(dist)*(sourceParams[ln].u[j].z-nU[i][j]);
+            g[5*size + i*heatSourceNumber  + j] += 0.5*(sourceParams[ln].p[i].z)*(sourceParams[ln].u[j].z-nU[i][j]);
+
+            g[0*size + i*heatSourceNumber  + j] *= ht;
+            g[1*size + i*heatSourceNumber  + j] *= ht;
+            g[2*size + i*heatSourceNumber  + j] *= ht;
+            g[3*size + i*heatSourceNumber  + j] *= ht;
+            g[4*size + i*heatSourceNumber  + j] *= ht;
+            g[5*size + i*heatSourceNumber  + j] *= ht;
+        }
+    }
+}
+
+double Solver1::fx(const DoubleVector &x) const
+{
+    const_cast<Solver1*>(this)->vectorToParameter(x);
+    forward.implicit_calculate_D2V1();
+    return integral(U);
+}
+
+auto Solver1::integral(const DoubleMatrix &) const -> double
+{
+    const Dimension &dimensionX = spaceDimensionX();
+    const Dimension &dimensionY = spaceDimensionY();
+    const unsigned int N = static_cast<unsigned int> ( dimensionX.size()-1 );
+    const unsigned int M = static_cast<unsigned int> ( dimensionY.size()-1 );
+    const double hx = dimensionX.step();
+    const double hy = dimensionY.step();
+
+    double udiff = 0.0;
+    double usum = 0.0;
+
+    udiff = (U[0][0]-V[0][0]); usum += 0.25 * udiff * udiff;// * mu(0, 0);
+    udiff = (U[0][N]-V[0][N]); usum += 0.25 * udiff * udiff;// * mu(N, 0);
+    udiff = (U[M][0]-V[M][0]); usum += 0.25 * udiff * udiff;// * mu(0, M);
+    udiff = (U[M][N]-V[M][N]); usum += 0.25 * udiff * udiff;// * mu(N, M);
+
+    for (unsigned int n=1; n<=N-1; n++)
+    {
+        udiff = U[0][n]-V[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+        udiff = U[M][n]-V[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+    }
+
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        udiff = U[m][0]-V[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+        udiff = U[m][N]-V[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+    }
+
+    for (unsigned int m=1; m<=M-1; m++)
+    {
+        for (unsigned int n=1; n<=N-1; n++)
+        {
+            udiff = U[m][n]-V[m][n]; usum += udiff * udiff;// * mu(n, m);
+        }
+    }
+
+    return usum*(hx*hy);
 }
 
 auto HeatEquationIBVP::timeDimension() const -> Dimension { return solver->timeDimension(); }
@@ -405,8 +525,9 @@ auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) c
             param.f[i]  = SpacePoint(f0[0], f0[1]);
             param.ft[i] = SpacePoint(f0[2], f0[3]);
 
-            //param.p[i].z = DeltaFunction::lumpedPoint4(p, param.z[i], spaceDimensionX(), spaceDimensionY());
-            param.p[i].x = param.p[i].y = 0.0;
+            SpacePoint d;
+            param.p[i].z = DeltaFunction::lumpedPoint4(p, param.z[i], spaceDimensionX(), spaceDimensionY(), d);
+            param.p[i].x = d.x; param.p[i].y = d.y;
         }
     }
 
@@ -422,8 +543,9 @@ auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) c
             pp1.f[i]  = SpacePoint(f1[0], f1[1]);
             pp1.ft[i] = SpacePoint(f1[2], f1[3]);
 
-            //pp1.p[i].z = DeltaFunction::lumpedPoint4(p, pp1.z[i], spaceDimensionX(), spaceDimensionY());
-            pp1.p[i].x = pp1.p[i].y = 0.0;
+            SpacePoint d;
+            pp1.p[i].z = DeltaFunction::lumpedPoint4(p, pp1.z[i], spaceDimensionX(), spaceDimensionY(), d);
+            pp1.p[i].x = d.x; pp1.p[i].y = d.y;
         }
     }
 
@@ -473,5 +595,42 @@ auto HeatEquationFBVP::dimension() const -> Dimension { return solver->timeDimen
 //auto HeatEquationFBVP::iterationInfo(const DoubleVector &z, const PointNodeODE &node) const -> void
 //{
 //}
+
+void Solver1::vectorToParameter(const DoubleVector &x)
+{
+    size_t size = heatSourceNumber*measrPointNumber;
+    for (size_t i=0; i<heatSourceNumber; i++)
+    {
+        for (size_t j=0; j<measrPointNumber; j++)
+        {
+            alpha1[i][j] = x[0*size + i*heatSourceNumber  + j];
+            alpha2[i][j] = x[1*size + i*heatSourceNumber  + j];
+            alpha3[i][j] = x[2*size + i*heatSourceNumber  + j];
+            betta1[i][j] = x[3*size + i*heatSourceNumber  + j];
+            betta2[i][j] = x[4*size + i*heatSourceNumber  + j];
+            betta3[i][j] = x[5*size + i*heatSourceNumber  + j];
+        }
+    }
+}
+
+void Solver1::parameterToVector(DoubleVector &x)
+{
+    size_t size = heatSourceNumber*measrPointNumber;
+    x.clear();
+    x.resize(size*6);
+
+    for (size_t i=0; i<heatSourceNumber; i++)
+    {
+        for (size_t j=0; j<measrPointNumber; j++)
+        {
+            x[0*size + i*heatSourceNumber  + j] = alpha1[i][j];
+            x[1*size + i*heatSourceNumber  + j] = alpha2[i][j];
+            x[2*size + i*heatSourceNumber  + j] = alpha3[i][j];
+            x[3*size + i*heatSourceNumber  + j] = betta1[i][j];
+            x[4*size + i*heatSourceNumber  + j] = betta2[i][j];
+            x[5*size + i*heatSourceNumber  + j] = betta3[i][j];
+        }
+    }
+}
 
 

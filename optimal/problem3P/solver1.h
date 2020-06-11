@@ -95,7 +95,7 @@ public:
     size_t i;
 };
 
-class PROBLEM3P_SHARED_EXPORT Solver1
+class PROBLEM3P_SHARED_EXPORT Solver1 : public IGradient, public RnFunction
 {
 public:
     static void Main(int argc, char** argv);
@@ -106,6 +106,10 @@ public:
     virtual ~Solver1();
 
     void setPointNumber(size_t heatSourceNumber, size_t measrPointNumber);
+
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
+    virtual double fx(const DoubleVector &x) const;
+    auto integral(const DoubleMatrix &) const -> double;
 
     virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
@@ -148,6 +152,9 @@ public:
 
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;
+
+    void vectorToParameter(const DoubleVector &x);
+    void parameterToVector(DoubleVector &x);
 
 protected:
     Dimension _timeDimension;
