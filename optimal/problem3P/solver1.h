@@ -130,7 +130,7 @@ public:
 
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
-    double lambda0 = 0.001;
+    double lambda0 = 0.0;
     double lambda = 0.01;
 
     DoubleMatrix alpha1;
