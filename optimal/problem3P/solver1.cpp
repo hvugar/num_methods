@@ -36,6 +36,7 @@ void Solver1::Main(int argc, char **argv)
     IPrinter::print(g.mid(3*size, 4*size-1).L2Normalize(), g.mid(3*size, 4*size-1).length(), 8, 4);
     IPrinter::print(g.mid(4*size, 5*size-1).L2Normalize(), g.mid(4*size, 5*size-1).length(), 8, 4);
     IPrinter::print(g.mid(5*size, 6*size-1).L2Normalize(), g.mid(5*size, 6*size-1).length(), 8, 4);
+    //IPrinter::print(g.mid(6*size, 7*size-1).L2Normalize(), g.mid(6*size, 7*size-1).length(), 8, 4);
 
     puts("---------------------------------------------------------------------------------------");
     DoubleVector g1(x.length(), 0.0);
@@ -45,6 +46,7 @@ void Solver1::Main(int argc, char **argv)
     IGradient::Gradient(&s, 0.01, x, g1, 3*size, 4*size-1);
     IGradient::Gradient(&s, 0.01, x, g1, 4*size, 5*size-1);
     IGradient::Gradient(&s, 0.01, x, g1, 5*size, 6*size-1);
+    //IGradient::Gradient(&s, 0.01, x, g1, 6*size, 7*size-1);
 
     IPrinter::print(g1.mid(0*size, 1*size-1).L2Normalize(), g1.mid(0*size, 1*size-1).length(), 8, 4);
     IPrinter::print(g1.mid(1*size, 2*size-1).L2Normalize(), g1.mid(1*size, 2*size-1).length(), 8, 4);
@@ -52,6 +54,7 @@ void Solver1::Main(int argc, char **argv)
     IPrinter::print(g1.mid(3*size, 4*size-1).L2Normalize(), g1.mid(3*size, 4*size-1).length(), 8, 4);
     IPrinter::print(g1.mid(4*size, 5*size-1).L2Normalize(), g1.mid(4*size, 5*size-1).length(), 8, 4);
     IPrinter::print(g1.mid(5*size, 6*size-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), 8, 4);
+    //IPrinter::print(g1.mid(6*size, 7*size-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), 8, 4);
 }
 
 Solver1::Solver1(const Dimension &timeDimension, const Dimension &spaceDimensionX, const Dimension &spaceDimensionY)
@@ -91,7 +94,7 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     this->measurePoints[2] = SpacePoint(0.50, 0.80);
     this->measurePoints[3] = SpacePoint(0.80, 0.50);
 
-    nU.resize(heatSourceNumber, measrPointNumber, 0.0);
+    nominU.resize(heatSourceNumber, measrPointNumber, 0.0);
 
     sourceParams = new ProblemParams[timeDimension().size()];
     for (size_t ln=0; ln<timeDimension().size(); ln++)
@@ -281,7 +284,7 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 
             for (size_t j=0; j<solver->measrPointNumber; j++)
             {
-                double nominal = solver->nU.at(i, j);
+                double nominal = solver->nominU.at(i, j);
                 SpacePoint d;
                 param.u[j].z = DeltaFunction::lumpedPoint4(u, solver->measurePoints[j], spaceDimensionX(), spaceDimensionY(), d);
                 param.u[j].x = d.x; param.u[j].y = d.y;
@@ -315,7 +318,7 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
 
             for (size_t j=0; j<solver->measrPointNumber; j++)
             {
-                double nominal = solver->nU.at(i, j);
+                double nominal = solver->nominU.at(i, j);
                 SpacePoint d;
                 pp1.u[j].z = DeltaFunction::lumpedPoint4(u, solver->measurePoints[j], spaceDimensionX(), spaceDimensionY(), d);
                 pp1.u[j].x = d.x; pp1.u[j].y = d.y;
@@ -392,9 +395,9 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
 
             double dist2, dist1, dist0, val0, val1;
 
-            dist2 = (dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
-            dist1 = (dist)*(sourceParams[ln].u[j].z-nU[i][j]);
-            dist0 = sourceParams[ln].u[j].z-nU[i][j];
+            dist2 = (dist*dist)*(sourceParams[ln].u[j].z-nominU[i][j]);
+            dist1 = (dist)*(sourceParams[ln].u[j].z-nominU[i][j]);
+            dist0 = sourceParams[ln].u[j].z-nominU[i][j];
             val0 = sourceParams[ln].p[i].z;
             val1 = A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y;
 
@@ -403,15 +406,17 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             g[2*size + i*measrPointNumber  + j] = 0.5*val0*dist0;
             g[3*size + i*measrPointNumber  + j] = 0.5*val1*dist2;
             g[4*size + i*measrPointNumber  + j] = 0.5*val1*dist1;
-            g[5*size + i*measrPointNumber  + j] = 0.5*(A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y)*dist0;
+            g[5*size + i*measrPointNumber  + j] = 0.5*val1*dist0;
+            //g[6*size + i*measrPointNumber  + j] = 0.5*(val0*(alpha1[i][j]*dist2+alpha2[i][j]*dist1+alpha3[i][j]*dist0)
+            //                                          +val1*(betta1[i][j]*dist2+betta2[i][j]*dist1+betta3[i][j]*dist0));
 
             for (size_t ln=1; ln<L; ln++)
             {
                 node.i = ln; node.x = ln*ht;
 
-                dist2 = (dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
-                dist1 = (dist)*(sourceParams[ln].u[j].z-nU[i][j]);
-                dist0 = sourceParams[ln].u[j].z-nU[i][j];
+                dist2 = (dist*dist)*(sourceParams[ln].u[j].z-nominU[i][j]);
+                dist1 = (dist)*(sourceParams[ln].u[j].z-nominU[i][j]);
+                dist0 = sourceParams[ln].u[j].z-nominU[i][j];
                 val0 = sourceParams[ln].p[i].z;
                 val1 = A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y;
 
@@ -421,14 +426,16 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                 g[3*size + i*measrPointNumber  + j] += val1*dist2;
                 g[4*size + i*measrPointNumber  + j] += val1*dist1;
                 g[5*size + i*measrPointNumber  + j] += val1*dist0;
+                //g[6*size + i*measrPointNumber  + j] += (val0*(alpha1[i][j]*dist2+alpha2[i][j]*dist1+alpha3[i][j]*dist0)
+                //                                       +val1*(betta1[i][j]*dist2+betta2[i][j]*dist1+betta3[i][j]*dist0));
             }
 
             ln = L;
             node.i = ln; node.x = ln*ht;
 
-            dist2 = (dist*dist)*(sourceParams[ln].u[j].z-nU[i][j]);
-            dist1 = (dist)*(sourceParams[ln].u[j].z-nU[i][j]);
-            dist0 = sourceParams[ln].u[j].z-nU[i][j];
+            dist2 = (dist*dist)*(sourceParams[ln].u[j].z-nominU[i][j]);
+            dist1 = (dist)*(sourceParams[ln].u[j].z-nominU[i][j]);
+            dist0 = sourceParams[ln].u[j].z-nominU[i][j];
             val0 = sourceParams[ln].p[i].z;
             val1 = A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y;
 
@@ -438,6 +445,8 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             g[3*size + i*measrPointNumber  + j] += 0.5*val1*dist2;
             g[4*size + i*measrPointNumber  + j] += 0.5*val1*dist1;
             g[5*size + i*measrPointNumber  + j] += 0.5*val1*dist0;
+            //g[6*size + i*measrPointNumber  + j] += 0.5*(val0*(alpha1[i][j]*dist2+alpha2[i][j]*dist1+alpha3[i][j]*dist0)
+            //                                           +val1*(betta1[i][j]*dist2+betta2[i][j]*dist1+betta3[i][j]*dist0));
 
             g[0*size + i*measrPointNumber  + j] *= -ht;
             g[1*size + i*measrPointNumber  + j] *= -ht;
@@ -445,6 +454,7 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             g[3*size + i*measrPointNumber  + j] *= -ht;
             g[4*size + i*measrPointNumber  + j] *= -ht;
             g[5*size + i*measrPointNumber  + j] *= -ht;
+            //g[6*size + i*measrPointNumber  + j] *= +ht;
         }
     }
 }
@@ -631,7 +641,7 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
 
         double val0 = pp.p[i-1].z;
         double val1 = solver->A4(node, 1, i)*pp.f[i-1].x + solver->A4(node, 2, i)*pp.f[i-1].y;
-        double diff = pp.u[j].z-solver->nU[i-1][j];
+        double diff = pp.u[j].z-solver->nominU[i-1][j];
 
         sum += val0 * (2.0*solver->alpha1[i-1][j]*dist + solver->alpha2[i-1][j]) * diff;
         sum += val1 * (2.0*solver->betta1[i-1][j]*dist + solver->betta2[i-1][j]) * diff;
@@ -676,6 +686,7 @@ void Solver1::vectorToParameter(const DoubleVector &x)
             betta1[i][j] = x[3*size + i*measrPointNumber + j];
             betta2[i][j] = x[4*size + i*measrPointNumber + j];
             betta3[i][j] = x[5*size + i*measrPointNumber + j];
+            //nominU[i][j] = x[6*size + i*measrPointNumber + j];
         }
     }
 }
@@ -684,7 +695,7 @@ void Solver1::parameterToVector(DoubleVector &x)
 {
     size_t size = heatSourceNumber*measrPointNumber;
     x.clear();
-    x.resize(size*6);
+    x.resize(size*7);
 
     for (size_t i=0; i<heatSourceNumber; i++)
     {
@@ -696,6 +707,7 @@ void Solver1::parameterToVector(DoubleVector &x)
             x[3*size + i*measrPointNumber + j] = betta1[i][j];
             x[4*size + i*measrPointNumber + j] = betta2[i][j];
             x[5*size + i*measrPointNumber + j] = betta3[i][j];
+           // x[6*size + i*measrPointNumber + j] = nominU[i][j];
         }
     }
 }

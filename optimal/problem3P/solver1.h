@@ -139,7 +139,7 @@ public:
     DoubleMatrix betta1;
     DoubleMatrix betta2;
     DoubleMatrix betta3;
-    DoubleMatrix nU;
+    DoubleMatrix nominU;
     SpacePoint *measurePoints;
 
     ProblemParams *sourceParams = nullptr;
