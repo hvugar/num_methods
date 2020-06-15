@@ -3281,7 +3281,7 @@ void IFirstOrderLinearODEIVP::next(const DoubleVector &x0, const PointNodeODE &n
             x1[row-1] = x0[row-1] + sum + h*B(n0, row);
         }
     }
-/*
+
     if (method == ODESolverMethod::EULER_MOD)
     {
     }
@@ -3423,7 +3423,7 @@ void IFirstOrderLinearODEIVP::next(const DoubleVector &x0, const PointNodeODE &n
     if (method == ODESolverMethod::RUNGE_KUTTA_6)
     {
     }
-*/
+
     iterationInfo(x1, n1);
 }
 
@@ -5203,7 +5203,7 @@ void IFirstOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n
             x1[row-1] = x0[row-1] - sum - h*B(n0, row);
         }
     }
-/*
+
     if (method == ODESolverMethod::EULER_MOD)
     {
     }
@@ -5297,7 +5297,7 @@ void IFirstOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n
     if (method == ODESolverMethod::RUNGE_KUTTA_6)
     {
     }
-*/
+
     iterationInfo(x1, n1);
 }
 

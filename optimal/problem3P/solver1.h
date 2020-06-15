@@ -10,12 +10,13 @@ struct ProblemParams
 {
     double *q;
     double *v;
-    SpacePoint *z;
-    SpacePoint *zt;
+    double *h;
+    SpacePoint *zv;
+    SpacePoint *zd;
     SpacePoint *u;
-    SpacePoint *p;
-    SpacePoint *f;
-    SpacePoint *ft;
+    SpacePoint *ps;
+    SpacePoint *fv;
+    SpacePoint *fd;
     SpacePoint *bc;
 };
 
@@ -95,10 +96,11 @@ public:
     size_t i;
 };
 
-class PROBLEM3P_SHARED_EXPORT Solver1 : public IGradient, public RnFunction
+class PROBLEM3P_SHARED_EXPORT Solver1 : public IGradient, public RnFunction, public IProjection, public IPrinter
 {
 public:
     static void Main(int argc, char** argv);
+    static void optimize(int argc, char **argv);
 
 public:
     Solver1(const Dimension &timeDimension,
@@ -110,6 +112,11 @@ public:
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     virtual double fx(const DoubleVector &x) const;
     auto integral(const DoubleMatrix &) const -> double;
+
+    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &x) const -> void;
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
+                       double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
     virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
@@ -128,6 +135,8 @@ public:
     virtual double A3(const PointNodeODE &node, size_t row, size_t i) const;
     virtual double A4(const PointNodeODE &node, size_t row, size_t i) const;
 
+    bool isPointOnPlate(const SpacePoint &z) const;
+
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
     double lambda0 = 0.0;
@@ -139,7 +148,8 @@ public:
     DoubleMatrix betta1;
     DoubleMatrix betta2;
     DoubleMatrix betta3;
-    DoubleMatrix nominU;
+    DoubleMatrix nomnU1;
+    DoubleMatrix nomnU2;
     SpacePoint *measurePoints;
 
     ProblemParams *sourceParams = nullptr;
@@ -155,6 +165,10 @@ public:
 
     void vectorToParameter(const DoubleVector &x);
     void parameterToVector(DoubleVector &x);
+
+    bool drawImage = false;
+    ODESolverMethod method = ODESolverMethod::EULER;
+    GradientMethod *gradMethod;
 
 protected:
     Dimension _timeDimension;

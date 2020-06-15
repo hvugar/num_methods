@@ -17,8 +17,8 @@ public:
     void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
     void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
 
-    void start(DoubleVector &x, PointNodeODE &n);
-    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method = ODESolverMethod::EULER);
+    void start(DoubleVector &x, PointNodeODE &n) const;
+    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method = ODESolverMethod::EULER) const;
 };
 
 /**
@@ -49,8 +49,8 @@ public:
     void solveInitialValueProblem(std::vector<DoubleVector> &rv) const;
     void solveInitialValueProblem(ODESolverMethod method = ODESolverMethod::EULER) const;
 
-    void start(DoubleVector &x, PointNodeODE &n);
-    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method = ODESolverMethod::EULER);
+    void start(DoubleVector &x, PointNodeODE &n) const;
+    void next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method = ODESolverMethod::EULER) const;
 };
 
 /**
