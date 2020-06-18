@@ -137,6 +137,10 @@ public:
 
     bool isPointOnPlate(const SpacePoint &z) const;
 
+    void drawImages(Solver1 &solver) const;
+    double minU, maxU;
+    bool saveMinMaxU = false;
+
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
     double lambda0 = 0.0;
