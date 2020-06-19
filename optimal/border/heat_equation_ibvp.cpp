@@ -1,7 +1,8 @@
 #include "heat_equation_ibvp.h"
 
 #define HEAT_DIMENSION_2
-#define HEAT_QUADRATIC
+#define HEAT_HOMOGENIOUS
+//#define HEAT_QUADRATIC
 //#define HEAT_DELTA
 
 #if defined(HEAT_DIMENSION_1)
@@ -57,7 +58,7 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 
     h.setThermalDiffusivity(0.000111);
     h.setThermalConductivity(fb);
-    h.setThermalConvection(fc);
+    h.setThermalConvection(-h._lambda0);
 
     Benchmark bm;
     bm.tick();
@@ -117,6 +118,10 @@ double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 #if defined(HEAT_DELTA)
     return 0.0;
 #endif
+#if defined(HEAT_HOMOGENIOUS)
+    C_UNUSED(sn);
+    return _initialTemperature;
+#endif
 }
 
 double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const
@@ -160,11 +165,18 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     condition = BoundaryConditionPDE(BoundaryCondition::Neumann, +0.0, +1.0, +1.0);
     return 0.0;
 #endif
-#endif
 #if defined(HEAT_NORMAL_ROBIN)
     condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
     return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
 #endif
+#endif
+#endif
+
+#if defined(HEAT_HOMOGENIOUS)
+    //condition = BoundaryConditionPDE::Robin(0.01, -1.0, 0.01);
+    //condition = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    //condition = BoundaryConditionPDE(BoundaryCondition::Robin, _lambda, +1.00, _lambda); return _environmentTemperature;
+    condition = BoundaryConditionPDE::Robin(_lambda, -1.00, _lambda); return _environmentTemperature;
 #endif
 }
 
@@ -201,6 +213,10 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     //printf("%6d %6d %14.8f\n", sn.i, sn.j, val);
     return val;
 #endif
+#endif
+
+#if defined(HEAT_HOMOGENIOUS)
+    return -thermalConvection() * _environmentTemperature;
 #endif
 }
 

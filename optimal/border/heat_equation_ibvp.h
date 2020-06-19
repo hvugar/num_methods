@@ -37,6 +37,12 @@ private:
     Dimension _spaceDimensionY;
     Dimension _spaceDimensionZ;
     DeltaGrid2D deltaGrid;
+
+public:
+    double _initialTemperature = 1.0;
+    double _environmentTemperature = 2.0;
+    double _lambda = 0.01;
+    double _lambda0 = 0.001;
 };
 
 class BORDERSHARED_EXPORT HeatEquationFBVP : public IHeatEquationFBVP
