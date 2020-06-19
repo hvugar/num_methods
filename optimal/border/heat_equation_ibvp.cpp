@@ -176,7 +176,8 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     //condition = BoundaryConditionPDE::Robin(0.01, -1.0, 0.01);
     //condition = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
     //condition = BoundaryConditionPDE(BoundaryCondition::Robin, _lambda, +1.00, _lambda); return _environmentTemperature;
-    condition = BoundaryConditionPDE::Robin(_lambda, -1.00, _lambda); return _environmentTemperature;
+    //condition = BoundaryConditionPDE::Robin(_lambda, -1.00, _lambda); return _environmentTemperature;
+    condition = BoundaryConditionPDE::Neumann(1.0, 0.00); return 0.0;
 #endif
 }
 

@@ -44,7 +44,7 @@ void visualizeMatrixHeat(const DoubleMatrix& m, double min, double max, QPixmap 
         {
             double u = m.at(j,i);
             double ratio = 0.0;
-            if (fabs(max-min)>=DBL_EPSILON) ratio = 2.0 * (u-min) / (max - min);
+            if (fabs(max-min) >= 0.0000000001) ratio = 2.0 * (u-min) / (max - min);
             int b = int(MAX(0, 255*(1 - ratio)));
             int r = int(MAX(0, 255*(ratio - 1)));
             int g = 255 - b - r;
