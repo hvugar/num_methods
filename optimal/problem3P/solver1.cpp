@@ -6,7 +6,7 @@ void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    Solver1 s(Dimension(0.005, 0, 400), Dimension(0.001, 0, 1000), Dimension(0.001, 0, 1000));
+    Solver1 s(Dimension(0.005, 0, 400), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     s.setPointNumber(2, 4);
     s.forward.solver = &s;
     s.backward.solver = &s;
@@ -16,11 +16,11 @@ void Solver1::optimize(int argc, char **argv)
     s.forward.setThermalDiffusivity(a);
     s.forward.setThermalConvection(-s._lambda0);
     s.forward.setThermalConductivity(0.0);
-    s.drawImage = true;
+    s.drawImage = false;
     s.forward.implicit_calculate_D2V1();
     s.drawImage = false;
     s.V = s.U;
-    return;
+    //return;
 
     s.backward.setThermalDiffusivity(-a);
     s.backward.setThermalConvection(s._lambda0);
@@ -130,17 +130,21 @@ void Solver1::Main(int argc, char **argv)
     s.forward.solver = &s;
     s.backward.solver = &s;
 
-    s.forward.setThermalDiffusivity(0.0001);
-    s.forward.setThermalConductivity(0.0);
-    s.forward.setThermalConvection(-s._lambda0);
+    const double thermalDiffusivity = 0.0001;
+    const double thermalConductivity = 0.0;
+    const double thermalConvection = -s._lambda0;
+
+    s.forward.setThermalDiffusivity(thermalDiffusivity);
+    s.forward.setThermalConductivity(thermalConductivity);
+    s.forward.setThermalConvection(thermalConvection);
     s.drawImage = false;
     s.forward.implicit_calculate_D2V1();
     s.drawImage = false;
     s.V = s.U;
 
-    s.backward.setThermalDiffusivity(-0.0001);
-    s.backward.setThermalConductivity(0.0);
-    s.backward.setThermalConvection(s._lambda0);
+    s.backward.setThermalDiffusivity(-thermalDiffusivity);
+    s.backward.setThermalConductivity(thermalConductivity);
+    s.backward.setThermalConvection(-thermalConvection);
     //s.backward.implicit_calculate_D2V1();
 
     for (size_t i=0; i<s.heatSourceNumber; i++)
@@ -291,8 +295,8 @@ double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, Boundary
 
 double Solver1::bcw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
-    cn = BoundaryConditionPDE::Robin(lambda, -1.0, 0.0); return 0.0;
-    //cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    //cn = BoundaryConditionPDE::Robin(lambda, -1.0, 0.0); return 0.0;
+    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
 }
 
 void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -309,8 +313,8 @@ void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNode
         QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
         QPixmap pixmap;
         //visualizeMatrixHeat(u, 0.0, 46.052, pixmap, 101, 101);
-        //visualizeMatrixHeat(u, 1.50, 2.44, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-        visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+        visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+//        visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
         pixmap.save(filename);
     }
 #endif
@@ -364,12 +368,13 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         }
         fx -= sum * DeltaFunction::gaussian(sn, mp, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
     }
+
     return fx;
 }
 
 bool Solver1::isPointOnPlate(const SpacePoint &z) const
 {
-    return (0.00 <= z.x && z.x <= 1.00) && (0.00 <= z.y && z.y <= 1.00);
+    return (0.05 <= z.x && z.x <= 0.95) && (0.05 <= z.y && z.y <= 0.95);
 }
 
 void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
@@ -495,8 +500,9 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
     const ProblemParams &pp = sourceParams[ln];
 
     double fx = 0.0;//_lambda0*_environmentTemperature;
+    //if (ln >= 400) return 0.0;
 
-    if (ln>=200) return 0.0;
+    //if (ln>=10) return 0.0;
 
     for (size_t i=0; i<heatSourceNumber; i++)
     {
@@ -570,7 +576,7 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
             /**********************************************************************************************************/
 
-            printf("ln: %d i: %u z0: %10.6f %10.6f %10.6f %10.6f q:%10.6f v:%10.6f u:%10.6f %10.6f\n", ln, i, pp0.zv[i].x, pp0.zv[i].y, pp0.zd[i].x, pp0.zd[i].y, pp0.q[i], pp0.v[i], u.min(), u.max());
+            //printf("ln: %d i: %u z0: %10.6f %10.6f %10.6f %10.6f q:%10.6f v:%10.6f u:%10.6f %10.6f\n", ln, i, pp0.zv[i].x, pp0.zv[i].y, pp0.zd[i].x, pp0.zd[i].y, pp0.q[i], pp0.v[i], u.min(), u.max());
         }
     }
 
@@ -620,7 +626,7 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
                 pp1.v[i] = 0.0;
             }
 
-            printf("ln: %d i: %u z0: %10.6f %10.6f %10.6f %10.6f q:%10.6f v:%10.6f u:%10.6f %10.6f\n", ln, i, pp0.zv[i].x, pp0.zv[i].y, pp0.zd[i].x, pp0.zd[i].y, pp0.q[i], pp0.v[i], u.min(), u.max());
+            //printf("ln: %d i: %u z0: %10.6f %10.6f %10.6f %10.6f q:%10.6f v:%10.6f u:%10.6f %10.6f\n", ln, i, pp0.zv[i].x, pp0.zv[i].y, pp0.zd[i].x, pp0.zd[i].y, pp0.q[i], pp0.v[i], u.min(), u.max());
 
             /**********************************************************************************************************/
         }
