@@ -15,6 +15,13 @@ struct ProblemParams
     SpacePoint *zd;
     SpacePoint *u;
     SpacePoint *ps;
+
+    struct {
+        double val;
+        double dx;
+        double dy;
+    } *pps;
+
     SpacePoint *fv;
     SpacePoint *fd;
     SpacePoint *bc;
@@ -145,7 +152,7 @@ public:
     size_t measrPointNumber = 4;
     double _lambda0 = 0.000;
     double lambda = 0.01;
-    double _factor = 10.0;
+    double _factor = 1.0;
 
     DoubleMatrix alpha1;
     DoubleMatrix alpha2;
@@ -181,8 +188,8 @@ protected:
     Dimension _spaceDimensionY;
 
 private:
-    double _initialValue = 1.5;
-    double _environmentTemperature = 1.8;
+    double _initialValue = 0.5;
+    double _environmentTemperature = 0.6;
 };
 
 }

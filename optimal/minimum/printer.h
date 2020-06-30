@@ -25,10 +25,10 @@ public:
     static void printMatrix(unsigned int width, unsigned int presicion, const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);
     static void printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int N, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);
 
-    static void print(const DoubleMatrix &m, unsigned int M=10, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
-    static void print(const DoubleMatrix &m, const char *filename=nullptr, unsigned int M=10, unsigned int N=10, unsigned int width=14, unsigned int presicion=10);
+    static void print(const DoubleMatrix &m, size_t M=10, size_t N=10, size_t width=14, size_t presicion=10, FILE *file=stdout);
+    static void print(const DoubleMatrix &m, const char *filename=nullptr, size_t M=10, size_t N=10, size_t width=14, size_t presicion=10);
 
-    static void print(const DoubleVector &v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
+    static void print(const DoubleVector &v, size_t N=10, size_t width=14, size_t presicion=10, FILE *file=stdout);
     static void print(const double *v, unsigned int N=10, unsigned int width=14, unsigned int presicion=10, FILE *file=stdout);
 
     static void print(std::vector<DoubleVector> &rv, size_t k, size_t N=10, size_t width=14, size_t presicion=10, FILE *file=stdout);

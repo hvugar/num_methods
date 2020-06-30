@@ -232,7 +232,7 @@ void IPrinter::printDateTime(FILE *file)
     fprintf(file, "%s\n", buf);
 }
 
-void IPrinter::print(const DoubleMatrix &m, unsigned int M, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)
+void IPrinter::print(const DoubleMatrix &m, size_t M, size_t N, size_t width, size_t presicion, FILE *file)
 {
     C_UNUSED(M);
     C_UNUSED(N);
@@ -241,8 +241,8 @@ void IPrinter::print(const DoubleMatrix &m, unsigned int M, unsigned int N, unsi
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    unsigned int rows = m.rows();
-    unsigned int cols = m.cols();
+    size_t rows = m.rows();
+    size_t cols = m.cols();
 
     for (unsigned int i=0; i<rows; i++)
     {
@@ -255,7 +255,7 @@ void IPrinter::print(const DoubleMatrix &m, unsigned int M, unsigned int N, unsi
     fflush(file);
 }
 
-void IPrinter::print(const DoubleMatrix &m, const char *filename, unsigned int M, unsigned int N, unsigned int width, unsigned int presicion)
+void IPrinter::print(const DoubleMatrix &m, const char *filename, size_t M, size_t N, size_t width, size_t presicion)
 {
     C_UNUSED(M);
     C_UNUSED(N);
@@ -264,8 +264,8 @@ void IPrinter::print(const DoubleMatrix &m, const char *filename, unsigned int M
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    unsigned int rows = m.rows();
-    unsigned int cols = m.cols();
+    size_t rows = m.rows();
+    size_t cols = m.cols();
 
     FILE* file = fopen(filename, "w");
     for (unsigned int i=0; i<rows; i++)
@@ -280,7 +280,7 @@ void IPrinter::print(const DoubleMatrix &m, const char *filename, unsigned int M
     fclose(file);
 }
 
-void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, unsigned int presicion, FILE *file)
+void IPrinter::print(const DoubleVector &v, size_t N, size_t width, size_t presicion, FILE *file)
 {
     C_UNUSED(N);
 
@@ -289,7 +289,7 @@ void IPrinter::print(const DoubleVector &v, unsigned int N, unsigned int width, 
     format[sz] = '\0';
 
     //    unsigned int size = v.length();
-    unsigned int size = N;
+    size_t size = N;
 
     for (unsigned int i=0; i<size; i++)
     {

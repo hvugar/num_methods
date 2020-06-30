@@ -36,7 +36,6 @@
 #include <stdexcept>
 #include <matrix2d.h>
 #include <benchmark.h>
-#include <utils/random.h>
 
 #ifdef USE_LIB_IMAGING
 #include <QGuiApplication>
