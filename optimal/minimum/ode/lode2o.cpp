@@ -432,7 +432,7 @@ void ISecondOrderLinearODEFVP::start(DoubleVector &x, PointNodeODE &n) const
     flode.start(x, n);
 }
 
-void ISecondOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x, PointNodeODE &n, ODESolverMethod method) const
+void ISecondOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n0, DoubleVector &x1, PointNodeODE &n1, ODESolverMethod method) const
 {
     /* Normalized form of second order differential equation */
     class FirstOrderLinearODEFVP : public IFirstOrderLinearODEFVP
@@ -466,7 +466,7 @@ void ISecondOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &
     };
 
     FirstOrderLinearODEFVP flode(*this, count());
-    flode.next(x0, n0, x, n, method);
+    flode.next(x0, n0, x1, n1, method);
 }
 
 ISecondOrderLinearODEFBVP::ISecondOrderLinearODEFBVP() {}
