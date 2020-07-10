@@ -298,15 +298,9 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
         ProblemParams & pp = sourceParams[ln];
         pp.q = new double[heatSourceNumber];
         pp.v = new double[heatSourceNumber];
-        //pp.h = new double[heatSourceNumber];
-        pp.zv = new SpacePoint[heatSourceNumber];
-        pp.zd = new SpacePoint[heatSourceNumber];
-        pp.fv = new SpacePoint[heatSourceNumber];
-        pp.fd = new SpacePoint[heatSourceNumber];
-        pp.ps = new SpacePoint[heatSourceNumber];
-
-        //        pp.pps = new double [heatSourceNumber];
-
+        pp.z = new SpacePointX[heatSourceNumber];
+        pp.f = new SpacePointX[heatSourceNumber];
+        pp.p = new SpacePoint[heatSourceNumber];
         pp.u = new SpacePoint[measrPointNumber];
     }
 }
@@ -389,12 +383,16 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         double sum = 0.0;
         for (size_t i=0; i<heatSourceNumber; i++)
         {
-            const SpacePoint &zi = pp.zv[i];
+            //const SpacePoint &zi = pp.zv[i];
+            const SpacePointX &zi = pp.z[i];
+            const SpacePoint &pi = pp.p[i];
+            const SpacePoint &fi = pp.f[i];
             if (isPointOnPlate(zi))
             {
                 double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
-                sum += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * ( pp.ps[i].z );
-                sum += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * ( A4(node, 1, i+1)*pp.fv[i].x + A4(node, 2, i+1)*pp.fv[i].y );
+                sum += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * ( pi.z );
+                sum += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * ( A4(node, 1, i+1)*fi.x + A4(node, 2, i+1)*fi.y );
+                //printf("sum: %d %14.6f %14.6f %14.6f    %10.6f %10.6f %10.6f\n", ln, pi.x, pi.y, pi.z, fi.x, fi.y, fi.z);
             }
             else
             {
@@ -403,6 +401,19 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         }
         fx -= sum * DeltaFunction::gaussian(sn, mp, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
     }
+
+    static DoubleMatrix xx(101, 101, 0.0);
+
+    xx[sn.j][sn.i] = fx;
+
+    if (sn.i==99 && sn.j == 100 && (ln==199 || ln==198))
+    {
+        IPrinter::printMatrix(xx);
+        //        printf("%4d %4d %12.8f\n", sn.i, sn.j, fx);
+    }
+
+    ///printf("%4d %4d %12.8f\n", sn.i, sn.j, fx);
+
 
     return fx;
 }
@@ -434,28 +445,27 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
             /**********************************************************************************************************/
 
             const_backward.start( f0, n0 );
-            pp0.fv[i] = SpacePoint(f0[0], f0[1]);
-            pp0.fd[i] = SpacePoint(f0[2], f0[3]);
-
-            if (ln%20==0)
-            printf("%4d %4d %12.6f %12.6f %12.6f %12.6f\n", ln, i, pp0.fv[i].x, pp0.fv[i].y,
-                   pp0.fd[i].x, pp0.fd[i].y);
-
+            //pp0.fv[i] = SpacePoint(f0[0], f0[1]);
+            //pp0.fd[i] = SpacePoint(f0[2], f0[3]);
+            pp0.f[i] = SpacePointX(f0);
 
             /**********************************************************************************************************/
 
-            const SpacePoint &zi = pp0.zv[i];
+            //const SpacePoint &zi = pp0.zv[i];
+            const SpacePointX &zi = pp0.z[i];
+            SpacePoint &pi = pp0.p[i];
             if (isPointOnPlate(zi))
             {
-                SpacePoint d;
-                pp0.ps[i].z = DeltaFunction::lumpedPoint4(p, zi, spaceDimensionX(), spaceDimensionY(), d);
-                pp0.ps[i].x = d.x; pp0.ps[i].y = d.y;
+                SpacePoint d = { 0.0, 0.0, 0.0 };
+                pi.z = DeltaFunction::lumpedPoint4(p, zi, spaceDimensionX(), spaceDimensionY(), d);
+                pi.x = d.x; pi.y = d.y;
             }
             else
             {
-                pp0.ps[i].x =pp0.ps[i].y = pp0.ps[i].z = 0.0;
+                pp0.p[i].x = pp0.p[i].y = pp0.p[i].z = 0.0;
                 //throw std::runtime_error("bcw_layerInfo: unknown error...");
             }
+            if (ln%20==0) printf("%4d %4d f: [%12.6f %12.6f %12.6f %12.6f] pi: [%12.6f %12.6f %12.6f] zi: [%12.6f %12.6f %12.6f]\n", ln, i, pp0.f[i].x, pp0.f[i].y, pp0.f[i].dx, pp0.f[i].dy, pi.x, pi.y, pi.z, zi.x, zi.y, zi.z);
 
             /**********************************************************************************************************/
         }
@@ -474,31 +484,42 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
         {
             const_backward.i = i+1;
 
-            f0[0] = pp0.fv[i].x;
-            f0[1] = pp0.fv[i].y;
-            f0[2] = pp0.fd[i].x;
-            f0[3] = pp0.fd[i].y;
+            //f0[0] = pp0.fv[i].x;
+            //f0[1] = pp0.fv[i].y;
+            //f0[2] = pp0.fd[i].x;
+            //f0[3] = pp0.fd[i].y;
+            pp0.f[i].toDoubleVector(f0);
             const_backward.next( f0, n0, f1, n1, method );
-            pp1.fv[i] = SpacePoint(f1[0], f1[1]);
-            pp1.fd[i] = SpacePoint(f1[2], f1[3]);
-
-            if (/*(ln-1)%20==0 || */ln==200 || ln==199 || ln==198 || ln==197)
-            printf("%4d %4d %12.6f %12.6f %12.6f %12.6f\n", ln-1, i, pp1.fv[i].x, pp1.fv[i].y, pp1.fd[i].x, pp1.fd[i].y);
+            //pp1.fv[i] = SpacePoint(f1[0], f1[1]);
+            //pp1.fd[i] = SpacePoint(f1[2], f1[3]);
+            pp1.f[i] = SpacePointX(f1);
 
 
             /**********************************************************************************************************/
 
-            const SpacePoint &zi = pp1.zv[i];
+            //const SpacePoint &zi = pp1.zv[i];
+            const SpacePointX &zi = pp1.z[i];
+            SpacePoint &pi = pp1.p[i];
+
             if (isPointOnPlate(zi))
             {
-                SpacePoint d;
-                pp1.ps[i].z = DeltaFunction::lumpedPoint4(p, zi, spaceDimensionX(), spaceDimensionY(), d);
-                pp1.ps[i].x = d.x; pp1.ps[i].y = d.y;
+                SpacePoint d = { 0.0, 0.0, 0.0 };
+                pi.z = DeltaFunction::lumpedPoint4(p, zi, spaceDimensionX(), spaceDimensionY(), d);
+                pi.x = d.x; pi.y = d.y;
             }
             else
             {
-                pp1.ps[i].x =pp1.ps[i].y = pp1.ps[i].z = 0.0;
+                pi.x = pi.y = pi.z = 0.0;
                 // throw std::runtime_error("bcw_layerInfo: unknown error...");
+            }
+            //if (/*(ln-1)%20==0 || */ln==200 || ln==199 || ln==198 || ln==197)
+            //    printf("%4d %4d f: [%12.6f %12.6f %12.6f %12.6f] pi: [%12.6f %12.6f %12.6f] zi: [%12.6f %12.6f %12.6f]\n", ln, i, pp0.f[i].x, pp0.f[i].y, pp0.f[i].dx, pp0.f[i].dy, pi.x, pi.y, pi.z, zi.x, zi.y, zi.z);
+
+            if (ln==199)
+            {
+                IPrinter::printSeperatorLine();
+                IPrinter::printMatrix(p);
+                IPrinter::printSeperatorLine();
             }
 
             /**********************************************************************************************************/
@@ -557,7 +578,8 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
 
     for (size_t i=0; i<heatSourceNumber; i++)
     {
-        const SpacePoint &z = pp.zv[i];
+        //const SpacePoint &z = pp.zv[i];
+        const SpacePoint &z = pp.z[i];
         if ( isPointOnPlate(z) )
         {
             fx += pp.q[i] * DeltaFunction::gaussian(sn, z, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
@@ -593,12 +615,14 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             /**********************************************************************************************************/
 
             const_forward.start( z0, n0 );
-            pp0.zv[i] = SpacePoint(z0[0], z0[1]);
-            pp0.zd[i] = SpacePoint(z0[2], z0[3]);
+            //pp0.zv[i] = SpacePoint(z0[0], z0[1]);
+            //pp0.zd[i] = SpacePoint(z0[2], z0[3]);
+            pp0.z[i] = SpacePointX(z0);
 
             /**********************************************************************************************************/
 
-            const SpacePoint &z = pp0.zv[i];
+            //const SpacePoint &z = pp0.zv[i];
+            const SpacePointX &z = pp0.z[i];
             if (isPointOnPlate(z))
             {
                 double qi = 0.0;
@@ -642,14 +666,18 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
         {
             const_forward.i = i+1;
 
-            z0[0] = pp0.zv[i].x; z0[1] = pp0.zv[i].y; z0[2] = pp0.zd[i].x; z0[3] = pp0.zd[i].y;
+            //z0[0] = pp0.zv[i].x; z0[1] = pp0.zv[i].y; z0[2] = pp0.zd[i].x; z0[3] = pp0.zd[i].y;
+            pp0.z[i].toDoubleVector(z0);
+
             const_forward.next( z0, n0, z1, n1, method );
-            pp1.zv[i] = SpacePoint(z1[0], z1[1]);
-            pp1.zd[i] = SpacePoint(z1[2], z1[3]);
+            //pp1.zv[i] = SpacePoint(z1[0], z1[1]);
+            //pp1.zd[i] = SpacePoint(z1[2], z1[3]);
+            pp1.z[i] = SpacePointX(z1);
 
             /**********************************************************************************************************/
 
-            const SpacePoint &zi = pp1.zv[i];
+            //const SpacePoint &zi = pp1.zv[i];
+            const SpacePointX &zi = pp1.z[i];
             if (isPointOnPlate(zi))
             {
                 double qi = 0.0;
@@ -738,15 +766,18 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             int ln = min;
             PointNodeODE node; node.i = ln; node.x = node.i*ht;
 
-            const SpacePoint &zi0 = sourceParams[ln].zv[i];
+            //const SpacePoint &zi0 = sourceParams[ln].zv[i];
+            const SpacePointX &zi0 = sourceParams[ln].z[i];
+            const SpacePointX &fi0 = sourceParams[ln].f[i];
             if (isPointOnPlate(zi0))
             {
                 double dist = sqrt((zi0.x - mp.x)*(zi0.x - mp.x) + (zi0.y - mp.y)*(zi0.y - mp.y));
                 double dif1 = sourceParams[ln].u[j].z-nomnU1[i][j];
                 double dif2 = sourceParams[ln].u[j].z-nomnU2[i][j];
-                double val0 = sourceParams[ln].ps[i].z;
-                double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x
-                            + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                double val0 = sourceParams[ln].p[i].z;
+                //double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                double val1 = A4(node, 1, i+1)*fi0.x + A4(node, 2, i+1)*fi0.y;
+
 
                 //printf("ln: %4d i: %4d %12.8f %12.8f %12.8f %12.8f %12.8f\n", ln, i, dist, dif1, dif2, sourceParams[ln].fv[i].x, sourceParams[ln].fv[i].y);
 
@@ -780,15 +811,17 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             {
                 node.i = ln; node.x = node.i*ht;
 
-                const SpacePoint &zi = sourceParams[ln].zv[i];
+                //const SpacePoint &zi = sourceParams[ln].zv[i];
+                const SpacePointX &zi = sourceParams[ln].z[i];
+                const SpacePointX &fi = sourceParams[ln].f[i];
                 if (isPointOnPlate(zi))
                 {
                     double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
                     double dif1 = sourceParams[ln].u[j].z-nomnU1[i][j];
                     double dif2 = sourceParams[ln].u[j].z-nomnU2[i][j];
-                    double val0 = sourceParams[ln].ps[i].z;
-                    double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x
-                                + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                    double val0 = sourceParams[ln].p[i].z;
+                    //double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                    double val1 = A4(node, 1, i+1)*fi.x + A4(node, 2, i+1)*fi.y;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
                     g[0*size + i*measrPointNumber + j] += val0*dif1*dist*dist;
@@ -820,15 +853,15 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             ln = max;
             node.i = ln; node.x = node.i*ht;
 
-            const SpacePoint &zi1 = sourceParams[ln].zv[i];
+            //const SpacePoint &zi1 = sourceParams[ln].zv[i];
+            const SpacePointX &zi1 = sourceParams[ln].z[i];
             if (isPointOnPlate(zi1))
             {
                 double dist = sqrt((zi1.x - mp.x)*(zi1.x - mp.x) + (zi1.y - mp.y)*(zi1.y - mp.y));
                 double dif1 = sourceParams[ln].u[j].z-nomnU1[i][j];
                 double dif2 = sourceParams[ln].u[j].z-nomnU2[i][j];
-                double val0 = sourceParams[ln].ps[i].z;
-                double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x
-                            + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                double val0 = sourceParams[ln].p[i].z;
+                double val1 = A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y;
 
                 //printf("ln: %4d i: %4d %12.8f %12.8f %12.8f %12.8f %12.8f\n", ln, i, dist, dif1, dif2, sourceParams[ln].fv[i].x, sourceParams[ln].fv[i].y);
 
@@ -1054,13 +1087,13 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
     const size_t ln = static_cast<size_t>(node.i); if (ln==196) exit(-1);
     const ProblemParams &pp = solver->sourceParams[ln];
     double sum = 0.0;
-    double sum1 = 0.0;
 
-    const SpacePoint &zi = pp.zv[i-1];
+    //const SpacePoint &zi = pp.zv[i-1];
+    const SpacePointX &zi = pp.z[i-1];
     if (solver->isPointOnPlate(zi))
     {
-        double val0 = pp.ps[i-1].z;
-        double val1 = solver->A4(node, 1, i)*pp.fv[i-1].x + solver->A4(node, 2, i)*pp.fv[i-1].y;
+        double val0 = pp.p[i-1].z;
+        double val1 = solver->A4(node, 1, i)*pp.f[i-1].x + solver->A4(node, 2, i)*pp.f[i-1].y;
 
         for (size_t j=0; j<solver->measrPointNumber; j++)
         {
@@ -1074,13 +1107,9 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
             sum += val1 * (2.0*solver->betta1[i-1][j]*dist + solver->betta2[i-1][j]) * diff2;
         }
 
-        if (r==1) sum1 = pp.ps[i-1].x * pp.q[i-1];
-        if (r==2) sum1 = pp.ps[i-1].y * pp.q[i-1];
-
-        //sum1 = ((r==1) ? pp.ps[i-1].x * pp.q[i-1] : pp.ps[i-1].y * pp.q[i-1]);
-        printf("%4d %4d %4d %16.8f %16.8f %16.8f\n", node.i, i, r, sum, sum1, pp.q[i-1]);
+        if (r==1) sum += pp.p[i-1].x * pp.q[i-1];
+        if (r==2) sum += pp.p[i-1].y * pp.q[i-1];
     }
-
 
     return sum;
 }

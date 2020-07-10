@@ -6,25 +6,28 @@
 namespace p3p1
 {
 
+struct SpacePointX : SpacePoint
+{
+    SpacePointX(double x = .0, double y = .0, double dx = .0, double dy = .0)
+        : SpacePoint(x, y), dx(dx), dy(dy) {}
+    SpacePointX(DoubleVector &z) : SpacePoint(z[0], z[1]), dx(z[2]), dy(z[3]) {}
+
+    void toDoubleVector(DoubleVector &z) { z[0] = x; z[1] = y; z[2] = dx; z[3] = dy; }
+
+    double dx = .0;
+    double dy = .0;
+};
+
 struct ProblemParams
 {
-    double *q;
-    double *v;
-    double *h;
-    SpacePoint *zv;
-    SpacePoint *zd;
+    double *q;  // istilik menbeyinin gucu
+    double *v;  // suert
+
+    SpacePointX *z;
+    SpacePointX *f;
+
     SpacePoint *u;
-    SpacePoint *ps;
-
-    struct {
-        double val;
-        double dx;
-        double dy;
-    } *pps;
-
-    SpacePoint *fv;
-    SpacePoint *fd;
-    SpacePoint *bc;
+    SpacePoint *p;
 };
 
 class Solver1;
