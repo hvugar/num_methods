@@ -193,6 +193,8 @@ protected:
 private:
     double _initialValue = 0.5;
     double _environmentTemperature = 0.6;
+
+    static DoubleMatrix xx;
 };
 
 }

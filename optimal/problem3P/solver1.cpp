@@ -2,13 +2,13 @@
 
 using namespace p3p1;
 
-//#define ENABLE_ALPHA1_OPTIMIZATION
-//#define ENABLE_ALPHA2_OPTIMIZATION
-//#define ENABLE_ALPHA3_OPTIMIZATION
+#define ENABLE_ALPHA1_OPTIMIZATION
+#define ENABLE_ALPHA2_OPTIMIZATION
+#define ENABLE_ALPHA3_OPTIMIZATION
 #define ENABLE_BETTA1_OPTIMIZATION
 #define ENABLE_BETTA2_OPTIMIZATION
 #define ENABLE_BETTA3_OPTIMIZATION
-//#define ENABLE_NOMIN1_OPTIMIZATION
+#define ENABLE_NOMIN1_OPTIMIZATION
 #define ENABLE_NOMIN2_OPTIMIZATION
 
 #define ENABLE_CHECKING_GRADIENTS
@@ -23,7 +23,7 @@ void Solver1::optimize(int argc, char **argv)
     s.forward.solver = &s;
     s.backward.solver = &s;
 
-    double a = 1.0;
+    double a = 0.01;
     s.forward.setThermalDiffusivity(a);
     s.forward.setThermalConvection(-s._lambda0);
     s.forward.setThermalConductivity(0.0);
@@ -98,8 +98,6 @@ void Solver1::optimize(int argc, char **argv)
     puts("------------------------------- CHANCING VECTOR ------------------------------");
 
 
-
-
     {
 #ifdef ENABLE_CHECKING_GRADIENTS
         puts("\n-------------------------- ENABLE CHECKING GRADIENTS -------------------------");
@@ -108,29 +106,32 @@ void Solver1::optimize(int argc, char **argv)
         DoubleVector g0;
         s.gradient(x0, g0);
 
+        unsigned int p = 14;
+        unsigned int d = 10;
+
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
-        printf("alfa1: "); IPrinter::print(g0.mid(0*size, 1*size-1).L2Normalize(), g0.mid(0*size, 1*size-1).length(), 8, 4);
+        printf("alfa1: "); IPrinter::print(g0.mid(0*size, 1*size-1).L2Normalize(), g0.mid(0*size, 1*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA2_OPTIMIZATION
-        printf("alfa2: "); IPrinter::print(g0.mid(1*size, 2*size-1).L2Normalize(), g0.mid(1*size, 2*size-1).length(), 8, 4);
+        printf("alfa2: "); IPrinter::print(g0.mid(1*size, 2*size-1).L2Normalize(), g0.mid(1*size, 2*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA3_OPTIMIZATION
-        printf("alfa3: "); IPrinter::print(g0.mid(2*size, 3*size-1).L2Normalize(), g0.mid(2*size, 3*size-1).length(), 8, 4);
+        printf("alfa3: "); IPrinter::print(g0.mid(2*size, 3*size-1).L2Normalize(), g0.mid(2*size, 3*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-        printf("beta1: "); IPrinter::print(g0.mid(3*size, 4*size-1).L2Normalize(), g0.mid(3*size, 4*size-1).length(), 8, 4);
+        printf("beta1: "); IPrinter::print(g0.mid(3*size, 4*size-1).L2Normalize(), g0.mid(3*size, 4*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-        printf("beta2: "); IPrinter::print(g0.mid(4*size, 5*size-1).L2Normalize(), g0.mid(4*size, 5*size-1).length(), 8, 4);
+        printf("beta2: "); IPrinter::print(g0.mid(4*size, 5*size-1).L2Normalize(), g0.mid(4*size, 5*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-        printf("beta3: "); IPrinter::print(g0.mid(5*size, 6*size-1).L2Normalize(), g0.mid(5*size, 6*size-1).length(), 8, 4);
+        printf("beta3: "); IPrinter::print(g0.mid(5*size, 6*size-1).L2Normalize(), g0.mid(5*size, 6*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-        printf("nomU1: "); IPrinter::print(g0.mid(6*size, 7*size-1).L2Normalize(), g0.mid(6*size, 7*size-1).length(), 8, 4);
+        printf("nomU1: "); IPrinter::print(g0.mid(6*size, 7*size-1).L2Normalize(), g0.mid(6*size, 7*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-        printf("nomU2: "); IPrinter::print(g0.mid(7*size, 8*size-1).L2Normalize(), g0.mid(7*size, 8*size-1).length(), 8, 4);
+        printf("nomU2: "); IPrinter::print(g0.mid(7*size, 8*size-1).L2Normalize(), g0.mid(7*size, 8*size-1).length(), p, d);
 #endif
 
         x0.clear();
@@ -140,30 +141,30 @@ void Solver1::optimize(int argc, char **argv)
         s.parameterToVector(x1);
         DoubleVector g1(x1.length(), 0.0);
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
-        IGradient::Gradient(&s, 0.01, x1, g1, 0*size, 1*size-1); printf("alfa1: "); IPrinter::print(g1.mid(0*size, 1*size-1).L2Normalize(), g1.mid(0*size, 1*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.01, x1, g1, 0*size, 1*size-1); printf("alfa1: "); IPrinter::print(g1.mid(0*size, 1*size-1).L2Normalize(), g1.mid(0*size, 1*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.01, x1, g1, 1*size, 2*size-1); printf("alfa2: "); IPrinter::print(g1.mid(1*size, 2*size-1).L2Normalize(), g1.mid(1*size, 2*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.01, x1, g1, 1*size, 2*size-1); printf("alfa2: "); IPrinter::print(g1.mid(1*size, 2*size-1).L2Normalize(), g1.mid(1*size, 2*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA3_OPTIMIZATION
-        IGradient::Gradient(&s, 0.01, x1, g1, 2*size, 3*size-1); printf("alfa3: "); IPrinter::print(g1.mid(2*size, 3*size-1).L2Normalize(), g1.mid(2*size, 3*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.01, x1, g1, 2*size, 3*size-1); printf("alfa3: "); IPrinter::print(g1.mid(2*size, 3*size-1).L2Normalize(), g1.mid(2*size, 3*size-1).length(), p, d);
 #endif
 
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-        IGradient::Gradient(&s, 0.1, x1, g1, 3*size, 4*size-1); printf("beta1: "); IPrinter::print(g1.mid(3*size, 4*size-1).L2Normalize(), g1.mid(3*size, 4*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.1, x1, g1, 3*size, 4*size-1); printf("beta1: "); IPrinter::print(g1.mid(3*size, 4*size-1).L2Normalize(), g1.mid(3*size, 4*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.1, x1, g1, 4*size, 5*size-1); printf("beta2: "); IPrinter::print(g1.mid(4*size, 5*size-1).L2Normalize(), g1.mid(4*size, 5*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.1, x1, g1, 4*size, 5*size-1); printf("beta2: "); IPrinter::print(g1.mid(4*size, 5*size-1).L2Normalize(), g1.mid(4*size, 5*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-        IGradient::Gradient(&s, 0.1, x1, g1, 5*size, 6*size-1); printf("beta3: "); IPrinter::print(g1.mid(5*size, 6*size-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.1, x1, g1, 5*size, 6*size-1); printf("beta3: "); IPrinter::print(g1.mid(5*size, 6*size-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), p, d);
 #endif
 
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-        IGradient::Gradient(&s, 0.001, x1, g1, 6*size, 7*size-1); printf("nomU1: "); IPrinter::print(g1.mid(6*size, 7*size-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.001, x1, g1, 6*size, 7*size-1); printf("nomU1: "); IPrinter::print(g1.mid(6*size, 7*size-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.001, x1, g1, 7*size, 8*size-1); printf("nomU2: "); IPrinter::print(g1.mid(7*size, 8*size-1).L2Normalize(), g1.mid(7*size, 8*size-1).length(), 8, 4);
+        IGradient::Gradient(&s, 0.001, x1, g1, 7*size, 8*size-1); printf("nomU2: "); IPrinter::print(g1.mid(7*size, 8*size-1).L2Normalize(), g1.mid(7*size, 8*size-1).length(), p, d);
 #endif
 
         x1.clear();
@@ -392,7 +393,6 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
                 double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
                 sum += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * ( pi.z );
                 sum += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * ( A4(node, 1, i+1)*fi.x + A4(node, 2, i+1)*fi.y );
-                //printf("sum: %d %14.6f %14.6f %14.6f    %10.6f %10.6f %10.6f\n", ln, pi.x, pi.y, pi.z, fi.x, fi.y, fi.z);
             }
             else
             {
@@ -402,18 +402,7 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         fx -= sum * DeltaFunction::gaussian(sn, mp, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
     }
 
-    static DoubleMatrix xx(101, 101, 0.0);
-
-    xx[sn.j][sn.i] = fx;
-
-    if (sn.i==99 && sn.j == 100 && (ln==199 || ln==198))
-    {
-        IPrinter::printMatrix(xx);
-        //        printf("%4d %4d %12.8f\n", sn.i, sn.j, fx);
-    }
-
-    ///printf("%4d %4d %12.8f\n", sn.i, sn.j, fx);
-
+//    Solver1::xx[sn.j][sn.i] = fx;
 
     return fx;
 }
@@ -465,7 +454,6 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
                 pp0.p[i].x = pp0.p[i].y = pp0.p[i].z = 0.0;
                 //throw std::runtime_error("bcw_layerInfo: unknown error...");
             }
-            if (ln%20==0) printf("%4d %4d f: [%12.6f %12.6f %12.6f %12.6f] pi: [%12.6f %12.6f %12.6f] zi: [%12.6f %12.6f %12.6f]\n", ln, i, pp0.f[i].x, pp0.f[i].y, pp0.f[i].dx, pp0.f[i].dy, pi.x, pi.y, pi.z, zi.x, zi.y, zi.z);
 
             /**********************************************************************************************************/
         }
@@ -484,16 +472,9 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
         {
             const_backward.i = i+1;
 
-            //f0[0] = pp0.fv[i].x;
-            //f0[1] = pp0.fv[i].y;
-            //f0[2] = pp0.fd[i].x;
-            //f0[3] = pp0.fd[i].y;
             pp0.f[i].toDoubleVector(f0);
             const_backward.next( f0, n0, f1, n1, method );
-            //pp1.fv[i] = SpacePoint(f1[0], f1[1]);
-            //pp1.fd[i] = SpacePoint(f1[2], f1[3]);
             pp1.f[i] = SpacePointX(f1);
-
 
             /**********************************************************************************************************/
 
@@ -512,19 +493,21 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
                 pi.x = pi.y = pi.z = 0.0;
                 // throw std::runtime_error("bcw_layerInfo: unknown error...");
             }
-            //if (/*(ln-1)%20==0 || */ln==200 || ln==199 || ln==198 || ln==197)
-            //    printf("%4d %4d f: [%12.6f %12.6f %12.6f %12.6f] pi: [%12.6f %12.6f %12.6f] zi: [%12.6f %12.6f %12.6f]\n", ln, i, pp0.f[i].x, pp0.f[i].y, pp0.f[i].dx, pp0.f[i].dy, pi.x, pi.y, pi.z, zi.x, zi.y, zi.z);
-
-            if (ln==199)
-            {
-                IPrinter::printSeperatorLine();
-                IPrinter::printMatrix(p);
-                IPrinter::printSeperatorLine();
-            }
 
             /**********************************************************************************************************/
         }
     }
+
+//    if (ln == 197 || ln == 198 || ln == 199 || ln == 200)
+//    {
+//        IPrinter::printSeperatorLine(std::to_string(ln).data(), '=');
+//        IPrinter::printMatrix(16, 8, Solver1::xx);
+//        IPrinter::printSeperatorLine();
+
+//        IPrinter::printSeperatorLine(std::to_string(ln).data(), '*');
+//        IPrinter::printMatrix(16, 10, p);
+//        IPrinter::printSeperatorLine();
+//    }
 
     //unsigned int ln = static_cast<unsigned int>(tn.i);
     //ProblemParams &pp = sourceParams[ln];
@@ -536,6 +519,7 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
     //IPrinter::printMatrix(u);
     //bcw_saveToImage(p, tn);
 }
+DoubleMatrix Solver1::xx = DoubleMatrix(101, 101, 0.001);
 
 double Solver1::A1(const PointNodeODE &, size_t r, size_t c, size_t i) const
 {
@@ -615,13 +599,10 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             /**********************************************************************************************************/
 
             const_forward.start( z0, n0 );
-            //pp0.zv[i] = SpacePoint(z0[0], z0[1]);
-            //pp0.zd[i] = SpacePoint(z0[2], z0[3]);
             pp0.z[i] = SpacePointX(z0);
 
             /**********************************************************************************************************/
 
-            //const SpacePoint &z = pp0.zv[i];
             const SpacePointX &z = pp0.z[i];
             if (isPointOnPlate(z))
             {
@@ -650,8 +631,6 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             }
 
             /**********************************************************************************************************/
-
-            //printf("ln: %d i: %u z0: %10.6f %10.6f %10.6f %10.6f q:%10.6f v:%10.6f u:%10.6f %10.6f\n", ln, i, pp0.zv[i].x, pp0.zv[i].y, pp0.zd[i].x, pp0.zd[i].y, pp0.q[i], pp0.v[i], u.min(), u.max());
         }
     }
 
@@ -666,17 +645,13 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
         {
             const_forward.i = i+1;
 
-            //z0[0] = pp0.zv[i].x; z0[1] = pp0.zv[i].y; z0[2] = pp0.zd[i].x; z0[3] = pp0.zd[i].y;
             pp0.z[i].toDoubleVector(z0);
 
             const_forward.next( z0, n0, z1, n1, method );
-            //pp1.zv[i] = SpacePoint(z1[0], z1[1]);
-            //pp1.zd[i] = SpacePoint(z1[2], z1[3]);
             pp1.z[i] = SpacePointX(z1);
 
             /**********************************************************************************************************/
 
-            //const SpacePoint &zi = pp1.zv[i];
             const SpacePointX &zi = pp1.z[i];
             if (isPointOnPlate(zi))
             {
@@ -704,8 +679,6 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
                 pp1.q[i] = 0.0;
                 pp1.v[i] = 0.0;
             }
-
-            //printf("ln: %d i: %u z0: %10.6f %10.6f %10.6f %10.6f q:%10.6f v:%10.6f u:%10.6f %10.6f\n", ln, i, pp0.zv[i].x, pp0.zv[i].y, pp0.zd[i].x, pp0.zd[i].y, pp0.q[i], pp0.v[i], u.min(), u.max());
 
             /**********************************************************************************************************/
         }
@@ -1084,7 +1057,7 @@ auto HeatEquationFBVP::B(const PointNodeODE &node, size_t r, size_t c) const -> 
 
 auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
 {
-    const size_t ln = static_cast<size_t>(node.i); if (ln==196) exit(-1);
+    const size_t ln = static_cast<size_t>(node.i);
     const ProblemParams &pp = solver->sourceParams[ln];
     double sum = 0.0;
 
@@ -1121,11 +1094,18 @@ auto HeatEquationFBVP::final(FinalCondition c, size_t r) const -> double
         if (i==1) { const double data[2] = { 0.00, 0.00 }; return data[r-1]; }
         if (i==2) { const double data[2] = { 0.00, 0.00 }; return data[r-1]; }
     }
+
     if (c == FinalCondition::FinalFirstDerivative)
     {
-        if (i==1) { return 0.0; }
-        if (i==2) { return 0.0; }
+        const int max = timeDimension().max();
+        const double ht = timeDimension().size();
+        PointNodeODE node; node.i = max; node.x = max*ht;
+        if (i==1) { return -( solver->A1(node, r, 1, i)*final(FinalCondition::FinalValue, 1) +
+                              solver->A1(node, r, 2, i)*final(FinalCondition::FinalValue, 2) ); }
+        if (i==2) { return -( solver->A1(node, r, 1, i)*final(FinalCondition::FinalValue, 1) +
+                              solver->A1(node, r, 2, i)*final(FinalCondition::FinalValue, 2) ); }
     }
+
     return 0.0;
 }
 
