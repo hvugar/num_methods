@@ -153,8 +153,8 @@ public:
 
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
-    double _lambda0 = 0.000;
-    double lambda = 0.01;
+    double _lambda0 = +0.001;
+    double _lambda1 = -0.01;
     double _factor = 1.0;
 
     DoubleMatrix alpha1;
@@ -191,10 +191,8 @@ protected:
     Dimension _spaceDimensionY;
 
 private:
-    double _initialValue = 0.5;
+    double _initialTemperature = 0.5;
     double _environmentTemperature = 0.6;
-
-    static DoubleMatrix xx;
 };
 
 }

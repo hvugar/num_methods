@@ -11,7 +11,8 @@ using namespace p3p1;
 #define ENABLE_NOMIN1_OPTIMIZATION
 #define ENABLE_NOMIN2_OPTIMIZATION
 
-#define ENABLE_CHECKING_GRADIENTS
+//#define ENABLE_CHECKING_GRADIENTS
+//#define ENABLE_CHANGING_VALUES
 
 
 void Solver1::optimize(int argc, char **argv)
@@ -23,14 +24,20 @@ void Solver1::optimize(int argc, char **argv)
     s.forward.solver = &s;
     s.backward.solver = &s;
 
-    double a = 0.01;
+    double a = 1.0;
     s.forward.setThermalDiffusivity(a);
     s.forward.setThermalConvection(-s._lambda0);
     s.forward.setThermalConductivity(0.0);
     s.drawImage = true;
     s.forward.implicit_calculate_D2V1();
     s.drawImage = false;
-    s.V = s.U;
+    //    s.V = s.U;
+
+    IPrinter::printSeperatorLine("matrix");
+    IPrinter::printMatrix(10, 4, s.U);
+    IPrinter::printSeperatorLine();
+
+    s.V.resize(101, 101, 25.0);
 
     s.backward.setThermalDiffusivity(-a);
     s.backward.setThermalConvection(s._lambda0);
@@ -52,6 +59,7 @@ void Solver1::optimize(int argc, char **argv)
         printf("nomU1: "); IPrinter::print(x.mid(6*size, 7*size-1), x.mid(6*size, 7*size-1).length(), 8, 4);
         printf("nomU2: "); IPrinter::print(x.mid(7*size, 8*size-1), x.mid(7*size, 8*size-1).length(), 8, 4);
 
+#ifdef ENABLE_CHANGING_VALUES
         puts("------------------------------- CHANCING VECTOR ------------------------------");
 
         for (size_t i=0; i<s.heatSourceNumber; i++)
@@ -94,8 +102,10 @@ void Solver1::optimize(int argc, char **argv)
         printf("beta3: "); IPrinter::print(x.mid(5*size, 6*size-1), x.mid(5*size, 6*size-1).length(), 8, 4);
         printf("nomU1: "); IPrinter::print(x.mid(6*size, 7*size-1), x.mid(6*size, 7*size-1).length(), 8, 4);
         printf("nomU2: "); IPrinter::print(x.mid(7*size, 8*size-1), x.mid(7*size, 8*size-1).length(), 8, 4);
+
+        puts("------------------------------- CHANCING VECTOR ------------------------------");
+#endif
     }
-    puts("------------------------------- CHANCING VECTOR ------------------------------");
 
 
     {
@@ -106,8 +116,8 @@ void Solver1::optimize(int argc, char **argv)
         DoubleVector g0;
         s.gradient(x0, g0);
 
-        unsigned int p = 14;
-        unsigned int d = 10;
+        unsigned int p = 8;
+        unsigned int d = 4;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
         printf("alfa1: "); IPrinter::print(g0.mid(0*size, 1*size-1).L2Normalize(), g0.mid(0*size, 1*size-1).length(), p, d);
@@ -186,7 +196,7 @@ void Solver1::optimize(int argc, char **argv)
     IPrinter::print(x2.mid(7*size, 8*size-1), x2.mid(7*size, 8*size-1).length(), 8, 4);
     IPrinter::printSeperatorLine();
 
-    exit(-1);
+//    exit(-1);
 
     //    ConjugateGradient g;
     SteepestDescentGradient g;
@@ -198,7 +208,7 @@ void Solver1::optimize(int argc, char **argv)
     g.setOptimalityTolerance(0.0000001);
     g.setStepTolerance(0.0000001);
     g.setFunctionTolerance(0.0000001);
-    g.setR1MinimizeEpsilon(1.0, 0.001);
+    g.setR1MinimizeEpsilon(1.0, 0.01);
     g.setNormalize(true);
     g.showExitMessage(true);
     g.setMaxIterationCount(10);
@@ -306,7 +316,7 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     }
 }
 
-double Solver1::frw_initial(const SpaceNodePDE &, InitialCondition) const { return _initialValue; }
+double Solver1::frw_initial(const SpaceNodePDE &, InitialCondition) const { return _initialTemperature; }
 
 double Solver1::bcw_final(const SpaceNodePDE &sn, FinalCondition) const
 {
@@ -318,15 +328,14 @@ double Solver1::bcw_final(const SpaceNodePDE &sn, FinalCondition) const
 double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
     //cn = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
-    //cn = BoundaryConditionPDE::Neumann(1.0, 1.0); return 0.0;
-    //cn = BoundaryConditionPDE::Robin(lambda, +1.0, lambda); return _environmentTemperature;
-    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    //cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    cn = BoundaryConditionPDE::Robin(_lambda1, -1.0, _lambda1); return _environmentTemperature;
 }
 
 double Solver1::bcw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
-    //cn = BoundaryConditionPDE::Robin(lambda, -1.0, 0.0); return 0.0;
-    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    //cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    cn = BoundaryConditionPDE::Robin(_lambda1, -1.0, 0.0); return 0.0;
 }
 
 void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -402,7 +411,7 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         fx -= sum * DeltaFunction::gaussian(sn, mp, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
     }
 
-//    Solver1::xx[sn.j][sn.i] = fx;
+    //    Solver1::xx[sn.j][sn.i] = fx;
 
     return fx;
 }
@@ -417,8 +426,6 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
     HeatEquationFBVP &const_backward = const_cast<HeatEquationFBVP&>(this->backward);
     const int ln = static_cast<int>(tn.i);
     const double ht = timeDimension().step();
-    //DoubleVector f0(4), f1(4);
-    //PointNodeODE n0, n1;
 
     if (ln == timeDimension().max())
     {
@@ -434,13 +441,10 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
             /**********************************************************************************************************/
 
             const_backward.start( f0, n0 );
-            //pp0.fv[i] = SpacePoint(f0[0], f0[1]);
-            //pp0.fd[i] = SpacePoint(f0[2], f0[3]);
             pp0.f[i] = SpacePointX(f0);
 
             /**********************************************************************************************************/
 
-            //const SpacePoint &zi = pp0.zv[i];
             const SpacePointX &zi = pp0.z[i];
             SpacePoint &pi = pp0.p[i];
             if (isPointOnPlate(zi))
@@ -451,8 +455,7 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
             }
             else
             {
-                pp0.p[i].x = pp0.p[i].y = pp0.p[i].z = 0.0;
-                //throw std::runtime_error("bcw_layerInfo: unknown error...");
+                pi.x = pi.y = pi.z = 0.0;
             }
 
             /**********************************************************************************************************/
@@ -478,10 +481,8 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
 
             /**********************************************************************************************************/
 
-            //const SpacePoint &zi = pp1.zv[i];
             const SpacePointX &zi = pp1.z[i];
             SpacePoint &pi = pp1.p[i];
-
             if (isPointOnPlate(zi))
             {
                 SpacePoint d = { 0.0, 0.0, 0.0 };
@@ -491,35 +492,14 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
             else
             {
                 pi.x = pi.y = pi.z = 0.0;
-                // throw std::runtime_error("bcw_layerInfo: unknown error...");
             }
 
             /**********************************************************************************************************/
         }
     }
 
-//    if (ln == 197 || ln == 198 || ln == 199 || ln == 200)
-//    {
-//        IPrinter::printSeperatorLine(std::to_string(ln).data(), '=');
-//        IPrinter::printMatrix(16, 8, Solver1::xx);
-//        IPrinter::printSeperatorLine();
-
-//        IPrinter::printSeperatorLine(std::to_string(ln).data(), '*');
-//        IPrinter::printMatrix(16, 10, p);
-//        IPrinter::printSeperatorLine();
-//    }
-
-    //unsigned int ln = static_cast<unsigned int>(tn.i);
-    //ProblemParams &pp = sourceParams[ln];
-    //std::string msg = "[ " + std::to_string(ln+1) + " ]";
-    //msg += " [ " + std::to_string(pp.f[0].x) + ", " + std::to_string(pp.f[0].y) + " ]";
-    //msg += " [ " + std::to_string(pp.f[1].x) + ", " + std::to_string(pp.f[1].y) + " ]";
-    //msg += " [ " + std::to_string(p.min()) + ", " + std::to_string(p.max()) + " ]";
-    //IPrinter::printSeperatorLine(msg.data());
-    //IPrinter::printMatrix(u);
     //bcw_saveToImage(p, tn);
 }
-DoubleMatrix Solver1::xx = DoubleMatrix(101, 101, 0.001);
 
 double Solver1::A1(const PointNodeODE &, size_t r, size_t c, size_t i) const
 {
@@ -554,41 +534,30 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
     size_t ln = static_cast<size_t>(tn.i);
 
     const ProblemParams &pp = sourceParams[ln];
+    double fx = _lambda0 * _environmentTemperature;
 
-    double fx = 0.0;//_lambda0*_environmentTemperature;
-    //if (ln >= 400) return 0.0;
-
-    //if (ln>=10) return 0.0;
-
+    double sum = 0.0;
     for (size_t i=0; i<heatSourceNumber; i++)
     {
-        //const SpacePoint &z = pp.zv[i];
-        const SpacePoint &z = pp.z[i];
-        if ( isPointOnPlate(z) )
-        {
-            fx += pp.q[i] * DeltaFunction::gaussian(sn, z, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
-        }
+        const SpacePointX &z = pp.z[i];
+        if ( isPointOnPlate(z) ) { sum += pp.q[i] * DeltaFunction::gaussian(sn, z, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor)); }
     }
 
-    return fx;
+    return fx + sum;
 }
 
 void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-    //    if (saveMinMaxU)
-    //    {
-    //        if (u.min() < minU) const_cast<Solver1*>(this)->minU = u.min();
-    //        if (u.max() > maxU) const_cast<Solver1*>(this)->maxU = u.max();
-    //    }
-
     HeatEquationIBVP &const_forward = const_cast<HeatEquationIBVP&>(this->forward);
-    int ln = static_cast<int>(tn.i);
-    double ht = timeDimension().step();
-    DoubleVector z0(4), z1(4);
-    PointNodeODE n0, n1;
+    const int ln = static_cast<int>(tn.i);
+    const double ht = timeDimension().step();
+
+    if (ln == timeDimension().max()) { const_cast<Solver1*>(this)->U = u; }
 
     if (ln == timeDimension().min())
     {
+        PointNodeODE n0;
+        DoubleVector z0(4);
         n0.i = static_cast<int>(ln); n0.x = n0.i*ht;
         ProblemParams &pp0 = sourceParams[ln];
 
@@ -636,6 +605,8 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
     if (ln != timeDimension().max())
     {
+        DoubleVector z0(4), z1(4);
+        PointNodeODE n0, n1;
         n0.i = static_cast<int>(ln+0); n0.x = n0.i*ht;
         n1.i = static_cast<int>(ln+1); n1.x = n1.i*ht;
         ProblemParams &pp0 = sourceParams[ln];
@@ -684,21 +655,6 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
         }
     }
 
-    if (ln == timeDimension().max())
-    {
-        const_cast<Solver1*>(this)->U = u;
-    }
-
-    //unsigned int ln = static_cast<unsigned int>(tn.i);
-    //ProblemParams &pp = sourceParams[ln];
-    //std::string msg = "[ " + std::to_string(ln+1) + " ]";
-    //msg += " [ " + std::to_string(pp.z[0].x) + ", " + std::to_string(pp.z[0].y) + " ]";
-    //msg += " [ " + std::to_string(pp.z[1].x) + ", " + std::to_string(pp.z[1].y) + " ]";
-    //msg += " [ " + std::to_string(pp.v[0]) + ", " + std::to_string(pp.v[1]) + " ]";
-    //msg += " [ " + std::to_string(pp.q[0]) + ", " + std::to_string(pp.q[1]) + " ]";
-    //msg += " [ " + std::to_string(u.min()) + ", " + std::to_string(u.max()) + " ]";
-    //IPrinter::printSeperatorLine(msg.data());
-    //IPrinter::printMatrix(u);
     if (drawImage) frw_saveToImage(u, tn);
 }
 
@@ -736,23 +692,20 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
             g[6*size + i*measrPointNumber  + j] = 0.0;
             g[7*size + i*measrPointNumber  + j] = 0.0;
 
-            int ln = min;
-            PointNodeODE node; node.i = ln; node.x = node.i*ht;
+            PointNodeODE node; node.i = min; node.x = node.i*ht;
 
-            //const SpacePoint &zi0 = sourceParams[ln].zv[i];
-            const SpacePointX &zi0 = sourceParams[ln].z[i];
-            const SpacePointX &fi0 = sourceParams[ln].f[i];
+            const SpacePointX &zi0 = sourceParams[min].z[i];
+            const SpacePointX &fi0 = sourceParams[min].f[i];
+            const SpacePoint  &uj0 = sourceParams[min].u[j];
+            const SpacePoint  &pi0 = sourceParams[min].p[i];
+
             if (isPointOnPlate(zi0))
             {
                 double dist = sqrt((zi0.x - mp.x)*(zi0.x - mp.x) + (zi0.y - mp.y)*(zi0.y - mp.y));
-                double dif1 = sourceParams[ln].u[j].z-nomnU1[i][j];
-                double dif2 = sourceParams[ln].u[j].z-nomnU2[i][j];
-                double val0 = sourceParams[ln].p[i].z;
-                //double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                double dif1 = uj0.z-nomnU1[i][j];
+                double dif2 = uj0.z-nomnU2[i][j];
+                double val0 = pi0.z;
                 double val1 = A4(node, 1, i+1)*fi0.x + A4(node, 2, i+1)*fi0.y;
-
-
-                //printf("ln: %4d i: %4d %12.8f %12.8f %12.8f %12.8f %12.8f\n", ln, i, dist, dif1, dif2, sourceParams[ln].fv[i].x, sourceParams[ln].fv[i].y);
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
                 g[0*size + i*measrPointNumber + j] += 0.5*val0*dif1*dist*dist;
@@ -780,20 +733,21 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
 #endif
             }
 
-            for (int ln=min+1; ln<max; ln++)
+            for (int ln=min+1; ln<max-1; ln++)
             {
                 node.i = ln; node.x = node.i*ht;
 
-                //const SpacePoint &zi = sourceParams[ln].zv[i];
                 const SpacePointX &zi = sourceParams[ln].z[i];
                 const SpacePointX &fi = sourceParams[ln].f[i];
+                const SpacePoint  &uj = sourceParams[ln].u[j];
+                const SpacePoint  &pi = sourceParams[ln].p[i];
+
                 if (isPointOnPlate(zi))
                 {
                     double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
-                    double dif1 = sourceParams[ln].u[j].z-nomnU1[i][j];
-                    double dif2 = sourceParams[ln].u[j].z-nomnU2[i][j];
-                    double val0 = sourceParams[ln].p[i].z;
-                    //double val1 = A4(node, 1, i+1)*sourceParams[ln].fv[i].x + A4(node, 2, i+1)*sourceParams[ln].fv[i].y;
+                    double dif1 = uj.z-nomnU1[i][j];
+                    double dif2 = uj.z-nomnU2[i][j];
+                    double val0 = pi.z;
                     double val1 = A4(node, 1, i+1)*fi.x + A4(node, 2, i+1)*fi.y;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
@@ -815,28 +769,28 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                     g[5*size + i*measrPointNumber + j] += val1*dif2;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-                    g[6*size + i*measrPointNumber + j] += val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j] * dist+alpha3[i][j] );
+                    g[6*size + i*measrPointNumber + j] += val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j] );
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                    g[7*size + i*measrPointNumber + j] += val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j] * dist+betta3[i][j] );
+                    g[7*size + i*measrPointNumber + j] += val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j]*dist + betta3[i][j] );
 #endif
                 }
             }
 
-            ln = max;
-            node.i = ln; node.x = node.i*ht;
+            node.i = max; node.x = node.i*ht;
 
-            //const SpacePoint &zi1 = sourceParams[ln].zv[i];
-            const SpacePointX &zi1 = sourceParams[ln].z[i];
+            const SpacePointX &zi1 = sourceParams[max].z[i];
+            const SpacePointX &fi1 = sourceParams[max].f[i];
+            const SpacePoint  &uj  = sourceParams[max].u[j];
+            const SpacePoint  &pi  = sourceParams[max].p[i];
+
             if (isPointOnPlate(zi1))
             {
                 double dist = sqrt((zi1.x - mp.x)*(zi1.x - mp.x) + (zi1.y - mp.y)*(zi1.y - mp.y));
-                double dif1 = sourceParams[ln].u[j].z-nomnU1[i][j];
-                double dif2 = sourceParams[ln].u[j].z-nomnU2[i][j];
-                double val0 = sourceParams[ln].p[i].z;
-                double val1 = A4(node, 1, i+1)*sourceParams[ln].f[i].x + A4(node, 2, i+1)*sourceParams[ln].f[i].y;
-
-                //printf("ln: %4d i: %4d %12.8f %12.8f %12.8f %12.8f %12.8f\n", ln, i, dist, dif1, dif2, sourceParams[ln].fv[i].x, sourceParams[ln].fv[i].y);
+                double dif1 = uj.z-nomnU1[i][j];
+                double dif2 = uj.z-nomnU2[i][j];
+                double val0 = pi.z;
+                double val1 = A4(node, 1, i+1)*fi1.x + A4(node, 2, i+1)*fi1.y;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
                 g[0*size + i*measrPointNumber + j] += 0.5*val0*dif1*dist*dist;
@@ -857,10 +811,10 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                 g[5*size + i*measrPointNumber + j] += 0.5*val1*dif2;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-                g[6*size + i*measrPointNumber + j] += 0.5 * val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j]);
+                g[6*size + i*measrPointNumber + j] += 0.5 * val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j] );
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                g[7*size + i*measrPointNumber + j] += 0.5 * val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j]*dist + betta3[i][j]);
+                g[7*size + i*measrPointNumber + j] += 0.5 * val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j]*dist + betta3[i][j] );
 #endif
             }
 
@@ -1061,30 +1015,35 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
     const ProblemParams &pp = solver->sourceParams[ln];
     double sum = 0.0;
 
-    //const SpacePoint &zi = pp.zv[i-1];
     const SpacePointX &zi = pp.z[i-1];
     if (solver->isPointOnPlate(zi))
     {
         double val0 = pp.p[i-1].z;
-        double val1 = solver->A4(node, 1, i)*pp.f[i-1].x + solver->A4(node, 2, i)*pp.f[i-1].y;
+        double val1 = solver->A4(node, 1, i)*pp.f[i-1].x
+                    + solver->A4(node, 2, i)*pp.f[i-1].y;
 
         for (size_t j=0; j<solver->measrPointNumber; j++)
         {
             const SpacePoint &mp = solver->measurePoints[j];
-            double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
+            //double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
+
+            double dist = 0.0;
+            if (r==1) dist = zi.x - mp.x;
+            if (r==2) dist = zi.y - mp.y;
 
             double diff1 = pp.u[j].z-solver->nomnU1[i-1][j];
             double diff2 = pp.u[j].z-solver->nomnU2[i-1][j];
 
             sum += val0 * (2.0*solver->alpha1[i-1][j]*dist + solver->alpha2[i-1][j]) * diff1;
             sum += val1 * (2.0*solver->betta1[i-1][j]*dist + solver->betta2[i-1][j]) * diff2;
+
+            if (r==1) sum += pp.p[i-1].x * pp.q[i-1] * diff1;
+            if (r==2) sum += pp.p[i-1].y * pp.q[i-1] * diff1;
         }
 
-        if (r==1) sum += pp.p[i-1].x * pp.q[i-1];
-        if (r==2) sum += pp.p[i-1].y * pp.q[i-1];
     }
 
-    return sum;
+    return -sum;
 }
 
 auto HeatEquationFBVP::final(FinalCondition c, size_t r) const -> double
