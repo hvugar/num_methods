@@ -191,8 +191,15 @@ protected:
     Dimension _spaceDimensionY;
 
 private:
-    double _initialTemperature = 0.5;
-    double _environmentTemperature = 0.6;
+    double _initialTemperature = NAN;
+    double _environmentTemperature = NAN;
+
+    double _initialTemperatureList[3] = { 0.5, 1.5, 2.0 };
+    double _environmentTemperatureList[3] = { 0.5, 1.0, 1.5 };
+    double _ratio1 = 1.0/2.0;
+    double _ratio2 = 1.0/3.0;
+    size_t _size1 = 2;
+    size_t _size2 = 2;
 };
 
 }
