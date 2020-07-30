@@ -171,16 +171,16 @@ void Solver1::optimize(int argc, char **argv)
 #endif
         std::cout << "---" << std::endl;
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-        IGradient::Gradient(&s, 1.0, x1, g1, indexes[3], indexes[4]-1); std::cout << labels[3]; IPrinter::print(g1.mid(indexes[3], indexes[4]-1).L2Normalize(), g1.mid(indexes[3], indexes[4]-1).length(), p, d);
-        IGradient::Gradient(&s, 1.0, x1, g1, indexes[4], indexes[5]-1); std::cout << labels[4]; IPrinter::print(g1.mid(indexes[4], indexes[5]-1).L2Normalize(), g1.mid(indexes[4], indexes[5]-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[3], indexes[4]-1); std::cout << labels[3]; IPrinter::print(g1.mid(indexes[3], indexes[4]-1).L2Normalize(), g1.mid(indexes[3], indexes[4]-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[4], indexes[5]-1); std::cout << labels[4]; IPrinter::print(g1.mid(indexes[4], indexes[5]-1).L2Normalize(), g1.mid(indexes[4], indexes[5]-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.001, x1, g1, indexes[5], indexes[6]-1); std::cout << labels[5]; IPrinter::print(g1.mid(indexes[5], indexes[6]-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), p, d);
-        IGradient::Gradient(&s, 0.001, x1, g1, indexes[6], indexes[7]-1); std::cout << labels[6]; IPrinter::print(g1.mid(indexes[6], indexes[7]-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[5], indexes[6]-1); std::cout << labels[5]; IPrinter::print(g1.mid(indexes[5], indexes[6]-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[6], indexes[7]-1); std::cout << labels[6]; IPrinter::print(g1.mid(indexes[6], indexes[7]-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-        IGradient::Gradient(&s, 0.001, x1, g1, indexes[7], indexes[8]-1); std::cout << labels[7]; IPrinter::print(g1.mid(indexes[7], indexes[8]-1).L2Normalize(), g1.mid(indexes[7], indexes[8]-1).length(), p, d);
-        IGradient::Gradient(&s, 0.001, x1, g1, indexes[8], indexes[9]-1); std::cout << labels[8]; IPrinter::print(g1.mid(indexes[8], indexes[9]-1).L2Normalize(), g1.mid(indexes[8], indexes[9]-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[7], indexes[8]-1); std::cout << labels[7]; IPrinter::print(g1.mid(indexes[7], indexes[8]-1).L2Normalize(), g1.mid(indexes[7], indexes[8]-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[8], indexes[9]-1); std::cout << labels[8]; IPrinter::print(g1.mid(indexes[8], indexes[9]-1).L2Normalize(), g1.mid(indexes[8], indexes[9]-1).length(), p, d);
 #endif
         std::cout << "---" << std::endl;
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
