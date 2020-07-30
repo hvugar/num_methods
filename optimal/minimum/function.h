@@ -68,10 +68,10 @@ struct MINIMUMSHARED_EXPORT IGradient
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const = 0;
 
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
-    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end);
-    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int inx[], unsigned int size);
-    static void GradientL(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end);
-    static void GradientR(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end);
+    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
+    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t inx[], size_t size);
+    static void GradientL(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
+    static void GradientR(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
 };
 
 #endif // FUNCTION_H

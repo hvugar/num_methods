@@ -41,12 +41,12 @@ void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x
     }
 }
 
-void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int inx[], unsigned int size)
+void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t inx[], size_t size)
 {
     double h = step;
     for (unsigned int j=0; j<size; j++)
     {
-        unsigned int i = inx[j];
+        size_t i = inx[j];
         double cx = x[i];
         const_cast<DoubleVector&>(x)[i] = cx - h;
         double f1 = f->fx(x);
@@ -57,10 +57,10 @@ void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x
     }
 }
 
-void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end)
+void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end)
 {
     DoubleVector &var_x = const_cast<DoubleVector&>(x);
-    for (unsigned int i=start; i<=end; i++)
+    for (size_t i=start; i<=end; i++)
     {
         double cx = var_x[i];
         var_x[i] = cx - step;
@@ -72,10 +72,10 @@ void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x
     }
 }
 
-void IGradient::GradientL(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end)
+void IGradient::GradientL(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end)
 {
     DoubleVector &var_x = const_cast<DoubleVector&>(x);
-    for (unsigned int i=start; i<=end; i++)
+    for (size_t i=start; i<=end; i++)
     {
         double cx = var_x[i];
         var_x[i] = cx - step;
@@ -86,10 +86,10 @@ void IGradient::GradientL(const RnFunction *f, double step, const DoubleVector &
     }
 }
 
-void IGradient::GradientR(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, unsigned int start, unsigned int end)
+void IGradient::GradientR(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end)
 {
     DoubleVector &var_x = const_cast<DoubleVector&>(x);
-    for (unsigned int i=start; i<=end; i++)
+    for (size_t i=start; i<=end; i++)
     {
         double cx = var_x[i];
         var_x[i] = cx + step;

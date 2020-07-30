@@ -21,7 +21,8 @@ struct SpacePointX : SpacePoint
 struct ProblemParams
 {
     double *q;  // istilik menbeyinin gucu
-    double *v;  // suert
+    double *vX; // suert
+    double *vY; // suert
 
     SpacePointX *z;
     SpacePointX *f;
@@ -143,7 +144,7 @@ public:
     virtual double A1(const PointNodeODE &node, size_t row, size_t col, size_t i) const;
     virtual double A2(const PointNodeODE &node, size_t row, size_t col, size_t i) const;
     virtual double A3(const PointNodeODE &node, size_t row, size_t i) const;
-    virtual double A4(const PointNodeODE &node, size_t row, size_t i) const;
+    virtual double A4(const PointNodeODE &node, size_t row, size_t col, size_t i) const;
 
     bool isPointOnPlate(const SpacePoint &z) const;
 
@@ -160,9 +161,12 @@ public:
     DoubleMatrix alpha1;
     DoubleMatrix alpha2;
     DoubleMatrix alpha3;
-    DoubleMatrix betta1;
-    DoubleMatrix betta2;
-    DoubleMatrix betta3;
+    DoubleMatrix bettaX1;
+    DoubleMatrix bettaX2;
+    DoubleMatrix bettaX3;
+    DoubleMatrix bettaY1;
+    DoubleMatrix bettaY2;
+    DoubleMatrix bettaY3;
     DoubleMatrix nomnU1;
     DoubleMatrix nomnU2;
     SpacePoint *measurePoints;

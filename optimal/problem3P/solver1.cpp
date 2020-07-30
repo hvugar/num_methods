@@ -2,9 +2,9 @@
 
 using namespace p3p1;
 
-#define ENABLE_ALPHA1_OPTIMIZATION
-#define ENABLE_ALPHA2_OPTIMIZATION
-#define ENABLE_ALPHA3_OPTIMIZATION
+//#define ENABLE_ALPHA1_OPTIMIZATION
+//#define ENABLE_ALPHA2_OPTIMIZATION
+//#define ENABLE_ALPHA3_OPTIMIZATION
 #define ENABLE_BETTA1_OPTIMIZATION
 #define ENABLE_BETTA2_OPTIMIZATION
 #define ENABLE_BETTA3_OPTIMIZATION
@@ -19,12 +19,12 @@ void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    Solver1 s(Dimension(0.01, 0, 200), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    Solver1 s(Dimension(0.02, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     s.setPointNumber(2, 4);
     s.forward.solver = &s;
     s.backward.solver = &s;
 
-    double a = 0.01;
+    double a = 1.0;
 
     s._initialTemperature = s._initialTemperatureList[0];
     s._environmentTemperature = s._environmentTemperatureList[0];
@@ -46,23 +46,21 @@ void Solver1::optimize(int argc, char **argv)
     s.backward.setThermalConvection(s._lambda0);
     s.backward.setThermalConductivity(0.0);
 
-    size_t size = s.heatSourceNumber*s.measrPointNumber;
+    const size_t size = s.heatSourceNumber*s.measrPointNumber;
+
+    size_t indexes[12] = { 0, size, 2*size, 3*size, 4*size, 5*size, 6*size, 7*size, 8*size, 9*size, 10*size, 11*size };
+    std::string labels[11] = { "alfa1:  ", "alfa2:  ", "alfa3:  ", "betaX1: ", "betaY1: ", "betaX2: ", "betaY2: ", "betaX3: ", "betaY3: ", "nomU1:  ",  "nomU2:  " };
 
     {
         puts("------------------------------------------------------------------------------");
 
         DoubleVector x;
         s.parameterToVector(x);
-        printf("alfa1: "); IPrinter::print(x.mid(0*size, 1*size-1), x.mid(0*size, 1*size-1).length(), 8, 4);
-        printf("alfa2: "); IPrinter::print(x.mid(1*size, 2*size-1), x.mid(1*size, 2*size-1).length(), 8, 4);
-        printf("alfa3: "); IPrinter::print(x.mid(2*size, 3*size-1), x.mid(2*size, 3*size-1).length(), 8, 4);
-        puts("---");
-        printf("beta1: "); IPrinter::print(x.mid(3*size, 4*size-1), x.mid(3*size, 4*size-1).length(), 8, 4);
-        printf("beta2: "); IPrinter::print(x.mid(4*size, 5*size-1), x.mid(4*size, 5*size-1).length(), 8, 4);
-        printf("beta3: "); IPrinter::print(x.mid(5*size, 6*size-1), x.mid(5*size, 6*size-1).length(), 8, 4);
-        puts("---");
-        printf("nomU1: "); IPrinter::print(x.mid(6*size, 7*size-1), x.mid(6*size, 7*size-1).length(), 8, 4);
-        printf("nomU2: "); IPrinter::print(x.mid(7*size, 8*size-1), x.mid(7*size, 8*size-1).length(), 8, 4);
+        for (size_t i=0; i<11; i++)
+        {
+            if (i==3 || i==9 || i==12) std::cout << "---" << std::endl;
+            std::cout << labels[i]; IPrinter::print(x.mid(indexes[i], indexes[i+1]-1), x.mid(indexes[i], indexes[i+1]-1).length(), 8, 4);
+        }
 
 #ifdef ENABLE_CHANGING_VALUES
         puts("------------------------------- CHANCING VECTOR ------------------------------");
@@ -127,30 +125,33 @@ void Solver1::optimize(int argc, char **argv)
         unsigned int d = 4;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
-        printf("alfa1: "); IPrinter::print(g0.mid(0*size, 1*size-1).L2Normalize(), g0.mid(0*size, 1*size-1).length(), p, d);
+        std::cout << labels[0]; IPrinter::print(g0.mid(indexes[0], indexes[1]-1).L2Normalize(), g0.mid(indexes[0], indexes[1]-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA2_OPTIMIZATION
-        printf("alfa2: "); IPrinter::print(g0.mid(1*size, 2*size-1).L2Normalize(), g0.mid(1*size, 2*size-1).length(), p, d);
+        std::cout << labels[1]; IPrinter::print(g0.mid(indexes[1], indexes[2]-1).L2Normalize(), g0.mid(indexes[1], indexes[2]-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA3_OPTIMIZATION
-        printf("alfa3: "); IPrinter::print(g0.mid(2*size, 3*size-1).L2Normalize(), g0.mid(2*size, 3*size-1).length(), p, d);
+        std::cout << labels[2]; IPrinter::print(g0.mid(indexes[2], indexes[3]-1).L2Normalize(), g0.mid(indexes[2], indexes[3]-1).length(), p, d);
 #endif
-        puts("---");
+        std::cout << "---" << std::endl;
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-        printf("beta1: "); IPrinter::print(g0.mid(3*size, 4*size-1).L2Normalize(), g0.mid(3*size, 4*size-1).length(), p, d);
+        std::cout << labels[3]; IPrinter::print(g0.mid(indexes[3], indexes[4]-1).L2Normalize(), g0.mid(indexes[3], indexes[4]-1).length(), p, d);
+        std::cout << labels[4]; IPrinter::print(g0.mid(indexes[4], indexes[5]-1).L2Normalize(), g0.mid(indexes[4], indexes[5]-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-        printf("beta2: "); IPrinter::print(g0.mid(4*size, 5*size-1).L2Normalize(), g0.mid(4*size, 5*size-1).length(), p, d);
+        std::cout << labels[5]; IPrinter::print(g0.mid(indexes[5], indexes[6]-1).L2Normalize(), g0.mid(indexes[5], indexes[6]-1).length(), p, d);
+        std::cout << labels[6]; IPrinter::print(g0.mid(indexes[6], indexes[7]-1).L2Normalize(), g0.mid(indexes[6], indexes[7]-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-        printf("beta3: "); IPrinter::print(g0.mid(5*size, 6*size-1).L2Normalize(), g0.mid(5*size, 6*size-1).length(), p, d);
+        std::cout << labels[7]; IPrinter::print(g0.mid(indexes[7], indexes[8]-1).L2Normalize(), g0.mid(indexes[7], indexes[8]-1).length(), p, d);
+        std::cout << labels[8]; IPrinter::print(g0.mid(indexes[8], indexes[9]-1).L2Normalize(), g0.mid(indexes[8], indexes[9]-1).length(), p, d);
 #endif
-        puts("---");
+        std::cout << "---" << std::endl;
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-        printf("nomU1: "); IPrinter::print(g0.mid(6*size, 7*size-1).L2Normalize(), g0.mid(6*size, 7*size-1).length(), p, d);
+        std::cout << labels[9]; IPrinter::print(g0.mid(indexes[9], indexes[10]-1).L2Normalize(), g0.mid(indexes[9], indexes[10]-1).length(), p, d);
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-        printf("nomU2: "); IPrinter::print(g0.mid(7*size, 8*size-1).L2Normalize(), g0.mid(7*size, 8*size-1).length(), p, d);
+        std::cout << labels[10]; IPrinter::print(g0.mid(indexes[10], indexes[11]-1).L2Normalize(), g0.mid(indexes[10], indexes[11]-1).length(), p, d);
 #endif
 
         x0.clear();
@@ -160,30 +161,33 @@ void Solver1::optimize(int argc, char **argv)
         s.parameterToVector(x1);
         DoubleVector g1(x1.length(), 0.0);
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
-        IGradient::Gradient(&s, 0.01, x1, g1, 0*size, 1*size-1); printf("alfa1: "); IPrinter::print(g1.mid(0*size, 1*size-1).L2Normalize(), g1.mid(0*size, 1*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[0], indexes[1]-1); std::cout << labels[0]; IPrinter::print(g1.mid(indexes[0], indexes[1]-1).L2Normalize(), g1.mid(indexes[0], indexes[1]-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.01, x1, g1, 1*size, 2*size-1); printf("alfa2: "); IPrinter::print(g1.mid(1*size, 2*size-1).L2Normalize(), g1.mid(1*size, 2*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[1], indexes[2]-1); std::cout << labels[1]; IPrinter::print(g1.mid(indexes[1], indexes[2]-1).L2Normalize(), g1.mid(indexes[1], indexes[2]-1).length(), p, d);
 #endif
 #ifdef ENABLE_ALPHA3_OPTIMIZATION
-        IGradient::Gradient(&s, 0.01, x1, g1, 2*size, 3*size-1); printf("alfa3: "); IPrinter::print(g1.mid(2*size, 3*size-1).L2Normalize(), g1.mid(2*size, 3*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.01, x1, g1, indexes[2], indexes[3]-1); std::cout << labels[2]; IPrinter::print(g1.mid(indexes[2], indexes[3]-1).L2Normalize(), g1.mid(indexes[2], indexes[3]-1).length(), p, d);
 #endif
-        puts("---");
+        std::cout << "---" << std::endl;
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-        IGradient::Gradient(&s, 0.1, x1, g1, 3*size, 4*size-1); printf("beta1: "); IPrinter::print(g1.mid(3*size, 4*size-1).L2Normalize(), g1.mid(3*size, 4*size-1).length(), p, d);
+        IGradient::Gradient(&s, 1.0, x1, g1, indexes[3], indexes[4]-1); std::cout << labels[3]; IPrinter::print(g1.mid(indexes[3], indexes[4]-1).L2Normalize(), g1.mid(indexes[3], indexes[4]-1).length(), p, d);
+        IGradient::Gradient(&s, 1.0, x1, g1, indexes[4], indexes[5]-1); std::cout << labels[4]; IPrinter::print(g1.mid(indexes[4], indexes[5]-1).L2Normalize(), g1.mid(indexes[4], indexes[5]-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.1, x1, g1, 4*size, 5*size-1); printf("beta2: "); IPrinter::print(g1.mid(4*size, 5*size-1).L2Normalize(), g1.mid(4*size, 5*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.001, x1, g1, indexes[5], indexes[6]-1); std::cout << labels[5]; IPrinter::print(g1.mid(indexes[5], indexes[6]-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.001, x1, g1, indexes[6], indexes[7]-1); std::cout << labels[6]; IPrinter::print(g1.mid(indexes[6], indexes[7]-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), p, d);
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-        IGradient::Gradient(&s, 0.1, x1, g1, 5*size, 6*size-1); printf("beta3: "); IPrinter::print(g1.mid(5*size, 6*size-1).L2Normalize(), g1.mid(5*size, 6*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.001, x1, g1, indexes[7], indexes[8]-1); std::cout << labels[7]; IPrinter::print(g1.mid(indexes[7], indexes[8]-1).L2Normalize(), g1.mid(indexes[7], indexes[8]-1).length(), p, d);
+        IGradient::Gradient(&s, 0.001, x1, g1, indexes[8], indexes[9]-1); std::cout << labels[8]; IPrinter::print(g1.mid(indexes[8], indexes[9]-1).L2Normalize(), g1.mid(indexes[8], indexes[9]-1).length(), p, d);
 #endif
-        puts("---");
+        std::cout << "---" << std::endl;
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-        IGradient::Gradient(&s, 0.001, x1, g1, 6*size, 7*size-1); printf("nomU1: "); IPrinter::print(g1.mid(6*size, 7*size-1).L2Normalize(), g1.mid(6*size, 7*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.001, x1, g1, indexes[9], indexes[10]-1); std::cout << labels[9]; IPrinter::print(g1.mid(indexes[9], indexes[10]-1).L2Normalize(), g1.mid(indexes[9], indexes[10]-1).length(), p, d);
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-        IGradient::Gradient(&s, 0.001, x1, g1, 7*size, 8*size-1); printf("nomU2: "); IPrinter::print(g1.mid(7*size, 8*size-1).L2Normalize(), g1.mid(7*size, 8*size-1).length(), p, d);
+        IGradient::Gradient(&s, 0.001, x1, g1, indexes[10], indexes[11]-1); std::cout << labels[10]; IPrinter::print(g1.mid(indexes[10], indexes[11]-1).L2Normalize(), g1.mid(indexes[10], indexes[11]-1).length(), p, d);
 #endif
 
         x1.clear();
@@ -195,21 +199,16 @@ void Solver1::optimize(int argc, char **argv)
     DoubleVector x2;
     s.parameterToVector(x2);
     IPrinter::printSeperatorLine();
-    IPrinter::print(x2.mid(0*size, 1*size-1), x2.mid(0*size, 1*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(1*size, 2*size-1), x2.mid(1*size, 2*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(2*size, 3*size-1), x2.mid(2*size, 3*size-1).length(), 8, 4);
-    puts("---");
-    IPrinter::print(x2.mid(3*size, 4*size-1), x2.mid(3*size, 4*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(4*size, 5*size-1), x2.mid(4*size, 5*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(5*size, 6*size-1), x2.mid(5*size, 6*size-1).length(), 8, 4);
-    puts("---");
-    IPrinter::print(x2.mid(6*size, 7*size-1), x2.mid(6*size, 7*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(7*size, 8*size-1), x2.mid(7*size, 8*size-1).length(), 8, 4);
+    for (size_t i=0; i<11; i++)
+    {
+        if (i==3 || i==9 || i==12) std::cout << "---" << std::endl;
+        std::cout << labels[i]; IPrinter::print(x2.mid(indexes[i], indexes[i+1]-1), x2.mid(indexes[i], indexes[i+1]-1).length(), 8, 4);
+    }
     IPrinter::printSeperatorLine();
 
-    //    exit(-1);
+    exit(-1);
 
-    //    ConjugateGradient g;
+    //ConjugateGradient g;
     SteepestDescentGradient g;
     g.setFunction(&s);
     g.setGradient(&s);
@@ -230,14 +229,11 @@ void Solver1::optimize(int argc, char **argv)
     IPrinter::printSeperatorLine(nullptr, '=');
 
     IPrinter::printSeperatorLine();
-    IPrinter::print(x2.mid(0*size, 1*size-1), x2.mid(0*size, 1*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(1*size, 2*size-1), x2.mid(1*size, 2*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(2*size, 3*size-1), x2.mid(2*size, 3*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(3*size, 4*size-1), x2.mid(3*size, 4*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(4*size, 5*size-1), x2.mid(4*size, 5*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(5*size, 6*size-1), x2.mid(5*size, 6*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(6*size, 7*size-1), x2.mid(6*size, 7*size-1).length(), 8, 4);
-    IPrinter::print(x2.mid(7*size, 8*size-1), x2.mid(7*size, 8*size-1).length(), 8, 4);
+    for (size_t i=0; i<11; i++)
+    {
+        if (i==3 || i==9 || i==12) std::cout << "---" << std::endl;
+        std::cout << labels[i]; IPrinter::print(x2.mid(indexes[i], indexes[i+1]-1), x2.mid(indexes[i], indexes[i+1]-1).length(), 8, 4);
+    }
     IPrinter::printSeperatorLine();
 }
 
@@ -283,9 +279,13 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     alpha3.resize(heatSourceNumber, measrPointNumber, 0.165);
 
     // v
-    betta1.resize(heatSourceNumber, measrPointNumber, 0.013);
-    betta2.resize(heatSourceNumber, measrPointNumber, 0.015);
-    betta3.resize(heatSourceNumber, measrPointNumber, 0.019);
+    bettaX1.resize(heatSourceNumber, measrPointNumber, 0.013);
+    bettaX2.resize(heatSourceNumber, measrPointNumber, 0.015);
+    bettaX3.resize(heatSourceNumber, measrPointNumber, 0.019);
+
+    bettaY1.resize(heatSourceNumber, measrPointNumber, 0.014);
+    bettaY2.resize(heatSourceNumber, measrPointNumber, 0.011);
+    bettaY3.resize(heatSourceNumber, measrPointNumber, 0.018);
 
     nomnU1.resize(heatSourceNumber, measrPointNumber, 0.0500);
     nomnU2.resize(heatSourceNumber, measrPointNumber, 0.0400);
@@ -294,13 +294,16 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     {
         for (size_t j=0; j<measrPointNumber; j++)
         {
-            alpha1[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            alpha2[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            alpha1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            alpha2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
             alpha3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
 
-            betta1[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            betta2[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            betta3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaX1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaY1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaX2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaY2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaX3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaY3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
 
             nomnU1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
             nomnU2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
@@ -319,7 +322,8 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     {
         ProblemParams & pp = sourceParams[ln];
         pp.q = new double[heatSourceNumber];
-        pp.v = new double[heatSourceNumber];
+        pp.vX = new double[heatSourceNumber];
+        pp.vY = new double[heatSourceNumber];
         pp.z = new SpacePointX[heatSourceNumber];
         pp.f = new SpacePointX[heatSourceNumber];
         pp.p = new SpacePoint[heatSourceNumber];
@@ -412,7 +416,12 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
             {
                 double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
                 sum += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * ( pi.z );
-                sum += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * ( A4(node, 1, i+1)*fi.x + A4(node, 2, i+1)*fi.y );
+
+                double betaXij = bettaX1[i][j]*dist*dist + bettaX2[i][j]*dist + bettaX3[i][j];
+                double betaYij = bettaY1[i][j]*dist*dist + bettaY2[i][j]*dist + bettaY3[i][j];
+
+                sum += (A4(node, 1, 1, i+1)*fi.x + A4(node, 2, 1, i+1)*fi.y) * betaXij
+                     + (A4(node, 1, 2, i+1)*fi.x + A4(node, 2, 2, i+1)*fi.y) * betaYij;
             }
             else
             {
@@ -533,10 +542,10 @@ double Solver1::A3(const PointNodeODE &, size_t r, size_t i) const
     return 0.0;
 }
 
-double Solver1::A4(const PointNodeODE &, size_t r, size_t i) const
+double Solver1::A4(const PointNodeODE &, size_t r, size_t c, size_t i) const
 {
-    if (i==1) { double data[2] = { +0.79, +0.60 }; return data[r-1]; }
-    if (i==2) { double data[2] = { -0.84, +0.83 }; return data[r-1]; }
+    if (i==1) { double data[2][2] = { { +0.79, +0.00 }, { +0.00, +0.60 } }; return data[r-1][c-1]; }
+    if (i==2) { double data[2][2] = { { -0.84, +0.00 }, { +0.00, +0.83 } }; return data[r-1][c-1]; }
     return 0.0;
 }
 
@@ -586,8 +595,9 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             const SpacePointX &z = pp0.z[i];
             if (isPointOnPlate(z))
             {
-                double qi = 0.0;
-                double vi = 0.0;
+                double qi  = 0.0;
+                double vXi = 0.0;
+                double vYi = 0.0;
                 for (size_t j=0; j<measrPointNumber; j++)
                 {
                     double nominal1 = nomnU1[i][j];
@@ -598,16 +608,19 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
                     const SpacePoint &mp = measurePoints[j];
                     double dist = sqrt((z.x - mp.x)*(z.x - mp.x) + (z.y - mp.y)*(z.y - mp.y));
-                    qi += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * (pp0.u[j].z - nominal1);
-                    vi += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * (pp0.u[j].z - nominal2);
+                    qi  += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * (pp0.u[j].z - nominal1);
+                    vXi += (bettaX1[i][j]*dist*dist + bettaX2[i][j]*dist + bettaX3[i][j]) * (pp0.u[j].z - nominal2);
+                    vYi += (bettaY1[i][j]*dist*dist + bettaY2[i][j]*dist + bettaY3[i][j]) * (pp0.u[j].z - nominal2);
                 }
-                pp0.q[i] = qi;
-                pp0.v[i] = vi;
+                pp0.q[i]  = qi;
+                pp0.vX[i] = vXi;
+                pp0.vY[i] = vYi;
             }
             else
             {
-                pp0.q[i] = 0.0;
-                pp0.v[i] = 0.0;
+                pp0.q[i]  = 0.0;
+                pp0.vX[i] = 0.0;
+                pp0.vY[i] = 0.0;
             }
 
             /**********************************************************************************************************/
@@ -637,8 +650,9 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             const SpacePointX &zi = pp1.z[i];
             if (isPointOnPlate(zi))
             {
-                double qi = 0.0;
-                double vi = 0.0;
+                double qi  = 0.0;
+                double vXi = 0.0;
+                double vYi = 0.0;
                 for (size_t j=0; j<measrPointNumber; j++)
                 {
                     double nominal1 = nomnU1[i][j];
@@ -646,20 +660,23 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
                     const SpacePoint &mp = measurePoints[j];
                     double dist = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
-                    qi += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * (pp0.u[j].z - nominal1);
-                    vi += (betta1[i][j]*dist*dist + betta2[i][j]*dist + betta3[i][j]) * (pp0.u[j].z - nominal2);
+                    qi  += (alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j]) * (pp0.u[j].z - nominal1);
+                    vXi += (bettaX1[i][j]*dist*dist + bettaX2[i][j]*dist + bettaX3[i][j]) * (pp0.u[j].z - nominal2);
+                    vYi += (bettaY1[i][j]*dist*dist + bettaY2[i][j]*dist + bettaY3[i][j]) * (pp0.u[j].z - nominal2);
 
                     SpacePoint d;
                     pp1.u[j].z = DeltaFunction::lumpedPoint4(u, measurePoints[j], spaceDimensionX(), spaceDimensionY(), d);
                     pp1.u[j].x = d.x; pp0.u[j].y = d.y;
                 }
-                pp1.q[i] = qi;
-                pp1.v[i] = vi;
+                pp1.q[i]  = qi;
+                pp1.vX[i] = vXi;
+                pp1.vY[i] = vYi;
             }
             else
             {
-                pp1.q[i] = 0.0;
-                pp1.v[i] = 0.0;
+                pp1.q[i]  = 0.0;
+                pp1.vX[i] = 0.0;
+                pp1.vY[i] = 0.0;
             }
 
             /**********************************************************************************************************/
@@ -709,10 +726,13 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                     g0[3*size + i*measrPointNumber  + j] = 0.0;
                     g0[4*size + i*measrPointNumber  + j] = 0.0;
                     g0[5*size + i*measrPointNumber  + j] = 0.0;
-
-                    // nomnU
                     g0[6*size + i*measrPointNumber  + j] = 0.0;
                     g0[7*size + i*measrPointNumber  + j] = 0.0;
+                    g0[8*size + i*measrPointNumber  + j] = 0.0;
+
+                    // nomnU
+                    g0[ 9*size + i*measrPointNumber  + j] = 0.0;
+                    g0[10*size + i*measrPointNumber  + j] = 0.0;
 
                     PointNodeODE node; node.i = min; node.x = node.i*ht;
 
@@ -727,7 +747,8 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                         double dif1 = uj0.z-nomnU1[i][j];
                         double dif2 = uj0.z-nomnU2[i][j];
                         double val0 = pi0.z;
-                        double val1 = A4(node, 1, i+1)*fi0.x + A4(node, 2, i+1)*fi0.y;
+                        double valX1 = A4(node, 1, 1, i+1)*fi0.x + A4(node, 2, 1, i+1)*fi0.y;
+                        double valY1 = A4(node, 1, 2, i+1)*fi0.x + A4(node, 2, 2, i+1)*fi0.y;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
                         g0[0*size + i*measrPointNumber + j] += 0.5*val0*dif1*dist*dist;
@@ -739,19 +760,24 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                         g0[2*size + i*measrPointNumber + j] += 0.5*val0*dif1;
 #endif
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-                        g0[3*size + i*measrPointNumber + j] += 0.5*val1*dif2*dist*dist;
+                        g0[3*size + i*measrPointNumber + j] += 0.5*valX1*dif2*dist*dist;
+                        g0[4*size + i*measrPointNumber + j] += 0.5*valY1*dif2*dist*dist;
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-                        g0[4*size + i*measrPointNumber + j] += 0.5*val1*dif2*dist;
+                        g0[5*size + i*measrPointNumber + j] += 0.5*valX1*dif2*dist;
+                        g0[6*size + i*measrPointNumber + j] += 0.5*valY1*dif2*dist;
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-                        g0[5*size + i*measrPointNumber + j] += 0.5*val1*dif2;
+                        g0[7*size + i*measrPointNumber + j] += 0.5*valX1*dif2;
+                        g0[8*size + i*measrPointNumber + j] += 0.5*valY1*dif2;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-                        g0[6*size + i*measrPointNumber + j] += 0.5 * val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j] );
+                        g0[9*size + i*measrPointNumber + j] += 0.5 * val0 * ( alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j] );
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                        g0[7*size + i*measrPointNumber + j] += 0.5 * val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j]*dist + betta3[i][j] );
+                        double betaXij = bettaX1[i][j]*dist*dist + bettaX2[i][j]*dist + bettaX3[i][j];
+                        double betaYij = bettaY1[i][j]*dist*dist + bettaY2[i][j]*dist + bettaY3[i][j];
+                        g0[10*size + i*measrPointNumber + j] += 0.5 * (valX1 * betaXij + valY1 * betaYij);
 #endif
                     }
 
@@ -770,7 +796,8 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                             double dif1 = uj.z-nomnU1[i][j];
                             double dif2 = uj.z-nomnU2[i][j];
                             double val0 = pi.z;
-                            double val1 = A4(node, 1, i+1)*fi.x + A4(node, 2, i+1)*fi.y;
+                            double valX1 = A4(node, 1, 1, i+1)*fi.x + A4(node, 2, 1, i+1)*fi.y;
+                            double valY1 = A4(node, 1, 2, i+1)*fi.x + A4(node, 2, 2, i+1)*fi.y;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
                             g0[0*size + i*measrPointNumber + j] += val0*dif1*dist*dist;
@@ -782,19 +809,24 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                             g0[2*size + i*measrPointNumber + j] += val0*dif1;
 #endif
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-                            g0[3*size + i*measrPointNumber + j] += val1*dif2*dist*dist;
+                            g0[3*size + i*measrPointNumber + j] += valX1*dif2*dist*dist;
+                            g0[4*size + i*measrPointNumber + j] += valY1*dif2*dist*dist;
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-                            g0[4*size + i*measrPointNumber + j] += val1*dif2*dist;
+                            g0[5*size + i*measrPointNumber + j] += valX1*dif2*dist;
+                            g0[6*size + i*measrPointNumber + j] += valY1*dif2*dist;
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-                            g0[5*size + i*measrPointNumber + j] += val1*dif2;
+                            g0[7*size + i*measrPointNumber + j] += valX1*dif2;
+                            g0[8*size + i*measrPointNumber + j] += valY1*dif2;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-                            g0[6*size + i*measrPointNumber + j] += val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j] );
+                            g0[9*size + i*measrPointNumber + j] += val0 * ( alpha1[i][j]*dist*dist + alpha2[i][j]*dist + alpha3[i][j] );
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                            g0[7*size + i*measrPointNumber + j] += val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j]*dist + betta3[i][j] );
+                            double betaXij = bettaX1[i][j]*dist*dist + bettaX2[i][j]*dist + bettaX3[i][j];
+                            double betaYij = bettaY1[i][j]*dist*dist + bettaY2[i][j]*dist + bettaY3[i][j];
+                            g0[10*size + i*measrPointNumber + j] += valX1 * betaXij + valY1 * betaYij;
 #endif
                         }
                     }
@@ -812,7 +844,8 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                         double dif1 = uj.z-nomnU1[i][j];
                         double dif2 = uj.z-nomnU2[i][j];
                         double val0 = pi.z;
-                        double val1 = A4(node, 1, i+1)*fi1.x + A4(node, 2, i+1)*fi1.y;
+                        double valX1 = A4(node, 1, 1, i+1)*fi1.x + A4(node, 2, 1, i+1)*fi1.y;
+                        double valY1 = A4(node, 1, 2, i+1)*fi1.x + A4(node, 2, 2, i+1)*fi1.y;
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
                         g0[0*size + i*measrPointNumber + j] += 0.5*val0*dif1*dist*dist;
@@ -824,19 +857,24 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                         g0[2*size + i*measrPointNumber + j] += 0.5*val0*dif1;
 #endif
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-                        g0[3*size + i*measrPointNumber + j] += 0.5*val1*dif2*dist*dist;
+                        g0[3*size + i*measrPointNumber + j] += 0.5*valX1*dif2*dist*dist;
+                        g0[4*size + i*measrPointNumber + j] += 0.5*valY1*dif2*dist*dist;
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-                        g0[4*size + i*measrPointNumber + j] += 0.5*val1*dif2*dist;
+                        g0[5*size + i*measrPointNumber + j] += 0.5*valX1*dif2*dist;
+                        g0[6*size + i*measrPointNumber + j] += 0.5*valY1*dif2*dist;
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-                        g0[5*size + i*measrPointNumber + j] += 0.5*val1*dif2;
+                        g0[7*size + i*measrPointNumber + j] += 0.5*valX1*dif2;
+                        g0[8*size + i*measrPointNumber + j] += 0.5*valY1*dif2;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-                        g0[6*size + i*measrPointNumber + j] += 0.5 * val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j] );
+                        g0[9*size + i*measrPointNumber + j] += 0.5 * val0 * ( alpha1[i][j]*(dist*dist) + alpha2[i][j]*dist + alpha3[i][j] );
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                        g0[7*size + i*measrPointNumber + j] += 0.5 * val1 * ( betta1[i][j]*(dist*dist) + betta2[i][j]*dist + betta3[i][j] );
+                        double betaXij = bettaX1[i][j]*dist*dist + bettaX2[i][j]*dist + bettaX3[i][j];
+                        double betaYij = bettaY1[i][j]*dist*dist + bettaY2[i][j]*dist + bettaY3[i][j];
+                        g0[10*size + i*measrPointNumber + j] += 0.5 * (valX1 * betaXij + valY1 * betaYij);
 #endif
                     }
 
@@ -851,18 +889,21 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
 #endif
 #ifdef ENABLE_BETTA1_OPTIMIZATION
                     g0[3*size + i*measrPointNumber + j] *= -ht;
-#endif
-#ifdef ENABLE_BETTA2_OPTIMIZATION
                     g0[4*size + i*measrPointNumber + j] *= -ht;
 #endif
-#ifdef ENABLE_BETTA3_OPTIMIZATION
+#ifdef ENABLE_BETTA2_OPTIMIZATION
                     g0[5*size + i*measrPointNumber + j] *= -ht;
+                    g0[6*size + i*measrPointNumber + j] *= -ht;
+#endif
+#ifdef ENABLE_BETTA3_OPTIMIZATION
+                    g0[7*size + i*measrPointNumber + j] *= -ht;
+                    g0[8*size + i*measrPointNumber + j] *= -ht;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
-                    g0[6*size + i*measrPointNumber + j] *= +ht;
+                    g0[9*size + i*measrPointNumber + j] *= +ht;
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                    g0[7*size + i*measrPointNumber + j] *= +ht;
+                    g0[10*size + i*measrPointNumber + j] *= +ht;
 #endif
                 }
             }
@@ -880,10 +921,13 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                     g[3*size + i*measrPointNumber  + j] += g0[3*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
                     g[4*size + i*measrPointNumber  + j] += g0[4*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
                     g[5*size + i*measrPointNumber  + j] += g0[5*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
-
-                    // nomnU
                     g[6*size + i*measrPointNumber  + j] += g0[6*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
                     g[7*size + i*measrPointNumber  + j] += g0[7*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
+                    g[8*size + i*measrPointNumber  + j] += g0[8*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
+
+                    // nomnU
+                    g[9*size + i*measrPointNumber  + j] += g0[9*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
+                    g[10*size + i*measrPointNumber  + j] += g0[10*size + i*measrPointNumber  + j] * _ratio1 * _ratio2;
                 }
             }
 
@@ -1007,7 +1051,9 @@ auto HeatEquationIBVP::B(const PointNodeODE &node, size_t r, size_t c) const -> 
 auto HeatEquationIBVP::C(const PointNodeODE &node, size_t r) const -> double
 {
     size_t ln = static_cast<size_t>(node.i);
-    return solver->A3(node, r, i) + solver->A4(node, r, i) * solver->sourceParams[ln].v[i-1];
+    return solver->A3(node, r, i) +
+            ( solver->A4(node, r, 1, i) * solver->sourceParams[ln].vX[i-1] +
+            solver->A4(node, r, 2, i) * solver->sourceParams[ln].vY[i-1] );
 }
 
 auto HeatEquationIBVP::initial(InitialCondition c, size_t r) const -> double
@@ -1079,8 +1125,10 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
     if (solver->isPointOnPlate(zi))
     {
         double val0 = pp.p[i-1].z;
-        double val1 = solver->A4(node, 1, i)*pp.f[i-1].x
-                + solver->A4(node, 2, i)*pp.f[i-1].y;
+        double valX1 = solver->A4(node, 1, 1, i)*pp.f[i-1].x
+                + solver->A4(node, 1, 2, i)*pp.f[i-1].y;
+        double valY1 = solver->A4(node, 2, 1, i)*pp.f[i-1].x
+                + solver->A4(node, 2, 2, i)*pp.f[i-1].y;
 
         for (size_t j=0; j<solver->measrPointNumber; j++)
         {
@@ -1095,7 +1143,8 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
             double diff2 = pp.u[j].z-solver->nomnU2[i-1][j];
 
             sum += val0 * (2.0*solver->alpha1[i-1][j]*dist + solver->alpha2[i-1][j]) * diff1;
-            sum += val1 * (2.0*solver->betta1[i-1][j]*dist + solver->betta2[i-1][j]) * diff2;
+            sum += valX1 * (2.0*solver->bettaX1[i-1][j]*dist + solver->bettaX2[i-1][j]) * diff2;
+            sum += valY1 * (2.0*solver->bettaY1[i-1][j]*dist + solver->bettaY2[i-1][j]) * diff2;
 
             if (r==1) sum += pp.p[i-1].x * pp.q[i-1] * diff1;
             if (r==2) sum += pp.p[i-1].y * pp.q[i-1] * diff1;
@@ -1143,14 +1192,17 @@ void Solver1::vectorToParameter(const DoubleVector &x)
     {
         for (size_t j=0; j<measrPointNumber; j++)
         {
-            alpha1[i][j] = x[0*size + i*measrPointNumber + j];
-            alpha2[i][j] = x[1*size + i*measrPointNumber + j];
-            alpha3[i][j] = x[2*size + i*measrPointNumber + j];
-            betta1[i][j] = x[3*size + i*measrPointNumber + j];
-            betta2[i][j] = x[4*size + i*measrPointNumber + j];
-            betta3[i][j] = x[5*size + i*measrPointNumber + j];
-            nomnU1[i][j] = x[6*size + i*measrPointNumber + j];
-            nomnU2[i][j] = x[7*size + i*measrPointNumber + j];
+            alpha1[i][j]  = x[0*size + i*measrPointNumber + j];
+            alpha2[i][j]  = x[1*size + i*measrPointNumber + j];
+            alpha3[i][j]  = x[2*size + i*measrPointNumber + j];
+            bettaX1[i][j] = x[3*size + i*measrPointNumber + j];
+            bettaY1[i][j] = x[4*size + i*measrPointNumber + j];
+            bettaX2[i][j] = x[5*size + i*measrPointNumber + j];
+            bettaY2[i][j] = x[6*size + i*measrPointNumber + j];
+            bettaX3[i][j] = x[7*size + i*measrPointNumber + j];
+            bettaY3[i][j] = x[8*size + i*measrPointNumber + j];
+            nomnU1[i][j]  = x[9*size + i*measrPointNumber + j];
+            nomnU2[i][j]  = x[10*size + i*measrPointNumber + j];
         }
     }
 }
@@ -1159,7 +1211,7 @@ void Solver1::parameterToVector(DoubleVector &x)
 {
     size_t size = heatSourceNumber*measrPointNumber;
     x.clear();
-    x.resize(size*8);
+    x.resize(size*11);
 
     for (size_t i=0; i<heatSourceNumber; i++)
     {
@@ -1168,11 +1220,14 @@ void Solver1::parameterToVector(DoubleVector &x)
             x[0*size + i*measrPointNumber + j] = alpha1[i][j];
             x[1*size + i*measrPointNumber + j] = alpha2[i][j];
             x[2*size + i*measrPointNumber + j] = alpha3[i][j];
-            x[3*size + i*measrPointNumber + j] = betta1[i][j];
-            x[4*size + i*measrPointNumber + j] = betta2[i][j];
-            x[5*size + i*measrPointNumber + j] = betta3[i][j];
-            x[6*size + i*measrPointNumber + j] = nomnU1[i][j];
-            x[7*size + i*measrPointNumber + j] = nomnU2[i][j];
+            x[3*size + i*measrPointNumber + j] = bettaX1[i][j];
+            x[4*size + i*measrPointNumber + j] = bettaY1[i][j];
+            x[5*size + i*measrPointNumber + j] = bettaX2[i][j];
+            x[6*size + i*measrPointNumber + j] = bettaY2[i][j];
+            x[7*size + i*measrPointNumber + j] = bettaX3[i][j];
+            x[8*size + i*measrPointNumber + j] = bettaY3[i][j];
+            x[9*size + i*measrPointNumber + j] = nomnU1[i][j];
+            x[10*size + i*measrPointNumber + j] = nomnU2[i][j];
         }
     }
 }
