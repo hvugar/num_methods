@@ -200,10 +200,10 @@ private:
 
     double _initialTemperatureList[3] = { 0.5, 1.5, 2.0 };
     double _environmentTemperatureList[3] = { 0.5, 1.0, 1.5 };
-    double _ratio1 = 1.0/2.0;
-    double _ratio2 = 1.0/3.0;
-    size_t _size1 = 2;
-    size_t _size2 = 2;
+    double _ratio1 = 1.0/1.0;
+    double _ratio2 = 1.0/1.0;
+    size_t _size1 = 1;
+    size_t _size2 = 1;
 };
 
 }

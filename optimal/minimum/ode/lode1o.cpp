@@ -5210,6 +5210,53 @@ void IFirstOrderLinearODEFVP::next(const DoubleVector &x0, const PointNodeODE &n
 
     if (method == ODESolverMethod::RUNGE_KUTTA_2)
     {
+        const double h2 = h/2.0;
+
+        double *k1 = new double[m];
+        double *k2 = new double[m];
+
+        double *v0 = new double[m];
+        double *v1 = new double[m];
+
+        PointNodeODE node1, node2;
+        node1.i = n0.i;   node1.x = node1.i*h;
+        node2.i = n0.i-1; node2.x = node2.i*h;
+
+        memcpy(v0, x0.data(), sizeof (double) * m);
+
+        // k1
+        for (size_t row=1, j=0; row<=m; row++, j++)
+        {
+            double sum = B(node1, row);
+            for (size_t col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node1, row, col)*v0[j];
+            }
+            k1[row-1] = sum;
+            v1[j]=v0[j]-h*k1[j];
+        }
+
+        // k2
+        for (size_t row=1; row<=m; row++)
+        {
+            double sum = B(node2, row);
+            for (size_t col=1, j=0; col<=m; col++, j++)
+            {
+                sum += A(node2, row, col)*v1[j];
+            }
+            k2[row-1] = sum;
+        }
+
+        for (size_t j=0; j<m; j++)
+        {
+            x1[j] = x0[j] - h2 * (k1[j] + k2[j]);
+        }
+
+        delete [] v0;
+        delete [] v1;
+
+        delete [] k2;
+        delete [] k1;
     }
 
     if (method == ODESolverMethod::RUNGE_KUTTA_4)
