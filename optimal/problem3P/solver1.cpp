@@ -19,22 +19,24 @@ void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    Solver1 s(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    Solver1 s(Dimension(0.001, 0, 200), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     s.setPointNumber(2, 4);
     s.forward.solver = &s;
     s.backward.solver = &s;
 
-    double a = 0.0001;
+    double a = 1.0;
 
     s._initialTemperature = s._initialTemperatureList[0];
     s._environmentTemperature = s._environmentTemperatureList[0];
     s.forward.setThermalDiffusivity(a);
     s.forward.setThermalConvection(-s._lambda0);
     s.forward.setThermalConductivity(0.0);
-    s.drawImage = false;
+    s.drawImage = true;
+    s.forward.findUMode = true;
     s.forward.implicit_calculate_D2V1();
     s.drawImage = false;
     //s.V = s.U;
+    exit(-1);
 
     IPrinter::printSeperatorLine("matrix");
     IPrinter::printMatrix(10, 4, s.U);
@@ -567,7 +569,7 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         }
         else
         {
-            std::cout << "frw_f" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+            std::cout << "frw_f: " << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
         }
     }
 
@@ -597,6 +599,9 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
             const_forward.start( z0, n0 );
             pp0.z[i] = SpacePointX(z0);
+
+            if (i==0) pp0.z[i] = SpacePointX(0.50, 0.15);
+            if (i==1) pp0.z[i] = SpacePointX(0.25, 0.40);
 
             /**********************************************************************************************************/
 
@@ -653,6 +658,9 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 
             const_forward.next( z0, n0, z1, n1, method );
             pp1.z[i] = SpacePointX(z1);
+
+            if (i==0) pp1.z[i] = SpacePointX(0.50-0.42*sin(4.0*M_PI*tn.t), 0.50-0.35*cos(2.0*M_PI*tn.t));
+            if (i==1) pp1.z[i] = SpacePointX(0.60-0.35*sin(2.0*M_PI*tn.t), 0.40-0.25*cos(4.0*M_PI*tn.t));
 
             /**********************************************************************************************************/
 
@@ -1064,35 +1072,96 @@ auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return solver->spa
 
 auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime_error("Not supportted..."); }
 
+auto HeatEquationIBVP::q(size_t i, const TimeNodePDE &tn) const -> double
+{
+    if (i==1) return pow(2.7182818284590452353602874713527, -20.0*tn.t);
+    if (i==2) return pow(2.7182818284590452353602874713527, -30.0*tn.t);
+    return 0.0;
+}
+
+auto HeatEquationIBVP::v(size_t /*i*/, const PointNodeODE &/*tn*/) const -> double
+{
+    return 0.0;
+}
+
 //--------------------------------------------------------------------------------------------------------------//
 
-auto HeatEquationIBVP::A(const PointNodeODE &node, size_t r, size_t c) const -> double { return solver->A1(node, r, c, i); }
+auto HeatEquationIBVP::A(const PointNodeODE &node, size_t r, size_t c) const -> double
+{
+    if (findUMode) return 0.0;
+    else return solver->A1(node, r, c, i);
+}
 
-auto HeatEquationIBVP::B(const PointNodeODE &node, size_t r, size_t c) const -> double { return solver->A2(node, r, c, i); }
+auto HeatEquationIBVP::B(const PointNodeODE &node, size_t r, size_t c) const -> double
+{
+    if (findUMode)
+    {
+//        if (r==1 && c==1 && i==1) return -16.0*M_PI*M_PI;
+//        if (r==2 && r==2 && i==1) return  -4.0*M_PI*M_PI;
+//        if (r==1 && c==1 && i==2) return  -4.0*M_PI*M_PI;
+//        if (r==2 && r==2 && i==2) return -16.0*M_PI*M_PI;
+        return 0.0;
+    }
+    else
+        return solver->A2(node, r, c, i);
+}
 
 auto HeatEquationIBVP::C(const PointNodeODE &node, size_t r) const -> double
 {
     size_t ln = static_cast<size_t>(node.i);
-    return solver->A3(node, r, i) +
-            ( solver->A4(node, r, 1, i) * solver->sourceParams[ln].vX[i-1] +
-            solver->A4(node, r, 2, i) * solver->sourceParams[ln].vY[i-1] );
+
+    if (findUMode)
+    {
+        if (r==1 && i==1) return 7.2*M_PI*M_PI*sin(4.0*M_PI*node.x);
+        if (r==2 && i==1) return 1.4*M_PI*M_PI*cos(2.0*M_PI*node.x);
+        if (r==1 && i==2) return 2.4*M_PI*M_PI;
+        if (r==2 && i==2) return 6.4*M_PI*M_PI;
+
+//        if (r==1 && i==1) return 8.0*M_PI*M_PI;
+//        if (r==2 && i==1) return 2.0*M_PI*M_PI;
+//        if (r==1 && i==2) return 2.4*M_PI*M_PI;
+//        if (r==2 && i==2) return 6.4*M_PI*M_PI;
+    }
+    else
+    {
+        return solver->A3(node, r, i) +
+                ( solver->A4(node, r, 1, i) * solver->sourceParams[ln].vX[i-1] +
+                solver->A4(node, r, 2, i) * solver->sourceParams[ln].vY[i-1] );
+    }
+    throw std::runtime_error(std::string("auto HeatEquationIBVP::C(const PointNodeODE &node, size_t r) const -> double"));
 }
 
 auto HeatEquationIBVP::initial(InitialCondition c, size_t r) const -> double
 {
-    if (c == InitialCondition::InitialValue)
+    if (findUMode)
     {
-        //if (i==1) { const double data[2] = { 0.04, 0.04 }; return data[r-1]; }
-        //if (i==2) { const double data[2] = { 0.96, 0.04 }; return data[r-1]; }
-        if (i==1) { const double data[2] = { 0.10, 0.10 }; return data[r-1]; }
-        if (i==2) { const double data[2] = { 0.90, 0.10 }; return data[r-1]; }
+        if (c == InitialCondition::InitialValue)
+        {
+            if (i==1) { const double data[2] = { +0.50, +0.15 }; return data[r-1]; }
+            if (i==2) { const double data[2] = { +0.25, +0.40 }; return data[r-1]; }
+        }
+        if (c == InitialCondition::InitialFirstDerivative)
+        {
+            if (i==1) { const double data[2] = { -1.80*M_PI, +0.00*M_PI }; return data[r-1]; }
+            if (i==2) { const double data[2] = { +0.00*M_PI, -1.00*M_PI }; return data[r-1]; }
+        }
     }
-    if (c == InitialCondition::InitialFirstDerivative)
+    else
     {
-        //        if (i==1) { const double data[2] = { +0.35, +0.56 }; return data[r-1]; }
-        //        if (i==2) { const double data[2] = { -0.54, +0.42 }; return data[r-1]; }
-        if (i==1) { const double data[2] = { +0.00, +0.00 }; return data[r-1]; }
-        if (i==2) { const double data[2] = { -0.00, +0.00 }; return data[r-1]; }
+        if (c == InitialCondition::InitialValue)
+        {
+            //if (i==1) { const double data[2] = { 0.04, 0.04 }; return data[r-1]; }
+            //if (i==2) { const double data[2] = { 0.96, 0.04 }; return data[r-1]; }
+            if (i==1) { const double data[2] = { 0.10, 0.10 }; return data[r-1]; }
+            if (i==2) { const double data[2] = { 0.90, 0.10 }; return data[r-1]; }
+        }
+        if (c == InitialCondition::InitialFirstDerivative)
+        {
+            //        if (i==1) { const double data[2] = { +0.35, +0.56 }; return data[r-1]; }
+            //        if (i==2) { const double data[2] = { -0.54, +0.42 }; return data[r-1]; }
+            if (i==1) { const double data[2] = { +0.00, +0.00 }; return data[r-1]; }
+            if (i==2) { const double data[2] = { -0.00, +0.00 }; return data[r-1]; }
+        }
     }
     throw std::runtime_error(std::string("auto HeatEquationIBVP::initial(InitialCondition, size_t row) const -> double"));
 }
@@ -1154,27 +1223,24 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
         {
             const SpacePoint &mp = solver->measurePoints[j];
 
-            double sum1 = 0.0, sum2 = 0.0, sum3 = 0.0;
-            double diff1 = pp.u[j].z-solver->nomnU1[i-1][j];
-            double diff2 = pp.u[j].z-solver->nomnU2[i-1][j];
+            double sum2 = 0.0, sum1 = 0.0, sum3 = 0.0;
 
-            double dist = 0.0;
-            if (r==1) dist = zi.x - mp.x;
-            if (r==2) dist = zi.y - mp.y;
-            double dist1 = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
+            // grad
+            if (r==1) sum1 = pp.p[i-1].x * pp.q[i-1];
+            if (r==2) sum1 = pp.p[i-1].y * pp.q[i-1];
+            //double dist1 = sqrt((zi.x - mp.x)*(zi.x - mp.x) + (zi.y - mp.y)*(zi.y - mp.y));
+            //if (r==1) sum1 = pp.p[i-1].x * (solver->alpha1[i-1][j]*dist1*dist1 + solver->alpha2[i-1][j]*dist1 + solver->alpha3[i-1][j]) * diff1;
+            //if (r==2) sum1 = pp.p[i-1].y * (solver->alpha1[i-1][j]*dist1*dist1 + solver->alpha2[i-1][j]*dist1 + solver->alpha3[i-1][j]) * diff1;
 
-            if (r==1) sum1 = valX1 * (2.0*solver->bettaX1[i-1][j]*dist + solver->bettaX2[i-1][j]) * diff2;
-            if (r==2) sum1 = valY1 * (2.0*solver->bettaY1[i-1][j]*dist + solver->bettaY2[i-1][j]) * diff2;
+            //
+            if (r==1) sum2 = valX1 * (2.0*solver->bettaX1[i-1][j]*(zi.x - mp.x) + solver->bettaX2[i-1][j]) * (pp.u[j].z-solver->nomnU2[i-1][j]);
+            if (r==2) sum2 = valY1 * (2.0*solver->bettaY1[i-1][j]*(zi.y - mp.y) + solver->bettaY2[i-1][j]) * (pp.u[j].z-solver->nomnU2[i-1][j]);
 
-            //if (r==1) sum += pp.p[i-1].x * pp.q[i-1];
-            //if (r==2) sum += pp.p[i-1].y * pp.q[i-1];
-            if (r==1) sum2 = pp.p[i-1].x * (solver->alpha1[i-1][j]*dist1*dist1 + solver->alpha2[i-1][j]*dist1 + solver->alpha3[i-1][j]) * diff1;
-            if (r==2) sum2 = pp.p[i-1].y * (solver->alpha1[i-1][j]*dist1*dist1 + solver->alpha2[i-1][j]*dist1 + solver->alpha3[i-1][j]) * diff1;
+            //
+            if (r==1) sum3 = pp.p[i-1].z * (2.0*solver->alpha1[i-1][j]*(zi.x - mp.x) + solver->alpha2[i-1][j]) * (pp.u[j].z-solver->nomnU1[i-1][j]);
+            if (r==2) sum3 = pp.p[i-1].z * (2.0*solver->alpha1[i-1][j]*(zi.y - mp.y) + solver->alpha2[i-1][j]) * (pp.u[j].z-solver->nomnU2[i-1][j]);
 
-            sum3 = pp.p[i-1].z * (2.0*solver->alpha1[i-1][j]*dist + solver->alpha2[i-1][j]) * diff1;
-
-            sum += sum1 + sum2 + sum3;
-            //printf("sum: %d %d %f %f %f %f\n", node.i, r, sum, sum1, sum2, sum3);
+            sum -= (sum2 + sum1 + sum3);
         }
     }
     else

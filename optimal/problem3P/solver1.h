@@ -2,6 +2,7 @@
 #define PROBLEM3P_SOLVER1_H
 
 #include "global.h"
+#include <functional>   // std::bind
 
 namespace p3p1
 {
@@ -33,7 +34,72 @@ struct ProblemParams
 
 class Solver1;
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public ISecondOrderLinearODEIVP
+//class HeatEquationIBVP2 : virtual public IHeatEquationIBVP, virtual public ISecondOrderLinearODEIVP
+//{
+//public:
+//    HeatEquationIBVP2(Solver1 *solver = nullptr);
+//    HeatEquationIBVP2(const HeatEquationIBVP2 &);
+//    HeatEquationIBVP2 & operator =(const HeatEquationIBVP2 &);
+//    virtual ~HeatEquationIBVP2() override;
+
+//public:
+//    virtual auto initial(const SpaceNodePDE &/*sn*/, InitialCondition /*condition*/) const -> double override { return 0.5; }
+//    virtual auto boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &cn) const -> double override
+//    { cn = BoundaryConditionPDE::Robin(_lambda, -1.0, _lambda); return 0.5; }
+//    virtual auto f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double override
+//    {
+//        size_t ln = static_cast<size_t>(tn.i);
+
+//        const ProblemParams &pp = sourceParams[ln];
+//        double fx = _lambda0 * _environmentTemperature;
+
+//        double sum = 0.0;
+//        for (size_t i=0; i<heatSourceNumber; i++)
+//        {
+//            const SpacePointX &zi = pp.z[i];
+//            if ( isPointOnPlate(zi) )
+//            {
+//                sum += pp.q[i] * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
+//            }
+//            else
+//            {
+//                std::cout << "frw_f" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+//            }
+//        }
+
+//        return fx + sum;
+//    }
+
+//public:
+//    virtual auto layerInfo(const DoubleMatrix &, const TimeNodePDE &) const -> void override;
+//    virtual auto timeDimension() const -> Dimension override;
+//    virtual auto spaceDimensionX() const -> Dimension override;
+//    virtual auto spaceDimensionY() const -> Dimension override;
+//    virtual auto spaceDimensionZ() const -> Dimension override;
+
+//    virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double override;
+//    virtual auto B(const PointNodeODE &node, size_t row, size_t col) const -> double override;
+//    virtual auto C(const PointNodeODE &node, size_t row) const -> double override;
+
+//protected:
+//    virtual auto initial(InitialCondition condition, size_t row = 1) const  -> double override;
+//    virtual auto count() const  -> size_t override;
+
+//public:
+//    virtual auto dimension() const -> Dimension override;
+//    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
+
+//public:
+//    size_t heatSourceNumber = 2;
+//    size_t measrPointNumber = 4;
+//    double _lambda0 = +0.001;
+//    double _lambda1 = -0.01;
+//    double _factor = 1.0;
+
+//    size_t i;
+//};
+
+class HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public ISecondOrderLinearODEIVP
 {
 public:
     HeatEquationIBVP(Solver1 *solver = nullptr);
@@ -41,7 +107,11 @@ public:
     HeatEquationIBVP & operator =(const HeatEquationIBVP &);
     virtual ~HeatEquationIBVP() override;
 
-protected:
+public:
+    auto q(size_t i, const TimeNodePDE &tn) const -> double;
+    auto v(size_t i, const PointNodeODE &tn) const -> double;
+
+public:
     virtual auto initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double override;
     virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const -> double override;
     virtual auto f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double override;
@@ -68,6 +138,7 @@ public:
 public:
     Solver1 *solver;
     size_t i;
+    bool findUMode = true;
 };
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP, virtual public ISecondOrderLinearODEFVP
@@ -129,7 +200,7 @@ public:
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
                        double f, double alpha, GradientMethod::MethodResult result) const -> void;
 
-    virtual double frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const;
+    virtual auto frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double;
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
     virtual double frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
     virtual void frw_layerInfo(const DoubleMatrix &U, const TimeNodePDE &tn) const;
