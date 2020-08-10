@@ -19,7 +19,7 @@ void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    Solver1 s(Dimension(0.001, 0, 200), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
+    Solver1 s(Dimension(0.001, 0, 10000), Dimension(0.0025, 0, 400), Dimension(0.0025, 0, 400));
     s.setPointNumber(2, 4);
     s.forward.solver = &s;
     s.backward.solver = &s;
@@ -343,13 +343,13 @@ double Solver1::bcw_final(const SpaceNodePDE &sn, FinalCondition) const
 double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
     //cn = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
-    //cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+//    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
     cn = BoundaryConditionPDE::Robin(_lambda1, -1.0, _lambda1); return _environmentTemperature;
 }
 
 double Solver1::bcw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
-    //cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+//    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
     cn = BoundaryConditionPDE::Robin(_lambda1, -1.0, 0.0); return 0.0;
 }
 
@@ -360,7 +360,7 @@ void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNode
     static double MAX = -10000.0;
     if (u.max()>MAX) MAX = u.max();
     if (u.min()<MIN) MIN = u.min();
-    //printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, u.min(), u.max(), MIN, MAX);
+    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, u.min(), u.max(), MIN, MAX);
 
     //if (tn.i%10==0)
     {
@@ -368,7 +368,16 @@ void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNode
         QPixmap pixmap;
         //visualizeMatrixHeat(u, 0.0, 46.052, pixmap, 101, 101);
         //        visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-        visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+        visualizeMatrixHeat(u, 0.50, 2.32, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+
+        QPainter painter(&pixmap);
+        painter.setFont(QFont("Consolas", 12));
+        painter.setPen(Qt::white);
+
+        painter.drawText(2, 30, QString("time: ")+QString::number(tn.t, 'f', 3));
+        painter.drawText(2, 60, QString("temp: ")+QString::number(u.max(), 'f', 3)+QString(" max temp: ")+QString::number(MAX, 'f', 3));
+
+
         pixmap.save(filename);
     }
 #endif
@@ -565,7 +574,16 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         const SpacePointX &zi = pp.z[i];
         if ( isPointOnPlate(zi) )
         {
-            sum += pp.q[i] * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
+            //if (tn.i==1) printf("%4d %4d %12.6f %12.6f\n", tn.i, i, zi.x, zi.y);
+            if (forward.findUMode)
+            {
+                sum += forward.q(i,tn) * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
+
+            }
+            else
+            {
+                sum += pp.q[i] * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
+            }
         }
         else
         {
@@ -600,8 +618,8 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             const_forward.start( z0, n0 );
             pp0.z[i] = SpacePointX(z0);
 
-            if (i==0) pp0.z[i] = SpacePointX(0.50, 0.15);
-            if (i==1) pp0.z[i] = SpacePointX(0.25, 0.40);
+            //if (i==0) pp0.z[i] = SpacePointX(0.50, 0.15);
+            //if (i==1) pp0.z[i] = SpacePointX(0.28, 0.40);
 
             /**********************************************************************************************************/
 
@@ -659,8 +677,8 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             const_forward.next( z0, n0, z1, n1, method );
             pp1.z[i] = SpacePointX(z1);
 
-            if (i==0) pp1.z[i] = SpacePointX(0.50-0.42*sin(4.0*M_PI*tn.t), 0.50-0.35*cos(2.0*M_PI*tn.t));
-            if (i==1) pp1.z[i] = SpacePointX(0.60-0.35*sin(2.0*M_PI*tn.t), 0.40-0.25*cos(4.0*M_PI*tn.t));
+            //if (i==0) { pp1.z[i] = SpacePointX(0.50-0.42*sin(4.0*M_PI*tn.t), 0.50-0.35*cos(2.0*M_PI*tn.t)); printf("%d %f %f\n", i, pp1.z[i].x, pp1.z[i].y); }
+            //if (i==1) { pp1.z[i] = SpacePointX(0.60-0.32*cos(2.0*M_PI*tn.t), 0.40-0.25*sin(4.0*M_PI*tn.t)); printf("%d %f %f\n", i, pp1.z[i].x, pp1.z[i].y); }
 
             /**********************************************************************************************************/
 
@@ -1074,9 +1092,9 @@ auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { throw std::runtime
 
 auto HeatEquationIBVP::q(size_t i, const TimeNodePDE &tn) const -> double
 {
-    if (i==1) return pow(2.7182818284590452353602874713527, -20.0*tn.t);
-    if (i==2) return pow(2.7182818284590452353602874713527, -30.0*tn.t);
-    return 0.0;
+    //if (i==0) return pow(2.7182818284590452353602874713527, -0.2*tn.t);
+    //if (i==1) return pow(2.7182818284590452353602874713527, -0.3*tn.t);
+    return pow(2.7182818284590452353602874713527, -tn.t);
 }
 
 auto HeatEquationIBVP::v(size_t /*i*/, const PointNodeODE &/*tn*/) const -> double
@@ -1112,10 +1130,10 @@ auto HeatEquationIBVP::C(const PointNodeODE &node, size_t r) const -> double
 
     if (findUMode)
     {
-        if (r==1 && i==1) return 7.2*M_PI*M_PI*sin(4.0*M_PI*node.x);
-        if (r==2 && i==1) return 1.4*M_PI*M_PI*cos(2.0*M_PI*node.x);
-        if (r==1 && i==2) return 2.4*M_PI*M_PI;
-        if (r==2 && i==2) return 6.4*M_PI*M_PI;
+        if (r==1 && i==1) return +6.72*M_PI*M_PI*sin(4.0*M_PI*node.x);
+        if (r==2 && i==1) return +1.40*M_PI*M_PI*cos(2.0*M_PI*node.x);
+        if (r==1 && i==2) return -1.28*M_PI*M_PI*cos(2.0*M_PI*node.x);
+        if (r==2 && i==2) return -4.00*M_PI*M_PI*sin(4.0*M_PI*node.x);
 
 //        if (r==1 && i==1) return 8.0*M_PI*M_PI;
 //        if (r==2 && i==1) return 2.0*M_PI*M_PI;
@@ -1138,12 +1156,12 @@ auto HeatEquationIBVP::initial(InitialCondition c, size_t r) const -> double
         if (c == InitialCondition::InitialValue)
         {
             if (i==1) { const double data[2] = { +0.50, +0.15 }; return data[r-1]; }
-            if (i==2) { const double data[2] = { +0.25, +0.40 }; return data[r-1]; }
+            if (i==2) { const double data[2] = { +0.92, +0.40 }; return data[r-1]; }
         }
         if (c == InitialCondition::InitialFirstDerivative)
         {
-            if (i==1) { const double data[2] = { -1.80*M_PI, +0.00*M_PI }; return data[r-1]; }
-            if (i==2) { const double data[2] = { +0.00*M_PI, -1.00*M_PI }; return data[r-1]; }
+            if (i==1) { const double data[2] = { -1.68*M_PI, +0.00*M_PI }; return data[r-1]; }
+            if (i==2) { const double data[2] = { +0.00*M_PI, +1.00*M_PI }; return data[r-1]; }
         }
     }
     else
