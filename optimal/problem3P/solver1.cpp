@@ -2,41 +2,43 @@
 
 using namespace p3p1;
 
-//#define ENABLE_ALPHA1_OPTIMIZATION
-//#define ENABLE_ALPHA2_OPTIMIZATION
-//#define ENABLE_ALPHA3_OPTIMIZATION
-//#define ENABLE_BETTA1_OPTIMIZATION
-//#define ENABLE_BETTA2_OPTIMIZATION
-//#define ENABLE_BETTA3_OPTIMIZATION
+#define ENABLE_ALPHA1_OPTIMIZATION
+#define ENABLE_ALPHA2_OPTIMIZATION
+#define ENABLE_ALPHA3_OPTIMIZATION
+#define ENABLE_BETTA1_OPTIMIZATION
+#define ENABLE_BETTA2_OPTIMIZATION
+#define ENABLE_BETTA3_OPTIMIZATION
 #define ENABLE_NOMIN1_OPTIMIZATION
 #define ENABLE_NOMIN2_OPTIMIZATION
 
-#define ENABLE_CHECKING_GRADIENTS
+//#define ENABLE_CHECKING_GRADIENTS
 //#define ENABLE_CHANGING_VALUES
+
+//#define ENABLE_ERROR_PRINT
 
 
 void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    Solver1 s(Dimension(0.001, 0, 10000), Dimension(0.0025, 0, 400), Dimension(0.0025, 0, 400));
+    Solver1 s(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     s.setPointNumber(2, 4);
     s.forward.solver = &s;
     s.backward.solver = &s;
 
-    double a = 1.0;
+    double a = 0.0001;
 
     s._initialTemperature = s._initialTemperatureList[0];
     s._environmentTemperature = s._environmentTemperatureList[0];
     s.forward.setThermalDiffusivity(a);
     s.forward.setThermalConvection(-s._lambda0);
     s.forward.setThermalConductivity(0.0);
-    s.drawImage = true;
+    s.drawImage = false;
     s.forward.findUMode = true;
     s.forward.implicit_calculate_D2V1();
     s.drawImage = false;
-    //s.V = s.U;
-    exit(-1);
+    s.V = s.U;
+    s.forward.findUMode = false;
 
     IPrinter::printSeperatorLine("matrix");
     IPrinter::printMatrix(10, 4, s.U);
@@ -206,7 +208,7 @@ void Solver1::optimize(int argc, char **argv)
     }
     IPrinter::printSeperatorLine();
 
-    exit(-1);
+    //exit(-1);
 
     //ConjugateGradient g;
     SteepestDescentGradient g;
@@ -294,14 +296,14 @@ void Solver1::setPointNumber(size_t heatSourceNumber, size_t measrPointNumber)
     {
         for (size_t j=0; j<measrPointNumber; j++)
         {
-            alpha1[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            alpha2[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            alpha1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            alpha2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
             alpha3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
 
-            bettaX1[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            bettaY1[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            bettaX2[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
-            bettaY2[i][j] *= 0.0;//1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaX1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaY1[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaX2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
+            bettaY2[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
             bettaX3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
             bettaY3[i][j] *= 1.0 + (sin(5.0*(i+1)) + cos(4.0*(j+1))) * 0.10;
 
@@ -434,8 +436,10 @@ auto Solver1::bcw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
             }
             else
             {
+#ifdef ENABLE_ERROR_PRINT
                 //throw std::runtime_error("bcw_f: unknown error...");
                 std::cout << "bcw_f" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+#endif
             }
         }
         fx -= sum * DeltaFunction::gaussian(sn, mp, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
@@ -486,7 +490,9 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
             else
             {
                 pi.x = pi.y = pi.z = 0.0;
+#ifdef ENABLE_ERROR_PRINT
                 std::cout << "bcw_layerInfo" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+#endif
             }
 
             /**********************************************************************************************************/
@@ -523,7 +529,9 @@ void Solver1::bcw_layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const
             else
             {
                 pi.x = pi.y = pi.z = 0.0;
+#ifdef ENABLE_ERROR_PRINT
                 std::cout << "bcw_layerInfo" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+#endif
             }
 
             /**********************************************************************************************************/
@@ -578,7 +586,6 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
             if (forward.findUMode)
             {
                 sum += forward.q(i,tn) * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
-
             }
             else
             {
@@ -587,7 +594,9 @@ auto Solver1::frw_f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> doub
         }
         else
         {
+#ifdef ENABLE_ERROR_PRINT
             std::cout << "frw_f: " << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+#endif
         }
     }
 
@@ -652,7 +661,9 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
                 pp0.q[i]  = 0.0;
                 pp0.vX[i] = 0.0;
                 pp0.vY[i] = 0.0;
+#ifdef ENABLE_ERROR_PRINT
                 std::cout << "frw_layerInfo" << tn.t << ", " << z.x << ", " << z.y << std::endl;
+#endif
             }
 
             /**********************************************************************************************************/
@@ -712,7 +723,9 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
                 pp1.q[i]  = 0.0;
                 pp1.vX[i] = 0.0;
                 pp1.vY[i] = 0.0;
+#ifdef ENABLE_ERROR_PRINT
                 std::cout << "frw_layerInfo" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
+#endif
             }
 
             /**********************************************************************************************************/
@@ -818,7 +831,9 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                     }
                     else
                     {
+#ifdef ENABLE_ERROR_PRINT
                         std::cout << "gradient" << node.x << ", " << zi0.x << ", " << zi0.y << std::endl;
+#endif
                     }
 
                     for (int ln=min+1; ln<max-1; ln++)
@@ -871,7 +886,9 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                         }
                         else
                         {
+#ifdef ENABLE_ERROR_PRINT
                             std::cout << "gradient" << node.x << ", " << zi0.x << ", " << zi0.y << std::endl;
+#endif
                         }
                     }
 
@@ -923,7 +940,9 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                     }
                     else
                     {
+#ifdef ENABLE_ERROR_PRINT
                         std::cout << "gradient" << node.x << ", " << zi0.x << ", " << zi0.y << std::endl;
+#endif
                     }
 
 #ifdef ENABLE_ALPHA1_OPTIMIZATION
@@ -936,22 +955,22 @@ void Solver1::gradient(const DoubleVector &x, DoubleVector &g) const
                     g0[2*size + i*measrPointNumber + j] *= -ht;
 #endif
 #ifdef ENABLE_BETTA1_OPTIMIZATION
-                    g0[3*size + i*measrPointNumber + j] *= -ht;
-                    g0[4*size + i*measrPointNumber + j] *= -ht;
+                    g0[3*size + i*measrPointNumber + j] *= +ht;
+                    g0[4*size + i*measrPointNumber + j] *= +ht;
 #endif
 #ifdef ENABLE_BETTA2_OPTIMIZATION
-                    g0[5*size + i*measrPointNumber + j] *= -ht;
-                    g0[6*size + i*measrPointNumber + j] *= -ht;
+                    g0[5*size + i*measrPointNumber + j] *= +ht;
+                    g0[6*size + i*measrPointNumber + j] *= +ht;
 #endif
 #ifdef ENABLE_BETTA3_OPTIMIZATION
-                    g0[7*size + i*measrPointNumber + j] *= -ht;
-                    g0[8*size + i*measrPointNumber + j] *= -ht;
+                    g0[7*size + i*measrPointNumber + j] *= +ht;
+                    g0[8*size + i*measrPointNumber + j] *= +ht;
 #endif
 #ifdef ENABLE_NOMIN1_OPTIMIZATION
                     g0[9*size + i*measrPointNumber + j] *= +ht;
 #endif
 #ifdef ENABLE_NOMIN2_OPTIMIZATION
-                    g0[10*size + i*measrPointNumber + j] *= +ht;
+                    g0[10*size + i*measrPointNumber + j] *= -ht;
 #endif
                 }
             }
@@ -1263,7 +1282,9 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
     }
     else
     {
+#ifdef ENABLE_ERROR_PRINT
         std::cout << "HeatEquationFBVP::C" << node.x << ", " << zi.x << ", " << zi.y << std::endl;
+#endif
     }
 
     return sum;
