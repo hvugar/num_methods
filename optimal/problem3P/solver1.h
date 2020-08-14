@@ -227,7 +227,7 @@ public:
     size_t measrPointNumber = 4;
     double _lambda0 = +0.001;
     double _lambda1 = -0.01;
-    double _factor = 1.0;
+    double _factor = 4.0;
 
     DoubleMatrix alpha1;
     DoubleMatrix alpha2;
