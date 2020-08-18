@@ -198,7 +198,7 @@ public:
     virtual auto project(DoubleVector &x, unsigned int index) -> void;
     virtual auto project(DoubleVector &x) const -> void;
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
-                       double f, double alpha, GradientMethod::MethodResult result) const -> void;
+                       double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
 
     virtual auto frw_initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double;
     virtual double frw_boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
@@ -258,7 +258,7 @@ public:
 
     bool drawImage = false;
     ODESolverMethod method = ODESolverMethod::EULER;
-    GradientMethod *gradMethod;
+    GradientBasedMethod *gradMethod;
 
 protected:
     Dimension _timeDimension;
@@ -275,6 +275,9 @@ private:
     double _ratio2 = 1.0/1.0;
     size_t _size1 = 1;
     size_t _size2 = 1;
+
+public:
+    double R = 1.0;
 };
 
 }

@@ -224,10 +224,10 @@ void Solver1::optimize(int argc, char **argv)
     g.setOptimalityTolerance(0.0000001);
     g.setStepTolerance(0.0000001);
     g.setFunctionTolerance(0.0000001);
-    g.setR1MinimizeEpsilon(0.01, 0.001);
+    g.setR1MinimizeEpsilon(0.1, 0.01);
     g.setNormalize(true);
     g.showExitMessage(true);
-    g.setMaxIterationCount(10);
+    //    g.setMaxIterationCount(10);
     s.gradMethod = &g;
 
     g.calculate(x2);
@@ -736,8 +736,8 @@ void Solver1::frw_layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
             if (!isPointOnPlate(zi))
             {
                 pp1.q[i]  = 0.0;
-//                pp1.vX[i] = 0.0;
-//                pp1.vY[i] = 0.0;
+                //                pp1.vX[i] = 0.0;
+                //                pp1.vY[i] = 0.0;
 #ifdef ENABLE_ERROR_PRINT
                 std::cout << std::setprecision (15) << "frw_layerInfo" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
 #endif
@@ -1054,6 +1054,35 @@ double Solver1::fx(const DoubleVector &x) const
             forward.implicit_calculate_D2V1();
 
             sum += integral(U) * _ratio1 * _ratio2;
+
+
+            double penalty = 0.0;
+            unsigned int time_size = timeDimension().size()-1;
+            double time_step = timeDimension().step();
+            for (size_t i=0; i<heatSourceNumber; i++)
+            {
+                double penalty_i = 0.0;
+
+                double g0x = fabs(sourceParams[0].z[i].x - 0.5) - 0.5; if (g0x <= 0) g0x = 0.0;
+                double g0y = fabs(sourceParams[0].z[i].y - 0.5) - 0.5; if (g0y <= 0) g0y = 0.0;
+                penalty_i += 0.5*(g0x*g0x+g0y*g0y);
+                for (unsigned int ln=1; ln<time_size; ln++)
+                {
+                    double gx = fabs(sourceParams[ln].z[i].x - 0.5) - 0.5; if (gx <= 0) gx = 0.0;
+                    double gy = fabs(sourceParams[ln].z[i].y - 0.5) - 0.5; if (gy <= 0) gy = 0.0;
+                    penalty_i += (gx*gx+gy*gy);
+                }
+                double g1x = fabs(sourceParams[time_size].z[i].x - 0.5) - 0.5; if (g1x <= 0) g1x = 0.0;
+                double g1y = fabs(sourceParams[time_size].z[i].y - 0.5) - 0.5; if (g1y <= 0) g1y = 0.0;
+                penalty_i += 0.5*(g1x*g1x+g1y*g1y);
+
+                penalty_i *= time_step;
+
+                penalty += penalty_i;
+            }
+
+            sum += R*penalty;
+
         }
     }
 
@@ -1101,7 +1130,7 @@ auto Solver1::integral(const DoubleMatrix &) const -> double
 }
 
 auto Solver1::print(unsigned int i, const DoubleVector &x, const DoubleVector &g,
-                    double f, double alpha, GradientMethod::MethodResult result) const -> void
+                    double f, double alpha, GradientBasedMethod::MethodResult result) const -> void
 {
     printf_s("%4d %16.8f %16.8f\n", i, f, alpha);
     //if (alpha > 0.0)
@@ -1306,6 +1335,10 @@ auto HeatEquationFBVP::C(const PointNodeODE &node, size_t r) const -> double
         std::cout << "HeatEquationFBVP::C" << std::setprecision (15) << node.x << ", " << zi.x << ", " << zi.y << std::endl;
 #endif
     }
+
+    double gx = fabs(zi.x-0.5)-0.5; if (gx <= 0) gx = 0.0;
+    double gy = fabs(zi.y-0.5)-0.5; if (gy <= 0) gy = 0.0;
+    sum -= solver->R * 2.0*(sgn(zi.x-0.5)*gx + sgn(zi.y-0.5)*gy);
 
     return sum;
 }

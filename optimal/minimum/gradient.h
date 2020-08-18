@@ -1,5 +1,5 @@
-#ifndef GRADIENT_METHOD_H
-#define GRADIENT_METHOD_H
+#ifndef GRADIENT_BASED_METHOD_H
+#define GRADIENT_BASED_METHOD_H
 
 #include "global.h"
 #include "vector2d.h"
@@ -14,7 +14,7 @@ class IVectorNormalizer;
 /**
  * @brief The Abstract Gradient Method class
  */
-class MINIMUMSHARED_EXPORT GradientMethod : protected R1Function
+class MINIMUMSHARED_EXPORT GradientBasedMethod : protected R1Function
 {
 public:
     enum class MethodResult
@@ -27,8 +27,8 @@ public:
     };
 
 public:
-    GradientMethod();
-    virtual ~GradientMethod();
+    GradientBasedMethod();
+    virtual ~GradientBasedMethod();
 
     virtual void calculate(DoubleVector &x) = 0;
 
@@ -229,4 +229,4 @@ protected:
     unsigned int m_maxFunctionEvaluationCount;
 };
 
-#endif // GRADIENT_METHOD_H
+#endif // GRADIENT_BASED_METHOD_H

@@ -124,7 +124,7 @@ public:
     virtual auto project(DoubleVector &) const  -> void;
 
     virtual auto print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
-                       double alpha, GradientMethod::MethodResult result) const -> void;
+                       double alpha, GradientBasedMethod::MethodResult result) const -> void;
 
     virtual auto integral(const DoubleMatrix &u) const -> double;
     virtual auto norm() const -> double;

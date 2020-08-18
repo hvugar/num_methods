@@ -37,12 +37,12 @@ class DefaultPrinter : public IPrinter
 {
 public:
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f,
-                       double alpha, GradientMethod::MethodResult result) const -> void;
+                       double alpha, GradientBasedMethod::MethodResult result) const -> void;
 };
 
 /*****************************************************************************************************/
 
-GradientMethod::GradientMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullptr), m_projection(nullptr),
+GradientBasedMethod::GradientBasedMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullptr), m_projection(nullptr),
     m_optimalityTolerance(0.1), m_functionTolerance(0.1), m_stepTolerance(0.1), m_constraintTolerance(0.0),
     min_step(0.1), min_epsilon(0.01),
     m_show_end_message(true), m_normalize(true), m_normalizer(nullptr),
@@ -53,13 +53,13 @@ GradientMethod::GradientMethod() : m_fn(nullptr), m_gr(nullptr), m_printer(nullp
     m_normalizer = new DefaultNormalizer();
 }
 
-GradientMethod::~GradientMethod() {}
+GradientBasedMethod::~GradientBasedMethod() {}
 
 /**
  * @brief Objective function
  * @param f
  */
-void GradientMethod::setFunction(RnFunction *fn)
+void GradientBasedMethod::setFunction(RnFunction *fn)
 {
     m_fn = fn;
 }
@@ -68,130 +68,130 @@ void GradientMethod::setFunction(RnFunction *fn)
  * @brief Objective function
  * @return
  */
-RnFunction* GradientMethod::function() const
+RnFunction* GradientBasedMethod::function() const
 {
     return m_fn;
 }
 
-IGradient* GradientMethod::gradient() const
+IGradient* GradientBasedMethod::gradient() const
 {
     return m_gr;
 }
 
-void GradientMethod::setGradient(IGradient *gr)
+void GradientBasedMethod::setGradient(IGradient *gr)
 {
     m_gr = gr;
 }
 
-auto GradientMethod::optimalityTolerance() const -> double
+auto GradientBasedMethod::optimalityTolerance() const -> double
 {
     return m_optimalityTolerance;
 }
 
-auto GradientMethod::setOptimalityTolerance(double optimalityTolerance) -> void
+auto GradientBasedMethod::setOptimalityTolerance(double optimalityTolerance) -> void
 {
     m_optimalityTolerance = optimalityTolerance;
 }
 
-auto GradientMethod::stepTolerance() const -> double
+auto GradientBasedMethod::stepTolerance() const -> double
 {
     return m_stepTolerance;
 }
 
-auto GradientMethod::setStepTolerance(double stepTolerance) -> void
+auto GradientBasedMethod::setStepTolerance(double stepTolerance) -> void
 {
     m_stepTolerance = stepTolerance;
 }
 
-auto GradientMethod::functionTolerance() const -> double
+auto GradientBasedMethod::functionTolerance() const -> double
 {
     return m_functionTolerance;
 }
 
-auto GradientMethod::setFunctionTolerance(double functionTolerance) -> void
+auto GradientBasedMethod::setFunctionTolerance(double functionTolerance) -> void
 {
     m_functionTolerance = functionTolerance;
 }
 
-auto GradientMethod::constraintTolerance() const -> double
+auto GradientBasedMethod::constraintTolerance() const -> double
 {
     return m_constraintTolerance;
 }
 
-auto GradientMethod::setConstraintTolerance(double constraintTolerance) -> void
+auto GradientBasedMethod::setConstraintTolerance(double constraintTolerance) -> void
 {
     m_constraintTolerance = constraintTolerance;
 }
 
-auto GradientMethod::setTolerance(double optimalityTolerance, double stepTolerance, double functionTolerance) -> void
+auto GradientBasedMethod::setTolerance(double optimalityTolerance, double stepTolerance, double functionTolerance) -> void
 {
     m_optimalityTolerance = optimalityTolerance;
     m_stepTolerance = stepTolerance;
     m_functionTolerance = functionTolerance;
 }
 
-void GradientMethod::setR1MinimizeEpsilon(double step, double epsilon)
+void GradientBasedMethod::setR1MinimizeEpsilon(double step, double epsilon)
 {
     min_step = step;
     min_epsilon = epsilon;
 }
 
-unsigned int GradientMethod::count() const
+unsigned int GradientBasedMethod::count() const
 {
     return m_iterationNumber;
 }
 
-void GradientMethod::setPrinter(IPrinter *printer)
+void GradientBasedMethod::setPrinter(IPrinter *printer)
 {
     this->m_printer = printer;
 }
 
-void GradientMethod::setProjection(IProjection *projection)
+void GradientBasedMethod::setProjection(IProjection *projection)
 {
     this->m_projection = projection;
 }
 
-void GradientMethod::setNormalize(bool normalize)
+void GradientBasedMethod::setNormalize(bool normalize)
 {
     this->m_normalize = normalize;
 }
 
-void GradientMethod::showExitMessage(bool showEndMessage)
+void GradientBasedMethod::showExitMessage(bool showEndMessage)
 {
     m_show_end_message = showEndMessage;
 }
 
-void GradientMethod::setGradientNormalizer(IVectorNormalizer *normalizer)
+void GradientBasedMethod::setGradientNormalizer(IVectorNormalizer *normalizer)
 {
     m_normalizer = normalizer;
 }
 
-void GradientMethod::setMaxIterationCount(unsigned int maxIterationCount)
+void GradientBasedMethod::setMaxIterationCount(unsigned int maxIterationCount)
 {
     m_maxIterationCount = maxIterationCount;
 }
 
-unsigned int GradientMethod::maxIterationCount() const
+unsigned int GradientBasedMethod::maxIterationCount() const
 {
     return m_maxIterationCount;
 }
 
-void GradientMethod::setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount)
+void GradientBasedMethod::setMaxFunctionEvaluationCount(unsigned int maxFunctionEvaluationCount)
 {
     m_maxFunctionEvaluationCount = maxFunctionEvaluationCount;
 }
 
-unsigned int GradientMethod::maxFunctionEvaluationCount() const
+unsigned int GradientBasedMethod::maxFunctionEvaluationCount() const
 {
     return m_maxFunctionEvaluationCount;
 }
 
-unsigned int GradientMethod::iterationNumber() const
+unsigned int GradientBasedMethod::iterationNumber() const
 {
     return m_iterationNumber;
 }
 
-unsigned int GradientMethod::maxFunctionEvaluationNumber() const
+unsigned int GradientBasedMethod::maxFunctionEvaluationNumber() const
 {
     return m_maxFunctionEvaluationCount;
 }
@@ -206,7 +206,7 @@ unsigned int GradientMethod::maxFunctionEvaluationNumber() const
  * @param fxb      Величина функции в точке b.
  * @param unimodal
  */
-void GradientMethod::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
+void GradientBasedMethod::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
     unsigned int iteration = 0; C_UNUSED(iteration);
     unsigned int fx_count = 0;
@@ -301,7 +301,7 @@ void GradientMethod::straightLineSearch(double x, double step, double &a, double
  * @param fxb      Величина функции в точке b.
  * @param unimodal
  */
-void GradientMethod::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
+void GradientBasedMethod::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
     unsigned int iteration = 0; C_UNUSED(iteration);
     unsigned int fx_count = 0;
@@ -399,7 +399,7 @@ void GradientMethod::swann(double x, double step, double &a, double &b, double &
  * @param b        Конечнная точка отрезка.
  * @param epsilon  Число эпсилон для останова метода.
  */
-void GradientMethod::goldenSectionSearch(double &x, double &a, double &b, double epsilon) const
+void GradientBasedMethod::goldenSectionSearch(double &x, double &a, double &b, double epsilon) const
 {
     unsigned int iteration = 0;
     unsigned int fx__count = 0;
@@ -485,7 +485,7 @@ void GradientMethod::goldenSectionSearch(double &x, double &a, double &b, double
  * @param b        Конечнная точка отрезка.
  * @param epsilon  Число эпсилон для останова метода.
  */
-void GradientMethod::halphIntervalMethod(double &x, double &a, double &b, double epsilon) const
+void GradientBasedMethod::halphIntervalMethod(double &x, double &a, double &b, double epsilon) const
 {
     unsigned int iteration = 0;
     unsigned int fx__count = 0;
@@ -543,7 +543,7 @@ void GradientMethod::halphIntervalMethod(double &x, double &a, double &b, double
     //if (fa>fb) x = b;
 }
 
-bool GradientMethod::checkForExit(double step_tolerance, double optimality_tolerance, double function_tolerance,
+bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_tolerance, double function_tolerance,
                                   double f2, const DoubleVector &x, const DoubleVector &g, double alpha) const
 {
     C_UNUSED(optimality_tolerance);

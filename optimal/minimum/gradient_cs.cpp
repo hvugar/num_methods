@@ -5,7 +5,7 @@
 #include "vectornormalizer.h"
 #include <math.h>
 
-ConstStepGradient::ConstStepGradient() : GradientMethod(),
+ConstStepGradient::ConstStepGradient() : GradientBasedMethod(),
     mx(nullptr), mg(nullptr)
 {}
 

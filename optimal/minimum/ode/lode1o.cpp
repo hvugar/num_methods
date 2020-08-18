@@ -1264,7 +1264,7 @@ void IFirstOrderLinearODEIVP::transferOfConditionM(const std::vector<NonLocalCon
             }
         }
 
-        virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double, GradientMethod::MethodResult) const
+        virtual void print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double, GradientBasedMethod::MethodResult) const
         {
             //printf("%4d %14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", i, f, x[0], x[1], x[2], x[3], x[4]);
             //printf("%4d %14.8f | %14.8f %14.8f %14.8f %14.8f %14.8f \n", i, f, g[0], g[1], g[2], g[3], g[4]);

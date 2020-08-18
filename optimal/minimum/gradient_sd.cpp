@@ -5,7 +5,7 @@
 #include "vectornormalizer.h"
 #include <math.h>
 
-SteepestDescentGradient::SteepestDescentGradient() : GradientMethod(),
+SteepestDescentGradient::SteepestDescentGradient() : GradientBasedMethod(),
     mx(nullptr), mg(nullptr)
 {}
 

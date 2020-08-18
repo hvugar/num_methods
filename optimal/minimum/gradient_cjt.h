@@ -9,7 +9,7 @@
  * Ru: Метод сопряженных градиентов. (Метод Флетчера-Ривса)
  * Az: Qoşma qradiyentlər üsulu.
  */
-class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientMethod
+class MINIMUMSHARED_EXPORT ConjugateGradient : public GradientBasedMethod
 {
 public:
     enum class Algorithm

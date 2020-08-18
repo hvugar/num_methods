@@ -366,7 +366,7 @@ auto Solver::project(DoubleVector &x, unsigned int index) -> void
 
 auto Solver::project(DoubleVector &) const  -> void {}
 
-auto Solver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void
+auto Solver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void
 {
     //    C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     //    const char* msg = nullptr; C_UNUSED(msg);

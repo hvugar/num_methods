@@ -95,6 +95,8 @@ SOURCES += \
     benchmark.cpp \
     deltagrid.cpp \
     interpolation.cpp \
+    method/direct_search_method.cpp \
+    method/region_elimination_method.cpp \
     grid/ivp.cpp
 
 HEADERS += global.h \
@@ -145,4 +147,6 @@ HEADERS += global.h \
     benchmark.h \
     deltagrid.h \
     interpolation.h \
+    method/direct_search_method.h \
+    method/region_elimination_method.h \
     grid/ivp.h

@@ -5,7 +5,7 @@
 #include "vectornormalizer.h"
 #include <math.h>
 
-ConjugateGradient::ConjugateGradient() : GradientMethod(), mx(nullptr), ms(nullptr),
+ConjugateGradient::ConjugateGradient() : GradientBasedMethod(), mx(nullptr), ms(nullptr),
     m_algoritm(Algorithm::FLETCHER_REEVES), m_reset_iteration(true)
 {}
 

@@ -11,7 +11,7 @@ class MINIMUMSHARED_EXPORT IPrinter
 {
 public:
     virtual ~IPrinter();
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const = 0;
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const = 0;
 
 public:
 
