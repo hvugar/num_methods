@@ -101,10 +101,12 @@ macx-clang {
 }
 
 HEADERS += global.h \
+    heatequationibvp1.h \
     solver1.h
 
 HEADERS += solver.h
 SOURCES += solver.cpp \
+    heatequationibvp1.cpp \
     solver1.cpp
 
 #HEADERS += heat_equation_ibvp.h

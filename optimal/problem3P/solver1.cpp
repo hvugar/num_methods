@@ -18,10 +18,19 @@ using namespace p3p1;
 #define TEST_PROBLEM_0
 #define TEST_PROBLEM_2
 
+#include "heatequationibvp1.h"
 
 void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
+
+    HeatEquationIBVP1 he;
+    he.setThermalDiffusivity(1.0);
+    he.setThermalConvection(-he.lambda0);
+    he.implicit_calculate_D2V1();
+    return;
+
+
 
     Solver1 s(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     s._factor = 1.0;
