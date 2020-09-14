@@ -41,7 +41,7 @@ public:
 public:
     size_t i;
     double lambda0 = 0.0;
-    double lambda1 = +0.01;
+    double lambda1 = -0.01;
 };
 
 #endif // HEATEQUATIONIBVP1_H

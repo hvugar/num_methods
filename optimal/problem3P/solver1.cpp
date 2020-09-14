@@ -7,16 +7,18 @@ void Solver1::optimize(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    const size_t time_size = 100;
-    const double time_step = 0.01;
-    const size_t heatSourceNumber = 2;
-    const size_t measrPointNumber = 4;
-
     HeatEquationIBVP1 he;
     he.setThermalDiffusivity(1.0);
     he.setThermalConvection(-he.lambda0);
     he.implicit_calculate_D2V1();
     return;
+
+    const size_t time_size = 100;
+    const double time_step = 0.01;
+    const size_t heatSourceNumber = 2;
+    const size_t measrPointNumber = 4;
+
+
 
     Solver1 s(Dimension(0.01, 0, 100), Dimension(0.01, 0, 100), Dimension(0.01, 0, 100));
     s._factor = 1.0;
