@@ -4,6 +4,25 @@
 #include "global.h"
 #include <functional>   // std::bind
 
+#define ENABLE_PROGRAM_CONTROL
+
+#define ENABLE_ALPHA1_OPTIMIZATION
+#define ENABLE_ALPHA2_OPTIMIZATION
+#define ENABLE_ALPHA3_OPTIMIZATION
+//#define ENABLE_BETTA1_OPTIMIZATION
+//#define ENABLE_BETTA2_OPTIMIZATION
+//#define ENABLE_BETTA3_OPTIMIZATION
+#define ENABLE_NOMIN1_OPTIMIZATION
+//#define ENABLE_NOMIN2_OPTIMIZATION
+
+//#define ENABLE_CHECKING_GRADIENTS
+#define ENABLE_CHANGING_VALUES
+
+//#define ENABLE_ERROR_PRINT
+#define TEST_PROBLEM_0
+#define TEST_PROBLEM_2
+
+
 namespace p3p1
 {
 
@@ -21,9 +40,8 @@ struct SpacePointX : SpacePoint
 
 struct ProblemParams
 {
-    double *q;  // istilik menbeyinin gucu
-    double *vX; // suert
-    double *vY; // suert
+    double     *q; // istilik menbeyinin gucu
+    SpacePoint *v; // suert
 
     SpacePointX *z;
     SpacePointX *f;
@@ -33,71 +51,6 @@ struct ProblemParams
 };
 
 class Solver1;
-
-//class HeatEquationIBVP2 : virtual public IHeatEquationIBVP, virtual public ISecondOrderLinearODEIVP
-//{
-//public:
-//    HeatEquationIBVP2(Solver1 *solver = nullptr);
-//    HeatEquationIBVP2(const HeatEquationIBVP2 &);
-//    HeatEquationIBVP2 & operator =(const HeatEquationIBVP2 &);
-//    virtual ~HeatEquationIBVP2() override;
-
-//public:
-//    virtual auto initial(const SpaceNodePDE &/*sn*/, InitialCondition /*condition*/) const -> double override { return 0.5; }
-//    virtual auto boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &cn) const -> double override
-//    { cn = BoundaryConditionPDE::Robin(_lambda, -1.0, _lambda); return 0.5; }
-//    virtual auto f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double override
-//    {
-//        size_t ln = static_cast<size_t>(tn.i);
-
-//        const ProblemParams &pp = sourceParams[ln];
-//        double fx = _lambda0 * _environmentTemperature;
-
-//        double sum = 0.0;
-//        for (size_t i=0; i<heatSourceNumber; i++)
-//        {
-//            const SpacePointX &zi = pp.z[i];
-//            if ( isPointOnPlate(zi) )
-//            {
-//                sum += pp.q[i] * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step()*_factor, spaceDimensionY().step()*_factor));
-//            }
-//            else
-//            {
-//                std::cout << "frw_f" << tn.t << ", " << zi.x << ", " << zi.y << std::endl;
-//            }
-//        }
-
-//        return fx + sum;
-//    }
-
-//public:
-//    virtual auto layerInfo(const DoubleMatrix &, const TimeNodePDE &) const -> void override;
-//    virtual auto timeDimension() const -> Dimension override;
-//    virtual auto spaceDimensionX() const -> Dimension override;
-//    virtual auto spaceDimensionY() const -> Dimension override;
-//    virtual auto spaceDimensionZ() const -> Dimension override;
-
-//    virtual auto A(const PointNodeODE &node, size_t row, size_t col) const -> double override;
-//    virtual auto B(const PointNodeODE &node, size_t row, size_t col) const -> double override;
-//    virtual auto C(const PointNodeODE &node, size_t row) const -> double override;
-
-//protected:
-//    virtual auto initial(InitialCondition condition, size_t row = 1) const  -> double override;
-//    virtual auto count() const  -> size_t override;
-
-//public:
-//    virtual auto dimension() const -> Dimension override;
-//    virtual auto iterationInfo(const DoubleVector &v, const PointNodeODE &node) const -> void override;
-
-//public:
-//    size_t heatSourceNumber = 2;
-//    size_t measrPointNumber = 4;
-//    double _lambda0 = +0.001;
-//    double _lambda1 = -0.01;
-//    double _factor = 1.0;
-
-//    size_t i;
-//};
 
 class HeatEquationIBVP : virtual public IHeatEquationIBVP, virtual public ISecondOrderLinearODEIVP
 {
@@ -109,7 +62,7 @@ public:
 
 public:
     auto q(size_t i, const TimeNodePDE &tn) const -> double;
-    auto v(size_t i, const PointNodeODE &tn) const -> double;
+    auto v(size_t i, const PointNodeODE &tn, SpacePoint &vl) const -> void;
 
 public:
     virtual auto initial(const SpaceNodePDE &sn, InitialCondition condition) const -> double override;
@@ -219,16 +172,19 @@ public:
 
     bool isPointOnPlate(const SpacePoint &z) const;
 
-    void drawImages(Solver1 &solver) const;
     double minU, maxU;
     bool saveMinMaxU = false;
 
     size_t heatSourceNumber = 2;
+#ifndef ENABLE_PROGRAM_CONTROL
     size_t measrPointNumber = 4;
+#endif
     double _lambda0 = +0.001;
     double _lambda1 = -0.01;
     double _factor = 1.0;
 
+#ifdef ENABLE_PROGRAM_CONTROL
+#else
     DoubleMatrix alpha1;
     DoubleMatrix alpha2;
     DoubleMatrix alpha3;
@@ -241,6 +197,7 @@ public:
     DoubleMatrix nomnU1;
     DoubleMatrix nomnU2;
     SpacePoint *measurePoints;
+#endif
 
     ProblemParams *sourceParams = nullptr;
 
