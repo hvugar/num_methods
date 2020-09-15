@@ -20,8 +20,8 @@ public:
     virtual double theta() const { return _theta; }
     virtual double mu(const SpaceNodePDE &/*sn*/) const { return 1.0; }
 
-    auto convert(const DoubleVector &x, size_t size, size_t length) -> void;
-    auto convert(size_t size, size_t length, DoubleVector &x) const -> void;
+    auto convert1(const DoubleVector &x, size_t size, size_t length) -> void;
+    auto convert2(size_t size, size_t length, DoubleVector &x) const -> void;
 
     double _lambda1 = +0.001;
     double _theta = +2.0;
@@ -30,7 +30,8 @@ public:
     DoubleVector V;
     DoubleVector U;
 
-    double **q = nullptr;
+    DoubleVector *q;
+    DoubleVector *p;
 };
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP
@@ -42,9 +43,9 @@ public:
     virtual ~HeatEquationIBVP() override;
 
 public:
-    auto q(size_t i, const TimeNodePDE &tn) const -> double;
+    auto q(const TimeNodePDE &tn) const -> DoubleVector;
+    auto z(const TimeNodePDE &tn) const -> DoubleVector;
     auto v(size_t i, const PointNodeODE &tn, SpacePoint &vl) const -> void;
-    auto z(size_t i, const TimeNodePDE &tn) const -> double;
 
 protected:
     virtual auto initial(const SpaceNodePDE &sn, InitialCondition ic) const -> double override;
@@ -82,10 +83,12 @@ protected:
 
 public:
     Solver2 *s;
+    HeatEquationIBVP *h;
 };
 
 class PROBLEM3P_SHARED_EXPORT Solver2 : virtual public RnFunction,
                                         virtual public IGradient,
+                                        virtual public IPrinter,
                                         virtual public Common
 {
 public:
@@ -94,16 +97,22 @@ public:
 public:
     Solver2();
 
-    inline auto timeDimension() const -> Dimension { return Dimension(0.001, 0, 1000); }
-    inline auto spaceDimensionX() const -> Dimension { return Dimension(0.01, 0, 100); }
+    inline auto timeDimension() const -> Dimension { return _timeDimension; }
+    inline auto spaceDimensionX() const -> Dimension { return _spaceDimensionX; }
 
 protected:
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
     virtual auto fx(const DoubleVector &x) const -> double;
     auto integral(const DoubleMatrix &) const -> double;
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
 
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;
+
+private:
+    Dimension _timeDimension;
+    Dimension _spaceDimensionX;
+    size_t heatSourceNumber = 2;
 };
 
 }

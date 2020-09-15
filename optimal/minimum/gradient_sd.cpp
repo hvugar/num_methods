@@ -5,12 +5,9 @@
 #include "vectornormalizer.h"
 #include <math.h>
 
-SteepestDescentGradient::SteepestDescentGradient() : GradientBasedMethod(),
-    mx(nullptr), mg(nullptr)
-{}
+SteepestDescentGradient::SteepestDescentGradient() : GradientBasedMethod(), mx(nullptr), mg(nullptr) {}
 
-SteepestDescentGradient::~SteepestDescentGradient()
-{}
+SteepestDescentGradient::~SteepestDescentGradient() {}
 
 void SteepestDescentGradient::calculate(DoubleVector &x)
 {

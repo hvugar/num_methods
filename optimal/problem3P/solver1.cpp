@@ -240,10 +240,10 @@ void Solver1::optimize(int argc, char **argv)
     g.setOptimalityTolerance(0.0000001);
     g.setStepTolerance(0.0000001);
     g.setFunctionTolerance(0.0000001);
-    g.setR1MinimizeEpsilon(0.1, 0.01);
+    g.setR1MinimizeEpsilon(0.01, 0.001);
     g.setNormalize(true);
     g.showExitMessage(true);
-    //    g.setMaxIterationCount(10);
+    g.setMaxIterationCount(10);
     s.gradMethod = &g;
 
     g.calculate(x2);
