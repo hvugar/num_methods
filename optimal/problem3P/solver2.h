@@ -3,6 +3,8 @@
 
 #include "global.h"
 
+#define OPTIMIZE_Q
+
 namespace p3p0
 {
 
@@ -14,7 +16,7 @@ public:
     Common() {}
     Common(const Common &) {}
     Common & operator =(const Common &) { return *this; }
-    virtual ~Common() {}
+    virtual ~Common();
 
     virtual double lambda1() const { return _lambda1; }
     virtual double theta() const { return _theta; }
@@ -31,7 +33,16 @@ public:
     DoubleVector U;
 
     DoubleVector *q;
+#ifdef OPTIMIZE_Q
     DoubleVector *p;
+#endif
+    size_t heatSourceNumber = 2;
+    size_t measrPointNumber = 4;
+
+    DoubleMatrix alpha;
+    DoubleMatrix betta;
+    DoubleMatrix nomnU;
+    DoubleVector measurePoints;
 };
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP
@@ -112,7 +123,6 @@ protected:
 private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
-    size_t heatSourceNumber = 2;
 };
 
 }

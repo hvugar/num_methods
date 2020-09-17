@@ -15,52 +15,68 @@ void Solver2::Main(int /*argc*/, char **/*argv*/)
 
     const size_t time_size = s.timeDimension().size();
 
-    DoubleVector x0(s.timeDimension().size()*2, 1.0);
-    IPrinter::print(x0.mid(0*time_size, 1*time_size-1));
-    IPrinter::print(x0.mid(1*time_size, 2*time_size-1));
-    s.convert1(x0, 2, s.timeDimension().size());
-    s.forward.implicit_calculate_D1V1();
-    s.V = s.U;
+    /******************************************************************
+     *                     Calculating V(x) function
+     ******************************************************************/
+    {
+        DoubleVector x(s.timeDimension().size()*2);
+        for (unsigned int i=0; i<time_size; i++)
+        {
+            x[0*time_size + i] = (i*s.timeDimension().step());
+            x[1*time_size + i] = (i*s.timeDimension().step())*(i*s.timeDimension().step());
+        }
+        IPrinter::printVector(x.mid(0*time_size, 1*time_size-1));
+        IPrinter::printVector(x.mid(1*time_size, 2*time_size-1));
+        s.convert1(x, 2, s.timeDimension().size());
+        s.forward.implicit_calculate_D1V1();
+        IPrinter::print(s.U);
+        s.V = s.U;
+    }
 
-    IPrinter::print(s.U);
-    DoubleVector x(s.timeDimension().size()*2, 5.0);
+    /******************************************************************
+     *                     Calculating V(x) function
+     ******************************************************************/
+    DoubleVector x(s.timeDimension().size()*2, 2.0);
+    x[0*time_size] = 0.0;
+    x[1*time_size] = 0.0;
     DoubleVector g(x.length());
     DoubleVector g1(x.length());
 
+    puts("---");
+    IPrinter::printVector(x.mid(0*time_size, 1*time_size-1));
+    IPrinter::printVector(x.mid(1*time_size, 2*time_size-1));
 
     puts("---");
-    IPrinter::print(x.mid(0*time_size, 1*time_size-1));
-    IPrinter::print(x.mid(1*time_size, 2*time_size-1));
-    fflush(stdout);
-
-    puts("---");
+    puts("OK");
     s.gradient(x, g);
-    IPrinter::print(g.mid(0*time_size, 1*time_size-1).L2Normalize());
-    IPrinter::print(g.mid(1*time_size, 2*time_size-1).L2Normalize());
+    puts("OK");
+    IPrinter::printVector(g.mid(0*time_size, 1*time_size-1).L2Normalize());
+    IPrinter::printVector(g.mid(1*time_size, 2*time_size-1).L2Normalize());
 
     puts("---");
     IGradient::Gradient(&s, 0.01, x, g1);
-    IPrinter::print(g1.mid(0*time_size, 1*time_size-1).L2Normalize());
-    IPrinter::print(g1.mid(1*time_size, 2*time_size-1).L2Normalize());
+    IPrinter::printVector(g1.mid(0*time_size, 1*time_size-1).L2Normalize());
+    IPrinter::printVector(g1.mid(1*time_size, 2*time_size-1).L2Normalize());
 
-//    ConjugateGradient gm;
+    //    ConjugateGradient gm;
     SteepestDescentGradient gm;
     gm.setFunction(&s);
     gm.setGradient(&s);
     gm.setPrinter(&s);
     //gm.setProjection(&s);
     //gm.setGradientNormalizer(&prob);
-    gm.setOptimalityTolerance(0.0000001);
-    gm.setStepTolerance(0.0000001);
-    gm.setFunctionTolerance(0.0000001);
+    gm.setOptimalityTolerance(0.0);
+    gm.setStepTolerance(0.0);
+    gm.setFunctionTolerance(0.0);
     gm.setR1MinimizeEpsilon(0.01, 0.0001);
+//    gm.setMaxIterationCount(10);
     gm.setNormalize(true);
     gm.showExitMessage(true);
     gm.calculate(x);
 
     puts("---");
-    IPrinter::print(x.mid(0, 100));
-    IPrinter::print(x.mid(101, 201));
+    IPrinter::print(x.mid(0*time_size, 1*time_size-1), time_size);
+    IPrinter::print(x.mid(1*time_size, 2*time_size-1), time_size);
     puts("+++");
 }
 
@@ -75,8 +91,8 @@ HeatEquationIBVP::~HeatEquationIBVP() {}
 auto HeatEquationIBVP::q(const TimeNodePDE &tn) const -> DoubleVector
 {
     DoubleVector q;
-    q << s->q[0][tn.i];//tn.t;
-    q << s->q[1][tn.i];//tn.t;
+    q << s->q[0][tn.i];
+    q << s->q[1][tn.i];
     return q;
 }
 
@@ -156,7 +172,7 @@ auto HeatEquationFBVP::f(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/) 
 
 auto HeatEquationFBVP::HeatEquationFBVP::layerInfo(const DoubleVector &p, const TimeNodePDE &tn) const -> void
 {
-    //printf("%4d | << ", tn.i); IPrinter::printVector(p);
+    printf("%4d | << ", tn.i); IPrinter::printVector(p);
 
     const auto hx = spaceDimensionX().step();
     const auto Nx = spaceDimensionX().size();
@@ -174,6 +190,8 @@ auto HeatEquationFBVP::spaceDimensionY() const -> Dimension { return spaceDimens
 auto HeatEquationFBVP::spaceDimensionZ() const -> Dimension { return spaceDimensionX(); }
 
 /**************************************************************************************************************************/
+
+Common::~Common() {}
 
 auto Common::convert1(const DoubleVector &x, size_t size, size_t length) -> void
 {
@@ -221,8 +239,8 @@ auto Common::convert2(size_t size, size_t length, DoubleVector &x) const -> void
 Solver2::Solver2()
 {
     const auto time_min = 0;
-    const auto time_max = 100;
-    const auto time_len = 101;
+    const auto time_max = 1000;
+    const auto time_len = 1001;
     const auto time_stp = 0.01;
 
     const auto dimX_min = 0;
@@ -246,12 +264,14 @@ Solver2::Solver2()
 
 auto Solver2::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
-    const unsigned int sizeX = spaceDimensionX().size();
     const auto time_size = timeDimension().size();
-    const_cast<Solver2*>(this)->convert1(x, 2, sizeX);
+    const_cast<Solver2*>(this)->convert1(x, 2, time_size);
 
+    printf("%d %d\n", time_size, x.length());
     forward.implicit_calculate_D1V1();
+    puts("OK2");
     backward.implicit_calculate_D1V1();
+    puts("OK3");
 
     g.resize(x.length(), 0.0);
 
@@ -259,21 +279,18 @@ auto Solver2::gradient(const DoubleVector &x, DoubleVector &g) const -> void
     {
         const DoubleVector &pi = p[i];
         for (size_t ln=0; ln<time_size; ln++) { g[i*time_size+ln] = -pi[ln]; }
-        //g[i*time_size] = 0.0;
+        g[i*time_size] = 0.0;
     }
 }
 
 auto Solver2::fx(const DoubleVector &x) const -> double
 {
-    const_cast<Solver2*>(this)->convert1(x, 2, timeDimension().size());
+    const auto time_size = timeDimension().size();
+    const_cast<Solver2*>(this)->convert1(x, 2, time_size);
     forward.implicit_calculate_D1V1();
 
     const auto N = spaceDimensionX().size()-1;
     const auto h = spaceDimensionX().step();
-
-//    IPrinter::printVector(x, "x: ");
-//    IPrinter::printVector(U, "U: ");
-//    IPrinter::printVector(V, "V: ");
 
     double sum = (U[0]-V[0])*(U[0]-V[0]);
     for (unsigned int i=1; i<N; i++)
@@ -287,10 +304,18 @@ auto Solver2::fx(const DoubleVector &x) const -> double
 
 auto Solver2::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &/*g*/, double f, double /*alpha*/, GradientBasedMethod::MethodResult /*result*/) const -> void
 {
+    const size_t time_size = timeDimension().size();
+
     IPrinter::printSeperatorLine();
-    printf_s("I[%4d] %10.8f\n", iteration, f);
-    IPrinter::print(x.mid(0, 100));
-    IPrinter::print(x.mid(101, 201));
+    printf_s("I[%4d] %10.8f %10.8f\n", iteration, f, fx(x));
+    IPrinter::printVector(x.mid(0*time_size, 1*time_size-1), "q1");
+    IPrinter::printVector(x.mid(1*time_size, 2*time_size-1), "q2");
+    IPrinter::printVector(U, "U:");
+    IPrinter::printVector(V, "V:");
     IPrinter::printSeperatorLine();
 }
+
+/**************************************************************************************************************************/
+
+
 
