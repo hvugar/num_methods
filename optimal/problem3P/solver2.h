@@ -123,6 +123,7 @@ protected:
 private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
+    double epsilon = 0.01;
 };
 
 }
