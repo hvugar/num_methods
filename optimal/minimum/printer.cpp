@@ -12,18 +12,17 @@ void IPrinter::printMatrix(const DoubleMatrix &x, unsigned int m, unsigned int n
 {
     C_UNUSED(s);
 
-    unsigned int rows = x.rows();
-    unsigned int cols = x.cols();
-    unsigned int M = rows / m;
+    size_t rows = x.rows();
+    size_t cols = x.cols();
+    size_t M = rows / m;
 
-    for (unsigned int j=0; j<rows; j++)
+    for (size_t j=0; j<rows; j++)
     {
-        unsigned int N = cols / n;
+        size_t N = cols / n;
         if (j%M==0)
         {
-            for (unsigned int i=0; i<cols; i++)
+            for (size_t i=0; i<cols; i++)
             {
-                //if (i%N==0) fprintf(f, "%14.10f ", x.at(j,i));
                 if (i%N==0) fprintf(f, "%14.10f ", x.at(j,i));
             }
             fputs("\n", f);
@@ -40,16 +39,16 @@ void IPrinter::printMatrix(unsigned int width, unsigned int presicion, const Dou
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    unsigned int rows = x.rows();
-    unsigned int cols = x.cols();
-    unsigned int M = rows / m;
+    size_t rows = x.rows();
+    size_t cols = x.cols();
+    size_t M = rows / m;
 
-    for (unsigned int j=0; j<rows; j++)
+    for (size_t j=0; j<rows; j++)
     {
-        unsigned int N = cols / n;
+        size_t N = cols / n;
         if (j%M==0)
         {
-            for (unsigned int i=0; i<cols; i++)
+            for (size_t i=0; i<cols; i++)
             {
                 if (i%N==0) fprintf(f, format, x.at(j,i));
             }
@@ -63,11 +62,11 @@ void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int
 {
     C_UNUSED(s);
 
-    for (unsigned int j=0; j<=M; j++)
+    for (size_t j=0; j<=M; j++)
     {
         if (j%(M/m)==0)
         {
-            for (unsigned int i=0; i<=N; i++)
+            for (size_t i=0; i<=N; i++)
             {
                 if (i%(N/n)==0) fprintf(f, "%12.8f ", x[j*(N+1)+i]);
             }
@@ -82,16 +81,16 @@ void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n,
     if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
-        unsigned int N = (end-start+1) / n;
-        for (unsigned int i=start; i<=end; i++)
+        size_t N = (end-start+1) / n;
+        for (size_t i=start; i<=end; i++)
         {
             if ((i-start)%N==0) fprintf(file, "%10.6f ", x[i]);
         }
     }
     else
     {
-        unsigned int N = x.length() / n;
-        for (unsigned int i=0; i<x.length(); i++)
+        size_t N = x.length() / n;
+        for (size_t i=0; i<x.length(); i++)
         {
             if (i%N==0) fprintf(file, "%10.6f ", x[i]);
         }
@@ -180,16 +179,16 @@ void IPrinter::printVector(unsigned int width, unsigned int presicion, const Dou
     if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
     {
-        unsigned int N = (end-start+1) / n;
-        for (unsigned int i=start; i<=end; i++)
+        size_t N = static_cast<size_t>(end-start+1) / n;
+        for (size_t i=start; i<=end; i++)
         {
             if ((i-start)%N==0) fprintf(file, format, x[i]);
         }
     }
     else
     {
-        unsigned int N = x.length() / n;
-        for (unsigned int i=0; i<x.length(); i++)
+        size_t N = x.length() / n;
+        for (size_t i=0; i<x.length(); i++)
         {
             if (i%N==0) fprintf(file, format, x[i]);
         }
@@ -232,11 +231,8 @@ void IPrinter::printDateTime(FILE *file)
     fprintf(file, "%s\n", buf);
 }
 
-void IPrinter::print(const DoubleMatrix &m, size_t M, size_t N, size_t width, size_t presicion, FILE *file)
+void IPrinter::print(const DoubleMatrix &m, size_t /*M*/, size_t /*N*/, size_t width, size_t presicion, FILE *file)
 {
-    C_UNUSED(M);
-    C_UNUSED(N);
-
     char format[10] = {0};
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
@@ -288,10 +284,9 @@ void IPrinter::print(const DoubleVector &v, size_t N, size_t width, size_t presi
     int sz = sprintf(format, "%%%d.%df ", width, presicion);
     format[sz] = '\0';
 
-    //    unsigned int size = v.length();
-    size_t size = N;
+    //unsigned int size = v.length();
 
-    for (unsigned int i=0; i<size; i++)
+    for (unsigned int i=0; i<N; i++)
     {
         fprintf(file, format, v.at(i));
     }
@@ -308,9 +303,8 @@ void IPrinter::print(const double *v, unsigned int N, unsigned int width, unsign
     format[sz] = '\0';
 
     //    unsigned int size = v.length();
-    unsigned int size = N;
 
-    for (unsigned int i=0; i<size; i++)
+    for (unsigned int i=0; i<N; i++)
     {
         fprintf(file, format, v[i]);
     }
@@ -341,22 +335,22 @@ void IPrinter::print(std::vector<DoubleVector> &rv, size_t k, size_t N, size_t w
 
 void IPrinter::printSeperatorLine(const char* msg, char c, FILE* file)
 {
-    int columns=10;
+    size_t columns=10;
 
 #ifdef _INC_WINDOWS
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    columns = static_cast<size_t>(csbi.srWindow.Right - csbi.srWindow.Left) + 1;
 #endif
 
-    int start = 0;
+    size_t start = 0;
     if (msg != nullptr)
     {
         fprintf(file, "%s ", msg);
         start = strlen(msg)+1;
     }
 
-    for (int i=start; i<columns-1; i++) fprintf(file,"%c", c);
+    for (size_t i=start; i<columns-1; i++) fprintf(file,"%c", c);
 
 #ifdef _INC_WINDOWS
     fputs("\n", file);

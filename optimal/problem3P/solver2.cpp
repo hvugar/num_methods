@@ -15,53 +15,78 @@ void Solver2::Main(int /*argc*/, char **/*argv*/)
 
     const auto time_size = s.timeDimension().size();
     const auto time_step = s.timeDimension().step();
-    const auto vector_sz = time_size;
+
+#ifdef OPTIMIZE_Q_MIN
+    const auto vctr_size = (time_size/20) + 1;
+#else
+    const auto vctr_size = time_size;
+#endif
+    const unsigned int start[] = { 0*vctr_size+0, 1*vctr_size+0 };
+    const unsigned int finsh[] = { 1*vctr_size-1, 2*vctr_size-1 };
 
     /******************************************************************
      *                     Calculating V(x) function
      ******************************************************************/
     {
-        DoubleVector x(vector_sz*s.heatSourceNumber);
-        for (unsigned int ln=0; ln<vector_sz; ln++)
+        DoubleVector x(vctr_size*s.heatSourceNumber);
+        for (unsigned int ln=0; ln<vctr_size; ln++)
         {
-            double t = ((ln/20)*time_step)*20;
-            x[0*vector_sz + ln] = (t+2)*(t+2);
-            x[1*vector_sz + ln] = (t+2)*(t+2)*(t+2);
+#ifdef OPTIMIZE_Q_MIN
+            double t = ln * time_step * 20.0;
+#else
+            double t = ln * time_step;
+#endif
+            DoubleVector _qNorm = s.qNorm1(t);
+            x[0*vctr_size + ln] = _qNorm[0];
+            x[1*vctr_size + ln] = _qNorm[1];
         }
-        IPrinter::printVector(10, 6, x.mid(0*vector_sz, 1*vector_sz-1), "q1:");
-        IPrinter::printVector(10, 6, x.mid(1*vector_sz, 2*vector_sz-1), "q2:");
-        s.convert1(x, s.heatSourceNumber, s.timeDimension().size());
+        IPrinter::printVector(s._w, s._p, x.mid(start[0], finsh[0]), "q1:");
+        IPrinter::printVector(s._w, s._p, x.mid(start[1], finsh[1]), "q2:");
+        s.convert1(x, s.heatSourceNumber, vctr_size);
         s.forward.implicit_calculate_D1V1();
-        IPrinter::printVector(10, 6, s.U, "U: ");
+        IPrinter::printVector(s._w, s._p, s.U, "U: ");
         s.V = s.U;
     }
 
     /******************************************************************
      *                     Calculating V(x) function
      ******************************************************************/
-    DoubleVector x(vector_sz*s.heatSourceNumber, 2.0);
-    x[0*time_size] = 0.0;
-    x[1*time_size] = 0.0;
+    DoubleVector x(vctr_size*s.heatSourceNumber, 2.0);
+    //x[0*vctr_size] = 0.0;
+    //x[1*vctr_size] = 0.0;
+
+//    for (unsigned int ln=0; ln<vctr_size; ln++)
+//    {
+//#ifdef OPTIMIZE_Q_MIN
+//        double t = ln * time_step * 20.0;
+//#else
+//        double t = ln * time_step;
+//#endif
+//        DoubleVector _qNorm = s.qNorm1(t);
+//        x[0*vctr_size + ln] = _qNorm[0] * 1.1;//( rand()%2==0 ? 0.8 : 1.2 );
+//        x[1*vctr_size + ln] = _qNorm[1] * 1.1;//( rand()%2==0 ? 0.8 : 1.2 );
+//    }
+
     DoubleVector g(x.length());
     DoubleVector g1(x.length());
 
     puts("---");
-    IPrinter::printVector(10, 6, x.mid(0*vector_sz, 1*vector_sz-1), "q1:");
-    IPrinter::printVector(10, 6, x.mid(1*vector_sz, 2*vector_sz-1), "q2:");
+    IPrinter::printVector(s._w, s._p, x.mid(start[0], finsh[0]), "q1:");
+    IPrinter::printVector(s._w, s._p, x.mid(start[1], finsh[1]), "q2:");
 
     puts("---");
     s.gradient(x, g);
-    const auto sz = 10;//g.mid(0*vector_sz, 1*vector_sz-1).length();
-    IPrinter::printVector(10, 6, g.mid(0*vector_sz, 1*vector_sz-1).L2Normalize(), "g1:", sz);
-    IPrinter::printVector(10, 6, g.mid(1*vector_sz, 2*vector_sz-1).L2Normalize(), "g2:", sz);
+    IPrinter::printVector(s._w, s._p, g.mid(start[0], finsh[0]).L2Normalize(), "g1:");
+    IPrinter::printVector(s._w, s._p, g.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 
     puts("---");
     IGradient::Gradient(&s, 0.01, x, g1);
-    IPrinter::printVector(10, 6, g1.mid(0*vector_sz, 1*vector_sz-1).L2Normalize(), "g1:", sz);
-    IPrinter::printVector(10, 6, g1.mid(1*vector_sz, 2*vector_sz-1).L2Normalize(), "g2:", sz);
+    IPrinter::printVector(s._w, s._p, g1.mid(start[0], finsh[0]).L2Normalize(), "g1:");
+    IPrinter::printVector(s._w, s._p, g1.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 
-    //    ConjugateGradient gm;
-    SteepestDescentGradient gm;
+    puts("Starting optimization...");
+    ConjugateGradient gm;
+    //SteepestDescentGradient gm;
     gm.setFunction(&s);
     gm.setGradient(&s);
     gm.setPrinter(&s);
@@ -71,14 +96,14 @@ void Solver2::Main(int /*argc*/, char **/*argv*/)
     gm.setStepTolerance(0.000001);
     gm.setFunctionTolerance(0.000001);
     gm.setR1MinimizeEpsilon(0.1, 0.001);
-//    gm.setMaxIterationCount(10);
-    gm.setNormalize(true);
+    //    gm.setMaxIterationCount(10);
+    //    gm.setNormalize(true);
     gm.showExitMessage(true);
     gm.calculate(x);
 
-    puts("---");
-    IPrinter::printVector(10, 6, x.mid(0*vector_sz, 1*vector_sz-1));
-    IPrinter::printVector(10, 6, x.mid(1*vector_sz, 2*vector_sz-1));
+    puts("Optimization is finished.");
+    IPrinter::printVector(s._w, s._p, x.mid(0*vctr_size, 1*vctr_size-1));
+    IPrinter::printVector(s._w, s._p, x.mid(1*vctr_size, 2*vctr_size-1));
     puts("+++");
 }
 
@@ -93,8 +118,13 @@ HeatEquationIBVP::~HeatEquationIBVP() {}
 auto HeatEquationIBVP::q(const TimeNodePDE &tn) const -> DoubleVector
 {
     DoubleVector q;
+#ifdef OPTIMIZE_Q_MIN
+    q << s->q[0][static_cast<unsigned int>(tn.i/20)];
+    q << s->q[1][static_cast<unsigned int>(tn.i/20)];
+#else
     q << s->q[0][tn.i];
     q << s->q[1][tn.i];
+#endif
     return q;
 }
 
@@ -264,8 +294,12 @@ auto Solver2::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
     const auto time_size = timeDimension().size();
     const auto time_step = timeDimension().step();
-
-    const_cast<Solver2*>(this)->convert1(x, heatSourceNumber, time_size);
+#ifdef OPTIMIZE_Q_MIN
+    const auto vctr_size = (time_size/20) + 1;
+#else
+    const auto vctr_size = time_size;
+#endif
+    const_cast<Solver2*>(this)->convert1(x, heatSourceNumber, vctr_size);
 
     forward.implicit_calculate_D1V1();
     backward.implicit_calculate_D1V1();
@@ -274,12 +308,25 @@ auto Solver2::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 
     for (size_t i=0; i<heatSourceNumber; i++)
     {
-        for (size_t ln=0; ln<time_size; ln++)
+        for (size_t ln=0; ln<vctr_size-1; ln++)
         {
-            const auto ln0 = static_cast<size_t>(ln/20)*20;
-            double t = ln0*time_step;
-            if (i==0) { double q1 = (t-2.0)*(t-2.0);         g[i*time_size+ln] += -p[i][ln0] + 2.0*epsilon*(q[i][ln0] - q1); }
-            if (i==1) { double q2 = (t-2.0)*(t-2.0)*(t-2.0); g[i*time_size+ln] += -p[i][ln0]*time_step + 2.0*epsilon*(q[i][ln0] - q2); }
+#ifdef OPTIMIZE_Q_MIN
+            g[i*vctr_size+ln] = -p[i][20*ln+0];
+            for (size_t j=1; j<=19; j++) { g[i*vctr_size+ln] += -0.5*p[i][20*ln+j]; }
+            g[i*vctr_size+ln] += -p[i][20*ln+20];
+            g[i*vctr_size+ln] *= time_step;
+
+            double t = ln * time_step * 20.0;
+            DoubleVector _qNorm = qNorm1(t);
+            if (i==0) { g[i*vctr_size+ln] += 2.0*epsilon*(q[i][ln] - _qNorm[0]*no_norm); }
+            if (i==1) { g[i*vctr_size+ln] += 2.0*epsilon*(q[i][ln] - _qNorm[1]*no_norm); }
+#else
+            double t = ln * time_step;
+            g[i*time_size+ln] = -p[i][ln];
+            DoubleVector _qNorm = qNorm1(t);
+            if (i==0) { g[i*time_size+ln] += 2.0*epsilon*(q[i][ln] - _qNorm[0]*no_norm); }
+            if (i==1) { g[i*time_size+ln] += 2.0*epsilon*(q[i][ln] - _qNorm[1]*no_norm); }
+#endif
         }
         //g[i*time_size] = 0.0;
     }
@@ -293,7 +340,12 @@ auto Solver2::fx(const DoubleVector &x) const -> double
 auto Solver2::integral(const DoubleVector &x) const -> double
 {
     const auto time_size = timeDimension().size();
-    const_cast<Solver2*>(this)->convert1(x, heatSourceNumber, time_size);
+#ifdef OPTIMIZE_Q_MIN
+    const auto vctr_size = (time_size/20) + 1;
+#else
+    const auto vctr_size = time_size;
+#endif
+    const_cast<Solver2*>(this)->convert1(x, heatSourceNumber, vctr_size);
     forward.implicit_calculate_D1V1();
 
     const auto N = spaceDimensionX().size()-1;
@@ -305,7 +357,6 @@ auto Solver2::integral(const DoubleVector &x) const -> double
     {
         sum += 0.5*(U[i]-V[i])*(U[i]-V[i]);
     }
-
     sum += (U[N]-V[N])*(U[N]-V[N]);
 
     return sum*spaceDimensionX().step();
@@ -314,35 +365,71 @@ auto Solver2::integral(const DoubleVector &x) const -> double
 auto Solver2::norm(const DoubleVector &x) const -> double
 {
     const auto time_size = timeDimension().size();
-    const auto time_len = timeDimension().size() - 1;
-    const_cast<Solver2*>(this)->convert1(x, heatSourceNumber, time_size);
+    const auto time_step = timeDimension().step();
+#ifdef OPTIMIZE_Q_MIN
+    const auto vctr_size = (time_size/20) + 1;
+#else
+    const auto vctr_size = time_size;
+#endif
+    const_cast<Solver2*>(this)->convert1(x, heatSourceNumber, vctr_size);
 
     double _norm = 0.0;
     for (size_t i=0; i<heatSourceNumber; i++)
     {
         double qNorm = 0.0;
-        for (unsigned int ln=0; ln<=time_len; ln++)
+        for (unsigned int ln=0; ln<vctr_size; ln++)
         {
-            double t = ln*timeDimension().step();
-            if (i==0) { double q1 = (t-2.0)*(t-2.0);         qNorm += (q[i][ln]-q1)*(q[i][ln]-q1); }
-            if (i==1) { double q2 = (t-2.0)*(t-2.0)*(t-2.0); qNorm += (q[i][ln]-q2)*(q[i][ln]-q2); }
+#ifdef OPTIMIZE_Q_MIN
+            double t = ln * time_step * 20.0;
+#else
+            double t = ln * time_step;
+#endif
+            DoubleVector _qNorm = qNorm1(t);
+            if (i==0) { qNorm += (q[i][ln]-_qNorm[0]*no_norm)*(q[i][ln]-_qNorm[0]*no_norm); }
+            if (i==1) { qNorm += (q[i][ln]-_qNorm[1]*no_norm)*(q[i][ln]-_qNorm[1]*no_norm); }
         }
         _norm += qNorm;
     }
     return _norm;
 }
 
-auto Solver2::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &/*g*/, double f, double /*alpha*/, GradientBasedMethod::MethodResult /*result*/) const -> void
+auto Solver2::qNorm1(double t) const -> DoubleVector
+{
+    DoubleVector q;
+#ifdef OPTIMIZE_Q_MIN
+    q << (t+2.0)*(t+2.0);
+    q << (t+2.0)*(t+2.0)*(t+2.0);
+//    q << s->q[0][static_cast<unsigned int>(tn.i/20)];
+//    q << s->q[1][static_cast<unsigned int>(tn.i/20)];
+#else
+    q << (t+2.0)*(t+2.0);
+    q << (t+2.0)*(t+2.0)*(t+2.0);
+#endif
+    return q;
+}
+
+auto Solver2::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double /*f*/, double alpha, GradientBasedMethod::MethodResult /*result*/) const -> void
 {
     const size_t time_size = timeDimension().size();
 
+#ifdef OPTIMIZE_Q_MIN
+    const auto vctr_size = (time_size/20) + 1;
+#else
+    const auto vctr_size = time_size;
+#endif
+
     IPrinter::printSeperatorLine();
-    printf_s("I[%4d] %10.8f %10.8f %10.8f\n", iteration, fx(x), integral(x), norm(x));
-    IPrinter::printVector(10, 6, x.mid(0*time_size, 1*time_size-1), "q1");
-    IPrinter::printVector(10, 6, x.mid(1*time_size, 2*time_size-1), "q2");
-    IPrinter::printVector(10, 6, U, "U:");
-    IPrinter::printVector(10, 6, V, "V:");
-    IPrinter::printSeperatorLine();
+
+    const auto _fx = fx(x);
+    const auto _integral = integral(x);
+    const auto _norm = norm(x);
+    printf_s("I[%4d] fx: %10.8f int: %10.8f nrm: %10.8f alpha: %10.8f\n", i, _fx, _integral, _norm, alpha);
+    IPrinter::printVector(_w, _p, x.mid(0*vctr_size, 1*vctr_size-1), "q1");
+    IPrinter::printVector(_w, _p, x.mid(1*vctr_size, 2*vctr_size-1), "q2");
+    IPrinter::printVector(_w, _p, g.mid(0*vctr_size, 1*vctr_size-1), "g1");
+    IPrinter::printVector(_w, _p, g.mid(1*vctr_size, 2*vctr_size-1), "g2");
+    IPrinter::printVector(_w, _p, U, "U:");
+    IPrinter::printVector(_w, _p, V, "V:");
 }
 
 /**************************************************************************************************************************/

@@ -87,7 +87,7 @@ protected:
     virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const -> double override;
     virtual auto f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double override;
 
-    virtual auto layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const -> void override;
+    virtual auto layerInfo(const DoubleVector &psi, const TimeNodePDE &tn) const -> void override;
     virtual auto timeDimension() const -> Dimension override;
     virtual auto spaceDimensionX() const -> Dimension override;
     virtual auto spaceDimensionY() const -> Dimension override;
@@ -112,6 +112,8 @@ public:
     inline auto timeDimension() const -> Dimension { return _timeDimension; }
     inline auto spaceDimensionX() const -> Dimension { return _spaceDimensionX; }
 
+    auto qNorm1(double t) const -> DoubleVector;
+
 protected:
 
     virtual auto fx(const DoubleVector &x) const -> double;
@@ -128,7 +130,11 @@ protected:
 private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
-    double epsilon = 0.0;
+    double epsilon = 0.01;
+    double no_norm = 1.00;
+
+    unsigned int _w = 14;
+    unsigned int _p = 6;
 };
 
 }
