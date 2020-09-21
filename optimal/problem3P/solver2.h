@@ -4,6 +4,7 @@
 #include "global.h"
 
 #define OPTIMIZE_Q
+#define OPTIMIZE_Q_MIN
 
 namespace p3p0
 {
@@ -32,9 +33,9 @@ public:
     DoubleVector V;
     DoubleVector U;
 
-    DoubleVector *q;
+    DoubleVector *q = nullptr;
 #ifdef OPTIMIZE_Q
-    DoubleVector *p;
+    DoubleVector *p = nullptr;
 #endif
     size_t heatSourceNumber = 2;
     size_t measrPointNumber = 4;
@@ -112,9 +113,13 @@ public:
     inline auto spaceDimensionX() const -> Dimension { return _spaceDimensionX; }
 
 protected:
-    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+
     virtual auto fx(const DoubleVector &x) const -> double;
-    auto integral(const DoubleMatrix &) const -> double;
+    auto integral(const DoubleVector &) const -> double;
+    auto norm(const DoubleVector &) const -> double;
+
+    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
 
     HeatEquationIBVP forward;
@@ -123,7 +128,7 @@ protected:
 private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
-    double epsilon = 0.01;
+    double epsilon = 0.0;
 };
 
 }
