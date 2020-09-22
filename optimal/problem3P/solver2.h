@@ -4,7 +4,7 @@
 #include "global.h"
 
 #define OPTIMIZE_Q
-#define OPTIMIZE_Q_MIN
+#define OPTIMIZE_Q_MIN1
 
 namespace p3p0
 {
@@ -131,9 +131,9 @@ private:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
     double epsilon = 0.01;
-    double no_norm = 1.00;
+    double no_norm = 0.00;
 
-    unsigned int _w = 14;
+    unsigned int _w = 12;
     unsigned int _p = 6;
 };
 
