@@ -358,8 +358,8 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             }
         }
 
-        //tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-        memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
+        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
+        //memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
         for (unsigned int n=s; n<=e; n++) u1[n] = rx[n];
 
         layerInfo(DoubleVector(u1, N+1), tn1);
