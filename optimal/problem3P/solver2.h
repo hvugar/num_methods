@@ -56,8 +56,8 @@ public:
     size_t measrPointNumber = 4;
 #endif
 
-    double epsilon = 0.00;
-    double no_norm = 0.00;
+    double epsilon = 0.0001;
+    double no_norm = 0.0000;
 
     unsigned int _w = 12;
     unsigned int _p = 6;

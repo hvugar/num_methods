@@ -77,7 +77,7 @@ protected:
     double _thermalConvection;      //
 
 public:
-    bool _userHalfValues = true;
+    bool _userHalfValues = false;
 
 private:
     void *initParams;

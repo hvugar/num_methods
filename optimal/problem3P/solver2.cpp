@@ -80,21 +80,28 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     IPrinter::printVector(functional._w, functional._p, g1.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 
     puts("Starting optimization...");
-    //ConjugateGradient gm;
-    SteepestDescentGradient gm;
-    gm.setFunction(&functional);
-    gm.setGradient(&functional);
-    gm.setPrinter(&functional);
-    //gm.setProjection(&s);
-    //gm.setGradientNormalizer(&prob);
-    gm.setOptimalityTolerance(0.000001);
-    gm.setStepTolerance(0.000001);
-    gm.setFunctionTolerance(0.000001);
-    gm.setR1MinimizeEpsilon(0.01, 0.001);
-    //gm.setMaxIterationCount(10);
-    gm.setNormalize(false);
-    gm.showExitMessage(true);
-    gm.calculate(x);
+
+
+    while (functional.epsilon < 1.0)
+    {
+        //ConjugateGradient gm;
+        SteepestDescentGradient gm;
+        gm.setFunction(&functional);
+        gm.setGradient(&functional);
+        gm.setPrinter(&functional);
+        //gm.setProjection(&s);
+        //gm.setGradientNormalizer(&prob);
+        gm.setOptimalityTolerance(0.000001);
+        gm.setStepTolerance(0.000001);
+        gm.setFunctionTolerance(0.000001);
+        gm.setR1MinimizeEpsilon(0.01, 0.001);
+        //gm.setMaxIterationCount(10);
+        gm.setNormalize(false);
+        gm.showExitMessage(true);
+        gm.calculate(x);
+
+        functional.epsilon *= 10.0;
+    }
 
     puts("Optimization is finished.");
 }
@@ -332,9 +339,9 @@ auto CommonParameter::convertToVector(DoubleVector &x) const -> void
 
 auto CommonParameter::qNorm1(double t) const -> DoubleVector
 {
-    DoubleVector q;
-    q << (t+2.0)*(t+2.0);
-    q << (t+2.0)*(t+2.0)*(t+2.0);
+    DoubleVector q(2, 0.0);
+    q[0] = (t+2.0)*(t+2.0);
+    q[1] = (t+2.0)*(t+2.0)*(t+2.0);
     return q;
 }
 
@@ -352,6 +359,7 @@ Functional::Functional(double thermalDiffusivity, double thermalConvection, doub
 
     forward.common = this;
     backward.common = this;
+    forward._userHalfValues = backward._userHalfValues = false;
 }
 
 auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
@@ -410,15 +418,15 @@ auto Functional::norm(const DoubleVector &x) const -> double
     double _norm = 0.0;
     size_t ln = 0;
     DoubleVector _qNorm = qNorm1(ln * time_step);
-    for (size_t i=0; i<heatSourceNumber; i++) { _norm += sqr(mq[i][ln]-_qNorm[i]*no_norm); }
+    for (size_t i=0; i<heatSourceNumber; i++) { _norm += sqr(mq[ln][i]-_qNorm[i]*no_norm); }
     for (ln=1; ln<time_size-1; ln++)
     {
         _qNorm = qNorm1(ln * time_step);
-        for (unsigned int i=0; i<heatSourceNumber; i++) { _norm += 0.5*sqr(mq[i][ln]-_qNorm[i]*no_norm); }
+        for (unsigned int i=0; i<heatSourceNumber; i++) { _norm += 0.5*sqr(mq[ln][i]-_qNorm[i]*no_norm); }
     }
     ln = time_size-1;
     _qNorm = qNorm1(ln * time_step);
-    for (size_t i=0; i<heatSourceNumber; i++) { _norm += sqr(mq[i][ln]-_qNorm[i]*no_norm); }
+    for (size_t i=0; i<heatSourceNumber; i++) { _norm += sqr(mq[ln][i]-_qNorm[i]*no_norm); }
 
     return _norm*time_step;
 }
@@ -432,7 +440,7 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
     const auto _fx = fx(x);
     const auto _integral = integral(x);
     const auto _norm = norm(x);
-    printf_s("I[%4d] fx: %10.8f int: %10.8f nrm: %10.8f %10.8f %d\n", it, _fx, _integral, _norm, _alpha, result);
+    printf_s("I[%4d] fx: %10.8f int: %10.8f nrm: %10.8f %10.8f eps: %10.8f res: %d\n", it, _fx, _integral, _norm, _alpha, epsilon, result);
     IPrinter::printVector(_w, _p, x.mid(0*vector_size, 1*vector_size-1), "q1");
     IPrinter::printVector(_w, _p, x.mid(1*vector_size, 2*vector_size-1), "q2");
     IPrinter::printVector(_w, _p, g.mid(0*vector_size, 1*vector_size-1), "g1");
