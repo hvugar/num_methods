@@ -171,6 +171,7 @@ public:
     static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, unsigned int nps, size_t k);
 
     static double lumpedPoint4(const DoubleVector &m, double p, double hx, unsigned int Nx);
+    static double lumpedPoint4(const DoubleVector &m, double p, double hx, unsigned int Nx, double &dx);
     static double lumpedPoint4(const DoubleVector &m, double p, const Dimension &dimensionX, double &dx);
 };
 

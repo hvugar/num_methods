@@ -1327,6 +1327,27 @@ double DeltaFunction::lumpedPoint4(const DoubleVector &v, double p, double hx, u
     return pu;
 }
 
+double DeltaFunction::lumpedPoint4(const DoubleVector &m, double p, double hx, unsigned int Nx, double &dx)
+{
+    const double lx = hx*Nx;
+    const double px = p;
+    const unsigned int rx = static_cast<unsigned int>(floor((px/hx)*lx));
+    const double x0 = static_cast<double>(rx-1)*hx;
+    const double x1 = static_cast<double>(rx+0)*hx;
+    const double x2 = static_cast<double>(rx+1)*hx;
+    const double x3 = static_cast<double>(rx+2)*hx;
+
+    const double Lx0 = (px-x1)*(px-x2)*(px-x3); const double Lx00 = (x0-x1)*(x0-x2)*(x0-x3); const double Lx0x = (px-x1)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x1);
+    const double Lx1 = (px-x0)*(px-x2)*(px-x3); const double Lx11 = (x1-x0)*(x1-x2)*(x1-x3); const double Lx1x = (px-x0)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x0);
+    const double Lx2 = (px-x0)*(px-x1)*(px-x3); const double Lx22 = (x2-x0)*(x2-x1)*(x2-x3); const double Lx2x = (px-x0)*(px-x1)+(px-x1)*(px-x3)+(px-x3)*(px-x0);
+    const double Lx3 = (px-x0)*(px-x1)*(px-x2); const double Lx33 = (x3-x0)*(x3-x1)*(x3-x2); const double Lx3x = (px-x0)*(px-x1)+(px-x1)*(px-x2)+(px-x2)*(px-x0);
+
+    double pu = ( (Lx0/Lx00)*m[rx-1] + (Lx1/Lx11)*m[rx+0] + (Lx2/Lx22)*m[rx+1] + (Lx3/Lx33)*m[rx+2] );
+    dx = (Lx0x/Lx00) * m[rx-1] + (Lx1x/Lx11) * m[rx+0] + (Lx2x/Lx22) * m[rx+1] + (Lx3x/Lx33) * m[rx+2];
+
+    return pu;
+}
+
 double DeltaFunction::lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY, SpacePoint &d)
 {
     const double hx = dimensionX.step();
@@ -1379,7 +1400,7 @@ double DeltaFunction::lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, c
     return pu;
 }
 
-double DeltaFunction::lumpedPoint4(const DoubleVector &m, double p, const Dimension &dimensionX, double &/*dx*/)
+double DeltaFunction::lumpedPoint4(const DoubleVector &m, double p, const Dimension &dimensionX, double &dx)
 {
     const double hx = dimensionX.step();
     const double Nx = dimensionX.size()-1;
@@ -1391,24 +1412,13 @@ double DeltaFunction::lumpedPoint4(const DoubleVector &m, double p, const Dimens
     const double x2 = static_cast<double>(rx+1)*hx;
     const double x3 = static_cast<double>(rx+2)*hx;
 
-    const double Lx0 = (px-x1)*(px-x2)*(px-x3); const double Lx00 = (x0-x1)*(x0-x2)*(x0-x3); /*const double Lx0x = (px-x1)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x1);*/
-    const double Lx1 = (px-x0)*(px-x2)*(px-x3); const double Lx11 = (x1-x0)*(x1-x2)*(x1-x3); /*const double Lx1x = (px-x0)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x0);*/
-    const double Lx2 = (px-x0)*(px-x1)*(px-x3); const double Lx22 = (x2-x0)*(x2-x1)*(x2-x3); /*const double Lx2x = (px-x0)*(px-x1)+(px-x1)*(px-x3)+(px-x3)*(px-x0);*/
-    const double Lx3 = (px-x0)*(px-x1)*(px-x2); const double Lx33 = (x3-x0)*(x3-x1)*(x3-x2); /*const double Lx3x = (px-x0)*(px-x1)+(px-x1)*(px-x2)+(px-x2)*(px-x0);*/
+    const double Lx0 = (px-x1)*(px-x2)*(px-x3); const double Lx00 = (x0-x1)*(x0-x2)*(x0-x3); const double Lx0x = (px-x1)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x1);
+    const double Lx1 = (px-x0)*(px-x2)*(px-x3); const double Lx11 = (x1-x0)*(x1-x2)*(x1-x3); const double Lx1x = (px-x0)*(px-x2)+(px-x2)*(px-x3)+(px-x3)*(px-x0);
+    const double Lx2 = (px-x0)*(px-x1)*(px-x3); const double Lx22 = (x2-x0)*(x2-x1)*(x2-x3); const double Lx2x = (px-x0)*(px-x1)+(px-x1)*(px-x3)+(px-x3)*(px-x0);
+    const double Lx3 = (px-x0)*(px-x1)*(px-x2); const double Lx33 = (x3-x0)*(x3-x1)*(x3-x2); const double Lx3x = (px-x0)*(px-x1)+(px-x1)*(px-x2)+(px-x2)*(px-x0);
 
     double pu = ( (Lx0/Lx00)*m[rx-1] + (Lx1/Lx11)*m[rx+0] + (Lx2/Lx22)*m[rx+1] + (Lx3/Lx33)*m[rx+2] );
-
-//    d.x = 0.0;
-//    d.x += (Lx0x/Lx00) * ( (Ly0/Ly00)*m[ry-1][rx-1] + (Ly1/Ly11)*m[ry+0][rx-1] + (Ly2/Ly22)*m[ry+1][rx-1] + (Ly3/Ly33)*m[ry+2][rx-1] );
-//    d.x += (Lx1x/Lx11) * ( (Ly0/Ly00)*m[ry-1][rx+0] + (Ly1/Ly11)*m[ry+0][rx+0] + (Ly2/Ly22)*m[ry+1][rx+0] + (Ly3/Ly33)*m[ry+2][rx+0] );
-//    d.x += (Lx2x/Lx22) * ( (Ly0/Ly00)*m[ry-1][rx+1] + (Ly1/Ly11)*m[ry+0][rx+1] + (Ly2/Ly22)*m[ry+1][rx+1] + (Ly3/Ly33)*m[ry+2][rx+1] );
-//    d.x += (Lx3x/Lx33) * ( (Ly0/Ly00)*m[ry-1][rx+2] + (Ly1/Ly11)*m[ry+0][rx+2] + (Ly2/Ly22)*m[ry+1][rx+2] + (Ly3/Ly33)*m[ry+2][rx+2] );
-
-//    d.y = 0.0;
-//    d.y += (Ly0y/Ly00) * ( (Lx0/Lx00)*m[ry-1][rx-1] + (Lx1/Lx11)*m[ry-1][rx+0] + (Lx2/Lx22)*m[ry-1][rx+1] + (Lx3/Lx33)*m[ry-1][rx+2] );
-//    d.y += (Ly1y/Ly11) * ( (Lx0/Lx00)*m[ry+0][rx-1] + (Lx1/Lx11)*m[ry+0][rx+0] + (Lx2/Lx22)*m[ry+0][rx+1] + (Lx3/Lx33)*m[ry+0][rx+2] );
-//    d.y += (Ly2y/Ly22) * ( (Lx0/Lx00)*m[ry+1][rx-1] + (Lx1/Lx11)*m[ry+1][rx+0] + (Lx2/Lx22)*m[ry+1][rx+1] + (Lx3/Lx33)*m[ry+1][rx+2] );
-//    d.y += (Ly3y/Ly33) * ( (Lx0/Lx00)*m[ry+2][rx-1] + (Lx1/Lx11)*m[ry+2][rx+0] + (Lx2/Lx22)*m[ry+2][rx+1] + (Lx3/Lx33)*m[ry+2][rx+2] );
+    dx = (Lx0x/Lx00) * m[rx-1] + (Lx1x/Lx11) * m[rx+0] + (Lx2x/Lx22) * m[rx+1] + (Lx3x/Lx33) * m[rx+2];
 
     return pu;
 }

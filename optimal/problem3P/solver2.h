@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-#define OPTIMIZE_Q
-//#define OPTIMIZE_Q_FB
+//#define OPTIMIZE_Q
+#define OPTIMIZE_Q_FB
 
 namespace p3p0
 {
@@ -51,16 +51,18 @@ public:
 #ifdef OPTIMIZE_Q_FB
     DoubleMatrix alpha;
     DoubleMatrix betta;
-    DoubleMatrix nomnU;
+    DoubleMatrix omega;
     DoubleVector measurePoints;
     size_t measrPointNumber = 4;
+    DoubleVector *uv = nullptr;
+    DoubleVector *ud = nullptr;
 #endif
 
-    double epsilon = 0.0001;
+    double epsilon = 0.0000;
     double no_norm = 0.0000;
 
-    unsigned int _w = 12;
-    unsigned int _p = 6;
+    unsigned int _w = 10;
+    unsigned int _p = 4;
 
 protected:
     Dimension _timeDimension;
