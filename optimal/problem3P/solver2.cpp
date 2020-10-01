@@ -11,9 +11,9 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     const size_t _measrPointNumber = 4;
 
     const auto time_min = 0;
-    const auto time_max = 200;
+    const auto time_max = 600;
     const auto time_step = 0.005;
-    const auto time_size = 201;
+    const auto time_size = 601;
     const Dimension timeDimension(time_step, time_min, time_max);
 
     const auto dimX_min = 0;
@@ -182,19 +182,27 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     }
 
     puts("Optimization is finished.");
+
+    for (int ln=time_max; ln<=5*time_size; ln++)
+    {
+        functional.setTimeDimension(Dimension(time_step, 0, ln));
+        printf("time: %6.4f %16.10f\n", ln*time_step, functional.fx(x));
+    }
 }
 
 /**************************************************************************************************************************/
 
 auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
 {
+    const auto last_size = _timeDimension.size();
+
     _timeDimension = timeDimension;
     const auto time_size = _timeDimension.size();
     const auto time_step = _timeDimension.step();
 
     if (mq != nullptr)
     {
-        for (size_t ln=0; ln<time_size; ln++) { mq[ln].clear(); }
+        for (size_t ln=0; ln<last_size; ln++) { mq[ln].clear(); }
         delete [] mq;
         mq = nullptr;
     }
@@ -203,7 +211,7 @@ auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
 
     if (mz != nullptr)
     {
-        for (size_t ln=0; ln<time_size; ln++) { mz[ln].clear(); }
+        for (size_t ln=0; ln<last_size; ln++) { mz[ln].clear(); }
         delete [] mz;
         mz = nullptr;
     }
@@ -221,7 +229,7 @@ auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
 
     if (mp != nullptr)
     {
-        for (size_t ln=0; ln<time_size; ln++) { mp[ln].clear(); }
+        for (size_t ln=0; ln<last_size; ln++) { mp[ln].clear(); }
         delete [] mp;
         mp = nullptr;
     }
@@ -231,7 +239,7 @@ auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
 #ifdef OPTIMIZE_Q_FB
     if (uv != nullptr)
     {
-        for (size_t ln=0; ln<time_size; ln++) { uv[ln].clear(); ud[ln].clear(); }
+        for (size_t ln=0; ln<last_size; ln++) { uv[ln].clear(); ud[ln].clear(); }
         delete [] uv;
         delete [] ud;
         uv = nullptr;
