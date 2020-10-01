@@ -4,11 +4,11 @@ using namespace p3p0;
 
 void Functional::Main(int /*argc*/, char **/*argv*/)
 {
-    const double thermalDiffusivity = 0.01;
-    const double thermalConductivity = 0.00;
-    const double thermalConvection = 0.00;
-    const size_t heatSourceNumber = 2;
-    const size_t measrPointNumber = 4;
+    const double _thermalDiffusivity = 1.0;
+    const double _thermalConductivity = 0.00;
+    const double _thermalConvection = 0.00;
+    const size_t _heatSourceNumber = 2;
+    const size_t _measrPointNumber = 4;
 
     const auto time_min = 0;
     const auto time_max = 200;
@@ -22,13 +22,13 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     const auto dimX_size = 101;
     const Dimension spaceDimensionX(dimX_step, dimX_min, dimX_max);
 
-    Functional functional(thermalDiffusivity, thermalConductivity, thermalConvection);
+    Functional functional(_thermalDiffusivity, _thermalConductivity, _thermalConvection);
     functional.setTimeDimension(timeDimension);
     functional.setSpaceDimensionX(spaceDimensionX);
-    functional.setControlSize(heatSourceNumber, measrPointNumber);
+    functional.setControlSize(_heatSourceNumber, _measrPointNumber);
 
 #ifdef OPTIMIZE_Q_FB
-    const auto vector_size = measrPointNumber * (3*heatSourceNumber + 1);
+    const auto vector_size = _measrPointNumber * (3*_heatSourceNumber + 1);
 #else
     const auto vector_size = time_size;
     const unsigned int start[] = { 0*vector_size+0, 1*vector_size+0 };
@@ -41,16 +41,16 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
      ******************************************************************/
     {
 #ifdef OPTIMIZE_Q_FB
-        DoubleVector x(vector_size);
-        for (size_t j=0; j<measrPointNumber; j++)
+        DoubleVector x(vector_size, 0.0);
+        for (size_t j=0; j<_measrPointNumber; j++)
         {
-            for (size_t i=0; i<heatSourceNumber; i++)
+            for (size_t i=0; i<_heatSourceNumber; i++)
             {
-                x.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = -0.5*sin(2.0*(30.0*i+1)+3.0*(12.0*j+1));
-                x.at(1*measrPointNumber*heatSourceNumber + i*measrPointNumber + j) = 0.0;//0.5*(i+1);
-                x.at(2*measrPointNumber*heatSourceNumber + i*measrPointNumber + j) = +4.0*cos(2.0*(i+1.0)+3.0*(j+2.0));
+                x.at(0*_heatSourceNumber*_measrPointNumber + i*_measrPointNumber + j) = -0.5*sin(2.0*(30.0*i+1)+3.0*(12.0*j+1));
+                x.at(1*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = +0.4*sin(5.0*(10.0*i+1)+5.0*(15.0*j+1));
+                x.at(2*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = +4.0*cos(2.0*(i+1.0)+3.0*(j+2.0));
             }
-            x.at(3*measrPointNumber*heatSourceNumber + j) = 0.2*(j+1);
+            x.at(3*_measrPointNumber*_heatSourceNumber + j) = 0.2*(j+1);
         }
 
         puts("---");
@@ -81,34 +81,28 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
         functional.V = functional.U;
         functional.V.clear();
         functional.V.resize(dimX_size, 5.0);
-        IPrinter::printVector(functional._w, functional._p, functional.U, "V:");
+        IPrinter::printVector(functional._w, functional._p, functional.U, "V: ");
     }
     /******************************************************************
      *                     Calculating V(x) function
      ******************************************************************/
 
 #ifdef OPTIMIZE_Q_FB
-    DoubleVector x(vector_size, 0.2);
-
-
-    for (size_t j=0; j<measrPointNumber; j++)
+    DoubleVector x(vector_size, 0.0);
+    for (size_t j=0; j<_measrPointNumber; j++)
     {
-        for (size_t i=0; i<heatSourceNumber; i++)
+        for (size_t i=0; i<_heatSourceNumber; i++)
         {
-            x.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = +0.5*sin(2.0*(30.0*i+1)+3.0*(12.0*j+1));
-            x.at(1*measrPointNumber*heatSourceNumber + i*measrPointNumber + j) = 0.0;//0.5*(i+1);
-            x.at(2*measrPointNumber*heatSourceNumber + i*measrPointNumber + j) = +4.0*cos(2.0*(i+1.0)+3.0*(j+2.0));
+            x.at(0*_heatSourceNumber*_measrPointNumber + i*_measrPointNumber + j) = +0.5*sin(2.0*(30.0*i+1)+3.0*(12.0*j+1));
+            x.at(1*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = +0.6*cos(5.0*(12.0*i+1)+5.0*(10.0*j+1));
+            x.at(2*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = +4.0*cos(2.0*(i+1.0)+3.0*(j+2.0));
         }
-        x.at(3*measrPointNumber*heatSourceNumber + j) = 0.2*(j+1);
+        x.at(3*_measrPointNumber*_heatSourceNumber + j) = 0.2*(j+1);
     }
+    //x[0x18] = 0.24; x[0x19] = 0.36; x[0x1A] = 0.64; x[0x1B] = 0.76;
 
     DoubleVector g(x.length());
     DoubleVector g1(x.length());
-
-    //x[0x08] = 0.00; x[0x09] = 0.00; x[0x0A] = 0.00; x[0x0B] = 0.00;
-    //x[0x0C] = 0.00; x[0x0D] = 0.00; x[0x0E] = 0.00; x[0x0F] = 0.00;
-    x[0x18] = 0.24; x[0x19] = 0.36; x[0x1A] = 0.64; x[0x1B] = 0.76;
-
     puts("---");
     printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, functional._w, functional._p);
     printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, functional._w, functional._p);
@@ -144,7 +138,10 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, functional._w, functional._p);
 
     puts("---");
-    IGradient::Gradient(&functional, 0.01, x, g1, static_cast<size_t>(0x00), static_cast<size_t>(0x1B));
+    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
+    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
+    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x10), static_cast<size_t>(0x17));
+    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x18), static_cast<size_t>(0x1B));
     printf("a:");IPrinter::print(g1.mid(0x00, 0x07).L2Normalize(), 0x08, functional._w, functional._p);
     printf("b:");IPrinter::print(g1.mid(0x08, 0x0F).L2Normalize(), 0x08, functional._w, functional._p);
     printf("o:");IPrinter::print(g1.mid(0x10, 0x17).L2Normalize(), 0x08, functional._w, functional._p);
@@ -160,14 +157,13 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     IPrinter::printVector(functional._w, functional._p, g1.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 #endif
 
-    return;
     IPrinter::printSeperatorLine();
     puts("Starting optimization...");
 
-    while (functional.epsilon < 1.0)
+    //while (functional.epsilon < 1.0)
     {
-        //ConjugateGradient gm;
-        SteepestDescentGradient gm;
+        ConjugateGradient gm;
+        //SteepestDescentGradient gm;
         gm.setFunction(&functional);
         gm.setGradient(&functional);
         gm.setPrinter(&functional);
@@ -176,7 +172,7 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
         gm.setOptimalityTolerance(0.000001);
         gm.setStepTolerance(0.000001);
         gm.setFunctionTolerance(0.000001);
-        gm.setR1MinimizeEpsilon(0.01, 0.001);
+        gm.setR1MinimizeEpsilon(0.1, 0.001);
         //gm.setMaxIterationCount(10);
         gm.setNormalize(false);
         gm.showExitMessage(true);
@@ -217,10 +213,10 @@ auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
         mz[ln].resize(heatSourceNumber);
 
         double t = ln * time_step;
-        //mz[ln][0] = 0.05 + 0.9*fabs(sin(M_PI*t));
-        //mz[ln][1] = 0.95 - 0.9*fabs(sin(M_PI*t));
-        mz[ln][0] = 0.30;
-        mz[ln][1] = 0.70;
+        mz[ln][0] = 0.05 + 0.90*fabs(sin(M_PI*t));
+        mz[ln][1] = 0.95 - 0.90*fabs(sin(M_PI*t));
+        //mz[ln][0] = 0.30;
+        //mz[ln][1] = 0.70;
     }
 
     if (mp != nullptr)
@@ -388,9 +384,10 @@ auto HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &/*tn*
 
 auto HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    const auto sigma = 0.01;
-
     double fx = 0.0;
+
+#ifdef OPTIMIZE_Q_FB
+    const auto sigma = 0.01;
     for (size_t j=0; j<common->measrPointNumber; j++)
     {
         double fxj = 0.0;
@@ -398,10 +395,10 @@ auto HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
         {
             fxj += common->alpha[i][j] * common->mp[tn.i+1][i];
         }
-        fx += fxj * DeltaFunction::gaussian(sn.x, common->measurePoints[j], sigma);
+        fx -= fxj * DeltaFunction::gaussian(sn.x, common->measurePoints[j], sigma);
     }
-
-    return -fx;
+#endif
+    return fx;
 }
 
 auto HeatEquationFBVP::HeatEquationFBVP::layerInfo(const DoubleVector &psi, const TimeNodePDE &tn) const -> void
@@ -514,7 +511,6 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 
     for (size_t j=0; j<measrPointNumber; j++)
     {
-        double eta = 0.0;
         for (size_t i=0; i<heatSourceNumber; i++)
         {
             double g0 = 0.0;
@@ -524,21 +520,21 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 
             size_t ln = 0;
             g0 += 0.5*mp[ln][i] * (uv[ln][j]-omega[i][j]);
-            g1 += 0.5*mp[ln][i] * (mz[ln][j]-measurePoints[j])*(mz[ln][j]-measurePoints[j]);
+            g1 += 0.5*mp[ln][i] * (mz[ln][i]-measurePoints[j])*(mz[ln][i]-measurePoints[j]);
             g2 += 0.5*mp[ln][i] * (alpha[i][j]);
             g3 += 0.5*mp[ln][i] * (alpha[i][j]*ud[ln][j] - 2.0*betta[i][j]*(mz[ln][j]-measurePoints[j]));
             for (ln=1; ln<time_size-1; ln++)
             {
                 g0 += mp[ln][i] * (uv[ln][j]-omega[i][j]);
-                g1 += mp[ln][i] * (mz[ln][j]-measurePoints[j])*(mz[ln][j]-measurePoints[j]);
+                g1 += mp[ln][i] * (mz[ln][i]-measurePoints[j])*(mz[ln][i]-measurePoints[j]);
                 g2 += mp[ln][i] * (alpha[i][j]);
-                g3 += mp[ln][i] * (alpha[i][j]*ud[ln][j] - 2.0*betta[i][j]*(mz[ln][j]-measurePoints[j]));
+                g3 += mp[ln][i] * (alpha[i][j]*ud[ln][j] - 2.0*betta[i][j]*(mz[ln][i]-measurePoints[j]));
             }
             ln = time_size-1;
             g0 += 0.5*mp[ln][i] * (uv[ln][j]-omega[i][j]);
-            g1 += 0.5*mp[ln][i] * (mz[time_size-1][j]-measurePoints[j])*(mz[ln][j]-measurePoints[j]);
+            g1 += 0.5*mp[ln][i] * (mz[ln][i]-measurePoints[j])*(mz[ln][i]-measurePoints[j]);
             g2 += 0.5*mp[ln][i] * (alpha[i][j]);
-            g3 += 0.5*mp[ln][i] * (alpha[i][j]*ud[ln][j] - 2.0*betta[i][j]*(mz[ln][j]-measurePoints[j]));
+            g3 += 0.5*mp[ln][i] * (alpha[i][j]*ud[ln][j] - 2.0*betta[i][j]*(mz[ln][i]-measurePoints[j]));
 
             g0 *= -time_step;
             g1 *= -time_step;
@@ -548,9 +544,8 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
             g.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g0;
             g.at(1*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g1;
             g.at(2*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g2;
-            eta += g3;
+//            g.at(3*heatSourceNumber*measrPointNumber + j) += g3;
         }
-        g.at(3*heatSourceNumber*measrPointNumber + j) = eta;
     }
 
 
@@ -624,15 +619,18 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
     const auto _norm = norm(x);
     printf_s("I[%4d] fx: %10.8f int: %10.8f nrm: %10.8f %10.8f eps: %10.8f res: %d\n", it, _fx, _integral, _norm, _alpha, epsilon, result);
 #ifdef OPTIMIZE_Q_FB
-    printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, _w, _p);
-    printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, _w, _p);
-    printf("o:");IPrinter::print(x.mid(0x10, 0x17), 8, _w, _p);
-    printf("e:");IPrinter::print(x.mid(0x18, 0x1B), 4, _w, _p);
-    puts("---");
-    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, _w, _p);
-    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, _w, _p);
-    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, _w, _p);
-    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, _w, _p);
+    IPrinter::print(x, x.length(), _w, _p);
+    IPrinter::print(g, g.length(), _w, _p);
+
+//    printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, _w, _p);
+//    printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, _w, _p);
+//    printf("o:");IPrinter::print(x.mid(0x10, 0x17), 8, _w, _p);
+//    printf("e:");IPrinter::print(x.mid(0x18, 0x1B), 4, _w, _p);
+//    puts("---");
+//    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, _w, _p);
+//    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, _w, _p);
+//    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, _w, _p);
+//    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, _w, _p);
     puts("---");
 #else
     IPrinter::printVector(_w, _p, x.mid(0*vector_size, 1*vector_size-1), "q1");
