@@ -3,7 +3,8 @@
 
 #include "global.h"
 
-#define OPTIMIZE_Q_FB
+#define OPTIMIZE_Y
+#define OPTIMIZE_ETA
 
 namespace p3p0
 {
@@ -34,6 +35,10 @@ public:
     auto q(const TimeNodePDE &tn) const -> DoubleVector;
     auto z(const TimeNodePDE &tn) const -> DoubleVector;
 
+    auto g0(size_t i, size_t ln) const -> double;
+    auto gi(size_t i, size_t ln) const -> double;
+    auto gp(size_t i, size_t ln) const -> double;
+
     double _lambda1 = +0.001;
     double _theta = +2.0;
     double initialTemperature = 0.0;
@@ -47,21 +52,31 @@ public:
 
     size_t heatSourceNumber = 2;
 
-#ifdef OPTIMIZE_Q_FB
+#ifdef OPTIMIZE_Y
     DoubleMatrix alpha;
     DoubleMatrix betta;
     DoubleMatrix omega;
-    DoubleVector measurePoints;
+    DoubleVector mPnts;
     size_t measrPointNumber = 4;
     DoubleVector *uv = nullptr;
     DoubleVector *ud = nullptr;
+
+    DoubleMatrix alphaN;
+    DoubleMatrix bettaN;
+    DoubleMatrix omegaN;
+    DoubleVector mPntsN;
 #endif
 
-    double epsilon = 0.0000;
-    double no_norm = 0.0000;
+    double epsilon = 1.0000;
+    double no_norm = 1.0000;
+
+    DoubleVector *qMin = nullptr;
+    DoubleVector *qMax = nullptr;
 
     unsigned int _w = 8;
     unsigned int _p = 4;
+
+    double R = 1.0;
 
 protected:
     Dimension _timeDimension;
@@ -125,8 +140,9 @@ public:
 protected:
 
     virtual auto fx(const DoubleVector &x) const -> double;
-    auto integral(const DoubleVector &) const -> double;
-    auto norm(const DoubleVector &) const -> double;
+    auto integral(const DoubleVector &x) const -> double;
+    auto norm(const DoubleVector &x) const -> double;
+    auto penalty(const DoubleVector &x) const -> double;
 
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
 
