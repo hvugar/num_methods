@@ -4,16 +4,16 @@ using namespace p3p0;
 
 void Functional::Main(int /*argc*/, char **/*argv*/)
 {
-    const double _thermalDiffusivity = 1.0;
+    const double _thermalDiffusivity = 0.01;
     const double _thermalConductivity = 0.00;
     const double _thermalConvection = 0.00;
     const size_t _heatSourceNumber = 2;
     const size_t _measrPointNumber = 4;
 
     const auto time_min = 0;
-    const auto time_max = 600;
+    const auto time_max = 200;
     const auto time_step = 0.005;
-    const auto time_size = 601;
+    const auto time_size = 201;
     const Dimension timeDimension(time_step, time_min, time_max);
 
     const auto dimX_min = 0;
@@ -95,7 +95,7 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
         {
             x.at(0*_heatSourceNumber*_measrPointNumber + i*_measrPointNumber + j) = +0.5*sin(2.0*(30.0*i+1)+3.0*(12.0*j+1));
             x.at(1*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = +0.6*cos(5.0*(12.0*i+1)+5.0*(10.0*j+1));
-            x.at(2*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = +4.0*cos(2.0*(i+1.0)+3.0*(j+2.0));
+            x.at(2*_measrPointNumber*_heatSourceNumber + i*_measrPointNumber + j) = 4.0*cos(2.0*(i+1.0)+3.0*(j+2.0));
         }
         x.at(3*_measrPointNumber*_heatSourceNumber + j) = 0.2*(j+1);
     }
@@ -167,12 +167,12 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
         gm.setFunction(&functional);
         gm.setGradient(&functional);
         gm.setPrinter(&functional);
-        //gm.setProjection(&s);
+        gm.setProjection(&functional);
         //gm.setGradientNormalizer(&prob);
         gm.setOptimalityTolerance(0.000001);
         gm.setStepTolerance(0.000001);
         gm.setFunctionTolerance(0.000001);
-        gm.setR1MinimizeEpsilon(0.1, 0.001);
+        gm.setR1MinimizeEpsilon(0.01, 0.001);
         //gm.setMaxIterationCount(10);
         gm.setNormalize(false);
         gm.showExitMessage(true);
@@ -183,10 +183,15 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 
     puts("Optimization is finished.");
 
-    for (int ln=time_max; ln<=5*time_size; ln++)
+    for (int ln=time_max; ln<=2*time_size; ln++)
     {
         functional.setTimeDimension(Dimension(time_step, 0, ln));
-        printf("time: %6.4f %16.10f\n", ln*time_step, functional.fx(x));
+        double t = ln*time_step;
+        double fx = functional.fx(x);
+        double a1 = functional.mq[ln][0];
+        double a2 = functional.mq[ln][1];
+
+        printf("time: %6.4f fx: %16.10f q1: %16.10f q2: %16.10f\n", t, fx, a1, a2);
     }
 }
 
@@ -552,7 +557,7 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
             g.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g0;
             g.at(1*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g1;
             g.at(2*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g2;
-//            g.at(3*heatSourceNumber*measrPointNumber + j) += g3;
+            g.at(3*heatSourceNumber*measrPointNumber + j) += g3;
         }
     }
 
@@ -648,6 +653,15 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
 #endif
     IPrinter::printVector(_w, _p, U, "U:");
     IPrinter::printVector(_w, _p, V, "V:");
+}
+
+/*virtual*/ void Functional::project(DoubleVector &x, unsigned int i)
+{
+    if (i >= 3*heatSourceNumber*measrPointNumber)
+    {
+        if (x[i] < 0.05) x[i] = 0.05;
+        if (x[i] > 0.95) x[i] = 0.95;
+    }
 }
 
 /**************************************************************************************************************************/

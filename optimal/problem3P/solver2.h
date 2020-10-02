@@ -115,7 +115,7 @@ public:
 };
 
 class PROBLEM3P_SHARED_EXPORT Functional : virtual public RnFunction, virtual public IGradient,
-        virtual public IPrinter, virtual public CommonParameter
+        virtual public IPrinter, virtual public CommonParameter, virtual public IProjection
 {
 public:
     static void Main(int argc, char** argv);
@@ -131,6 +131,8 @@ protected:
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
+
+    virtual void project(DoubleVector &x, unsigned int index);
 
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;
