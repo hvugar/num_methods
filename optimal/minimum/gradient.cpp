@@ -557,7 +557,7 @@ bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_
     if (m_normalizer) gradient_norm = m_normalizer->norm(g);
     if (gradient_norm < optimalityTolerance())
     {
-        if (m_printer) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_GRADIENT_NORM_LESS);
+        if (m_printer) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_OPTIMALITY_TOLERANCE);
         if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
         return true;
     }
@@ -569,12 +569,12 @@ bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_
      * If distance and difference is less than step tolerance then break the iteration.
      * Finish minimization.
      **************************************************************************************/
-    //if (stepTolerance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
-    //{
-    //    if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
-    //    if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
-    //    break;
-    //}
+    if (function_tolerance < functionTolerance())
+    {
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_FUNCTION_TOLERANCE);
+        if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
+        return true;
+    }
     /**************************************************************************************
      *
      *
@@ -582,7 +582,7 @@ bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_
      **************************************************************************************/
     if (step_tolerance <= stepTolerance())
     {
-        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_STEP_TOLERANCE);
         if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
         return true;
     }
@@ -593,7 +593,7 @@ bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_
      **************************************************************************************/
     if (function_tolerance <= functionTolerance())
     {
-        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_FUNCTION_TOLERANCE);
         if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
         return true;
     }
@@ -604,7 +604,7 @@ bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_
      **************************************************************************************/
     if (m_iterationNumber == maxIterationCount())
     {
-        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_ITERATION_NUMBER);
         if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
         return true;
     }
@@ -616,7 +616,7 @@ bool GradientBasedMethod::checkForExit(double step_tolerance, double optimality_
      **************************************************************************************/
     if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
     {
-        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+        if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_FUNCTION_EVALUATION_NUMBER);
         if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
         return true;
     }

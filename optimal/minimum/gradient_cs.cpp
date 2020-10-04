@@ -18,7 +18,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
     double f1 = 0.0;
     double f2 = 0.0;
 
-    unsigned int n = x.length();
+    size_t n = x.length();
     DoubleVector g(n);
 
     mx = &x;
@@ -71,12 +71,12 @@ void ConstStepGradient::calculate(DoubleVector &x)
          * Calculation next point.
          **************************************************************************************/
         DoubleVector cx = x;
-        for (unsigned int i=0; i<n; i++)
+        for (size_t i=0; i<n; i++)
         {
             //double cx = x[i];
             x[i] = x[i] - alpha * g[i];
 
-            //if (m_projection != nullptr) m_projection->project(x, i);
+            if (m_projection != nullptr) m_projection->project(x, i);
 
             /**************************************************************************************
              * Calculating distance.
@@ -107,7 +107,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
         if (m_normalizer != nullptr) gradient_norm = m_normalizer->norm(g);
         if (gradient_norm < optimalityTolerance())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_GRADIENT_NORM_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_OPTIMALITY_TOLERANCE);
             if (m_show_end_message) puts("Optimisation ends, because norm of gradient is less than optimality tolerance...");
             break;
         }
@@ -120,7 +120,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (distance < stepTolerance() && fabs(f2 - f1) < functionTolerance())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_STEP_TOLERANCE);
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
             break;
         }
@@ -131,7 +131,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (distance <= stepTolerance())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_STEP_TOLERANCE);
             if (m_show_end_message) puts("Optimisation ends, because distance between previous and current point less than step tolerance...");
             break;
         }
@@ -142,7 +142,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (fabs(f2 - f1) <= functionTolerance())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_FUNCTION_TOLERANCE);
             if (m_show_end_message) puts("Optimisation ends, because previous and current function values difference less than function tolerance...");
             break;
         }
@@ -153,7 +153,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (m_iterationNumber == maxIterationCount())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_ITERATION_NUMBER);
             if (m_show_end_message) puts("Optimisation ends, because iteration count reached max allowed iterations number...");
             break;
         }
@@ -165,7 +165,7 @@ void ConstStepGradient::calculate(DoubleVector &x)
          **************************************************************************************/
         if (m_functionEvaluationNumber == maxFunctionEvaluationCount())
         {
-            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_DISTANCE_LESS);
+            if (m_printer != nullptr) m_printer->print(m_iterationNumber, x, g, f2, alpha, MethodResult::BREAK_FUNCTION_EVALUATION_NUMBER);
             if (m_show_end_message) puts("Optimisation ends, because max function evaluation count reached max allowed number...");
             break;
         }
@@ -184,23 +184,27 @@ void ConstStepGradient::calculate(DoubleVector &x)
 
 double ConstStepGradient::minimize(const DoubleVector &x, const DoubleVector &g) const
 {
-    unsigned int n = x.length();
+    size_t n = x.length();
 
     DoubleVector cx(n);
 
     double alpha = min_step;
-    for (unsigned int i=0; i < n; i++)
+    for (size_t i=0; i < n; i++)
     {
         cx[i] = x[i] - alpha * g[i];
+        if (m_projection != nullptr) m_projection->project(cx, i);
     }
+    if (m_projection != nullptr) m_projection->project(cx);
 
     while (m_fn->fx(cx) > m_fn->fx(x))
     {
-        alpha = alpha / 2.0;
-        for (unsigned int i=0; i < n; i++)
+        alpha = alpha * 0.5;
+        for (size_t i=0; i < n; i++)
         {
             cx[i] = x[i] - alpha * g[i];
+            if (m_projection != nullptr) m_projection->project(cx, i);
         }
+        if (m_projection != nullptr) m_projection->project(cx);
     }
     return alpha;
 }
@@ -209,13 +213,13 @@ double ConstStepGradient::fx(double alpha) const
 {
     DoubleVector &x = *mx;
     DoubleVector &g = *mg;
-    unsigned int n = x.length();
+    size_t n = x.length();
 
     DoubleVector cx = x;
-    for (unsigned int i=0; i<n; i++)
+    for (size_t i=0; i<n; i++)
     {
         cx[i] = x[i] - alpha * g[i];
-        //if (m_projection != nullptr) m_projection->project(cx, i);
+        if (m_projection != nullptr) m_projection->project(cx, i);
     }
 
     if (m_projection != nullptr) m_projection->project(cx);

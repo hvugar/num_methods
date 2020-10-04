@@ -5,6 +5,7 @@
 
 /**
  * @brief Метод градиентного спуска с постоянным шагом.
+ *
  */
 class MINIMUMSHARED_EXPORT ConstStepGradient : public GradientBasedMethod
 {

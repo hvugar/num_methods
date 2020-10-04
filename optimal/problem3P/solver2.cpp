@@ -101,6 +101,25 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     }
     //x[0x18] = 0.24; x[0x19] = 0.36; x[0x1A] = 0.64; x[0x1B] = 0.76;
 
+    x[0] = -1.0000; x[2] = -1.0000; x[2] = -1.0000; x[3] = -1.0000; x[4] = -1.0000; x[5] = -1.0000; x[6] = -1.0000; x[7] = -1.0000;
+    x[16] = 5.0000; x[17] = 5.0000; x[18] = 5.0000; x[19] = 5.0000; x[20] = 5.0000; x[21] = 5.0000; x[22] = 5.0000; x[23] = 5.0000;
+    //x[24] = 0.1634; x[25] = 0.3895; x[26] = 0.6836; x[27] = 0.8595;
+    x[24] = 0.2094; x[25] = 0.4734; x[26] = 0.5592; x[27] = 0.7868;
+
+//    x.clear();
+//    x << -1.2854 << -0.0716 << -0.7366 << -1.1863 << -0.2629 << 0.4718 << -0.9833 << -0.5427
+//      << -0.0352 << -0.4949 << -0.9574 << -1.1628 << -0.1911 << 0.1157 <<  0.4264 <<  0.5910
+//      <<  5.4749 <<  5.2397 <<  4.9967 <<  5.2884 <<  4.9176 << 5.0094 <<  4.7901 <<  4.8653
+//      <<  0.1634 <<  0.3895 <<  0.6836 <<  0.8595;
+//    0.00018377
+
+//    x.clear();
+//    x << 0.9616 << -1.9615 <<  0.1521 << -1.2175 << -0.0817 << -1.5069 << -0.5075 << -1.2325
+//      << 0.3984 <<  0.1484 << -0.3091 << -0.4197 <<  0.2276 <<  0.4323 <<  0.7706 <<  0.9026
+//      << 5.2333 <<  5.0948 <<  5.4212 <<  5.3341 <<  4.9449 <<  4.8119 <<  4.9440 <<  4.8672
+//      << 0.1078 <<  0.2612 <<  0.7232 << 0.9125;
+//    0.00003079
+
     DoubleVector g(x.length());
     DoubleVector g1(x.length());
     puts("---");
@@ -132,20 +151,20 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     puts("---");
 #ifdef OPTIMIZE_Y
     functional.gradient(x, g);
-    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, functional._w, functional._p);
-    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, functional._w, functional._p);
-    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, functional._w, functional._p);
-    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, functional._w, functional._p);
+    printf("a:");IPrinter::print(g.mid(0x00, 0x07)/*.L2Normalize()*/, 8, functional._w, functional._p);
+    printf("b:");IPrinter::print(g.mid(0x08, 0x0F)/*.L2Normalize()*/, 8, functional._w, functional._p);
+    printf("o:");IPrinter::print(g.mid(0x10, 0x17)/*.L2Normalize()*/, 8, functional._w, functional._p);
+    printf("e:");IPrinter::print(g.mid(0x18, 0x1B)/*.L2Normalize()*/, 4, functional._w, functional._p);
 
     puts("---");
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x10), static_cast<size_t>(0x17));
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x18), static_cast<size_t>(0x1B));
-    printf("a:");IPrinter::print(g1.mid(0x00, 0x07).L2Normalize(), 0x08, functional._w, functional._p);
-    printf("b:");IPrinter::print(g1.mid(0x08, 0x0F).L2Normalize(), 0x08, functional._w, functional._p);
-    printf("o:");IPrinter::print(g1.mid(0x10, 0x17).L2Normalize(), 0x08, functional._w, functional._p);
-    printf("e:");IPrinter::print(g1.mid(0x18, 0x1B).L2Normalize(), 0x04, functional._w, functional._p);
+    printf("a:");IPrinter::print(g1.mid(0x00, 0x07)/*.L2Normalize()*/, 0x08, functional._w, functional._p);
+    printf("b:");IPrinter::print(g1.mid(0x08, 0x0F)/*.L2Normalize()*/, 0x08, functional._w, functional._p);
+    printf("o:");IPrinter::print(g1.mid(0x10, 0x17)/*.L2Normalize()*/, 0x08, functional._w, functional._p);
+    printf("e:");IPrinter::print(g1.mid(0x18, 0x1B)/*.L2Normalize()*/, 0x04, functional._w, functional._p);
 #else
     functional.gradient(x, g);
     IPrinter::printVector(functional._w, functional._p, g.mid(start[0], finsh[0]).L2Normalize(), "g1:");
@@ -160,40 +179,70 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     IPrinter::printSeperatorLine();
     puts("Starting optimization...");
 
-    while (functional.epsilon > 0.00001)
+    // while (functional.epsilon > 0.00001)
     {
 
-        while (functional.R < 2.0)
+        // while (functional.R < 2.0)
+        double step = 0.1;
+        double epsl = 0.001;
+        int i=0;
+        while (true)
         {
-            //ConjugateGradient gm;
-            SteepestDescentGradient gm;
-            gm.setFunction(&functional);
-            gm.setGradient(&functional);
-            gm.setPrinter(&functional);
-            gm.setProjection(&functional);
+            i++;
+            GradientBasedMethod *gm;
+            //            if (i % 2 == 1)
+            {
+                gm = new ConjugateGradient;
+                gm->setNormalize(false);
+            }
+            //            else
+            //            {
+            //                gm = new SteepestDescentGradient;
+            //            gm = new ConstStepGradient;
+            //            gm->setNormalize(true);
+            //            }
+            gm->setFunction(&functional);
+            gm->setGradient(&functional);
+            gm->setPrinter(&functional);
+            gm->setProjection(&functional);
             //gm.setGradientNormalizer(&prob);
-            gm.setOptimalityTolerance(0.000001);
-            gm.setStepTolerance(0.000001);
-            gm.setFunctionTolerance(0.000001);
-            gm.setR1MinimizeEpsilon(0.1, 0.001);
+            gm->setOptimalityTolerance(0.000001);
+            gm->setStepTolerance(0.000001);
+            gm->setFunctionTolerance(0.000001);
+            gm->setR1MinimizeEpsilon(step, epsl);
             //gm.setMaxIterationCount(10);
             //gm.setNormalize(false);
-            gm.setNormalize(true);
-            gm.showExitMessage(true);
-            gm.calculate(x);
+            //gm->setNormalize(i%2==0);
+            gm->showExitMessage(true);
+            gm->calculate(x);
 
-            functional.R *= 10.0;
+            delete gm;
+
+            //            functional.R *= 10.0;
+
+            //step *= 0.9;
+            //epsl *= 0.9;
+
+            IPrinter::print(x, x.length(), functional._w, functional._p);
         }
 
-        functional.R = 1.0;
-        functional.epsilon *= 0.1;
+        //        functional.R = 1.0;
+        //        functional.epsilon *= 0.1;
     }
 
     puts("Optimization is finished.");
+    IPrinter::print(x, x.length(), functional._w, functional._p);
 
-    //    for (int ln=time_max; ln<=2*time_size; ln++)
+
+    //    for (size_t ln=0; ln<=time_max; ln++)
+    //    {
+    //        printf("%4d %10.8f %10.8f\n", ln, functional.mq[ln][0], functional.mq[ln][1]);
+    //    }
+
+    //    for (int ln=time_max; ln<=10*time_size; ln++)
     //    {
     //        functional.setTimeDimension(Dimension(time_step, 0, ln));
+
     //        double t = ln*time_step;
     //        double fx = functional.fx(x);
     //        double a1 = functional.mq[ln][0];
@@ -204,6 +253,49 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 }
 
 /**************************************************************************************************************************/
+
+auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVector &g, double /*f*/, double _alpha, GradientBasedMethod::MethodResult result) const -> void
+{
+    //const size_t time_size = timeDimension().size();
+    //const auto vector_size = time_size;
+    //IPrinter::printSeperatorLine();
+
+    const auto _fx = fx(x);
+    const auto _integral = integral(x);
+    const auto _norm = norm(x);
+    const auto _penalty = penalty(x);
+    printf_s("I[%4d] fx: %10.8f int: %10.8f nrm: %10.8f penalty: %10.8f eps: %10.8f R: %10.8f alpha: %10.8f res: %d\n", it, _fx, _integral, _norm, _penalty, epsilon, R, _alpha, result);
+#ifdef OPTIMIZE_Y
+
+    if (
+            result == GradientBasedMethod::MethodResult::BREAK_STEP_TOLERANCE ||
+            result == GradientBasedMethod::MethodResult::BREAK_FUNCTION_TOLERANCE ||
+            result == GradientBasedMethod::MethodResult::BREAK_OPTIMALITY_TOLERANCE
+            )
+    {
+//        IPrinter::print(x, x.length(), _w, _p);
+//        IPrinter::print(g, g.length(), _w, _p);
+
+        //printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, _w, _p);
+        //printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, _w, _p);
+        //printf("o:");IPrinter::print(x.mid(0x10, 0x17), 8, _w, _p);
+        //printf("e:");IPrinter::print(x.mid(0x18, 0x1B), 4, _w, _p);
+        //    puts("---");Q
+        //    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, _w, _p);
+        //    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, _w, _p);
+        //    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, _w, _p);
+        //    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, _w, _p);
+        //puts("---");
+    }
+#else
+    IPrinter::printVector(_w, _p, x.mid(0*vector_size, 1*vector_size-1), "q1");
+    IPrinter::printVector(_w, _p, x.mid(1*vector_size, 2*vector_size-1), "q2");
+    IPrinter::printVector(_w, _p, g.mid(0*vector_size, 1*vector_size-1), "g1");
+    IPrinter::printVector(_w, _p, g.mid(1*vector_size, 2*vector_size-1), "g2");
+#endif
+//    IPrinter::printVector(_w, _p, U, "U:");
+//    IPrinter::printVector(_w, _p, V, "V:");
+}
 
 auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
 {
@@ -645,7 +737,7 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 auto Functional::fx(const DoubleVector &x) const -> double
 {
     const double _integral = integral(x);
-    return _integral + epsilon * norm(x) + R * penalty(x);
+    return _integral;// + epsilon * norm(x) + R * penalty(x);
 }
 
 auto Functional::integral(const DoubleVector &x) const -> double
@@ -725,48 +817,21 @@ auto Functional::penalty(const DoubleVector &x) const -> double
     return _penalty;
 }
 
-auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVector &g, double /*f*/, double _alpha, GradientBasedMethod::MethodResult result) const -> void
+/*virtual*/ void Functional::project(DoubleVector &x, size_t i)
 {
-    const size_t time_size = timeDimension().size();
-    const auto vector_size = time_size;
-    //IPrinter::printSeperatorLine();
+    if (i < 3*heatSourceNumber*measrPointNumber) return;
 
-    const auto _fx = fx(x);
-    const auto _integral = integral(x);
-    const auto _norm = norm(x);
-    const auto _penalty = penalty(x);
-    printf_s("I[%4d] fx: %10.6f int: %10.8f nrm: %10.8f penalty: %10.8f eps: %10.8f R: %10.8f alpha: %10.8f res: %d\n", it, _fx, _integral, _norm, _penalty, epsilon, R, _alpha, result);
-#ifdef OPTIMIZE_Y
-    //IPrinter::print(x, x.length(), _w, _p);
-    //IPrinter::print(g, g.length(), _w, _p);
+    const auto n = 3*heatSourceNumber*measrPointNumber;
+    if (i == (n+0)) { if (x[i] < 0.05) x[i] = 0.05; if (x[i] > 0.25) x[i] = 0.25; }
+    if (i == (n+1)) { if (x[i] < 0.25) x[i] = 0.25; if (x[i] > 0.50) x[i] = 0.50; }
+    if (i == (n+2)) { if (x[i] < 0.50) x[i] = 0.50; if (x[i] > 0.75) x[i] = 0.75; }
+    if (i == (n+3)) { if (x[i] < 0.75) x[i] = 0.75; if (x[i] > 0.95) x[i] = 0.95; }
 
-    //    printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, _w, _p);
-    //    printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, _w, _p);
-    //    printf("o:");IPrinter::print(x.mid(0x10, 0x17), 8, _w, _p);
-    //    printf("e:");IPrinter::print(x.mid(0x18, 0x1B), 4, _w, _p);
-    //    puts("---");
-    //    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, _w, _p);
-    //    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, _w, _p);
-    //    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, _w, _p);
-    //    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, _w, _p);
-    //puts("---");
-#else
-    IPrinter::printVector(_w, _p, x.mid(0*vector_size, 1*vector_size-1), "q1");
-    IPrinter::printVector(_w, _p, x.mid(1*vector_size, 2*vector_size-1), "q2");
-    IPrinter::printVector(_w, _p, g.mid(0*vector_size, 1*vector_size-1), "g1");
-    IPrinter::printVector(_w, _p, g.mid(1*vector_size, 2*vector_size-1), "g2");
-#endif
-    //IPrinter::printVector(_w, _p, U, "U:");
-    //IPrinter::printVector(_w, _p, V, "V:");
-}
-
-/*virtual*/ void Functional::project(DoubleVector &x, unsigned int i)
-{
-    if (i >= 3*heatSourceNumber*measrPointNumber)
-    {
-        if (x[i] < 0.05) x[i] = 0.05;
-        if (x[i] > 0.95) x[i] = 0.95;
-    }
+    //    if (i >= 3*heatSourceNumber*measrPointNumber)
+    //    {
+    //        if (x[i] < 0.05) x[i] = 0.05;
+    //        if (x[i] > 0.95) x[i] = 0.95;
+    //    }
 }
 
 /**************************************************************************************************************************/

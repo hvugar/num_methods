@@ -4,7 +4,7 @@
 #include "global.h"
 
 #define OPTIMIZE_Y
-#define OPTIMIZE_ETA
+//#define OPTIMIZE_ETA
 
 namespace p3p0
 {
@@ -67,7 +67,7 @@ public:
     DoubleVector mPntsN;
 #endif
 
-    double epsilon = 1.0000;
+    double epsilon = 0.0000;
     double no_norm = 1.0000;
 
     DoubleVector *qMin = nullptr;
@@ -76,7 +76,7 @@ public:
     unsigned int _w = 8;
     unsigned int _p = 4;
 
-    double R = 1.0;
+    double R = 0.0;
 
 protected:
     Dimension _timeDimension;
@@ -148,7 +148,7 @@ protected:
 
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
 
-    virtual void project(DoubleVector &x, unsigned int index);
+    virtual void project(DoubleVector &x, size_t index);
 
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;

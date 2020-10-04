@@ -29,10 +29,10 @@ void Solver::bcw_calculate() const
     //puts("backward->solveFinalValueProblem.");
 }
 
-void Solver::Main(int argc, char **argv)
+void Solver::Main(int /*argc*/, char **/*argv*/)
 {
     const unsigned int time_size = TIME_MAX+1;
-    const double ht = TIME_STEP;
+    //const double ht = TIME_STEP;
 
     Solver solver(Dimension(TIME_STEP, 0, TIME_MAX), Dimension(DIMX_STEP, 0, DIMX_MAX), Dimension(DIMY_STEP, 0, DIMX_MAX));
 //    for (unsigned int i=0; i<=TIME_MAX; i++)
@@ -361,12 +361,11 @@ auto Solver::gradient(const DoubleVector &x, DoubleVector &g) const -> void
     }
 }
 
-auto Solver::project(DoubleVector &x, unsigned int index) -> void
-{}
+auto Solver::project(DoubleVector &/*x*/, size_t /*index*/) -> void {}
 
 auto Solver::project(DoubleVector &) const  -> void {}
 
-auto Solver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void
+auto Solver::print(unsigned int /*i*/, const DoubleVector &/*x*/, const DoubleVector &g, double /*f*/, double /*alpha*/, GradientBasedMethod::MethodResult /*result*/) const -> void
 {
     //    C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     //    const char* msg = nullptr; C_UNUSED(msg);
