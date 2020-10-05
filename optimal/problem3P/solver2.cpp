@@ -4,9 +4,9 @@ using namespace p3p0;
 
 void Functional::Main(int /*argc*/, char **/*argv*/)
 {
-    const double _thermalDiffusivity = 0.01;
+    const double _thermalDiffusivity  = 0.01;
     const double _thermalConductivity = 0.00;
-    const double _thermalConvection = 0.00;
+    const double _thermalConvection   = 0.0001;
     const size_t _heatSourceNumber = 2;
     const size_t _measrPointNumber = 4;
 
@@ -103,22 +103,21 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 
     x[0] = -1.0000; x[2] = -1.0000; x[2] = -1.0000; x[3] = -1.0000; x[4] = -1.0000; x[5] = -1.0000; x[6] = -1.0000; x[7] = -1.0000;
     x[16] = 5.0000; x[17] = 5.0000; x[18] = 5.0000; x[19] = 5.0000; x[20] = 5.0000; x[21] = 5.0000; x[22] = 5.0000; x[23] = 5.0000;
-    //x[24] = 0.1634; x[25] = 0.3895; x[26] = 0.6836; x[27] = 0.8595;
-    x[24] = 0.2094; x[25] = 0.4734; x[26] = 0.5592; x[27] = 0.7868;
+    x[24] = 0.1634; x[25] = 0.3895; x[26] = 0.6836; x[27] = 0.8595;
+    //x[24] = 0.2094; x[25] = 0.4734; x[26] = 0.5592; x[27] = 0.7868;
 
-//    x.clear();
-//    x << -1.2854 << -0.0716 << -0.7366 << -1.1863 << -0.2629 << 0.4718 << -0.9833 << -0.5427
-//      << -0.0352 << -0.4949 << -0.9574 << -1.1628 << -0.1911 << 0.1157 <<  0.4264 <<  0.5910
-//      <<  5.4749 <<  5.2397 <<  4.9967 <<  5.2884 <<  4.9176 << 5.0094 <<  4.7901 <<  4.8653
-//      <<  0.1634 <<  0.3895 <<  0.6836 <<  0.8595;
-//    0.00018377
+    x.clear(); /*0.00007882*/
+    x << -1.0545 <<  0.6535 << -1.1357 << -1.1477 << -0.7377 << 0.9597 << -1.1885 << -0.7221
+      << -0.0478 << -0.4230 << -0.8102 << -0.9891 << -0.0093 << 0.2945 <<  0.5956 <<  0.7514
+      <<  5.2754 <<  5.0960 <<  5.2618 <<  5.1903 <<  4.9103 << 5.0278 <<  4.7885 <<  4.8992
+      <<  0.1634 <<  0.3895 <<  0.6836 <<  0.8595;
 
-//    x.clear();
-//    x << 0.9616 << -1.9615 <<  0.1521 << -1.2175 << -0.0817 << -1.5069 << -0.5075 << -1.2325
-//      << 0.3984 <<  0.1484 << -0.3091 << -0.4197 <<  0.2276 <<  0.4323 <<  0.7706 <<  0.9026
-//      << 5.2333 <<  5.0948 <<  5.4212 <<  5.3341 <<  4.9449 <<  4.8119 <<  4.9440 <<  4.8672
-//      << 0.1078 <<  0.2612 <<  0.7232 << 0.9125;
-//    0.00003079
+
+    //    x.clear(); /*0.00003079*/
+    //    x << 0.9616 << -1.9615 <<  0.1521 << -1.2175 << -0.0817 << -1.5069 << -0.5075 << -1.2325
+    //      << 0.3984 <<  0.1484 << -0.3091 << -0.4197 <<  0.2276 <<  0.4323 <<  0.7706 <<  0.9026
+    //      << 5.2333 <<  5.0948 <<  5.4212 <<  5.3341 <<  4.9449 <<  4.8119 <<  4.9440 <<  4.8672
+    //      << 0.1078 <<  0.2612 <<  0.7232 << 0.9125;
 
     DoubleVector g(x.length());
     DoubleVector g1(x.length());
@@ -151,20 +150,20 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     puts("---");
 #ifdef OPTIMIZE_Y
     functional.gradient(x, g);
-    printf("a:");IPrinter::print(g.mid(0x00, 0x07)/*.L2Normalize()*/, 8, functional._w, functional._p);
-    printf("b:");IPrinter::print(g.mid(0x08, 0x0F)/*.L2Normalize()*/, 8, functional._w, functional._p);
-    printf("o:");IPrinter::print(g.mid(0x10, 0x17)/*.L2Normalize()*/, 8, functional._w, functional._p);
-    printf("e:");IPrinter::print(g.mid(0x18, 0x1B)/*.L2Normalize()*/, 4, functional._w, functional._p);
+    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, functional._w, functional._p);
+    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, functional._w, functional._p);
+    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, functional._w, functional._p);
+    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, functional._w, functional._p);
 
     puts("---");
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x10), static_cast<size_t>(0x17));
     IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x18), static_cast<size_t>(0x1B));
-    printf("a:");IPrinter::print(g1.mid(0x00, 0x07)/*.L2Normalize()*/, 0x08, functional._w, functional._p);
-    printf("b:");IPrinter::print(g1.mid(0x08, 0x0F)/*.L2Normalize()*/, 0x08, functional._w, functional._p);
-    printf("o:");IPrinter::print(g1.mid(0x10, 0x17)/*.L2Normalize()*/, 0x08, functional._w, functional._p);
-    printf("e:");IPrinter::print(g1.mid(0x18, 0x1B)/*.L2Normalize()*/, 0x04, functional._w, functional._p);
+    printf("a:");IPrinter::print(g1.mid(0x00, 0x07).L2Normalize(), 0x08, functional._w, functional._p);
+    printf("b:");IPrinter::print(g1.mid(0x08, 0x0F).L2Normalize(), 0x08, functional._w, functional._p);
+    printf("o:");IPrinter::print(g1.mid(0x10, 0x17).L2Normalize(), 0x08, functional._w, functional._p);
+    printf("e:");IPrinter::print(g1.mid(0x18, 0x1B).L2Normalize(), 0x04, functional._w, functional._p);
 #else
     functional.gradient(x, g);
     IPrinter::printVector(functional._w, functional._p, g.mid(start[0], finsh[0]).L2Normalize(), "g1:");
@@ -183,24 +182,18 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     {
 
         // while (functional.R < 2.0)
-        double step = 0.1;
-        double epsl = 0.001;
+        double step = 0.5;
+        double epsl = 0.0001;
         int i=0;
         while (true)
         {
             i++;
             GradientBasedMethod *gm;
-            //            if (i % 2 == 1)
-            {
-                gm = new ConjugateGradient;
-                gm->setNormalize(false);
-            }
-            //            else
-            //            {
-            //                gm = new SteepestDescentGradient;
-            //            gm = new ConstStepGradient;
-            //            gm->setNormalize(true);
-            //            }
+            gm = new ConjugateGradient;
+            //gm = new SteepestDescentGradient;
+            //gm = new ConstStepGradient;
+            gm->setNormalize(true);
+
             gm->setFunction(&functional);
             gm->setGradient(&functional);
             gm->setPrinter(&functional);
@@ -273,8 +266,8 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
             result == GradientBasedMethod::MethodResult::BREAK_OPTIMALITY_TOLERANCE
             )
     {
-//        IPrinter::print(x, x.length(), _w, _p);
-//        IPrinter::print(g, g.length(), _w, _p);
+        //        IPrinter::print(x, x.length(), _w, _p);
+        //        IPrinter::print(g, g.length(), _w, _p);
 
         //printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, _w, _p);
         //printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, _w, _p);
@@ -293,8 +286,8 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
     IPrinter::printVector(_w, _p, g.mid(0*vector_size, 1*vector_size-1), "g1");
     IPrinter::printVector(_w, _p, g.mid(1*vector_size, 2*vector_size-1), "g2");
 #endif
-//    IPrinter::printVector(_w, _p, U, "U:");
-//    IPrinter::printVector(_w, _p, V, "V:");
+    //    IPrinter::printVector(_w, _p, U, "U:");
+    //    IPrinter::printVector(_w, _p, V, "V:");
 }
 
 auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
@@ -465,7 +458,7 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     auto fx = 0.0;
     fx += _q[0] * DeltaFunction::gaussian(sn.x, _z[0], sigma);
     fx += _q[1] * DeltaFunction::gaussian(sn.x, _z[1], sigma);
-    return fx;
+    return fx - thermalConvection()*common->theta();
 }
 
 auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) const -> void
@@ -644,15 +637,15 @@ auto CommonParameter::qNorm1(double t) const -> DoubleVector
 
 /**************************************************************************************************************************/
 
-Functional::Functional(double thermalDiffusivity, double thermalConvection, double thermalConductivity) : CommonParameter ()
+Functional::Functional(double thermalDiffusivity, double thermalConductivity, double thermalConvection) : CommonParameter ()
 {
     forward.setThermalDiffusivity(thermalDiffusivity);
     forward.setThermalConductivity(thermalConductivity);
-    forward.setThermalConvection(thermalConvection);
+    forward.setThermalConvection(-thermalConvection);
 
     backward.setThermalDiffusivity(-thermalDiffusivity);
     backward.setThermalConductivity(thermalConductivity);
-    backward.setThermalConvection(thermalConvection);
+    backward.setThermalConvection(+thermalConvection);
 
     forward.common = this;
     backward.common = this;

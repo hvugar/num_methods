@@ -17,6 +17,7 @@ public:
     CommonParameter & operator =(const CommonParameter &) { return *this; }
     virtual ~CommonParameter();
 
+    inline auto lambda0() const -> double { return _lambda0; }
     inline auto lambda1() const -> double { return _lambda1; }
     inline auto theta() const -> double { return _theta; }
     inline auto mu(const SpaceNodePDE &/*sn*/) const -> double { return 1.0; }
@@ -39,6 +40,7 @@ public:
     auto gi(size_t i, size_t ln) const -> double;
     auto gp(size_t i, size_t ln) const -> double;
 
+    double _lambda0 = +0.0001;
     double _lambda1 = +0.001;
     double _theta = +2.0;
     double initialTemperature = 0.0;
@@ -135,7 +137,7 @@ class PROBLEM3P_SHARED_EXPORT Functional : virtual public RnFunction, virtual pu
 public:
     static void Main(int argc, char** argv);
 
-    Functional(double thermalDiffusivity, double thermalConvection, double thermalConductivity);
+    Functional(double thermalDiffusivity, double thermalConductivity, double thermalConvection);
 
 protected:
 
