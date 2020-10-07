@@ -148,7 +148,7 @@ public:
     virtual double fx(const DoubleVector &x) const;
     auto integral(const DoubleMatrix &) const -> double;
 
-    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &x, size_t index) -> void;
     virtual auto project(DoubleVector &x) const -> void;
     virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g,
                        double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;

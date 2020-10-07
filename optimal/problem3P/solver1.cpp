@@ -1181,8 +1181,7 @@ auto Solver1::project(DoubleVector &x) const -> void
 
 }
 
-auto Solver1::project(DoubleVector &x, unsigned int index) -> void
-{}
+auto Solver1::project(DoubleVector &x, size_t /*index*/) -> void {}
 
 //--------------------------------------------------------------------------------------------------------------//
 

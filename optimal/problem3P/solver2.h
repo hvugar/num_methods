@@ -5,7 +5,7 @@
 
 #define OPTIMIZE_Y
 //#define OPTIMIZE_BETTA
-//#define OPTIMIZE_ETA
+#define OPTIMIZE_ETA
 
 namespace p3p0
 {
@@ -13,7 +13,7 @@ namespace p3p0
 class CommonParameter
 {
 public:
-    CommonParameter() { mp = nullptr; }
+    CommonParameter() { }
     CommonParameter(const CommonParameter &) {}
     CommonParameter & operator =(const CommonParameter &) { return *this; }
     virtual ~CommonParameter();
@@ -49,9 +49,12 @@ public:
     DoubleVector V;
     DoubleVector U;
 
-    DoubleVector *mq = nullptr;
-    DoubleVector *mp = nullptr;
-    DoubleVector *mz = nullptr;
+    //DoubleVector *mq = nullptr;
+    //DoubleVector *mp = nullptr;
+    //DoubleVector *mz = nullptr;
+    DoubleMatrix mq;
+    DoubleMatrix mp;
+    DoubleMatrix mz;
 
     size_t heatSourceNumber = 2;
 
@@ -62,8 +65,10 @@ public:
     DoubleMatrix omega;
     DoubleVector mPnts;
     size_t measrPointNumber = 4;
-    DoubleVector *uv = nullptr;
-    DoubleVector *ud = nullptr;
+    DoubleMatrix uv;
+    DoubleMatrix ud;
+//    DoubleVector *uv = nullptr;
+//    DoubleVector *ud = nullptr;
 
     DoubleMatrix alphaN;
     DoubleMatrix bettaN;
