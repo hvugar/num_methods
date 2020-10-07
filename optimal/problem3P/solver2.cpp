@@ -94,7 +94,7 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 
 #ifdef OPTIMIZE_Y
     //    DoubleVector x(vector_size, 0.0);
-    DoubleVector x(functional.VCTR_1, 28);
+    DoubleVector x(functional.VCTR_2, 28);
 
     //    for (size_t j=0; j<_measrPointNumber; j++)
     //    {
@@ -228,8 +228,9 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     double step = 0.1;
     double epsl = 0.0001;
 
-    functional.R = 0.01;
-    functional.epsilon = 1.0;
+    functional.R = 0.1;
+    functional.epsilon = 0.1;
+    functional.no_norm = 1.0;
     while (functional.epsilon > 0.0000001)
     {
         while (functional.R <= 100000000.0)
@@ -248,13 +249,12 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->setR1MinimizeEpsilon(step, epsl);
             gm->showExitMessage(false);
             gm->calculate(x);
-
             delete gm;
 
             if (functional.R <= 100000000.0) functional.R *= 10.0;
             //IPrinter::print(x, x.length(), functional._w, functional._p);
         }
-        functional.R = 1.0;
+        functional.R = 0.1;
         functional.epsilon *= 0.5;
     }
     puts("Optimization is finished.");
@@ -657,13 +657,13 @@ auto CommonParameter::convertFromVector(const DoubleVector &x) -> void
             betta.at(i,j) = x.at((1*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j);
             omega.at(i,j) = x.at((2*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j);
 
-            alphaN.at(i,j) = NORM_1[(0*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
-            bettaN.at(i,j) = NORM_1[(1*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
-            omegaN.at(i,j) = NORM_1[(2*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
+            alphaN.at(i,j) = NORM_2[(0*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
+            bettaN.at(i,j) = NORM_2[(1*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
+            omegaN.at(i,j) = NORM_2[(2*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
 
         }
         mPnts.at(j) = x.at((3*heatSourceNumber*measrPointNumber) + j);
-        mPntsN.at(j) = NORM_1[(3*heatSourceNumber*measrPointNumber) + j];
+        mPntsN.at(j) = NORM_2[(3*heatSourceNumber*measrPointNumber) + j];
     }
 
     //for (unsigned int i=0; i<heatSourceNumber; i++) { mq[0].at(i) = 0.0; }
