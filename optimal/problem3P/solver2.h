@@ -4,6 +4,7 @@
 #include "global.h"
 
 #define OPTIMIZE_Y
+//#define OPTIMIZE_BETTA
 //#define OPTIMIZE_ETA
 
 namespace p3p0
@@ -54,6 +55,7 @@ public:
 
     size_t heatSourceNumber = 2;
 
+
 #ifdef OPTIMIZE_Y
     DoubleMatrix alpha;
     DoubleMatrix betta;
@@ -69,20 +71,43 @@ public:
     DoubleVector mPntsN;
 #endif
 
-    double epsilon = 0.0000;
-    double no_norm = 1.0000;
+    double R       = 1.0;
+    double epsilon = 0.10000;
+    double no_norm = 1.00000;
 
     DoubleVector *qMin = nullptr;
     DoubleVector *qMax = nullptr;
 
-    unsigned int _w = 8;
+    unsigned int _w = 7;
     unsigned int _p = 4;
 
-    double R = 0.0;
 
 protected:
     Dimension _timeDimension;
     Dimension _spaceDimensionX;
+
+public:
+    const double VCTR_1[28] = {
+        -0.4384,-0.2379, 1.4993, -0.1458, 1.2402, 0.6780, -1.4138, -0.3162,
+        0.0000, 0.0000, 0.0000,  0.0000, 0.0000, 0.0000,  0.0000,  0.0000,
+        +4.7275, 4.0221, 5.6837, +3.3758,+3.1954, 4.5372, +4.7883, 	3.9435,
+        0.2444, 0.4913, 0.6988,  0.8745 };
+
+    const double NORM_1[28] = {
+        0.5112, -2.5011, 1.1734, -0.6380, 0.8051, -1.5831, 0.2565, -1.4589,
+        0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000,
+        5.0249,  5.2474, 5.4654,  5.5379, 4.9167,  4.9639, 4.9973,  5.0597,
+        0.1078,  0.2612, 0.7232 , 0.9125};
+    /*0.00085968*/
+
+    const double NORM_2[28] = {
+        0.0527,1.0949,-1.4853,-1.6131,-1.1310,1.3967,-1.5548,-0.2611,
+        0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
+        5.3490, 4.9490, 5.2758, 4.8753, 4.7894, 5.0547, 5.2184, 5.3647,
+        0.1634,0.3895,0.6836,0.8595
+    };  /*0.00110691*/
+
+
 };
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP
@@ -156,6 +181,6 @@ protected:
     HeatEquationFBVP backward;
 };
 
-}
+};
 
 #endif // SOLVER2_H
