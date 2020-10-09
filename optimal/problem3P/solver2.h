@@ -202,6 +202,20 @@ protected:
 
     HeatEquationIBVP forward;
     HeatEquationFBVP backward;
+
+private:
+    auto gradientY(const DoubleVector &x, DoubleVector &g) const -> void;
+    auto gradientQ(const DoubleVector &x, DoubleVector &g) const -> void;
+
+    auto normY(const DoubleVector &x, const DoubleVector &n) const -> double;
+    auto normQ(const DoubleVector &x, const DoubleVector &n) const -> double;
+
+    auto penaltyY(const DoubleVector &/*x*/) const -> double;
+    auto penaltyQ(const DoubleVector &/*x*/) const -> double;
+
+    auto printY(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
+    auto printQ(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
+
 };
 
 };
