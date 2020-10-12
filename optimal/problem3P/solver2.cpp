@@ -29,18 +29,18 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 
 #ifdef OPTIMIZE_Y
     size_t vector_size = 0;
-#if defined(ENABLE_ALPHA) && defined(OPTIMIZE_ALPHA)
+//#if defined(ENABLE_ALPHA) && defined(OPTIMIZE_ALPHA)
     vector_size += _measrPointNumber*_heatSourceNumber;
-#endif
-#if defined (ENABLE_BETTA) && defined(OPTIMIZE_BETTA)
+//#endif
+//#if defined (ENABLE_BETTA) && defined(OPTIMIZE_BETTA)
     vector_size += _measrPointNumber*_heatSourceNumber;
-#endif
-#if defined (ENABLE_OMEGA) && defined(OPTIMIZE_OMEGA)
+//#endif
+//#if defined (ENABLE_OMEGA) && defined(OPTIMIZE_OMEGA)
     vector_size += _measrPointNumber*_heatSourceNumber;
-#endif
-#if defined (ENABLE_ETA) &&  defined (OPTIMIZE_ETA)
+//#endif
+//#if defined (ENABLE_ETA) &&  defined (OPTIMIZE_ETA)
     vector_size += _measrPointNumber;
-#endif
+//#endif
 #else
     const auto vector_size = time_size;
     const unsigned int start[] = { 0*vector_size+0, 1*vector_size+0 };
@@ -108,67 +108,73 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     IPrinter::printVector(functional._w, functional._p, g1.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 #endif
 
-    //    IPrinter::printSeperatorLine("Starting optimization...");
-    //    double step = 0.1;
-    //    double epsl = 0.0001;
-    //    functional.R = 1.0;
-    //    functional.epsilon = 1.0;
-    //    functional.no_norm = 1.0;
-    //    while (functional.epsilon > 0.001)
-    //    {
-    //        while (functional.R <= 100000.0)
-    //        {
-    //            GradientBasedMethod *gm;
-    //            gm = new ConjugateGradient; gm->setNormalize(false);
-    //            //gm = new SteepestDescentGradient; gm->setNormalize(true);
-    //            gm->setFunction(&functional);
-    //            gm->setGradient(&functional);
-    //            gm->setPrinter(&functional);
-    //            gm->setProjection(&functional);
-    //            //gm.setGradientNormalizer(&prob);
-    //            gm->setOptimalityTolerance(0.000000001);
-    //            gm->setStepTolerance(0.000000001);
-    //            gm->setFunctionTolerance(0.000000001);
-    //            gm->setR1MinimizeEpsilon(step, epsl);
-    //            gm->showExitMessage(false);
-    //            gm->calculate(x);
-    //            delete gm;
+    IPrinter::printSeperatorLine("Starting optimization...");
+    double step = 0.1;
+    double epsl = 0.0001;
+    functional.R = 0.0;
+    functional.epsilon = 0.0;
+    functional.no_norm = 1.0;
+    functional.error = 0.0;
+//    while (functional.epsilon > 0.001)
+    {
+//        while (functional.R <= 100000.0)
+        {
+            GradientBasedMethod *gm;
+            gm = new ConjugateGradient; gm->setNormalize(false);
+            //gm = new SteepestDescentGradient; gm->setNormalize(true);
+            gm->setFunction(&functional);
+            gm->setGradient(&functional);
+            gm->setPrinter(&functional);
+            gm->setProjection(&functional);
+            //gm.setGradientNormalizer(&prob);
+            gm->setOptimalityTolerance(0.000000001);
+            gm->setStepTolerance(0.000000001);
+            gm->setFunctionTolerance(0.000000001);
+            gm->setR1MinimizeEpsilon(step, epsl);
+            gm->showExitMessage(false);
+//            gm->calculate(x);
+            delete gm;
 
-    //            if (functional.R <= 100000.0) functional.R *= 2.0;
-    //            //IPrinter::print(x, x.length(), functional._w, functional._p);
-    //        }
-    //        functional.R = 1.0;
-    //        functional.epsilon *= 0.5;
-    //    }
-    //    IPrinter::printSeperatorLine("Optimization is finished.");
-    //    IPrinter::printVector(functional._w, functional._p, functional.V, "V: ");
+//            if (functional.R <= 100000.0) functional.R *= 2.0;
+            //IPrinter::print(x, x.length(), functional._w, functional._p);
+        }
+//        functional.R = 1.0;
+//        functional.epsilon *= 0.5;
+    }
+    IPrinter::printSeperatorLine("Optimization is finished.");
+    IPrinter::printVector(functional._w, functional._p, functional.V, "V: ");
 
     IPrinter::printSeperatorLine();
     DoubleVector x1(functional.RESULT_1, vector_size);
-    functional.convertFromVector(x1);
-    functional.R = 1.0;
+    IPrinter::print(x1, x1.length(), functional._w, functional._p);
+    functional.R = 0.0;
     functional.epsilon = 0.0;
     functional.no_norm = 1.0;
-    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
-    {
-        double t = ln*time_step;
-        functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(ln)));
-        double fx = functional.fx(x1);
-        double in = functional.integral(x1);
-        double nr = functional.norm(x1);
-        double pn = functional.penalty(x1);
-        double q1 = functional.mq.at(ln,0);
-        double q2 = functional.mq.at(ln,1);
-        double qMin1 = functional.qMin.at(ln,0);
-        double qMin2 = functional.qMin.at(ln,1);
-        double qMax1 = functional.qMax.at(ln,0);
-        double qMax2 = functional.qMax.at(ln,1);
+    functional.error = 0.01;
+    functional.withError = true;
+    functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(5.0*(time_size-1))));
+    functional.convertFromVector(x1);
+    functional.forward.implicit_calculate_D1V1();
 
-        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | \n", t, fx, in, nr, pn,
-               qMin1, q1, qMax1,
-               qMin2, q2, qMax2,
-               functional.R, functional.epsilon);
-    }
+//    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
+//    {
+//        double t = ln*time_step;
+//        double fx = functional.fx(x1);
+//        double in = functional.integral(functional.U);
+//        double nr = functional.norm(x1);
+//        double pn = functional.penalty(x1);
+//        double q1 = functional.mq.at(ln,0);
+//        double q2 = functional.mq.at(ln,1);
+//        double qMin1 = functional.qMin.at(ln,0);
+//        double qMin2 = functional.qMin.at(ln,1);
+//        double qMax1 = functional.qMax.at(ln,0);
+//        double qMax2 = functional.qMax.at(ln,1);
+
+//        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | \n", t, fx, in, nr, pn,
+//               qMin1, q1, qMax1,
+//               qMin2, q2, qMax2,
+//               functional.R, functional.epsilon);
+//    }
 }
 
 /**************************************************************************************************************************/
@@ -178,7 +184,7 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
 #ifdef OPTIMIZE_Y
     printY(it, x, g, f, alpha, result);
 #else
-    printY(it, x, g, f, alpha, result);
+    printQ(it, x, g, f, alpha, result);
 #endif
 }
 
@@ -430,6 +436,11 @@ auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
 {
     if (static_cast<int>(tn.i) == timeDimension().max()) { common->U = u; }
 
+    if (common->withError) {
+        printf("%6.3f %14.10f u: ", tn.t, common->integral(u));
+        IPrinter::printVector(u);
+    }
+
 #ifdef OPTIMIZE_Y
     const size_t heatSourceNumber = common->heatSourceNumber;
     const size_t measrPointNumber = common->measrPointNumber;
@@ -458,7 +469,7 @@ auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
             for (size_t j=0; j<measrPointNumber; j++)
             {
                 const double mp = common->mPnts[j];
-                const double uv = common->uv.at(tn.i,j);// * (1.0+(rand()%2==0 ? 0.005 : -0.005));
+                const double uv = common->uv.at(tn.i,j) * (1.0+(rand()%2==0 ? -common->error : common->error));
                 const double alpha = common->alpha.at(i,j);
                 const double betta = common->betta.at(i,j);
                 const double omega = common->omega.at(i,j);
@@ -657,24 +668,24 @@ Functional::Functional(double thermalDiffusivity, double thermalConductivity, do
 
 /*virtual*/ auto Functional::fx(const DoubleVector &x) const -> double
 {
-    const double _integral = integral(x);
+    const_cast<Functional*>(this)->convertFromVector(x);
+    forward.implicit_calculate_D1V1();
+
+    const double _integral = integral(U);
     return _integral + epsilon * norm(x) + R * penalty(x);
 }
 
-auto Functional::integral(const DoubleVector &x) const -> double
+auto CommonParameter::integral(const DoubleVector &u) const -> double
 {
-    const_cast<Functional*>(this)->convertFromVector(x);
-    forward.implicit_calculate_D1V1();
     const auto N = spaceDimensionX().size()-1;
 
     double sum = 0.0;
-
-    sum += 0.5*(U[0]-V[0])*(U[0]-V[0]);
+    sum += 0.5*(u[0]-V[0])*(u[0]-V[0]);
     for (unsigned int i=1; i<N; i++)
     {
-        sum += (U[i]-V[i])*(U[i]-V[i]);
+        sum += (u[i]-V[i])*(u[i]-V[i]);
     }
-    sum += 0.5*(U[N]-V[N])*(U[N]-V[N]);
+    sum += 0.5*(u[N]-V[N])*(u[N]-V[N]);
 
     return sum*spaceDimensionX().step();
 }
@@ -899,7 +910,7 @@ auto Functional::printY(unsigned int it, const DoubleVector &x, const DoubleVect
     //IPrinter::printSeperatorLine();
 
     const auto _fx = fx(x);
-    const auto _integral = integral(x);
+    const auto _integral = integral(U);
     const auto _norm = norm(x);
     const auto _penalty = penalty(x);
     printf_s("I[%4d] fx:%10.8f int: %8.5f nrm: %8.5f penalty: %8.5f eps: %8.6f R:%8.1f ", it, _fx, _integral, _norm, _penalty, epsilon, R);
