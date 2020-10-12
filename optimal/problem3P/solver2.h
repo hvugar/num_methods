@@ -4,8 +4,18 @@
 #include "global.h"
 
 #define OPTIMIZE_Y
-//#define OPTIMIZE_BETTA
+
+#ifdef OPTIMIZE_Y
+#define ENABLE_ALPHA
+//#define ENABLE_BETTA
+#define ENABLE_OMEGA
+#define ENABLE_ETA
+
+#define OPTIMIZE_ALPHA
+#define OPTIMIZE_BETTA
+#define OPTIMIZE_OMEGA
 #define OPTIMIZE_ETA
+#endif
 
 namespace p3p0
 {
@@ -32,6 +42,8 @@ public:
     //auto convertToVector(DoubleVector &x) const -> void;
     auto qNorm1(double t) const -> DoubleVector;
     inline auto sqr(double x) const -> double { return x*x; }
+
+    void printVectorY(const DoubleVector& x, bool normolize = false) const;
 
 public:
     auto q(const TimeNodePDE &tn) const -> DoubleVector;
@@ -67,8 +79,8 @@ public:
     size_t measrPointNumber = 4;
     DoubleMatrix uv;
     DoubleMatrix ud;
-//    DoubleVector *uv = nullptr;
-//    DoubleVector *ud = nullptr;
+    //    DoubleVector *uv = nullptr;
+    //    DoubleVector *ud = nullptr;
 
     DoubleMatrix alphaN;
     DoubleMatrix bettaN;
@@ -83,8 +95,8 @@ public:
     DoubleMatrix qMin;
     DoubleMatrix qMax;
 
-//    DoubleVector *qMin = nullptr;
-//    DoubleVector *qMax = nullptr;
+    //    DoubleVector *qMin = nullptr;
+    //    DoubleVector *qMax = nullptr;
 
     unsigned int _w = 7;
     unsigned int _p = 4;
@@ -95,30 +107,30 @@ protected:
 
 public:
 
-//    const double VCTR_1[28] = {
-//        -0.4384,-0.2379, 1.4993, -0.1458, 1.2402, 0.6780, -1.4138, -0.3162,
-//        0.0000, 0.0000, 0.0000,  0.0000, 0.0000, 0.0000,  0.0000,  0.0000,
-//        +4.7275, 4.0221, 5.6837, +3.3758,+3.1954, 4.5372, +4.7883, 	3.9435,
-//        0.2444, 0.4913, 0.6988,  0.8745 };
+    //    const double VCTR_1[28] = {
+    //        -0.4384,-0.2379, 1.4993, -0.1458, 1.2402, 0.6780, -1.4138, -0.3162,
+    //        0.0000, 0.0000, 0.0000,  0.0000, 0.0000, 0.0000,  0.0000,  0.0000,
+    //        +4.7275, 4.0221, 5.6837, +3.3758,+3.1954, 4.5372, +4.7883, 	3.9435,
+    //        0.2444, 0.4913, 0.6988,  0.8745 };
 
-//    const double NORM_1[28] = {
-//        0.5112, -2.5011, 1.1734, -0.6380, 0.8051, -1.5831, 0.2565, -1.4589,
-//        0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000,
-//        5.0249,  5.2474, 5.4654,  5.5379, 4.9167,  4.9639, 4.9973,  5.0597,
-//        0.1078,  0.2612, 0.7232 , 0.9125}; /*0.00085968*/
+    //    const double NORM_1[28] = {
+    //        0.5112, -2.5011, 1.1734, -0.6380, 0.8051, -1.5831, 0.2565, -1.4589,
+    //        0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000,
+    //        5.0249,  5.2474, 5.4654,  5.5379, 4.9167,  4.9639, 4.9973,  5.0597,
+    //        0.1078,  0.2612, 0.7232 , 0.9125}; /*0.00085968*/
 
-//    const double RESULT_1[28] = {
-//        0.5112, -2.5011, 1.1734, -0.6380, 0.8051, -1.5831, 0.2565, -1.4589,
-//        0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000,
-//        5.0249,  5.2474, 5.4654,  5.5379, 4.9167,  4.9639, 4.9973,  5.0597,
-//        0.1078,  0.2612, 0.7232 , 0.9125 }; /*0.00085968*/
+    //    const double RESULT_1[28] = {
+    //        0.5112, -2.5011, 1.1734, -0.6380, 0.8051, -1.5831, 0.2565, -1.4589,
+    //        0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000, 0.0000,  0.0000,
+    //        5.0249,  5.2474, 5.4654,  5.5379, 4.9167,  4.9639, 4.9973,  5.0597,
+    //        0.1078,  0.2612, 0.7232 , 0.9125 }; /*0.00085968*/
 
     /*fx:29.08423687 int:  6.93129 nrm: 13.62076 penalty:  8.53218*/
     const double VCTR_1[28] = { // 1.0 1.0 1.0 0.5 0.0001 R *= 2.0 epsilon *= 0.5
-        0.8308, 0.7776, 0.4642,-3.8820,-0.7526, 1.6451,-0.0113,- 1.2315,
-        0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,  0.0000,
-        5.0665, 4.9530, 5.0094, 5.0119, 5.1485, 4.9594, 5.1899,  5.0338,
-        0.2439, 0.3608, 0.5999, 0.7879 };  /*0.00110691*/
+                                0.8308, 0.7776, 0.4642,-3.8820,-0.7526, 1.6451,-0.0113,- 1.2315,
+                                0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,  0.0000,
+                                5.0665, 4.9530, 5.0094, 5.0119, 5.1485, 4.9594, 5.1899,  5.0338,
+                                0.2439, 0.3608, 0.5999, 0.7879 };  /*0.00110691*/
 
     const double NORM_1[28] = {
         0.0527,1.0949,-1.4853,-1.6131,-1.1310,1.3967,-1.5548,-0.2611,
@@ -127,10 +139,10 @@ public:
         0.1634,0.3895,0.6836,0.8595 };  /*0.00110691*/
 
     const double RESULT_1[28] = { /*0.0008164817*/
-        0.0538, 1.1115, -1.4909, -1.6223, -1.1340, 1.3753, -1.5611, -0.2472,
-        0.0000, 0.0000,  0.0000,  0.0000,  0.0000, 0.0000,  0.0000,  0.0000,
-        5.3496, 4.9623,  5.2580,  4.8559,  4.7911, 5.0526,  5.2208,  5.3651,
-        0.1618, 0.3861,  0.7037,  0.8543 };
+                                  0.0538, 1.1115, -1.4909, -1.6223, -1.1340, 1.3753, -1.5611, -0.2472,
+                                  0.0000, 0.0000,  0.0000,  0.0000,  0.0000, 0.0000,  0.0000,  0.0000,
+                                  5.3496, 4.9623,  5.2580,  4.8559,  4.7911, 5.0526,  5.2208,  5.3651,
+                                  0.1618, 0.3861,  0.7037,  0.8543 };
 };
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : virtual public IHeatEquationIBVP
@@ -215,7 +227,6 @@ private:
 
     auto printY(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
     auto printQ(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
-
 };
 
 };

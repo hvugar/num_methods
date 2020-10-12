@@ -207,7 +207,7 @@ double DoubleVector::LInfNorm() const
 
 DoubleVector& DoubleVector::EuclideanNormalize()
 {
-    double norm = L2Norm();
+    double norm = EuclideanNorm();
     if (norm > DBL_EPSILON) for (size_t i=0; i<mLength; i++) mData[i] /= norm;
     return *this;
 }

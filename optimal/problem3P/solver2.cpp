@@ -28,7 +28,19 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     functional.setControlSize(_heatSourceNumber, _measrPointNumber);
 
 #ifdef OPTIMIZE_Y
-    const auto vector_size = _measrPointNumber * (3*_heatSourceNumber + 1);
+    size_t vector_size = 0;
+#if defined(ENABLE_ALPHA) && defined(OPTIMIZE_ALPHA)
+    vector_size += _measrPointNumber*_heatSourceNumber;
+#endif
+#if defined (ENABLE_BETTA) && defined(OPTIMIZE_BETTA)
+    vector_size += _measrPointNumber*_heatSourceNumber;
+#endif
+#if defined (ENABLE_OMEGA) && defined(OPTIMIZE_OMEGA)
+    vector_size += _measrPointNumber*_heatSourceNumber;
+#endif
+#if defined (ENABLE_ETA) &&  defined (OPTIMIZE_ETA)
+    vector_size += _measrPointNumber;
+#endif
 #else
     const auto vector_size = time_size;
     const unsigned int start[] = { 0*vector_size+0, 1*vector_size+0 };
@@ -47,16 +59,9 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
      ******************************************************************/
 
 #ifdef OPTIMIZE_Y
-    //    DoubleVector x(vector_size, 0.0);
     DoubleVector x(functional.VCTR_1, vector_size);
-
-    DoubleVector g(x.length());
-    DoubleVector g1(x.length());
     IPrinter::printSeperatorLine("x vector");
-    printf("a:");IPrinter::print(x.mid(0x00, 0x07), 8, functional._w, functional._p);
-    printf("b:");IPrinter::print(x.mid(0x08, 0x0F), 8, functional._w, functional._p);
-    printf("o:");IPrinter::print(x.mid(0x10, 0x17), 8, functional._w, functional._p);
-    printf("e:");IPrinter::print(x.mid(0x18, 0x1B), 4, functional._w, functional._p);
+    functional.printVectorY(x);
 #else
     DoubleVector x(vector_size*functional.heatSourceNumber, 2.0);
     //x[0*vctr_size] = 0.0;
@@ -79,24 +84,19 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 #endif
 
 #ifdef OPTIMIZE_Y
+    DoubleVector g1(x.length());
+    functional.gradient(x, g1);
     std::string msg = std::string("gradient vector: R:") + std::to_string(functional.R) + std::string(", epsilon: ") + std::to_string(functional.epsilon);
-    functional.gradient(x, g);
     IPrinter::printSeperatorLine(msg.data());
-    printf("a:");IPrinter::print(g.mid(0x00, 0x07).L2Normalize(), 8, functional._w, functional._p);
-    printf("b:");IPrinter::print(g.mid(0x08, 0x0F).L2Normalize(), 8, functional._w, functional._p);
-    printf("o:");IPrinter::print(g.mid(0x10, 0x17).L2Normalize(), 8, functional._w, functional._p);
-    printf("e:");IPrinter::print(g.mid(0x18, 0x1B).L2Normalize(), 4, functional._w, functional._p);
+    functional.printVectorY(g1, true);
 
-
+    DoubleVector g2(x.length());
     IPrinter::printSeperatorLine("numerical gradient vector");
-    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
-    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
-    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x10), static_cast<size_t>(0x17));
-    IGradient::Gradient(&functional, 0.001, x, g1, static_cast<size_t>(0x18), static_cast<size_t>(0x1B));
-    printf("a:");IPrinter::print(g1.mid(0x00, 0x07).L2Normalize(), 0x08, functional._w, functional._p);
-    printf("b:");IPrinter::print(g1.mid(0x08, 0x0F).L2Normalize(), 0x08, functional._w, functional._p);
-    printf("o:");IPrinter::print(g1.mid(0x10, 0x17).L2Normalize(), 0x08, functional._w, functional._p);
-    printf("e:");IPrinter::print(g1.mid(0x18, 0x1B).L2Normalize(), 0x04, functional._w, functional._p);
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x10), static_cast<size_t>(0x17));
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x18), static_cast<size_t>(0x1B));
+    functional.printVectorY(g2, true);
 #else
     functional.gradient(x, g);
     IPrinter::printVector(functional._w, functional._p, g.mid(start[0], finsh[0]).L2Normalize(), "g1:");
@@ -179,6 +179,45 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
     printY(it, x, g, f, alpha, result);
 #else
     printY(it, x, g, f, alpha, result);
+#endif
+}
+
+void CommonParameter::printVectorY(const DoubleVector &x, bool normolize) const
+{
+#ifdef OPTIMIZE_Y
+    const size_t offset = measrPointNumber*heatSourceNumber;
+    size_t n = 0;
+#if defined (OPTIMIZE_ALPHA)
+    if (normolize) {
+        printf("a:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), offset, _w, _p);
+    } else {
+        printf("a:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), offset, _w, _p);
+    }
+    n++;
+#endif
+#if defined (OPTIMIZE_BETTA)
+    if (normolize) {
+        printf("b:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), offset, _w, _p);
+    } else {
+        printf("b:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), offset, _w, _p);
+    }
+    n++;
+#endif
+#if defined (OPTIMIZE_OMEGA)
+    if (normolize) {
+        printf("o:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), offset, _w, _p);
+    } else {
+        printf("o:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), offset, _w, _p);
+    }
+    n++;
+#endif
+#if defined (OPTIMIZE_ETA)
+    if (normolize) {
+        printf("e:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), measrPointNumber, _w, _p);
+    } else {
+        printf("e:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), measrPointNumber, _w, _p);
+    }
+#endif
 #endif
 }
 

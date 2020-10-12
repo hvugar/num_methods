@@ -119,4 +119,38 @@ private:
     double **mData;
 };
 
+#include <cstring>
+
+class MINIMUMSHARED_EXPORT Matrix2D
+{
+public:
+    explicit Matrix2D(size_t rows = 0, size_t cols = 0, double at = 0.0);
+    Matrix2D(const Matrix2D &matrix);
+    //    Matrix2D(const DoubleVector &vector);
+    //    Matrix2D(const double* const data, size_t length, size_t rows, size_t cols);
+    //    Matrix2D(double** data, size_t rows, size_t cols);
+    virtual ~Matrix2D();
+
+    auto rows() const -> size_t;
+    auto cols() const -> size_t;
+
+    auto at(size_t row, size_t col) const -> double;
+    auto at(size_t row, size_t col) -> double &;
+
+    auto value(size_t row, size_t col) const -> double;
+    auto value(size_t row, size_t col) -> double &;
+
+    auto min() const -> double;
+    auto max() const -> double;
+
+    auto fill(double value) -> void;
+    auto clear() -> void;
+    auto reset(size_t rows = 0, size_t cols = 0) -> void;
+
+private:
+    size_t m_rows;
+    size_t m_cols;
+    double *m_data;
+};
+
 #endif // MATRIX2D_H

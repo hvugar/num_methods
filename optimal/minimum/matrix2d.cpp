@@ -795,3 +795,102 @@ void DoubleMatrix::switchRows(size_t row1, size_t row2)
 void DoubleMatrix::switchCols(size_t, size_t)
 {
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+Matrix2D::Matrix2D(size_t rows, size_t cols, double /*value*/) : m_rows(rows), m_cols(cols), m_data(nullptr)
+{
+    const size_t length = m_rows * m_cols;
+    m_data = static_cast<double*>(std::calloc(length, sizeof(double)));
+    if (m_data == nullptr) { throw std::exception(); }
+}
+
+Matrix2D::Matrix2D(const Matrix2D &mtx) : m_rows(mtx.m_rows), m_cols(mtx.m_cols)
+{
+    const size_t length = m_rows * m_cols;
+    //m_data = new double[length];
+    m_data = static_cast<double*>(std::malloc(length*sizeof(double)));
+    std::memcpy(m_data, mtx.m_data, length);
+}
+
+Matrix2D::~Matrix2D()
+{
+    clear();
+}
+
+auto Matrix2D::rows() const -> size_t { return m_rows; }
+
+auto Matrix2D::cols() const -> size_t { return m_cols; }
+
+auto Matrix2D::at(size_t row, size_t col) const -> double
+{
+    if ((row >= m_rows) || (col >= m_cols)) { throw std::exception(); }
+    return value(row, col);
+}
+
+auto Matrix2D::at(size_t row, size_t col) -> double &
+{
+    if ((row >= m_rows) || (col >= m_cols)) { throw std::exception(); }
+    return value(row, col);
+}
+
+auto Matrix2D::value(size_t row, size_t col) const -> double
+{
+    size_t index = row*m_cols + col;
+    return m_data[index];
+}
+
+auto Matrix2D::value(size_t row, size_t col) -> double &
+{
+    size_t index = row*m_cols + col;
+    return m_data[index];
+}
+
+auto Matrix2D::min() const -> double
+{
+    const size_t length = m_rows * m_cols;
+    double minimum = 0.0;
+    if (length == 0) { std::exception(); } else { minimum = m_data[0]; }
+    for (size_t i = 1; i < length; ++i)
+    {
+        if (m_data[i] < minimum) minimum = m_data[i];
+    }
+    return minimum;
+}
+
+auto Matrix2D::max() const -> double
+{
+    const size_t length = m_rows * m_cols;
+    double maximum = 0.0;
+    if (length == 0) { std::exception(); } else { maximum = m_data[0]; }
+    for (size_t i = 1; i < length; ++i)
+    {
+        if (m_data[i] > maximum) maximum = m_data[i];
+    }
+    return maximum;
+}
+
+auto Matrix2D::fill(double value) -> void
+{
+    const size_t length = m_rows * m_cols;
+    for (size_t i = 0; i < length; ++i) { m_data[i] = value; }
+}
+
+auto Matrix2D::clear() -> void
+{
+    if (m_data != nullptr) std::free(m_data);
+    m_data = nullptr;
+    m_rows = m_cols = 0;
+}
+
+
+auto Matrix2D::reset(size_t rows, size_t cols) -> void
+{
+    if (m_data != nullptr) std::free(m_data);
+    m_rows = rows;
+    m_cols = cols;
+    const size_t length = m_rows * m_cols;
+    m_data = static_cast<double*>(std::calloc(length, sizeof(double)));
+    if (m_data == nullptr) { throw std::exception(); }
+}
+
