@@ -26,21 +26,13 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     functional.setTimeDimension(timeDimension);
     functional.setSpaceDimensionX(spaceDimensionX);
     functional.setControlSize(_heatSourceNumber, _measrPointNumber);
+    functional.R = 0.0;
+    functional.epsilon = 0.0;
+    functional.error = 0.0;
+    functional.withError = false;
 
 #ifdef OPTIMIZE_Y
-    size_t vector_size = 0;
-//#if defined(ENABLE_ALPHA) && defined(OPTIMIZE_ALPHA)
-    vector_size += _measrPointNumber*_heatSourceNumber;
-//#endif
-//#if defined (ENABLE_BETTA) && defined(OPTIMIZE_BETTA)
-    vector_size += _measrPointNumber*_heatSourceNumber;
-//#endif
-//#if defined (ENABLE_OMEGA) && defined(OPTIMIZE_OMEGA)
-    vector_size += _measrPointNumber*_heatSourceNumber;
-//#endif
-//#if defined (ENABLE_ETA) &&  defined (OPTIMIZE_ETA)
-    vector_size += _measrPointNumber;
-//#endif
+    size_t vector_size = 2*_measrPointNumber*_heatSourceNumber + _heatSourceNumber + _measrPointNumber;
 #else
     const auto vector_size = time_size;
     const unsigned int start[] = { 0*vector_size+0, 1*vector_size+0 };
@@ -84,18 +76,34 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 #endif
 
 #ifdef OPTIMIZE_Y
+    puts("1");
     DoubleVector g1(x.length());
     functional.gradient(x, g1);
+    puts("2");
+
     std::string msg = std::string("gradient vector: R:") + std::to_string(functional.R) + std::string(", epsilon: ") + std::to_string(functional.epsilon);
     IPrinter::printSeperatorLine(msg.data());
-    functional.printVectorY(g1, true);
+
+    //functional.printVectorY(g1, true);
 
     DoubleVector g2(x.length());
     IPrinter::printSeperatorLine("numerical gradient vector");
-    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
-    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
-    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x10), static_cast<size_t>(0x17));
-    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x18), static_cast<size_t>(0x1B));
+    size_t start = 0;
+#if defined (OPTIMIZE_ALPHA)
+    IGradient::Gradient(&functional, 0.001, x, g2, start, start + _heatSourceNumber*_measrPointNumber-1);
+    start += _heatSourceNumber*_measrPointNumber;
+#endif
+#if defined (OPTIMIZE_BETTA)
+    IGradient::Gradient(&functional, 0.001, x, g2, start, start + _heatSourceNumber*_measrPointNumber - 1);
+    start += _heatSourceNumber*_measrPointNumber;
+#endif
+#if defined (OPTIMIZE_OMEGA)
+    IGradient::Gradient(&functional, 0.001, x, g2, start, start + _heatSourceNumber - 1);
+    start += _heatSourceNumber;
+#endif
+#if defined (OPTIMIZE_ETA)
+    IGradient::Gradient(&functional, 0.001, x, g2, start, start+_measrPointNumber - 1);
+#endif
     functional.printVectorY(g2, true);
 #else
     functional.gradient(x, g);
@@ -108,6 +116,8 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     IPrinter::printVector(functional._w, functional._p, g1.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 #endif
 
+    return;
+
     IPrinter::printSeperatorLine("Starting optimization...");
     double step = 0.1;
     double epsl = 0.0001;
@@ -115,9 +125,9 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     functional.epsilon = 0.0;
     functional.no_norm = 1.0;
     functional.error = 0.0;
-//    while (functional.epsilon > 0.001)
+    //    while (functional.epsilon > 0.001)
     {
-//        while (functional.R <= 100000.0)
+        //        while (functional.R <= 100000.0)
         {
             GradientBasedMethod *gm;
             gm = new ConjugateGradient; gm->setNormalize(false);
@@ -132,20 +142,20 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->setFunctionTolerance(0.000000001);
             gm->setR1MinimizeEpsilon(step, epsl);
             gm->showExitMessage(false);
-//            gm->calculate(x);
+            //            gm->calculate(x);
             delete gm;
 
-//            if (functional.R <= 100000.0) functional.R *= 2.0;
+            //            if (functional.R <= 100000.0) functional.R *= 2.0;
             //IPrinter::print(x, x.length(), functional._w, functional._p);
         }
-//        functional.R = 1.0;
-//        functional.epsilon *= 0.5;
+        //        functional.R = 1.0;
+        //        functional.epsilon *= 0.5;
     }
     IPrinter::printSeperatorLine("Optimization is finished.");
     IPrinter::printVector(functional._w, functional._p, functional.V, "V: ");
 
     IPrinter::printSeperatorLine();
-    DoubleVector x1(functional.RESULT_1, vector_size);
+    DoubleVector x1(functional.VCTR_1, vector_size);
     IPrinter::print(x1, x1.length(), functional._w, functional._p);
     functional.R = 0.0;
     functional.epsilon = 0.0;
@@ -156,25 +166,25 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     functional.convertFromVector(x1);
     functional.forward.implicit_calculate_D1V1();
 
-//    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
-//    {
-//        double t = ln*time_step;
-//        double fx = functional.fx(x1);
-//        double in = functional.integral(functional.U);
-//        double nr = functional.norm(x1);
-//        double pn = functional.penalty(x1);
-//        double q1 = functional.mq.at(ln,0);
-//        double q2 = functional.mq.at(ln,1);
-//        double qMin1 = functional.qMin.at(ln,0);
-//        double qMin2 = functional.qMin.at(ln,1);
-//        double qMax1 = functional.qMax.at(ln,0);
-//        double qMax2 = functional.qMax.at(ln,1);
+    //    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
+    //    {
+    //        double t = ln*time_step;
+    //        double fx = functional.fx(x1);
+    //        double in = functional.integral(functional.U);
+    //        double nr = functional.norm(x1);
+    //        double pn = functional.penalty(x1);
+    //        double q1 = functional.mq.at(ln,0);
+    //        double q2 = functional.mq.at(ln,1);
+    //        double qMin1 = functional.qMin.at(ln,0);
+    //        double qMin2 = functional.qMin.at(ln,1);
+    //        double qMax1 = functional.qMax.at(ln,0);
+    //        double qMax2 = functional.qMax.at(ln,1);
 
-//        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | \n", t, fx, in, nr, pn,
-//               qMin1, q1, qMax1,
-//               qMin2, q2, qMax2,
-//               functional.R, functional.epsilon);
-//    }
+    //        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | \n", t, fx, in, nr, pn,
+    //               qMin1, q1, qMax1,
+    //               qMin2, q2, qMax2,
+    //               functional.R, functional.epsilon);
+    //    }
 }
 
 /**************************************************************************************************************************/
@@ -190,41 +200,35 @@ auto Functional::print(unsigned int it, const DoubleVector &x, const DoubleVecto
 
 void CommonParameter::printVectorY(const DoubleVector &x, bool normolize) const
 {
-#ifdef OPTIMIZE_Y
     const size_t offset = measrPointNumber*heatSourceNumber;
-    size_t n = 0;
-#if defined (OPTIMIZE_ALPHA)
+    size_t start = 0;
+
     if (normolize) {
-        printf("a:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), offset, _w, _p);
+        printf("a:");IPrinter::print(x.mid(start,start+offset-1).EuclideanNormalize(), offset, _w, _p);
     } else {
-        printf("a:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), offset, _w, _p);
+        printf("a:");IPrinter::print(x.mid(start,start+offset-1), offset, _w, _p);
     }
-    n++;
-#endif
-#if defined (OPTIMIZE_BETTA)
+    start += offset;
+
     if (normolize) {
-        printf("b:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), offset, _w, _p);
+        printf("b:");IPrinter::print(x.mid(start,start+offset-1).EuclideanNormalize(), offset, _w, _p);
     } else {
-        printf("b:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), offset, _w, _p);
+        printf("b:");IPrinter::print(x.mid(start,start+offset-1), offset, _w, _p);
     }
-    n++;
-#endif
-#if defined (OPTIMIZE_OMEGA)
+    start += offset;
+
     if (normolize) {
-        printf("o:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), offset, _w, _p);
+        printf("o:");IPrinter::print(x.mid(start,start+heatSourceNumber-1).EuclideanNormalize(), heatSourceNumber, _w, _p);
     } else {
-        printf("o:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), offset, _w, _p);
+        printf("o:");IPrinter::print(x.mid(start,start+heatSourceNumber-1), heatSourceNumber, _w, _p);
     }
-    n++;
-#endif
-#if defined (OPTIMIZE_ETA)
+    start += heatSourceNumber;
+
     if (normolize) {
-        printf("e:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1).EuclideanNormalize(), measrPointNumber, _w, _p);
+        printf("e:");IPrinter::print(x.mid(start,start+measrPointNumber-1).EuclideanNormalize(), measrPointNumber, _w, _p);
     } else {
-        printf("e:");IPrinter::print(x.mid(n*offset, (n+1)*offset-1), measrPointNumber, _w, _p);
+        printf("e:");IPrinter::print(x.mid(start,start+measrPointNumber-1), measrPointNumber, _w, _p);
     }
-#endif
-#endif
 }
 
 auto CommonParameter::setTimeDimension(const Dimension &timeDimension) -> void
@@ -342,18 +346,13 @@ auto CommonParameter::setControlSize(size_t heatSourceNumber, size_t measrPointN
 
     alpha.resize(heatSourceNumber, measrPointNumber, 0.0);
     betta.resize(heatSourceNumber, measrPointNumber, 0.0);
-    omega.resize(heatSourceNumber, measrPointNumber, 0.0);
+    omega.resize(heatSourceNumber, 0.0);
     mPnts.resize(measrPointNumber, 0.0);
 
     alphaN.resize(heatSourceNumber, measrPointNumber, 0.0);
     bettaN.resize(heatSourceNumber, measrPointNumber, 0.0);
-    omegaN.resize(heatSourceNumber, measrPointNumber, 0.0);
+    omegaN.resize(heatSourceNumber, 0.0);
     mPntsN.resize(measrPointNumber, 0.0);
-
-    alphaN[0][0] = -0.7873; alphaN[0][1] = -1.0482; alphaN[0][2] = +0.1091; alphaN[0][3] = +1.7487; alphaN[1][0] = +0.2138; alphaN[1][1] = -1.6883; alphaN[1][2] = -0.0406; alphaN[1][3] = +0.2155;
-    bettaN[0][0] = -1.1766; bettaN[0][1] = -1.1083; bettaN[0][2] = -0.9647; bettaN[0][3] = -0.7437; bettaN[1][0] = +0.1263; alphaN[1][1] =  0.0839; bettaN[1][2] =  0.0227; bettaN[1][3] = -0.0627;
-    omegaN[0][0] = -0.5157; omegaN[0][1] = -0.0206; omegaN[0][2] =  0.3726; omegaN[0][3] = -1.0293; omegaN[1][0] = -3.3899; omegaN[1][1] =  3.7042; omegaN[1][2] = -3.7916; omegaN[1][3] =  3.9368;
-    mPntsN[0]    =  0.2000; mPntsN[1]    =  0.4000; mPntsN[2]    =  0.6000; mPntsN[3]    =  0.8000;
 #endif
 }
 
@@ -472,8 +471,8 @@ auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
                 const double uv = common->uv.at(tn.i,j) * (1.0+(rand()%2==0 ? -common->error : common->error));
                 const double alpha = common->alpha.at(i,j);
                 const double betta = common->betta.at(i,j);
-                const double omega = common->omega.at(i,j);
-                mqlni += alpha * ( uv - omega ) + betta * ( mzlni - mp ) * (mzlni - mp);
+                const double omega = common->omega.at(i);
+                mqlni += alpha*uv - omega + betta * ( mzlni - mp ) * (mzlni - mp);
             }
         }
     }
@@ -585,15 +584,23 @@ auto CommonParameter::convertFromVector(const DoubleVector &x) -> void
         {
             alpha.at(i,j) = x.at((0*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j);
             betta.at(i,j) = x.at((1*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j);
-            omega.at(i,j) = x.at((2*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j);
 
             alphaN.at(i,j) = NORM_1[(0*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
             bettaN.at(i,j) = NORM_1[(1*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
-            omegaN.at(i,j) = NORM_1[(2*heatSourceNumber*measrPointNumber) + i*measrPointNumber + j];
 
         }
-        mPnts.at(j) = x.at((3*heatSourceNumber*measrPointNumber) + j);
-        mPntsN.at(j) = NORM_1[(3*heatSourceNumber*measrPointNumber) + j];
+    }
+
+    for (unsigned int i=0; i<heatSourceNumber; i++)
+    {
+        omega.at(i)  = x.at((2*heatSourceNumber*measrPointNumber) + i);
+        omegaN.at(i) = NORM_1[(2*heatSourceNumber*measrPointNumber) + i];
+    }
+
+    for (unsigned int j=0; j<measrPointNumber; j++)
+    {
+        mPnts.at(j) = x.at((2*heatSourceNumber*measrPointNumber) + heatSourceNumber + j);
+        mPntsN.at(j) = NORM_1[(2*heatSourceNumber*measrPointNumber) + heatSourceNumber + j];
     }
 
     //for (unsigned int i=0; i<heatSourceNumber; i++) { mq[0].at(i) = 0.0; }
@@ -735,12 +742,15 @@ auto Functional::normY(const DoubleVector &x, const DoubleVector &/*n*/) const -
     {
         for (size_t i=0; i<heatSourceNumber; i++)
         {
-            norm += sqr(alpha[i][j] - alphaN[i][j]*no_norm);
-            norm += sqr(betta[i][j] - bettaN[i][j]*no_norm);
-            norm += sqr(omega[i][j] - omegaN[i][j]*no_norm);
+            norm += sqr(alpha.at(i,j) - alphaN.at(i,j)*no_norm);
+            norm += sqr(betta.at(i,j) - bettaN.at(i,j)*no_norm);
         }
-        norm += sqr(mPnts[j] - mPntsN[j]*no_norm);
     }
+
+    for (size_t i=0; i<heatSourceNumber; i++) { norm += sqr(omega.at(i) - omegaN.at(i)*no_norm); }
+
+    for (size_t j=0; j<measrPointNumber; j++) { norm += sqr(mPnts.at(j) - mPntsN.at(j)*no_norm); }
+
     return norm;
 }
 
@@ -812,17 +822,17 @@ auto Functional::gradientY(const DoubleVector &x, DoubleVector &g) const -> void
         {
             const auto alpha_ij = alpha.at(i,j);
             const auto betta_ij = betta.at(i,j);
-            const auto omega_ij = omega.at(i,j);
+            //const auto omega_i = omega.at(i);
 
             const auto alphaN_ij = alphaN.at(i,j)*no_norm;
             const auto bettaN_ij = bettaN.at(i,j)*no_norm;
-            const auto omegaN_ij = omegaN.at(i,j)*no_norm;
+            //const auto omegaN_ij = omegaN.at(i)*no_norm;
 
 
             double g1 = 0.0;
             double g2 = 0.0;
-            double g3 = 0.0;
-            double g4 = 0.0;
+            //double g3 = 0.0;
+            //double g4 = 0.0;
 
             size_t ln = 0;
             double _gpln = 2.0 * R * gp(i,ln) * sgn( g0(i,ln) );
@@ -831,10 +841,10 @@ auto Functional::gradientY(const DoubleVector &x, DoubleVector &g) const -> void
             double _uvlnj = uv.at(ln,j);
             double _udlnj = ud.at(ln,j);
 
-            g1 += 0.5*(_mpln + _gpln) * (_uvlnj - omega_ij);
+            g1 += 0.5*(_mpln + _gpln) * (_uvlnj /*- omega_ij*/);
             g2 += 0.5*(_mpln + _gpln) * (_mzlni - mPntsj)*(_mzlni - mPntsj);
-            g3 += 0.5*(_mpln + _gpln) * (alpha_ij);
-            g4 += 0.5*(_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+            //g3 += 0.5*(_mpln + _gpln) /** (alpha_ij)*/;
+            //g4 += 0.5*(_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
             for (ln=1; ln<time_size-1; ln++)
             {
                 _gpln = 2.0 * R * gp(i,ln) * sgn( g0(i,ln) );
@@ -843,10 +853,10 @@ auto Functional::gradientY(const DoubleVector &x, DoubleVector &g) const -> void
                 _uvlnj = uv.at(ln,j);
                 _udlnj = ud.at(ln,j);
 
-                g1 += (_mpln + _gpln) * (_uvlnj - omega_ij);
+                g1 += (_mpln + _gpln) * (_uvlnj /*- omega_ij*/);
                 g2 += (_mpln + _gpln) * (_mzlni - mPntsj)*(_mzlni - mPntsj);
-                g3 += (_mpln + _gpln) * (alpha_ij);
-                g4 += (_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+                //g3 += (_mpln + _gpln) /** (alpha_ij)*/;
+                //g4 += (_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
             }
             ln = time_size-1;
             _gpln = 2.0 * R * gp(i,ln) * sgn( g0(i,ln) );
@@ -855,29 +865,39 @@ auto Functional::gradientY(const DoubleVector &x, DoubleVector &g) const -> void
             _uvlnj = uv.at(ln,j);
             _udlnj = ud.at(ln,j);
 
-            g1 += 0.5*(_mpln + _gpln) * (_uvlnj - omega_ij);
+            g1 += 0.5*(_mpln + _gpln) * (_uvlnj /*- omega_ij*/);
             g2 += 0.5*(_mpln + _gpln) * (_mzlni - mPntsj)*(_mzlni - mPntsj);
-            g3 += 0.5*(_mpln + _gpln) * (alpha_ij);
-            g4 += 0.5*(_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+            //g3 += 0.5*(_mpln + _gpln) /** (alpha_ij)*/;
+            //g4 += 0.5*(_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
 
             g1 *= -time_step;
             g2 *= -time_step;
-            g3 *= +time_step;
-            g4 *= -time_step;
+            //g3 *= +time_step;
+            //g4 *= -time_step;
 
+#ifdef OPTIMIZE_ALPHA
             g.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g1 + 2.0*epsilon*(alpha_ij - alphaN_ij);
+#endif
 #ifdef OPTIMIZE_BETTA
             g.at(1*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g2 + 2.0*epsilon*(betta_ij - bettaN_ij);
 #endif
-            g.at(2*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g3 + 2.0*epsilon*(omega_ij - omegaN_ij);
+            //g.at(2*heatSourceNumber*measrPointNumber + i) = g3 + 2.0*epsilon*(omega_i - omegaN_ij);
 #ifdef OPTIMIZE_ETA
-            g.at(3*heatSourceNumber*measrPointNumber + j) += g4;
+            //g.at(2*heatSourceNumber*measrPointNumber + heatSourceNumber + j) += g4;
 #endif
         }
 #ifdef OPTIMIZE_ETA
-        g.at(3*heatSourceNumber*measrPointNumber + j) += 2.0*epsilon*(mPntsj - mPntsNj);
+        //g.at(3*heatSourceNumber*measrPointNumber + j) += 2.0*epsilon*(mPntsj - mPntsNj);
 #endif
     }
+
+    for (size_t i=0; i<heatSourceNumber; i++)
+    {}
+
+    for (size_t j=0; j<measrPointNumber; j++)
+    {}
+
+
 }
 
 auto Functional::gradientQ(const DoubleVector &x, DoubleVector &g) const -> void
