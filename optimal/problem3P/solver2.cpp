@@ -76,33 +76,26 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 #endif
 
 #ifdef OPTIMIZE_Y
-    puts("1");
+
     DoubleVector g1(x.length());
     functional.gradient(x, g1);
-    puts("2");
-
     std::string msg = std::string("gradient vector: R:") + std::to_string(functional.R) + std::string(", epsilon: ") + std::to_string(functional.epsilon);
     IPrinter::printSeperatorLine(msg.data());
-
-    //functional.printVectorY(g1, true);
+    functional.printVectorY(g1, true);
 
     DoubleVector g2(x.length());
     IPrinter::printSeperatorLine("numerical gradient vector");
-    size_t start = 0;
 #if defined (OPTIMIZE_ALPHA)
-    IGradient::Gradient(&functional, 0.001, x, g2, start, start + _heatSourceNumber*_measrPointNumber-1);
-    start += _heatSourceNumber*_measrPointNumber;
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x00), static_cast<size_t>(0x07));
 #endif
 #if defined (OPTIMIZE_BETTA)
-    IGradient::Gradient(&functional, 0.001, x, g2, start, start + _heatSourceNumber*_measrPointNumber - 1);
-    start += _heatSourceNumber*_measrPointNumber;
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x08), static_cast<size_t>(0x0F));
 #endif
 #if defined (OPTIMIZE_OMEGA)
-    IGradient::Gradient(&functional, 0.001, x, g2, start, start + _heatSourceNumber - 1);
-    start += _heatSourceNumber;
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x10), static_cast<size_t>(0x11));
 #endif
 #if defined (OPTIMIZE_ETA)
-    IGradient::Gradient(&functional, 0.001, x, g2, start, start+_measrPointNumber - 1);
+    IGradient::Gradient(&functional, 0.001, x, g2, static_cast<size_t>(0x12), static_cast<size_t>(0x15));
 #endif
     functional.printVectorY(g2, true);
 #else
@@ -116,8 +109,6 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     IPrinter::printVector(functional._w, functional._p, g1.mid(start[1], finsh[1]).L2Normalize(), "g2:");
 #endif
 
-    return;
-
     IPrinter::printSeperatorLine("Starting optimization...");
     double step = 0.1;
     double epsl = 0.0001;
@@ -125,13 +116,14 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     functional.epsilon = 0.0;
     functional.no_norm = 1.0;
     functional.error = 0.0;
-    //    while (functional.epsilon > 0.001)
+    functional.withError = false;
+    while (functional.epsilon > 0.001 || true)
     {
-        //        while (functional.R <= 100000.0)
+        //while (functional.R <= 100000.0)
         {
             GradientBasedMethod *gm;
-            gm = new ConjugateGradient; gm->setNormalize(false);
-            //gm = new SteepestDescentGradient; gm->setNormalize(true);
+            //gm = new ConjugateGradient; gm->setNormalize(false);
+            gm = new SteepestDescentGradient; gm->setNormalize(true);
             gm->setFunction(&functional);
             gm->setGradient(&functional);
             gm->setPrinter(&functional);
@@ -142,17 +134,19 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->setFunctionTolerance(0.000000001);
             gm->setR1MinimizeEpsilon(step, epsl);
             gm->showExitMessage(false);
-            //            gm->calculate(x);
+            gm->calculate(x);
             delete gm;
 
-            //            if (functional.R <= 100000.0) functional.R *= 2.0;
+            if (functional.R <= 100000.0) functional.R *= 2.0;
             //IPrinter::print(x, x.length(), functional._w, functional._p);
         }
-        //        functional.R = 1.0;
-        //        functional.epsilon *= 0.5;
+        //functional.R = 1.0;
+        //functional.epsilon *= 0.5;
     }
     IPrinter::printSeperatorLine("Optimization is finished.");
     IPrinter::printVector(functional._w, functional._p, functional.V, "V: ");
+
+    return;
 
     IPrinter::printSeperatorLine();
     DoubleVector x1(functional.VCTR_1, vector_size);
@@ -403,7 +397,7 @@ HeatEquationIBVP::~HeatEquationIBVP() {}
 
 auto HeatEquationIBVP::initial(const SpaceNodePDE &/*sn*/, InitialCondition /*cn*/) const -> double
 {
-    return common->initialTemperature;
+    return common->_initialTemperature;
 }
 
 auto HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
@@ -468,7 +462,7 @@ auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
             for (size_t j=0; j<measrPointNumber; j++)
             {
                 const double mp = common->mPnts[j];
-                const double uv = common->uv.at(tn.i,j) * (1.0+(rand()%2==0 ? -common->error : common->error));
+                const double uv = common->uv.at(tn.i,j) /** (1.0+(rand()%2==0 ? -common->error : common->error))*/;
                 const double alpha = common->alpha.at(i,j);
                 const double betta = common->betta.at(i,j);
                 const double omega = common->omega.at(i);
@@ -675,11 +669,26 @@ Functional::Functional(double thermalDiffusivity, double thermalConductivity, do
 
 /*virtual*/ auto Functional::fx(const DoubleVector &x) const -> double
 {
+    double _fx = 0.0;
     const_cast<Functional*>(this)->convertFromVector(x);
-    forward.implicit_calculate_D1V1();
 
-    const double _integral = integral(U);
-    return _integral + epsilon * norm(x) + R * penalty(x);
+    for (unsigned int k1=0; k1<initialTemperature_nmb; k1++)
+    {
+        const_cast<Functional*>(this)->_initialTemperature = initialTemperature_vls[k1];
+
+        for (unsigned int k2=0; k2<thetaTemperature_nmb; k2++)
+        {
+            const_cast<Functional*>(this)->_theta = thetaTemperature_vls[k2];
+
+            double rho = initialTemperature_rho[k1] * thetaTemperature_rho[k2];
+
+            forward.implicit_calculate_D1V1();
+
+            const double _integral = integral(U);
+            _fx += (_integral + epsilon * norm(x) + R * penalty(x)) * rho;
+        }
+    }
+    return _fx;
 }
 
 auto CommonParameter::integral(const DoubleVector &u) const -> double
@@ -808,96 +817,114 @@ auto Functional::gradientY(const DoubleVector &x, DoubleVector &g) const -> void
     const auto time_step = timeDimension().step();
     const_cast<Functional*>(this)->convertFromVector(x);
 
-    forward.implicit_calculate_D1V1();
-    backward.implicit_calculate_D1V1();
-
     g.resize(x.length(), 0.0);
 
-    for (size_t j=0; j<measrPointNumber; j++)
+    for (unsigned int k1=0; k1<initialTemperature_nmb; k1++)
     {
-        const auto mPntsj = mPnts.at(j);
-        const auto mPntsNj = mPntsN.at(j)*no_norm;
+        const_cast<Functional*>(this)->_initialTemperature = initialTemperature_vls[k1];
 
-        for (size_t i=0; i<heatSourceNumber; i++)
+        for (unsigned int k2=0; k2<thetaTemperature_nmb; k2++)
         {
-            const auto alpha_ij = alpha.at(i,j);
-            const auto betta_ij = betta.at(i,j);
-            //const auto omega_i = omega.at(i);
+            const_cast<Functional*>(this)->_theta = thetaTemperature_vls[k2];
 
-            const auto alphaN_ij = alphaN.at(i,j)*no_norm;
-            const auto bettaN_ij = bettaN.at(i,j)*no_norm;
-            //const auto omegaN_ij = omegaN.at(i)*no_norm;
+            double rho = initialTemperature_rho[k1] * thetaTemperature_rho[k2];
 
+            forward.implicit_calculate_D1V1();
+            backward.implicit_calculate_D1V1();
 
-            double g1 = 0.0;
-            double g2 = 0.0;
-            //double g3 = 0.0;
-            //double g4 = 0.0;
-
-            size_t ln = 0;
-            double _gpln = 2.0 * R * gp(i,ln) * sgn( g0(i,ln) );
-            double _mpln = mp.at(ln,i);
-            double _mzlni = mz.at(ln,i);
-            double _uvlnj = uv.at(ln,j);
-            double _udlnj = ud.at(ln,j);
-
-            g1 += 0.5*(_mpln + _gpln) * (_uvlnj /*- omega_ij*/);
-            g2 += 0.5*(_mpln + _gpln) * (_mzlni - mPntsj)*(_mzlni - mPntsj);
-            //g3 += 0.5*(_mpln + _gpln) /** (alpha_ij)*/;
-            //g4 += 0.5*(_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
-            for (ln=1; ln<time_size-1; ln++)
+            for (size_t j=0; j<measrPointNumber; j++)
             {
-                _gpln = 2.0 * R * gp(i,ln) * sgn( g0(i,ln) );
-                _mpln = mp.at(ln,i);
-                _mzlni = mz.at(ln,i);
-                _uvlnj = uv.at(ln,j);
-                _udlnj = ud.at(ln,j);
+                const auto mPntsj = mPnts.at(j);
+                const auto mPntsNj = mPntsN.at(j)*no_norm;
 
-                g1 += (_mpln + _gpln) * (_uvlnj /*- omega_ij*/);
-                g2 += (_mpln + _gpln) * (_mzlni - mPntsj)*(_mzlni - mPntsj);
-                //g3 += (_mpln + _gpln) /** (alpha_ij)*/;
-                //g4 += (_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
-            }
-            ln = time_size-1;
-            _gpln = 2.0 * R * gp(i,ln) * sgn( g0(i,ln) );
-            _mpln = mp.at(ln,i);
-            _mzlni = mz.at(ln,i);
-            _uvlnj = uv.at(ln,j);
-            _udlnj = ud.at(ln,j);
+                for (size_t i=0; i<heatSourceNumber; i++)
+                {
+                    const auto alpha_ij = alpha.at(i,j);
+                    const auto betta_ij = betta.at(i,j);
 
-            g1 += 0.5*(_mpln + _gpln) * (_uvlnj /*- omega_ij*/);
-            g2 += 0.5*(_mpln + _gpln) * (_mzlni - mPntsj)*(_mzlni - mPntsj);
-            //g3 += 0.5*(_mpln + _gpln) /** (alpha_ij)*/;
-            //g4 += 0.5*(_mpln + _gpln) * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+                    const auto alphaN_ij = alphaN.at(i,j)*no_norm;
+                    const auto bettaN_ij = bettaN.at(i,j)*no_norm;
 
-            g1 *= -time_step;
-            g2 *= -time_step;
-            //g3 *= +time_step;
-            //g4 *= -time_step;
+                    double g1 = 0.0;
+                    double g2 = 0.0;
+                    double g4 = 0.0;
+
+                    size_t ln = 0;
+                    double _mpln = mp.at(ln,i) + 2.0*R*gp(i,ln)*sgn( g0(i,ln) );
+                    double _uvlnj = uv.at(ln,j);
+                    double _mzlni = mz.at(ln,i);
+                    double _udlnj = ud.at(ln,j);
+
+                    g1 += 0.5*_mpln * (_uvlnj /*- omega_ij*/);
+                    g2 += 0.5*_mpln * (_mzlni - mPntsj)*(_mzlni - mPntsj);
+                    g4 += 0.5*_mpln * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+                    for (ln=1; ln<time_size-1; ln++)
+                    {
+                        _mpln = mp.at(ln,i) + 2.0*R*gp(i,ln)*sgn( g0(i,ln) );
+                        _uvlnj = uv.at(ln,j);
+                        _mzlni = mz.at(ln,i);
+                        _udlnj = ud.at(ln,j);
+
+                        g1 += _mpln * (_uvlnj /*- omega_ij*/);
+                        g2 += _mpln * (_mzlni - mPntsj)*(_mzlni - mPntsj);
+                        g4 += _mpln * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+                    }
+                    ln = time_size-1;
+                    _mpln = mp.at(ln,i) + 2.0*R*gp(i,ln)*sgn( g0(i,ln) );
+                    _uvlnj = uv.at(ln,j);
+                    _mzlni = mz.at(ln,i);
+                    _udlnj = ud.at(ln,j);
+
+                    g1 += 0.5*_mpln * (_uvlnj /*- omega_ij*/);
+                    g2 += 0.5*_mpln * (_mzlni - mPntsj)*(_mzlni - mPntsj);
+                    g4 += 0.5*_mpln * (alpha_ij*_udlnj - 2.0*betta_ij*(_mzlni - mPntsj));
+
+                    g1 *= -time_step;
+                    g2 *= -time_step;
+                    g4 *= -time_step;
 
 #ifdef OPTIMIZE_ALPHA
-            g.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g1 + 2.0*epsilon*(alpha_ij - alphaN_ij);
+                    g.at(0*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) += (g1 + 2.0*epsilon*(alpha_ij - alphaN_ij)) * rho;
 #endif
 #ifdef OPTIMIZE_BETTA
-            g.at(1*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) = g2 + 2.0*epsilon*(betta_ij - bettaN_ij);
+                    g.at(1*heatSourceNumber*measrPointNumber + i*measrPointNumber + j) += (g2 + 2.0*epsilon*(betta_ij - bettaN_ij)) * rho;
 #endif
-            //g.at(2*heatSourceNumber*measrPointNumber + i) = g3 + 2.0*epsilon*(omega_i - omegaN_ij);
 #ifdef OPTIMIZE_ETA
-            //g.at(2*heatSourceNumber*measrPointNumber + heatSourceNumber + j) += g4;
+                    g.at(2*heatSourceNumber*measrPointNumber + heatSourceNumber + j) += g4 * rho;
 #endif
+                }
+#ifdef OPTIMIZE_ETA
+                g.at(2*heatSourceNumber*measrPointNumber + heatSourceNumber + j) += (2.0*epsilon*(mPntsj - mPntsNj)) * rho;
+#endif
+            }
+
+#ifdef OPTIMIZE_OMEGA
+            for (size_t i=0; i<heatSourceNumber; i++)
+            {
+                const auto omega_i = omega.at(i);
+                const auto omegaN_i = omegaN.at(i)*no_norm;
+
+                double g3 = 0.0;
+
+                size_t ln = 0;
+                double _mpln = mp.at(ln,i) + 2.0*R*gp(i,ln)*sgn( g0(i,ln) );
+                g3 += 0.5*_mpln;
+                for (ln=1; ln<time_size-1; ln++)
+                {
+                    _mpln = mp.at(ln,i) + 2.0*R*gp(i,ln)*sgn( g0(i,ln) );
+                    g3 += _mpln;
+                }
+                ln = time_size-1;
+                _mpln = mp.at(ln,i) + 2.0*R*gp(i,ln)*sgn( g0(i,ln) );
+                g3 += 0.5*_mpln;
+                g3 *= +time_step;
+
+                g.at(2*heatSourceNumber*measrPointNumber + i) += (g3 + 2.0*epsilon*(omega_i - omegaN_i)) * rho;
+            }
+#endif
+
         }
-#ifdef OPTIMIZE_ETA
-        //g.at(3*heatSourceNumber*measrPointNumber + j) += 2.0*epsilon*(mPntsj - mPntsNj);
-#endif
     }
-
-    for (size_t i=0; i<heatSourceNumber; i++)
-    {}
-
-    for (size_t j=0; j<measrPointNumber; j++)
-    {}
-
-
 }
 
 auto Functional::gradientQ(const DoubleVector &x, DoubleVector &g) const -> void
