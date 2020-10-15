@@ -113,13 +113,13 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     double step = 0.1;
     double epsl = 0.0001;
     functional.R = 0.0;
-    functional.epsilon = 0.0;
-    functional.no_norm = 1.0;
+    functional.epsilon = 1.0;
+    functional.no_norm = 0.0;
     functional.error = 0.0;
     functional.withError = false;
-    while (functional.epsilon > 0.001 || true)
+//    while (functional.epsilon > 0.000001)
     {
-        //while (functional.R <= 100000.0)
+//        while (functional.R <= 100000.0)
         {
             GradientBasedMethod *gm;
             //gm = new ConjugateGradient; gm->setNormalize(false);
@@ -133,15 +133,16 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->setStepTolerance(0.000000001);
             gm->setFunctionTolerance(0.000000001);
             gm->setR1MinimizeEpsilon(step, epsl);
+            //gm->setMaxIterationCount(100);
             gm->showExitMessage(false);
             gm->calculate(x);
             delete gm;
 
-            if (functional.R <= 100000.0) functional.R *= 2.0;
+            if (functional.R <= 100000.0) functional.R *= 10.0;
             //IPrinter::print(x, x.length(), functional._w, functional._p);
         }
-        //functional.R = 1.0;
-        //functional.epsilon *= 0.5;
+        functional.R = 1.0;
+        functional.epsilon *= 0.1;
     }
     IPrinter::printSeperatorLine("Optimization is finished.");
     IPrinter::printVector(functional._w, functional._p, functional.V, "V: ");
@@ -149,36 +150,42 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     return;
 
     IPrinter::printSeperatorLine();
-    DoubleVector x1(functional.VCTR_1, vector_size);
+    DoubleVector x1(functional.NORM_1, vector_size);
     IPrinter::print(x1, x1.length(), functional._w, functional._p);
     functional.R = 0.0;
     functional.epsilon = 0.0;
     functional.no_norm = 1.0;
-    functional.error = 0.01;
-    functional.withError = true;
+    functional.error = 0.00;
+    functional.withError = false;
     functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(5.0*(time_size-1))));
     functional.convertFromVector(x1);
     functional.forward.implicit_calculate_D1V1();
 
-    //    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
-    //    {
-    //        double t = ln*time_step;
-    //        double fx = functional.fx(x1);
-    //        double in = functional.integral(functional.U);
-    //        double nr = functional.norm(x1);
-    //        double pn = functional.penalty(x1);
-    //        double q1 = functional.mq.at(ln,0);
-    //        double q2 = functional.mq.at(ln,1);
-    //        double qMin1 = functional.qMin.at(ln,0);
-    //        double qMin2 = functional.qMin.at(ln,1);
-    //        double qMax1 = functional.qMax.at(ln,0);
-    //        double qMax2 = functional.qMax.at(ln,1);
+    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
+    {
+        TimeNodePDE tn; tn.i = static_cast<unsigned int>(ln); tn.t = tn.i*time_step;
+        functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(ln)));
+        functional.convertFromVector(x1);
 
-    //        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | \n", t, fx, in, nr, pn,
-    //               qMin1, q1, qMax1,
-    //               qMin2, q2, qMax2,
-    //               functional.R, functional.epsilon);
-    //    }
+        double t = ln*time_step;
+        double fx = functional.fx(x1);
+        double in = functional.integral(functional.U);
+        double nr = functional.norm(x1);
+        double pn = functional.penalty(x1);
+        double q1 = functional.mq.at(ln,0);
+        double q2 = functional.mq.at(ln,1);
+        double qMin1 = functional.qMin.at(ln,0);
+        double qMin2 = functional.qMin.at(ln,1);
+        double qMax1 = functional.qMax.at(ln,0);
+        double qMax2 = functional.qMax.at(ln,1);
+
+        DoubleVector _z = functional.z(tn);
+        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | %0.4f %0.4f\n", t, fx, in, nr, pn,
+               qMin1, q1, qMax1,
+               qMin2, q2, qMax2,
+               functional.R, functional.epsilon,
+               _z[0], _z[1]);
+    }
 }
 
 /**************************************************************************************************************************/
