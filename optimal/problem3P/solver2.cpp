@@ -110,10 +110,10 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 #endif
 
     IPrinter::printSeperatorLine("Starting optimization...");
-    double step = 0.1;
+    double step = 0.5;
     double epsl = 0.0001;
     functional.R = 0.0;
-    functional.epsilon = 1.0;
+    functional.epsilon = 0.0;
     functional.no_norm = 0.0;
     functional.error = 0.0;
     functional.withError = false;
@@ -138,54 +138,55 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->calculate(x);
             delete gm;
 
-            if (functional.R <= 100000.0) functional.R *= 10.0;
+            //if (functional.R <= 100000.0) functional.R *= 10.0;
             //IPrinter::print(x, x.length(), functional._w, functional._p);
         }
-        functional.R = 1.0;
-        functional.epsilon *= 0.1;
+//        functional.R = 1.0;
+//        functional.epsilon *= 0.1;
     }
     IPrinter::printSeperatorLine("Optimization is finished.");
     IPrinter::printVector(functional._w, functional._p, functional.V, "V: ");
 
-    return;
-
     IPrinter::printSeperatorLine();
     DoubleVector x1(functional.NORM_1, vector_size);
+    x1= x;
     IPrinter::print(x1, x1.length(), functional._w, functional._p);
     functional.R = 0.0;
     functional.epsilon = 0.0;
     functional.no_norm = 1.0;
-    functional.error = 0.00;
-    functional.withError = false;
-    functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(5.0*(time_size-1))));
+    functional.error = 0.03;
+    functional.withError = true;
+    //functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(5.0*(time_size-1))));
     functional.convertFromVector(x1);
     functional.forward.implicit_calculate_D1V1();
 
-    for (size_t ln=1; ln<5.0*(time_size-1); ln++)
-    {
-        TimeNodePDE tn; tn.i = static_cast<unsigned int>(ln); tn.t = tn.i*time_step;
-        functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(ln)));
-        functional.convertFromVector(x1);
+    IPrinter::printVector(functional._w, functional._p, functional.U, "U: ", functional.U.length());
 
-        double t = ln*time_step;
-        double fx = functional.fx(x1);
-        double in = functional.integral(functional.U);
-        double nr = functional.norm(x1);
-        double pn = functional.penalty(x1);
-        double q1 = functional.mq.at(ln,0);
-        double q2 = functional.mq.at(ln,1);
-        double qMin1 = functional.qMin.at(ln,0);
-        double qMin2 = functional.qMin.at(ln,1);
-        double qMax1 = functional.qMax.at(ln,0);
-        double qMax2 = functional.qMax.at(ln,1);
+//    for (size_t ln=1; ln<1.1*(time_size-1); ln++)
+//    {
+//        TimeNodePDE tn; tn.i = static_cast<unsigned int>(ln); tn.t = tn.i*time_step;
+//        functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(ln)));
+//        functional.convertFromVector(x1);
 
-        DoubleVector _z = functional.z(tn);
-        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | %0.4f %0.4f\n", t, fx, in, nr, pn,
-               qMin1, q1, qMax1,
-               qMin2, q2, qMax2,
-               functional.R, functional.epsilon,
-               _z[0], _z[1]);
-    }
+//        double t = ln*time_step;
+//        double fx = functional.fx(x1);
+//        double in = functional.integral(functional.U);
+//        double nr = functional.norm(x1);
+//        double pn = functional.penalty(x1);
+//        double q1 = functional.mq.at(ln,0);
+//        double q2 = functional.mq.at(ln,1);
+//        double qMin1 = functional.qMin.at(ln,0);
+//        double qMin2 = functional.qMin.at(ln,1);
+//        double qMax1 = functional.qMax.at(ln,0);
+//        double qMax2 = functional.qMax.at(ln,1);
+
+//        DoubleVector _z = functional.z(tn);
+//        printf("time: %6.4f fx: %16.10f in: %16.10f nr: %16.10f pn: %16.10f | q1: %16.10f %16.10f %16.10f | q2: %16.10f %16.10f %16.10f | %16.10f %16.10f | %0.4f %0.4f\n", t, fx, in, nr, pn,
+//               qMin1, q1, qMax1,
+//               qMin2, q2, qMax2,
+//               functional.R, functional.epsilon,
+//               _z[0], _z[1]);
+//    }
 }
 
 /**************************************************************************************************************************/
@@ -436,10 +437,10 @@ auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
 {
     if (static_cast<int>(tn.i) == timeDimension().max()) { common->U = u; }
 
-    if (common->withError) {
-        printf("%6.3f %14.10f u: ", tn.t, common->integral(u));
-        IPrinter::printVector(u);
-    }
+//    if (common->withError) {
+//        printf("%6.3f %14.10f u: ", tn.t, common->integral(u));
+//        IPrinter::printVector(u);
+//    }
 
 #ifdef OPTIMIZE_Y
     const size_t heatSourceNumber = common->heatSourceNumber;
@@ -469,7 +470,8 @@ auto HeatEquationIBVP::layerInfo(const DoubleVector &u, const TimeNodePDE &tn) c
             for (size_t j=0; j<measrPointNumber; j++)
             {
                 const double mp = common->mPnts[j];
-                const double uv = common->uv.at(tn.i,j) /** (1.0+(rand()%2==0 ? -common->error : common->error))*/;
+                double err = rand() % 2==0 ? 1.0+common->error : 1.0-common->error;
+                const double uv = common->uv.at(tn.i,j) * err;
                 const double alpha = common->alpha.at(i,j);
                 const double betta = common->betta.at(i,j);
                 const double omega = common->omega.at(i);
@@ -692,7 +694,9 @@ Functional::Functional(double thermalDiffusivity, double thermalConductivity, do
             forward.implicit_calculate_D1V1();
 
             const double _integral = integral(U);
-            _fx += (_integral + epsilon * norm(x) + R * penalty(x)) * rho;
+            double __fx = (_integral + epsilon * norm(x) + R * penalty(x)) * rho;
+
+            _fx += __fx;
         }
     }
     return _fx;
