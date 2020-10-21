@@ -135,7 +135,7 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->setR1MinimizeEpsilon(step, epsl);
             //gm->setMaxIterationCount(100);
             gm->showExitMessage(false);
-            gm->calculate(x);
+//            gm->calculate(x);
             delete gm;
 
             //if (functional.R <= 100000.0) functional.R *= 10.0;
@@ -149,18 +149,41 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
 
     IPrinter::printSeperatorLine();
     DoubleVector x1(functional.NORM_1, vector_size);
-    x1= x;
+    //x1= x;
     IPrinter::print(x1, x1.length(), functional._w, functional._p);
     functional.R = 0.0;
     functional.epsilon = 0.0;
     functional.no_norm = 1.0;
-    functional.error = 0.03;
-    functional.withError = true;
+    functional.error = 0.00;
+    functional.withError = false;
     //functional.setTimeDimension(Dimension(time_step, 0, static_cast<int>(5.0*(time_size-1))));
     functional.convertFromVector(x1);
     functional.forward.implicit_calculate_D1V1();
 
     IPrinter::printVector(functional._w, functional._p, functional.U, "U: ", functional.U.length());
+
+
+    for (int i=-2500; i<=1500; i++)
+    {
+        double tmp;
+        const double step = 0.003;
+        tmp = x1[0]; x1[0] = i*step; double f1 = functional.fx(x1); x1[0] = tmp;
+        tmp = x1[1]; x1[1] = i*step; double f2 = functional.fx(x1); x1[1] = tmp;
+        tmp = x1[2]; x1[2] = i*step; double f3 = functional.fx(x1); x1[2] = tmp;
+        tmp = x1[3]; x1[3] = i*step; double f4 = functional.fx(x1); x1[3] = tmp;
+        tmp = x1[4]; x1[4] = i*step; double f5 = functional.fx(x1); x1[4] = tmp;
+        tmp = x1[5]; x1[5] = i*step; double f6 = functional.fx(x1); x1[5] = tmp;
+        tmp = x1[6]; x1[6] = i*step; double f7 = functional.fx(x1); x1[6] = tmp;
+        tmp = x1[7]; x1[7] = i*step; double f8 = functional.fx(x1); x1[7] = tmp;
+
+        tmp = x1[16]; x1[16] = i*step; double f9 = functional.fx(x1); x1[16] = tmp;
+        tmp = x1[17]; x1[17] = i*step; double f10 = functional.fx(x1); x1[17] = tmp;
+
+
+
+        printf("%8.4f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", i*step, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10);
+    }
+
 
 //    for (size_t ln=1; ln<1.1*(time_size-1); ln++)
 //    {
