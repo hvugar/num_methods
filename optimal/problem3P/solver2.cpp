@@ -167,21 +167,23 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
     {
         double tmp;
         const double step = 0.003;
-        tmp = x1[0]; x1[0] = i*step; double f1 = functional.fx(x1); x1[0] = tmp;
-        tmp = x1[1]; x1[1] = i*step; double f2 = functional.fx(x1); x1[1] = tmp;
-        tmp = x1[2]; x1[2] = i*step; double f3 = functional.fx(x1); x1[2] = tmp;
-        tmp = x1[3]; x1[3] = i*step; double f4 = functional.fx(x1); x1[3] = tmp;
-        tmp = x1[4]; x1[4] = i*step; double f5 = functional.fx(x1); x1[4] = tmp;
-        tmp = x1[5]; x1[5] = i*step; double f6 = functional.fx(x1); x1[5] = tmp;
-        tmp = x1[6]; x1[6] = i*step; double f7 = functional.fx(x1); x1[6] = tmp;
-        tmp = x1[7]; x1[7] = i*step; double f8 = functional.fx(x1); x1[7] = tmp;
+        double f1=0.0,f2=0.0,f3=0.0,f4=0.0,f5=0.0,f6=0.0,f7=0.0,f8=0.0,f9=0.0,f10=0.0;
+        double p1=0.0,p2=0.0,p3=0.0,p4=0.0,p5=0.0,p6=0.0,p7=0.0,p8=0.0,p9=0.0,p10=0.0;
+        //tmp = x1[0]; x1[0] = i*step; f1 = functional.fx(x1); p1 = functional.penalty(x1); x1[0] = tmp;
+        //tmp = x1[1]; x1[1] = i*step; f2 = functional.fx(x1); p2 = functional.penalty(x1); x1[1] = tmp;
+        //tmp = x1[2]; x1[2] = i*step; f3 = functional.fx(x1); p3 = functional.penalty(x1); x1[2] = tmp;
+        //tmp = x1[3]; x1[3] = i*step; f4 = functional.fx(x1); p4 = functional.penalty(x1); x1[3] = tmp;
+        tmp = x1[4]; x1[4] = i*step; f5 = functional.fx(x1); p5 = functional.penalty(x1); x1[4] = tmp;
+        //tmp = x1[5]; x1[5] = i*step; f6 = functional.fx(x1); p6 = functional.penalty(x1); x1[5] = tmp;
+        //tmp = x1[6]; x1[6] = i*step; f7 = functional.fx(x1); p7 = functional.penalty(x1); x1[6] = tmp;
+        //tmp = x1[7]; x1[7] = i*step; f8 = functional.fx(x1); p8 = functional.penalty(x1); x1[7] = tmp;
 
-        tmp = x1[16]; x1[16] = i*step; double f9 = functional.fx(x1); x1[16] = tmp;
-        tmp = x1[17]; x1[17] = i*step; double f10 = functional.fx(x1); x1[17] = tmp;
+        //tmp = x1[16]; x1[16] = i*step; double f9 = functional.fx(x1); x1[16] = tmp;
+        //tmp = x1[17]; x1[17] = i*step; double f10 = functional.fx(x1); x1[17] = tmp;
 
 
 
-        printf("%8.4f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f\n", i*step, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10);
+        printf("%8.4f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f %12.8f | %12.8f\n", i*step, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, p5);
     }
 
 
