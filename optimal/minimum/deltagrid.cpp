@@ -1084,6 +1084,20 @@ double DeltaFunction::gaussian(double p, double m, double sigma)
     return factor * exp(-(sigma2*(p-m)*(p-m)));
 }
 
+double DeltaFunction::nearest(const SpaceNodePDE &p, const SpacePoint &m, double hx, double hy, unsigned int Nx, unsigned int Ny)
+{
+    const double lx = hx*Nx;
+    const double ly = hy*Ny;
+    const double px = m.x;
+    const double py = m.y;
+    const unsigned int rx = static_cast<unsigned int>(floor((px/hx)*lx));
+    const unsigned int ry = static_cast<unsigned int>(floor((py/hy)*ly));
+
+    double pu = 0.0;
+    if (static_cast<unsigned int>(p.i) == rx && static_cast<unsigned int>(p.j) == ry) pu = 1.0/(hx*hy);
+    return pu;
+}
+
 double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma)
 {
     const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);

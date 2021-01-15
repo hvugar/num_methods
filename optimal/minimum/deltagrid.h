@@ -154,6 +154,8 @@ private:
 class MINIMUMSHARED_EXPORT DeltaFunction
 {
 public:
+    static double nearest(const SpaceNodePDE &p, const SpacePoint &m, double hx, double hy, unsigned int Nx, unsigned int Ny);
+
     static double gaussian(double p, double m, double sigma);
     static double gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma);
     static double gaussian(double p, double m, double sigma, size_t k);

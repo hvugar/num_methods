@@ -29,7 +29,7 @@ void Solver::bcw_calculate() const
     //puts("backward->solveFinalValueProblem.");
 }
 
-void Solver::Main(int /*argc*/, char **/*argv*/)
+void Solver::Main(int /*argc*/, char** /*argv*/)
 {
     const unsigned int time_size = TIME_MAX+1;
     //const double ht = TIME_STEP;

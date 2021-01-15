@@ -28,6 +28,7 @@
 #include "../problem3P/solver.h"
 #include "../problem3P/solver1.h"
 #include "../problem3P/solver2.h"
+#include "../problem3P/solver3.h"
 //#include "../problem3P/heat_equation_ibvp.h"
 
 #include "test/delta_grid_2d_ext1.h"
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
     //p3p::Solver::Main(argc, argv);
     //p3p1::Solver1::Main(argc, argv);
     p3p0::Functional::Main(argc, argv);
+    //p3p3::Functional::Main(argc, argv);
     //p3p2::Functional::Main(argc, argv);
     //p3p::HeatEquationIBVP1::Main(argc, argv);
 

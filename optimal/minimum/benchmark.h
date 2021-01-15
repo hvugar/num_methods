@@ -26,8 +26,8 @@ public:
 private:
     std::clock_t m_tick;
     std::clock_t m_tock;
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_chrone_tick;
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_chrone_tock;
+    //std::chrono::time_point< std::chrono::high_resolution_clock > m_chrone_tick;
+    //std::chrono::time_point< std::chrono::high_resolution_clock > m_chrone_tock;
 };
 
 #endif // BENCHMARK_H

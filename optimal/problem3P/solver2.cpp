@@ -135,7 +135,7 @@ void Functional::Main(int /*argc*/, char **/*argv*/)
             gm->setR1MinimizeEpsilon(step, epsl);
             //gm->setMaxIterationCount(100);
             gm->showExitMessage(false);
-//            gm->calculate(x);
+            gm->calculate(x);
             delete gm;
 
             //if (functional.R <= 100000.0) functional.R *= 10.0;

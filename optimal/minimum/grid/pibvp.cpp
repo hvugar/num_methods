@@ -400,7 +400,11 @@ void IHeatEquationIBVP::explicit_calculate_D2V1() const
     const double b2 = thermalConductivity();
     const double c  = thermalConvection();
 
-    if (ht > 0.5/(1.0/(hx*hx)+1.0/(hy*hy))) throw std::runtime_error("Differential scheme not steady!");
+    if (ht >= 0.5/(1.0/(hx*hx)+1.0/(hy*hy)))
+    {
+        fputs("Differential scheme is not steady!", stderr);
+        throw std::runtime_error("Differential scheme is not steady!");
+    }
 
     // common parameters
     const double k1 = +((a1*ht)/(hx*hx));
