@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
     //h1p::ProblemSolver::Main(argc, argv);
     //p3p::Solver::Main(argc, argv);
     //p3p1::Solver1::Main(argc, argv);
-    p3p0::Functional::Main(argc, argv);
-    //p3p3::Functional::Main(argc, argv);
+    //p3p0::Functional::Main(argc, argv);
+    p3p3::Functional::Main(argc, argv);
     //p3p2::Functional::Main(argc, argv);
     //p3p::HeatEquationIBVP1::Main(argc, argv);
 

@@ -6,10 +6,12 @@
 namespace p3p3
 {
 
+class Functional;
+
 class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
 {
 public:
-    HeatEquationIBVP();
+    HeatEquationIBVP(Functional*);
     HeatEquationIBVP(const HeatEquationIBVP &);
     HeatEquationIBVP & operator =(const HeatEquationIBVP &);
     virtual ~HeatEquationIBVP() override;
@@ -29,21 +31,17 @@ protected:
 private:
     double _initial_temperature = 0.0;
     double _enviroment_temperature = 0.5;
-    double _lambda1 = 0.1;
-    size_t _heat_source_number = 2;
-
-    SpacePoint z(double t, size_t i) const;
-    double v(double t, size_t i) const;
-    double q(double t, size_t i) const;
 
     void frw_saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
+
+    Functional* _functional;
 };
 
 
 class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP
 {
 public:
-    HeatEquationFBVP();
+    HeatEquationFBVP(Functional *function);
     HeatEquationFBVP(const HeatEquationFBVP &);
     HeatEquationFBVP & operator =(const HeatEquationFBVP &);
     virtual ~HeatEquationFBVP() override;
@@ -62,16 +60,50 @@ public:
 
 public:
     size_t i;
+    Functional* _functional;
 };
 
 
 
-class PROBLEM3P_SHARED_EXPORT Functional
+class PROBLEM3P_SHARED_EXPORT Functional : public RnFunction, public IGradient
 {
 public:
     static void Main(int argc, char** argv);
 
     Functional();
+
+    virtual double fx(const DoubleVector &x) const;
+    auto integral(const DoubleMatrix &u) const -> double;
+    virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
+
+    auto timeDimension() const -> Dimension { return Dimension(0.01, 0, 100) /*Dimension(0.0000005, 0, 20000000)*/; }
+
+    auto spaceDimensionX() const -> Dimension { return Dimension(0.01, 0, 100); }
+
+    auto spaceDimensionY() const -> Dimension { return Dimension(0.01, 0, 100); }
+
+    auto spaceDimensionZ() const -> Dimension { return Dimension(0.01, 0, 100); }
+
+    size_t heat_source_number = 2;
+    size_t measure_point_number = 4;
+    double _lambda1 = 1.0;
+
+    DoubleMatrix uT;
+    DoubleMatrix U;
+
+    DoubleVector *pp = nullptr;
+    DoubleVector *px;
+    DoubleVector *py;
+
+
+    SpacePoint tr(const TimeNodePDE &tn, size_t i) const;
+    double v(const TimeNodePDE &tn, size_t i) const;
+    double q(const TimeNodePDE &tn, size_t i) const;
+
+    HeatEquationIBVP *ih;
+    HeatEquationFBVP *fh;
+
+    DoubleVector x;
 };
 
 };
