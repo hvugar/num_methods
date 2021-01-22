@@ -724,7 +724,7 @@ R1Function* R1FxMinimizer::Callback::function() const
  * @param fa      Величина функции в точке a
  * @param fb      Величина функции в точке b
  */
-void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f)
+void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f) noexcept
 {
     if ( f == nullptr )
     {

@@ -9,27 +9,37 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     unsigned int time_size = functional->timeDimension().size();
     unsigned int dimX_size = functional->spaceDimensionX().size();
     unsigned int dimY_size = functional->spaceDimensionY().size();
-    functional->U.resize(dimY_size, dimX_size, 2.0);
+    functional->U.resize(dimY_size, dimX_size, 5.0);
     functional->uT.resize(dimY_size, dimX_size, 0.0);
     DoubleVector x(2*time_size);
+
+    for (unsigned int ln=0; ln<time_size; ln++)
+    {
+        x[0*time_size + ln] = 0.05;
+        x[1*time_size + ln] = 0.05;
+        //x[2*time_size + ln] = 2.0*ln*time_step;
+        //x[3*time_size + ln] = 2.0*ln*time_step;
+    }
 
     //functional->fx(x);
 
     DoubleVector g;
     functional->gradient(x, g);
+    IPrinter::printVector(10, 6, g.mid(0,   100).L2Normalize());
+    IPrinter::printVector(10, 6, g.mid(101, 201).L2Normalize());
 
     DoubleVector g1(x.length());
-    //IGradient::Gradient(functional, 0.01, x, g1);
+    IGradient::Gradient(functional, 0.01, x, g1);
+    IPrinter::printVector(10, 6, g1.mid(0,   100).L2Normalize());
+    IPrinter::printVector(10, 6, g1.mid(101, 201).L2Normalize());
 
     IPrinter::printSeperatorLine();
 
-    g.L2Normalize();
-    g1.L2Normalize();
+//    g.L2Normalize();
+//    g1.L2Normalize();
 
-    IPrinter::printVector(g);
-    IPrinter::printVector(g1);
-
-
+//    IPrinter::printVector(g);
+//    IPrinter::printVector(g1);
 }
 
 HeatEquationIBVP::HeatEquationIBVP(Functional *function) : _functional(function) {}
@@ -52,14 +62,13 @@ auto HeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/
 
 auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    size_t ln = static_cast<size_t>(tn.i);
+    //size_t ln = static_cast<size_t>(tn.i);
 
     double fx = -thermalConvection() * _enviroment_temperature;
 
     double sum = 0.0;
     for (size_t i=0; i<_functional->heat_source_number; i++)
     {
-        printf("time: %d\n", ln);
         const SpacePoint &zi = _functional->tr(tn, i);
         const double qi = _functional->q(tn, i);
         //sum += qi * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
@@ -70,8 +79,6 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
 
     //if (sn.i==250 && sn.j == 250) { return  1.0/(0.002*0.002) * 0.1; } else { return  0.0; }
 }
-
-
 
 double Functional::q(const TimeNodePDE &tn, size_t i) const
 {
@@ -85,8 +92,6 @@ double Functional::q(const TimeNodePDE &tn, size_t i) const
     unsigned int size = timeDimension().size();
     return x[i*size + tn.i];
 }
-
-
 
 auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
@@ -111,7 +116,7 @@ Functional::Functional()
     fh = new HeatEquationFBVP(this);
 
     double _a = 1.0;
-    double _lambda0 = 1.0;
+    double _lambda0 = 0.0;
 
     ih->setThermalDiffusivity(_a);
     ih->setThermalConductivity(0.0);
@@ -144,7 +149,7 @@ SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
 
     default:
     {
-        throw std::exception("i is not valid...");
+        //throw std::exception("i is not valid...");
     }
 
     }
@@ -297,15 +302,12 @@ auto Functional::integral(const DoubleMatrix &uT) const -> double
     return usum*(hx*hy);
 }
 
-void Functional::gradient(const DoubleVector &v, DoubleVector &g) const
+void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 {
     const_cast<Functional*>(this)->x = x;
 
-    puts("OK1");
     ih->implicit_calculate_D2V1();
-    puts("OK2");
     fh->implicit_calculate_D2V1();
-    puts("OK3");
 
     g.clear();
     g.resize(x.length());
