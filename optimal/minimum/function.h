@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "vector2d.h"
+#include <vector>
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,9 +70,11 @@ struct MINIMUMSHARED_EXPORT IGradient
 
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g);
     static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
-    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t inx[], size_t size);
+    static void Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, const std::vector<size_t> &index);
     static void GradientL(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
     static void GradientR(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
+
+    static void GradientF(const RnFunction *f, double factor, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
 };
 
 #endif // FUNCTION_H

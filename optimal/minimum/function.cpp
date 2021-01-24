@@ -41,12 +41,13 @@ void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x
     }
 }
 
-void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t inx[], size_t size)
+void IGradient::Gradient(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, const std::vector<size_t> &index)
 {
+    const size_t size = index.size();
     double h = step;
     for (unsigned int j=0; j<size; j++)
     {
-        size_t i = inx[j];
+        size_t i = index[j];
         double cx = x[i];
         const_cast<DoubleVector&>(x)[i] = cx - h;
         double f1 = f->fx(x);
@@ -100,3 +101,17 @@ void IGradient::GradientR(const RnFunction *f, double step, const DoubleVector &
     }
 }
 
+void IGradient::GradientF(const RnFunction *f, double factor, const DoubleVector &x, DoubleVector &g, size_t start, size_t end)
+{
+    DoubleVector &var_x = const_cast<DoubleVector&>(x);
+    for (size_t i=start; i<=end; i++)
+    {
+        double cx = var_x[i];
+        var_x[i] = cx * (1.0-factor);
+        double f1 = f->fx(var_x);
+        var_x[i] = cx + (1.0+factor);
+        double f2 = f->fx(var_x);
+        g[i] = (f2 - f1) / (2.0 * factor*cx);
+        var_x[i] = cx;
+    }
+}

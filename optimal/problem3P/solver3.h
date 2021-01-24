@@ -86,7 +86,7 @@ public:
 
     size_t heat_source_number = 2;
     size_t measure_point_number = 4;
-    double _lambda1 = 1.0;
+    double _lambda1 = 0.01;
 
     DoubleMatrix uT;
     DoubleMatrix U;
@@ -104,6 +104,8 @@ public:
     HeatEquationFBVP *fh;
 
     DoubleVector x;
+
+    void setVector(const DoubleVector &x) const;
 };
 
 };
