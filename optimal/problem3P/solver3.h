@@ -32,8 +32,6 @@ private:
     double _initial_temperature = 0.0;
     double _enviroment_temperature = 0.5;
 
-    void frw_saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
-
     Functional* _functional;
 };
 
@@ -63,8 +61,6 @@ public:
     Functional* _functional;
 };
 
-
-
 class PROBLEM3P_SHARED_EXPORT Functional : public RnFunction, public IGradient
 {
 public:
@@ -88,8 +84,8 @@ public:
     size_t measure_point_number = 4;
     double _lambda1 = 0.01;
 
-    DoubleMatrix uT;
     DoubleMatrix U;
+    DoubleMatrix V;
 
     DoubleVector *pp = nullptr;
     DoubleVector *px;
@@ -106,6 +102,10 @@ public:
     DoubleVector x;
 
     void setVector(const DoubleVector &x) const;
+
+    const double R[2] = {0.40, 0.20};
+
+    void frw_saveToImage(const DoubleMatrix &u, const TimeNodePDE &tn) const;
 };
 
 };

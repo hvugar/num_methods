@@ -1,5 +1,7 @@
 #include "solver3.h"
 
+#define OMTIMZIE_V
+
 using namespace p3p3;
 
 void Functional::Main(int /*argc*/, char** /*argv*/)
@@ -8,59 +10,82 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
     const size_t time_size = fn->timeDimension().size();
     const size_t dimX_size = fn->spaceDimensionX().size();
-    const size_t dimY_size = fn->spaceDimensionY().size();
+    const size_t dimY_size = fn->spaceDimensionY().size();0.0;//
     const double time_step = fn->timeDimension().step();
     //const double dimX_step = fn->spaceDimensionX().step();
     //const double dimY_step = fn->spaceDimensionX().step();
 
-    fn->U.resize(dimY_size, dimX_size, 5.0);
-    fn->uT.resize(dimY_size, dimX_size, 0.0);
+    fn->V.resize(dimY_size, dimX_size, 5.0);
+    fn->U.resize(dimY_size, dimX_size, 0.0);
 
+#ifdef OMTIMZIE_V
     DoubleVector x(4*time_size);
+#else
+    DoubleVector x(6*time_size);
+#endif
 
     for (unsigned int ln=0; ln<time_size; ln++)
     {
         const double t = ln*time_step;
-        x[0*time_size + ln] = 0.50;
-        x[1*time_size + ln] = 0.50;
+        const TimeNodePDE tn(ln, t);
+
+        x[0*time_size + ln] = 500.00;
+        x[1*time_size + ln] = 500.00;
+#ifdef OMTIMZIE_V
         x[2*time_size + ln] = 2.0*t;
         x[3*time_size + ln] = 2.0*t;
+#else
+        x[2*time_size + ln] = +fn->R[0]*sin(fn->v(tn, 0)*t) + 0.50;
+        x[3*time_size + ln] = +fn->R[0]*cos(fn->v(tn, 0)*t) + 0.50;
+        x[4*time_size + ln] = -fn->R[1]*sin(fn->v(tn, 1)*t) + 0.50;
+        x[5*time_size + ln] = +fn->R[1]*cos(fn->v(tn, 1)*t) + 0.50;
+#endif
     }
 
+    unsigned int w = 10, p = 4;
     {
         DoubleVector g0;
         fn->gradient(x, g0);
-        IPrinter::printVector(10, 6, g0.mid(0,   100).L2Normalize());
-        IPrinter::printVector(10, 6, g0.mid(101, 201).L2Normalize());
-        IPrinter::printVector(10, 6, g0.mid(202, 302).L2Normalize());
-        IPrinter::printVector(10, 6, g0.mid(303, 403).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(202, 302).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(303, 403).L2Normalize());
+#ifndef OMTIMZIE_V
+        IPrinter::printVector(w, p, g0.mid(404, 504).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(505, 605).L2Normalize());
+#endif
         IPrinter::printSeperatorLine();
 
-//        IPrinter::printVector(10, 6, g0.mid(0,   100));
-//        IPrinter::printVector(10, 6, g0.mid(101, 201));
-//        IPrinter::printVector(10, 6, g0.mid(202, 302));
-//        IPrinter::printVector(10, 6, g0.mid(303, 403));
-//        IPrinter::printSeperatorLine();
+        //        IPrinter::printVector(10, 6, g0.mid(0,   100));
+        //        IPrinter::printVector(10, 6, g0.mid(101, 201));
+        //        IPrinter::printVector(10, 6, g0.mid(202, 302));
+        //        IPrinter::printVector(10, 6, g0.mid(303, 403));
+        //        IPrinter::printSeperatorLine();
     }
 
     {
         DoubleVector g1(x.length());
 
         IGradient::Gradient(fn, 0.01, x, g1, 0, 100);   g1[0] *= 2.0; g1[100] *= 2.0;
-        IPrinter::printVector(10, 6, g1.mid(0, 100).L2Normalize());
+        IPrinter::printVector(w, p, g1.mid(0, 100).L2Normalize());
         IGradient::Gradient(fn, 0.01, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0;
-        IPrinter::printVector(10, 6, g1.mid(101, 201).L2Normalize());
+        IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
         IGradient::Gradient(fn, 0.01, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0;
-        IPrinter::printVector(10, 6, g1.mid(202, 302).L2Normalize());
+        IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
         IGradient::Gradient(fn, 0.01, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0;
-        IPrinter::printVector(10, 6, g1.mid(303, 403).L2Normalize());
+        IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
+#ifndef OMTIMZIE_V
+        IGradient::Gradient(fn, 0.01, x, g1, 404, 504); g1[404] *= 2.0; g1[504] *= 2.0;
+        IPrinter::printVector(w, p, g1.mid(404, 504).L2Normalize());
+        IGradient::Gradient(fn, 0.01, x, g1, 505, 605); g1[505] *= 2.0; g1[605] *= 2.0;
+        IPrinter::printVector(w, p, g1.mid(505, 605).L2Normalize());
+#endif
+        //        IPrinter::printSeperatorLine();
 
-        IPrinter::printSeperatorLine();
-
-        IPrinter::printVector(10, 6, g1.mid(0, 100));
-        IPrinter::printVector(10, 6, g1.mid(101, 201));
-        IPrinter::printVector(10, 6, g1.mid(202, 302));
-        IPrinter::printVector(10, 6, g1.mid(303, 403));
+        //        IPrinter::printVector(10, 6, g1.mid(0, 100));
+        //        IPrinter::printVector(10, 6, g1.mid(101, 201));
+        //        IPrinter::printVector(10, 6, g1.mid(202, 302));
+        //        IPrinter::printVector(10, 6, g1.mid(303, 403));
     }
 }
 
@@ -74,19 +99,20 @@ Functional::Functional()
 
     ih->setThermalDiffusivity(a);
     ih->setThermalConductivity(0.0);
-    ih->setThermalConvection(-lambda0);//-1.0 heating
+    ih->setThermalConvection(-lambda0);
 
     fh->setThermalDiffusivity(-a);
     fh->setThermalConductivity(0.0);
-    fh->setThermalConvection(lambda0);//+1.0 heating
+    fh->setThermalConvection(lambda0);
 }
 
 SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
 {
-    const double R[2] = {0.40, 0.20};
     const double t = tn.t;
+    const size_t time_size = timeDimension().size();
     SpacePoint sp;
 
+#ifdef OMTIMZIE_V
     switch (i)
     {
 
@@ -108,15 +134,22 @@ SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
     }
 
     }
+#else
+    if (i==0) { sp.x = x[2*time_size + tn.i]; sp.y = x[3*time_size + tn.i]; }
+    if (i==1) { sp.x = x[4*time_size + tn.i]; sp.y = x[5*time_size + tn.i]; }
+#endif
 
     return sp;
 }
 
 double Functional::v(const TimeNodePDE &tn, size_t i) const
 {
-    //return 2.0*tn.t;
+#ifdef OPTIMIZE_V
+    return 2.0*tn.t;
+#else
     const size_t time_size = timeDimension().size();
     return x[(2+i)*time_size + tn.i];
+#endif
 }
 
 double Functional::q(const TimeNodePDE &tn, size_t i) const
@@ -131,10 +164,10 @@ double Functional::fx(const DoubleVector &x) const
 
     ih->implicit_calculate_D2V1();
 
-    return integral(uT);
+    return integral(U);
 }
 
-auto Functional::integral(const DoubleMatrix &uT) const -> double
+auto Functional::integral(const DoubleMatrix &U) const -> double
 {
     const Dimension &dimensionX = spaceDimensionX();
     const Dimension &dimensionY = spaceDimensionY();
@@ -146,28 +179,28 @@ auto Functional::integral(const DoubleMatrix &uT) const -> double
     double udiff = 0.0;
     double usum = 0.0;
 
-    udiff = (U[0][0]-uT[0][0]); usum += 0.25 * udiff * udiff;// * mu(0, 0);
-    udiff = (U[0][N]-uT[0][N]); usum += 0.25 * udiff * udiff;// * mu(N, 0);
-    udiff = (U[M][0]-uT[M][0]); usum += 0.25 * udiff * udiff;// * mu(0, M);
-    udiff = (U[M][N]-uT[M][N]); usum += 0.25 * udiff * udiff;// * mu(N, M);
+    udiff = (U[0][0]-V[0][0]); usum += 0.25 * udiff * udiff;// * mu(0, 0);
+    udiff = (U[0][N]-V[0][N]); usum += 0.25 * udiff * udiff;// * mu(N, 0);
+    udiff = (U[M][0]-V[M][0]); usum += 0.25 * udiff * udiff;// * mu(0, M);
+    udiff = (U[M][N]-V[M][N]); usum += 0.25 * udiff * udiff;// * mu(N, M);
 
     for (size_t n=1; n<=N-1; n++)
     {
-        udiff = U[0][n]-uT[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
-        udiff = U[M][n]-uT[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
+        udiff = U[0][n]-V[0][n]; usum += 0.5 * udiff * udiff;// * mu(n, 0);
+        udiff = U[M][n]-V[M][n]; usum += 0.5 * udiff * udiff;// * mu(n, M);
     }
 
     for (size_t m=1; m<=M-1; m++)
     {
-        udiff = U[m][0]-uT[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
-        udiff = U[m][N]-uT[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
+        udiff = U[m][0]-V[m][0]; usum += 0.5 * udiff * udiff;// * mu(0, m);
+        udiff = U[m][N]-V[m][N]; usum += 0.5 * udiff * udiff;// * mu(N, m);
     }
 
     for (unsigned int m=1; m<=M-1; m++)
     {
         for (unsigned int n=1; n<=N-1; n++)
         {
-            udiff = U[m][n]-uT[m][n]; usum += udiff * udiff;// * mu(n, m);
+            udiff = U[m][n]-V[m][n]; usum += udiff * udiff;// * mu(n, m);
         }
     }
 
@@ -177,7 +210,7 @@ auto Functional::integral(const DoubleMatrix &uT) const -> double
 void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 {
     setVector(x);
-    const double R[2] = { 0.40, 0.20 };
+
     const double time_step = timeDimension().step();
     const unsigned int time_size = timeDimension().size();
 
@@ -198,8 +231,23 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 
             g[i*time_size+ln] = -pp[i][ln];
 
+
+#ifdef OMTIMZIE_V
             if (i==0) g[(2+i)*time_size+ln] = -qi * R[0] * ( +px[0][ln]*cos(v(tn, 0)*t)*t - py[0][ln]*sin(v(tn, 0)*t)*t );
             if (i==1) g[(2+i)*time_size+ln] = -qi * R[1] * ( -px[1][ln]*cos(v(tn, 1)*t)*t - py[1][ln]*sin(v(tn, 1)*t)*t );
+#else
+            if (i==0)
+            {
+                g[2*time_size+ln] = -qi * px[0][ln];
+                g[3*time_size+ln] = -qi * py[0][ln];
+            }
+
+            if (i==1)
+            {
+                g[4*time_size+ln] = -qi * px[1][ln];
+                g[5*time_size+ln] = -qi * py[1][ln];
+            }
+#endif
         }
     }
 }
@@ -209,64 +257,7 @@ void Functional::setVector(const DoubleVector &x) const
     const_cast<Functional*>(this)->x = x;
 }
 
-/********************************************************************************************************************************************************/
-
-HeatEquationIBVP::HeatEquationIBVP(Functional *function) : _functional(function) {}
-
-HeatEquationIBVP::HeatEquationIBVP(const HeatEquationIBVP &other) { *this = other; }
-
-HeatEquationIBVP& HeatEquationIBVP::operator =(const HeatEquationIBVP &) { return *this; }
-
-HeatEquationIBVP::~HeatEquationIBVP() {}
-
-auto HeatEquationIBVP::initial(const SpaceNodePDE &/*sn*/, InitialCondition /*ic*/) const -> double { return _initial_temperature; }
-
-auto HeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
-{
-    const double lambda1 = _functional->_lambda1;
-    //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
-    //bc = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
-    bc = BoundaryConditionPDE::Robin(lambda1, +1.0, lambda1); return _enviroment_temperature;
-}
-
-auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
-{
-    //size_t ln = static_cast<size_t>(tn.i);
-
-    double fx = -thermalConvection() * _enviroment_temperature;
-
-    double sum = 0.0;
-    for (size_t i=0; i<_functional->heat_source_number; i++)
-    {
-        const SpacePoint &zi = _functional->tr(tn, i);
-        const double qi = _functional->q(tn, i);
-        //sum += qi * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
-        sum += qi * DeltaFunction::nearest(sn, zi, spaceDimensionX().step(), spaceDimensionY().step(), spaceDimensionX().size(), spaceDimensionY().size());
-    }
-
-    return fx + sum;
-}
-
-auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
-{
-    //if (tn.i%100!=0) return;
-
-    //IPrinter::printSeperatorLine();
-    //IPrinter::printMatrix(u);
-
-    //frw_saveToImage(u, tn);
-
-    if (tn.i == timeDimension().max()) { _functional->uT = u; }
-}
-
-auto HeatEquationIBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
-auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
-auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
-auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
-
-
-
-void HeatEquationIBVP::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
+void Functional::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
 {
 #ifdef USE_LIB_IMAGING
     static double MIN = +10000.0;
@@ -299,6 +290,66 @@ void HeatEquationIBVP::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const
 
 /********************************************************************************************************************************************************/
 
+HeatEquationIBVP::HeatEquationIBVP(Functional *function) : _functional(function) {}
+
+HeatEquationIBVP::HeatEquationIBVP(const HeatEquationIBVP &other) { *this = other; }
+
+HeatEquationIBVP& HeatEquationIBVP::operator =(const HeatEquationIBVP &) { return *this; }
+
+HeatEquationIBVP::~HeatEquationIBVP() {}
+
+auto HeatEquationIBVP::initial(const SpaceNodePDE &/*sn*/, InitialCondition /*ic*/) const -> double { return _initial_temperature; }
+
+auto HeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
+{
+    const double lambda1 = _functional->_lambda1;
+    //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
+    //bc = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
+    bc = BoundaryConditionPDE::Robin(lambda1, +1.0, lambda1); return _enviroment_temperature;
+}
+
+auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
+{
+    //size_t ln = static_cast<size_t>(tn.i);
+
+    double fx = -thermalConvection() * _enviroment_temperature;
+    const double dimX_step = spaceDimensionX().step();
+    const double dimY_step = spaceDimensionY().step();
+    const unsigned dimX_size = spaceDimensionX().size();
+    const unsigned dimY_size = spaceDimensionY().size();
+
+
+    double sum = 0.0;
+    for (size_t i=0; i<_functional->heat_source_number; i++)
+    {
+        const SpacePoint &zi = _functional->tr(tn, i);
+        const double qi = _functional->q(tn, i);
+        //sum += qi * DeltaFunction::gaussian(sn, zi, SpacePoint(spaceDimensionX().step(), spaceDimensionY().step()));
+        sum += qi * DeltaFunction::nearest(sn, zi, dimX_step, dimY_step, dimX_size, dimY_size);
+    }
+
+    return fx + sum;
+}
+
+auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
+{
+    //if (tn.i%100!=0) return;
+
+    //IPrinter::printSeperatorLine();
+    //IPrinter::printMatrix(u);
+
+    //frw_saveToImage(u, tn);
+
+    if (tn.i == timeDimension().max()) { _functional->U = u; }
+}
+
+auto HeatEquationIBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
+auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
+auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
+auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
+
+/********************************************************************************************************************************************************/
+
 HeatEquationFBVP::HeatEquationFBVP(Functional *function) :_functional(function) {}
 
 HeatEquationFBVP::HeatEquationFBVP(const HeatEquationFBVP &other) { *this = other; }
@@ -310,7 +361,7 @@ HeatEquationFBVP::~HeatEquationFBVP() {}
 auto HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition /*condition*/) const -> double
 {
     const size_t i = static_cast<size_t>(sn.i), j = static_cast<size_t>(sn.j);
-    return -2.0*(_functional->uT[j][i] - _functional->U[j][i]);
+    return -2.0*(_functional->U[j][i] - _functional->V[j][i]);
 }
 
 auto HeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
@@ -347,7 +398,6 @@ auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) c
     const double dimY_step = _functional->spaceDimensionX().step();
     const size_t dimX_size = _functional->spaceDimensionX().size();
     const size_t dimY_size = _functional->spaceDimensionY().size();
-
 
     for (size_t i=0; i<_functional->heat_source_number; i++)
     {
