@@ -35,10 +35,10 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         x[2*time_size + ln] = 2.0*t;
         x[3*time_size + ln] = 2.0*t;
 #else
-        x[2*time_size + ln] = +0.8*t+0.1;//+fn->R[0]*sin(fn->v(tn, 0)*t) + 0.50;
-        x[3*time_size + ln] = 0.2;//+0.8*t+0.1;//+fn->R[0]*cos(fn->v(tn, 0)*t) + 0.50;
-        x[4*time_size + ln] = 0.2;//-fn->R[1]*sin(fn->v(tn, 1)*t) + 0.50;
-        x[5*time_size + ln] = -0.8*t+0.9;//+0.8*t+0.1;//+fn->R[1]*cos(fn->v(tn, 1)*t) + 0.50;
+        x[2*time_size + ln] = /*+0.8*t+0.1;*/+fn->R[0]*sin(fn->v(tn, 0)*t) + 0.50;
+        x[3*time_size + ln] = /*+0.8*t+0.1;*/+fn->R[0]*cos(fn->v(tn, 0)*t) + 0.50;
+        x[4*time_size + ln] = /*+0.8*t+0.1;*/-fn->R[1]*sin(fn->v(tn, 1)*t) + 0.50;
+        x[5*time_size + ln] = /*-0.8*t+0.9;*/+fn->R[1]*cos(fn->v(tn, 1)*t) + 0.50;
 #endif
     }
 
@@ -77,13 +77,14 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     {
         DoubleVector g1(x.length());
 
-        IGradient::Gradient(fn, 0.01, x, g1, 0, 100);   g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
-        IGradient::Gradient(fn, 0.01, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
-        IGradient::Gradient(fn, 0.01, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0; IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
-        IGradient::Gradient(fn, 0.01, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0; IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
+        const double step = 0.01;
+        IGradient::Gradient(fn, step, x, g1, 0, 100);   g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0; IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0; IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
 #ifndef OMTIMZIE_V
-        IGradient::Gradient(fn, 0.01, x, g1, 404, 504); g1[404] *= 2.0; g1[504] *= 2.0; IPrinter::printVector(w, p, g1.mid(404, 504).L2Normalize());
-        IGradient::Gradient(fn, 0.01, x, g1, 505, 605); g1[505] *= 2.0; g1[605] *= 2.0; IPrinter::printVector(w, p, g1.mid(505, 605).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 404, 504); g1[404] *= 2.0; g1[504] *= 2.0; IPrinter::printVector(w, p, g1.mid(404, 504).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 505, 605); g1[505] *= 2.0; g1[605] *= 2.0; IPrinter::printVector(w, p, g1.mid(505, 605).L2Normalize());
 #endif
         //        IPrinter::printSeperatorLine();
 
@@ -99,7 +100,7 @@ Functional::Functional()
     ih = new HeatEquationIBVP(this);
     fh = new HeatEquationFBVP(this);
 
-    const double a = 1.0;
+    const double a = 1.00;
     const double lambda0 = 0.0;
 
     ih->setThermalDiffusivity(a);
