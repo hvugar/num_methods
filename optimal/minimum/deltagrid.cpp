@@ -1106,6 +1106,17 @@ double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const S
     return factor1 * exp(-(sigmax2*(p.x-m.x)*(p.x-m.x)+sigmay2*(p.y-m.y)*(p.y-m.y)));
 }
 
+double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, double &dx, double &dy)
+{
+    const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);
+    const double sigmax2 = 1.0/(2.0*sigma.x*sigma.x);
+    const double sigmay2 = 1.0/(2.0*sigma.y*sigma.y);
+    double fx = factor1 * exp(-(sigmax2*(p.x-m.x)*(p.x-m.x)+sigmay2*(p.y-m.y)*(p.y-m.y)));
+    dx = -fx*(p.x-m.x)/(sigma.x*sigma.x);
+    dy = -fx*(p.y-m.y)/(sigma.y*sigma.y);
+    return fx;
+}
+
 double DeltaFunction::gaussian(double p, double m, double sigma, size_t k)
 {
     const double a = m-k*sigma;
@@ -1164,48 +1175,48 @@ double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const S
         double hy= fabs(by-ay)/N;
 
         /** Trapezoidal rule **/
-        //        sum += 0.25*F::fx(ax,ay,m.x,m.y,sigmaX2,sigmaY2);
-        //        sum += 0.25*F::fx(ax,by,m.x,m.y,sigmaX2,sigmaY2);
-        //        sum += 0.25*F::fx(bx,by,m.x,m.y,sigmaX2,sigmaY2);
-        //        sum += 0.25*F::fx(bx,ay,m.x,m.y,sigmaX2,sigmaY2);
+        sum += 0.25*F::fx(ax,ay,m.x,m.y,sigmaX2,sigmaY2);
+        sum += 0.25*F::fx(ax,by,m.x,m.y,sigmaX2,sigmaY2);
+        sum += 0.25*F::fx(bx,by,m.x,m.y,sigmaX2,sigmaY2);
+        sum += 0.25*F::fx(bx,ay,m.x,m.y,sigmaX2,sigmaY2);
 
-        //        for (size_t i=1; i<N; i++)
-        //        {
-        //            double x = ax+i*hx;
-        //            sum += 0.5*F::fx(x,ay,m.x,m.y,sigmaX2,sigmaY2);
-        //            sum += 0.5*F::fx(x,by,m.x,m.y,sigmaX2,sigmaY2);
-        //        }
-        //        for (size_t j=1; j<N; j++)
-        //        {
-        //            double y = ay+j*hy;
-        //            sum += 0.5*F::fx(ax,y,m.x,m.y,sigmaX2,sigmaY2);
-        //            sum += 0.5*F::fx(bx,y,m.x,m.y,sigmaX2,sigmaY2);
-        //        }
-        //        for (size_t i=1; i<N; i++)
-        //        {
-        //            double x = ax+i*hx;
-        //            for (size_t j=1; j<N; j++)
-        //            {
-        //                double y = ay+j*hy;
-        //                sum += F::fx(x,y,m.x,m.y,sigmaX2,sigmaY2);
-        //            }
-        //        }
-        //        sum *= hx*hy;
-
-        /** Simpson's rule **/
-        for (size_t i=0; i<=N; i++)
+        for (size_t i=1; i<N; i++)
         {
             double x = ax+i*hx;
-            for (size_t j=0; j<=N; j++)
+            sum += 0.5*F::fx(x,ay,m.x,m.y,sigmaX2,sigmaY2);
+            sum += 0.5*F::fx(x,by,m.x,m.y,sigmaX2,sigmaY2);
+        }
+        for (size_t j=1; j<N; j++)
+        {
+            double y = ay+j*hy;
+            sum += 0.5*F::fx(ax,y,m.x,m.y,sigmaX2,sigmaY2);
+            sum += 0.5*F::fx(bx,y,m.x,m.y,sigmaX2,sigmaY2);
+        }
+        for (size_t i=1; i<N; i++)
+        {
+            double x = ax+i*hx;
+            for (size_t j=1; j<N; j++)
             {
                 double y = ay+j*hy;
-                double fx = F::fx(x,y,m.x,m.y,sigmaX2,sigmaY2);
-                if (i==0 || i==N) { fx *= 1.0; } else if (i%2==1) { fx *= 4.0; } else { fx *= 2.0; }
-                if (j==0 || j==N) { fx *= 1.0; } else if (j%2==1) { fx *= 4.0; } else { fx *= 2.0; }
-                sum += fx;
+                sum += F::fx(x,y,m.x,m.y,sigmaX2,sigmaY2);
             }
         }
-        sum *= ((hx*hy)/9.0);
+        sum *= hx*hy;
+
+        /** Simpson's rule **/
+        //for (size_t i=0; i<=N; i++)
+        //{
+        //    double x = ax+i*hx;
+        //    for (size_t j=0; j<=N; j++)
+        //    {
+        //        double y = ay+j*hy;
+        //        double fx = F::fx(x,y,m.x,m.y,sigmaX2,sigmaY2);
+        //        if (i==0 || i==N) { fx *= 1.0; } else if (i%2==1) { fx *= 4.0; } else { fx *= 2.0; }
+        //        if (j==0 || j==N) { fx *= 1.0; } else if (j%2==1) { fx *= 4.0; } else { fx *= 2.0; }
+        //        sum += fx;
+        //    }
+        //}
+        //sum *= ((hx*hy)/9.0);
 
         A = 1.0/sum;
     }
@@ -1437,7 +1448,17 @@ double DeltaFunction::lumpedPoint4(const DoubleVector &m, double p, const Dimens
     return pu;
 }
 
-double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, unsigned int nps, size_t k)
+/**
+ * @brief DeltaFunction::lumpedPointG
+ * @param u matrix values of grid
+ * @param m searching point
+ * @param dimensionX X dimension of the grid
+ * @param dimensionY Y dimension of the grid
+ * @param nps
+ * @param k
+ * @return
+ */
+double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, size_t nps, size_t k)
 {
     const double hx = dimensionX.step(), hy = dimensionY.step();
     const unsigned int Nx = dimensionX.size()-1, Ny = dimensionY.size()-1;
@@ -1445,36 +1466,106 @@ double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, c
     const double ly = hy*Ny;
     const double px = m.x;
     const double py = m.y;
-    const unsigned int rx = static_cast<unsigned int>(round((px/hx)*lx));
-    const unsigned int ry = static_cast<unsigned int>(round((py/hy)*ly));
+    const size_t rx = static_cast<size_t>(round((px/hx)*lx));
+    const size_t ry = static_cast<size_t>(round((py/hy)*ly));
 
-    const unsigned int minX = static_cast<unsigned int>(rx - nps*k);
-    const unsigned int maxX = static_cast<unsigned int>(rx + nps*k);
-    const unsigned int minY = static_cast<unsigned int>(ry - nps*k);
-    const unsigned int maxY = static_cast<unsigned int>(ry + nps*k);
+    const size_t minX = static_cast<size_t>(rx - nps*k);
+    const size_t maxX = static_cast<size_t>(rx + nps*k);
+    const size_t minY = static_cast<size_t>(ry - nps*k);
+    const size_t maxY = static_cast<size_t>(ry + nps*k);
     const SpacePoint sigma = { nps*hx, nps*hy };
 
-    double uv = 0.0, ux = 0.0, uy = 0.0;
+    double uv = 0.0;
+    //double ux = 0.0, uy = 0.0;
     SpacePoint p;
-    for (uint32_t j=minY; j<=maxY; j++)
+    for (size_t j=minY; j<=maxY; j++)
     {
         p.y = j*hy;
 
-        for (uint32_t i=minX; i<=maxX; i++)
+        for (size_t i=minX; i<=maxX; i++)
         {
             p.x = i*hx;
 
-            double w = gaussian(p, m, sigma, k);
-            if (i==minX || i==minX) { w *= 1.0; } else if (i%2==1) { w *= 4.0; } else { w *= 2.0; }
-            if (j==minY || j==maxY) { w *= 1.0; } else if (j%2==1) { w *= 4.0; } else { w *= 2.0; }
+            double w = gaussian(p, m, sigma);
+            // Trapezoidal rule
+            if (i==minX || i==maxX) { w *= 0.5; }
+            if (j==minY || j==maxY) { w *= 0.5; }
+
+            // Simpson's rule
+            //if (i==minX || i==maxX) { w *= 1.0; } else if (i%2==1) { w *= 4.0; } else { w *= 2.0; }
+            //if (j==minY || j==maxY) { w *= 1.0; } else if (j%2==1) { w *= 4.0; } else { w *= 2.0; }
             uv += w * u[j][i];
-            ux += w * (u[j][i+1]-u[j][i-1])/(2.0*hx);
-            uy += w * (u[j+1][i]-u[j-1][i])/(2.0*hy);
+            //ux += w * (u[j][i+1]-u[j][i-1])/(2.0*hx);
+            //uy += w * (u[j+1][i]-u[j-1][i])/(2.0*hy);
         }
     }
-    uv *= ((hx*hy)/9.0);
-    ux *= ((hx*hy)/9.0);
-    uy *= ((hx*hy)/9.0);
+    // Trapezoidal rule
+    uv *= (hx*hy);
+
+    // Simpson's rule
+    //uv *= ((hx*hy)/9.0);
+
+    //ux *= ((hx*hy)/9.0);
+    //uy *= ((hx*hy)/9.0);
 
     return uv;
 }
+
+double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, size_t nps, size_t k, double &dx, double &dy)
+{
+    const double hx = dimensionX.step(), hy = dimensionY.step();
+    const unsigned int Nx = dimensionX.size()-1, Ny = dimensionY.size()-1;
+    const double lx = hx*Nx;
+    const double ly = hy*Ny;
+    const double px = m.x;
+    const double py = m.y;
+    const size_t rx = static_cast<size_t>(round((px/hx)*lx));
+    const size_t ry = static_cast<size_t>(round((py/hy)*ly));
+
+    const size_t minX = static_cast<size_t>(rx - nps*k);
+    const size_t maxX = static_cast<size_t>(rx + nps*k);
+    const size_t minY = static_cast<size_t>(ry - nps*k);
+    const size_t maxY = static_cast<size_t>(ry + nps*k);
+    const SpacePoint sigma = { nps*hx, nps*hy };
+
+    double uv = 0.0;
+    dx = dy = 0.0;
+    SpacePoint p;
+    for (size_t j=minY; j<=maxY; j++)
+    {
+        p.y = j*hy;
+
+        for (size_t i=minX; i<=maxX; i++)
+        {
+            p.x = i*hx;
+
+            double wx, wy;
+            double w0 = gaussian(p, m, sigma, wx, wy);
+            // Trapezoidal rule
+            if (i==minX || i==maxX) { w0 *= 0.5; }
+            if (j==minY || j==maxY) { w0 *= 0.5; }
+
+            // Simpson's rule
+            //if (i==minX || i==maxX) { w *= 1.0; } else if (i%2==1) { w *= 4.0; } else { w *= 2.0; }
+            //if (j==minY || j==maxY) { w *= 1.0; } else if (j%2==1) { w *= 4.0; } else { w *= 2.0; }
+            uv += w0 * u[j][i];
+            //dx += wx * u[j][i];
+            //dy += wy * u[j][i];
+            dx += w0 * (u[j][i+1]-u[j][i-1])/(2.0*hx);
+            dy += w0 * (u[j+1][i]-u[j-1][i])/(2.0*hy);
+        }
+    }
+    // Trapezoidal rule
+    uv *= (hx*hy);
+    dx *= (hx*hy);
+    dy *= (hx*hy);
+
+    // Simpson's rule
+    //uv *= ((hx*hy)/9.0);
+
+    //ux *= ((hx*hy)/9.0);
+    //uy *= ((hx*hy)/9.0);
+
+    return uv;
+}
+

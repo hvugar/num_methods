@@ -122,6 +122,24 @@ public:
     bool _userHalfValues = false;
 };
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+class MINIMUMSHARED_EXPORT ILoadedHeatEquationIBVP : public IHeatEquationIBVP
+{
+public:
+    explicit ILoadedHeatEquationIBVP(double thermalDiffusivity = 1.0, double thermalConductivity = 0.0, double thermalConvection = 0.0);
+    virtual ~ILoadedHeatEquationIBVP();
+    ILoadedHeatEquationIBVP(const ILoadedHeatEquationIBVP &);
+    ILoadedHeatEquationIBVP& operator=(const ILoadedHeatEquationIBVP &);
+
+    virtual void explicit_calculate_D1V1() const;// TO-DO
+    virtual void implicit_calculate_D1V1() const;// COMPLETED
+
+    virtual void explicit_calculate_D2V1() const;// TO-DO
+    virtual void implicit_calculate_D2V1() const;// COMPLETED
+};
+
+
 #endif // PARABOLIC_IBVP_H
 
 // a - thermal diffusivity

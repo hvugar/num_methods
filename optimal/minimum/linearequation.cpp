@@ -178,7 +178,7 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
             }
         }
     }
-    unsigned int selectedColsSize = selectedCols.size();
+    size_t selectedColsSize = selectedCols.size();
 
     //double **w = (double**) malloc(sizeof(double*) * selectedColsSize);
     double **w = new double*[selectedColsSize];

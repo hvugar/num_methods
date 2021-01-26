@@ -27,7 +27,6 @@ protected:
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
 
-
 private:
     double _initial_temperature = 0.0;
     double _enviroment_temperature = 0.5;
