@@ -1,6 +1,6 @@
 #include "solver3.h"
 
-//#define OMTIMZIE_V
+#define OMTIMIZE_V
 
 using namespace p3p3;
 
@@ -10,7 +10,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
     const size_t time_size = fn->timeDimension().size();
     const size_t dimX_size = fn->spaceDimensionX().size();
-    const size_t dimY_size = fn->spaceDimensionY().size();0.0;//
+    const size_t dimY_size = fn->spaceDimensionY().size();
     const double time_step = fn->timeDimension().step();
     //const double dimX_step = fn->spaceDimensionX().step();
     //const double dimY_step = fn->spaceDimensionX().step();
@@ -18,7 +18,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     fn->V.resize(dimY_size, dimX_size, 5.0);
     fn->U.resize(dimY_size, dimX_size, 0.0);
 
-#ifdef OMTIMZIE_V
+#ifdef OMTIMIZE_V
     DoubleVector x(4*time_size);
 #else
     DoubleVector x(6*time_size);
@@ -31,14 +31,14 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
         x[0*time_size + ln] = 50.00;
         x[1*time_size + ln] = 50.00;
-#ifdef OMTIMZIE_V
-        x[2*time_size + ln] = 2.0*t;
-        x[3*time_size + ln] = 2.0*t;
+#ifdef OMTIMIZE_V
+        x[2*time_size + ln] = 2.0*t*t;
+        x[3*time_size + ln] = 2.0*t*t;
 #else
-        x[2*time_size + ln] = /*+0.8*t+0.1;*/+fn->R[0]*sin(fn->v(tn, 0)*t) + 0.50;
-        x[3*time_size + ln] = /*+0.8*t+0.1;*/+fn->R[0]*cos(fn->v(tn, 0)*t) + 0.50;
-        x[4*time_size + ln] = /*+0.8*t+0.1;*/-fn->R[1]*sin(fn->v(tn, 1)*t) + 0.50;
-        x[5*time_size + ln] = /*-0.8*t+0.9;*/+fn->R[1]*cos(fn->v(tn, 1)*t) + 0.50;
+        x[2*time_size + ln] = /*+0.8*t+0.1;*/ +fn->R[0]*sin(fn->v(tn, 0)) + 0.50;
+        x[3*time_size + ln] = /*+0.8*t+0.1;*/ +fn->R[0]*cos(fn->v(tn, 0)) + 0.50;
+        x[4*time_size + ln] = /*+0.8*t+0.1;*/ -fn->R[1]*sin(fn->v(tn, 1)) + 0.50;
+        x[5*time_size + ln] = /*-0.8*t+0.9;*/ +fn->R[1]*cos(fn->v(tn, 1)) + 0.50;
 #endif
     }
 
@@ -46,11 +46,11 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     {
         DoubleVector g0;
         fn->gradient(x, g0);
-        IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
-        IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
+        //IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
+        //IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(202, 302).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(303, 403).L2Normalize());
-#ifndef OMTIMZIE_V
+#ifndef OMTIMIZE_V
         IPrinter::printVector(w, p, g0.mid(404, 504).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(505, 605).L2Normalize());
 #endif
@@ -78,11 +78,11 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         DoubleVector g1(x.length());
 
         const double step = 0.01;
-        IGradient::Gradient(fn, step, x, g1, 0, 100);   g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1,   0, 100); g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
         IGradient::Gradient(fn, step, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0; IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
         IGradient::Gradient(fn, step, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0; IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
-#ifndef OMTIMZIE_V
+#ifndef OMTIMIZE_V
         IGradient::Gradient(fn, step, x, g1, 404, 504); g1[404] *= 2.0; g1[504] *= 2.0; IPrinter::printVector(w, p, g1.mid(404, 504).L2Normalize());
         IGradient::Gradient(fn, step, x, g1, 505, 605); g1[505] *= 2.0; g1[605] *= 2.0; IPrinter::printVector(w, p, g1.mid(505, 605).L2Normalize());
 #endif
@@ -100,7 +100,7 @@ Functional::Functional()
     ih = new HeatEquationIBVP(this);
     fh = new HeatEquationFBVP(this);
 
-    const double a = 1.00;
+    const double a = 0.0001;
     const double lambda0 = 0.0;
 
     ih->setThermalDiffusivity(a);
@@ -118,20 +118,20 @@ SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
     const size_t time_size = timeDimension().size();
     SpacePoint sp;
 
-#ifdef OMTIMZIE_V
+#ifdef OMTIMIZE_V
     switch (i)
     {
 
     case 0:
     {
-        sp.x = +R[0]*sin(v(tn, i)*t) + 0.50;
-        sp.y = +R[0]*cos(v(tn, i)*t) + 0.50;
+        sp.x = +R[0]*sin(v(tn, i)) + 0.50;
+        sp.y = +R[0]*cos(v(tn, i)) + 0.50;
     } break;
 
     case 1:
     {
-        sp.x = -R[1]*sin(v(tn,i)*t) + 0.50;
-        sp.y = +R[1]*cos(v(tn,i)*t) + 0.50;
+        sp.x = -R[1]*sin(v(tn,i)) + 0.50;
+        sp.y = +R[1]*cos(v(tn,i)) + 0.50;
     } break;
 
     default:
@@ -151,7 +151,9 @@ SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
 double Functional::v(const TimeNodePDE &tn, size_t i) const
 {
 #ifndef OPTIMIZE_V
-    return 2.0*tn.t;
+//    return 2.0*tn.t;
+    const size_t time_size = timeDimension().size();
+    return x[(2+i)*time_size + tn.i];
 #else
     const size_t time_size = timeDimension().size();
     return x[(2+i)*time_size + tn.i];
@@ -238,9 +240,9 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
             g[i*time_size+ln] = -pp[i][ln];
 
 
-#ifdef OMTIMZIE_V
-            if (i==0) g[(2+i)*time_size+ln] = -qi * R[0] * ( +px[0][ln]*cos(v(tn, 0)*t)*t - py[0][ln]*sin(v(tn, 0)*t)*t );
-            if (i==1) g[(2+i)*time_size+ln] = -qi * R[1] * ( -px[1][ln]*cos(v(tn, 1)*t)*t - py[1][ln]*sin(v(tn, 1)*t)*t );
+#ifdef OMTIMIZE_V
+            if (i==0) g[(2+i)*time_size+ln] = -qi * R[0] * ( +px[0][ln]*cos(v(tn, 0)) - py[0][ln]*sin(v(tn, 0)) );
+            if (i==1) g[(2+i)*time_size+ln] = -qi * R[1] * ( -px[1][ln]*cos(v(tn, 1)) - py[1][ln]*sin(v(tn, 1)) );
 #else
             if (i==0)
             {
@@ -399,10 +401,10 @@ auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) c
         }
     }
 
-    const double dimX_step = _functional->spaceDimensionX().step();
-    const double dimY_step = _functional->spaceDimensionX().step();
-    const size_t dimX_size = _functional->spaceDimensionX().size();
-    const size_t dimY_size = _functional->spaceDimensionY().size();
+    //const double dimX_step = _functional->spaceDimensionX().step();
+    //const double dimY_step = _functional->spaceDimensionX().step();
+    //const size_t dimX_size = _functional->spaceDimensionX().size();
+    //const size_t dimY_size = _functional->spaceDimensionY().size();
 
     for (size_t i=0; i<_functional->heat_source_number; i++)
     {
