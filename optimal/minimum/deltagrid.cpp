@@ -1077,14 +1077,7 @@ auto DeltaGrid2D::onFlyWeight(const SpacePoint &sp, const SpacePoint &mu, size_t
     return 0.0;
 }
 
-double DeltaFunction::gaussian(double p, double m, double sigma)
-{
-    const double factor = 1.0/(sqrt(2.0*M_PI)*sigma);
-    const double sigma2 = 1.0/(2.0*sigma*sigma);
-    return factor * exp(-(sigma2*(p-m)*(p-m)));
-}
-
-double DeltaFunction::nearest(const SpaceNodePDE &p, const SpacePoint &m, double hx, double hy, unsigned int Nx, unsigned int Ny)
+auto DeltaFunction::nearest(const SpaceNodePDE &p, const SpacePoint &m, double hx, double hy, unsigned int Nx, unsigned int Ny) -> double
 {
     const double lx = hx*Nx;
     const double ly = hy*Ny;
@@ -1098,6 +1091,44 @@ double DeltaFunction::nearest(const SpaceNodePDE &p, const SpacePoint &m, double
     return pu;
 }
 
+/**
+ * @brief The normal (or Gaussian or Gauss or Laplace–Gauss) distribution
+ * @param p Searchin point
+ * @param m The mean point paremeter or expectation of the distribution
+ * @param sigma The standard deviation
+ * @return The value of Gaussian distribution function on point of p
+ */
+double DeltaFunction::gaussian(double p, double m, double sigma)
+{
+    const double factor = 1.0/(sqrt(2.0*M_PI)*sigma);
+    const double sigma2 = 1.0/(2.0*sigma*sigma);
+    return factor * exp(-(sigma2*(p-m)*(p-m)));
+}
+
+/**
+ * @brief The normal (or Gaussian or Gauss or Laplace–Gauss) distribution
+ * @param p Searchin point
+ * @param m The mean point paremeter or expectation of the distribution
+ * @param sigma The standard deviation
+ * @param dx The value of derivative by respect to x paremeter on point of p
+ * @return The value of Gaussian distribution function on point of p
+ */
+double DeltaFunction::gaussian(double p, double m, double sigma, double &dx)
+{
+    const double factor = 1.0/(sqrt(2.0*M_PI)*sigma);
+    const double sigma2 = 1.0/(2.0*sigma*sigma);
+    double fx = factor * exp(-(sigma2*(p-m)*(p-m)));
+    dx = -fx*(p-m)/(sigma*sigma);
+    return fx;
+}
+
+/**
+ * @brief The multivariate normal (or Gaussian or Gauss or Laplace–Gauss) distribution
+ * @param p Searchin point
+ * @param m The mean point paremeter or expectation of the distribution : (x,y)
+ * @param sigma The standard deviation : (x,y)
+ * @return The value of Gaussian distribution function on point of p
+ */
 double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma)
 {
     const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);
@@ -1106,6 +1137,15 @@ double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const S
     return factor1 * exp(-(sigmax2*(p.x-m.x)*(p.x-m.x)+sigmay2*(p.y-m.y)*(p.y-m.y)));
 }
 
+/**
+ * @brief The multivariate normal (or Gaussian or Gauss or Laplace–Gauss) distribution
+ * @param p Searchin point
+ * @param m The mean point paremeter or expectation of the distribution : (x,y)
+ * @param sigma The standard deviation : (x,y)
+ * @param dx The value of partial derivative by respect to x paremeter on point of p
+ * @param dy The value of partial derivative by respect to y paremeter on point of p
+ * @return The value of Gaussian distribution function on point of p
+ */
 double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, double &dx, double &dy)
 {
     const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);
@@ -1116,6 +1156,7 @@ double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const S
     dy = -fx*(p.y-m.y)/(sigma.y*sigma.y);
     return fx;
 }
+
 
 double DeltaFunction::gaussian(double p, double m, double sigma, size_t k)
 {

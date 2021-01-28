@@ -157,6 +157,7 @@ public:
     static double nearest(const SpaceNodePDE &p, const SpacePoint &m, double hx, double hy, unsigned int Nx, unsigned int Ny);
 
     static double gaussian(double p, double m, double sigma);
+    static double gaussian(double p, double m, double sigma, double &dx);
 
     static double gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma);
     static double gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, double &dx, double &dy);
@@ -174,7 +175,7 @@ public:
     static double lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, double hx, double hy, unsigned int Nx, unsigned int Ny);
     static double lumpedPoint4(const DoubleMatrix &m, const SpacePoint &p, const Dimension &dimensionX, const Dimension &dimensionY, SpacePoint &d);
 
-    static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, size_t nps, size_t k);
+    static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, size_t nps = 1, size_t k = 4);
     static double lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, size_t nps, size_t k, double &dx, double &dy);
 
     static double lumpedPoint4(const DoubleVector &m, double p, double hx, unsigned int Nx);

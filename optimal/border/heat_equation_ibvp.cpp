@@ -752,3 +752,47 @@ double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
 
     return res;
 }
+
+/***********************************************************************************************************************************/
+
+void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
+{
+    LoadedHeatEquationIBVP lheIBVP;
+    lheIBVP.setThermalDiffusivity(1.0);
+    lheIBVP.setThermalConductivity(0.0);
+    lheIBVP.setThermalConvection(0.0);
+
+    std::vector<SpacePoint> loadedPoints;
+    loadedPoints.push_back(SpacePoint(0.3, 0.35));
+    loadedPoints.push_back(SpacePoint(0.8, 0.32));
+    lheIBVP.setLoadedPoints(loadedPoints);
+
+    lheIBVP.implicit_calculate_D2V1();
+}
+
+double LoadedHeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
+{
+    return sn.x*sn.x + sn.y*sn.y;
+}
+
+double LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const
+{
+    bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+}
+
+double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    const double a =  thermalDiffusivity();
+    const double b =  thermalConductivity();
+    const double c =  thermalConvection();
+
+    return 2.0*tn.t - 4.0*a - 2.0*b*(sn.x+sn.y) - c*(sn.x*sn.x+sn.y*sn.y+tn.t*tn.t);
+}
+
+void LoadedHeatEquationIBVP::layerInfo(const DoubleVector&, const TimeNodePDE&) const
+{}
+
+void LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix&, const TimeNodePDE&) const
+{
+
+}

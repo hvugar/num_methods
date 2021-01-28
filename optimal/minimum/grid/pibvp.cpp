@@ -2963,6 +2963,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const {}
 
 void ILoadedHeatEquationIBVP::explicit_calculate_D2V1() const {}
 
+#include <set>
+#include <list>
 void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
@@ -3077,6 +3079,38 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         u05[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
         u10[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     }
+
+    std::vector<size_t> loaded_indecies_x;
+    std::vector<size_t> loaded_indecies_y;
+    size_t lps = loadedPoints().size();
+    const size_t k = 4;
+    for (size_t i=0; i<lps; i++)
+    {
+        const SpacePoint &p = _loadedPoints[i];
+        const size_t rx = static_cast<size_t>(round(p.x/hx));
+        const size_t ry = static_cast<size_t>(round(p.y/hy));
+
+        for (size_t n=rx-k; n<=rx+k; n++)
+        {
+            if (loaded_indecies_x)
+            loaded_indecies_x.insert(n);
+            printf("x: %zu %zu\n", i, n);
+        }
+        for (size_t m=ry-k; m<=ry+k; m++)
+        {
+            loaded_indecies_y.insert(m);
+            printf("y: %zu %zu\n", i, m);
+        }
+        puts("");
+    }
+
+    for (size_t i=0; i<loaded_indecies_x.size(); i++) printf(">> x: %zu\n", loaded_indecies_x[i]);
+    puts("");
+    for (size_t i=0; i<loaded_indecies_y.size(); i++) printf(">> y: %zu\n", i);
+    puts("");
+    printf("%zu %d %d\n", loadedPoints().size(), loaded_indecies_x.size(), loaded_indecies_y.size());
+
+    return;
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -3509,4 +3543,14 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
     free(cx);
     free(bx);
     free(ax);
+}
+
+void ILoadedHeatEquationIBVP::setLoadedPoints(const std::vector<SpacePoint> &loadedPoints)
+{
+    this->_loadedPoints = loadedPoints;
+}
+
+const std::vector<SpacePoint> ILoadedHeatEquationIBVP::loadedPoints() const
+{
+    return _loadedPoints;
 }

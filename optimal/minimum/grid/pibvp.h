@@ -137,6 +137,12 @@ public:
 
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// COMPLETED
+
+    void setLoadedPoints(const std::vector<SpacePoint> &loadedPoints);
+    const std::vector<SpacePoint> loadedPoints() const;
+
+private:
+    std::vector<SpacePoint> _loadedPoints;
 };
 
 
