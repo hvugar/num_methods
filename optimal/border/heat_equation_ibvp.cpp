@@ -763,9 +763,14 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
     lheIBVP.setThermalConvection(0.0);
 
     std::vector<SpacePoint> loadedPoints;
-    loadedPoints.push_back(SpacePoint(0.3, 0.35));
-    loadedPoints.push_back(SpacePoint(0.8, 0.32));
+    loadedPoints.push_back(SpacePoint(0.55, 0.35));
+    loadedPoints.push_back(SpacePoint(0.52, 0.32));
     lheIBVP.setLoadedPoints(loadedPoints);
+
+    std::vector<double> d;
+    d.push_back(0.1);
+    d.push_back(0.2);
+    lheIBVP._d = d;
 
     lheIBVP.implicit_calculate_D2V1();
 }

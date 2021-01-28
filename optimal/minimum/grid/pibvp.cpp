@@ -2965,6 +2965,7 @@ void ILoadedHeatEquationIBVP::explicit_calculate_D2V1() const {}
 
 #include <set>
 #include <list>
+#include <algorithm>
 void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 {
     const unsigned int N = static_cast<unsigned int>(spaceDimensionX().size()) - 1;
@@ -3080,9 +3081,14 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         u10[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     }
 
+    const size_t lps = loadedPoints().size();
+    size_t* minX = new size_t[lps];
+    size_t* maxX = new size_t[lps];
+    size_t* minY = new size_t[lps];
+    size_t* maxY = new size_t[lps];
+
     std::vector<size_t> loaded_indecies_x;
     std::vector<size_t> loaded_indecies_y;
-    size_t lps = loadedPoints().size();
     const size_t k = 4;
     for (size_t i=0; i<lps; i++)
     {
@@ -3090,27 +3096,26 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         const size_t rx = static_cast<size_t>(round(p.x/hx));
         const size_t ry = static_cast<size_t>(round(p.y/hy));
 
-        for (size_t n=rx-k; n<=rx+k; n++)
-        {
-            if (loaded_indecies_x)
-            loaded_indecies_x.insert(n);
-            printf("x: %zu %zu\n", i, n);
-        }
-        for (size_t m=ry-k; m<=ry+k; m++)
-        {
-            loaded_indecies_y.insert(m);
-            printf("y: %zu %zu\n", i, m);
-        }
-        puts("");
+        minX[i] = rx - k;
+        maxX[i] = rx + k;
+        minY[i] = ry - k;
+        maxY[i] = ry + k;
+
+
+        for (size_t n=minX[i]; n<=maxX[i]; n++) { if (std::find(loaded_indecies_x.begin(), loaded_indecies_x.end(), n) == loaded_indecies_x.end()) loaded_indecies_x.push_back(n); }
+        for (size_t m=minY[i]; m<=maxY[i]; m++) { if (std::find(loaded_indecies_y.begin(), loaded_indecies_y.end(), m) == loaded_indecies_y.end()) loaded_indecies_y.push_back(m); }
     }
+    sort(loaded_indecies_x.begin(), loaded_indecies_x.end());
+    sort(loaded_indecies_y.begin(), loaded_indecies_y.end());
 
-    for (size_t i=0; i<loaded_indecies_x.size(); i++) printf(">> x: %zu\n", loaded_indecies_x[i]);
-    puts("");
-    for (size_t i=0; i<loaded_indecies_y.size(); i++) printf(">> y: %zu\n", i);
-    puts("");
-    printf("%zu %d %d\n", loadedPoints().size(), loaded_indecies_x.size(), loaded_indecies_y.size());
+    size_t row_size = loaded_indecies_y.size();
+    double **w1= static_cast<double**> ( malloc(sizeof(double*)*row_size) );
+    for (unsigned int row=0; row < row_size; row++) w1[row] = static_cast<double*> ( malloc(sizeof(double)*row_size) );
 
-    return;
+
+    //for (size_t i=0; i<loaded_indecies_x.size(); i++) printf(">> x: %zu\n", loaded_indecies_x[i]); puts("");
+    //for (size_t i=0; i<loaded_indecies_y.size(); i++) printf(">> y: %zu\n", loaded_indecies_y[i]); puts("");
+    //printf("%zu %d %d\n", loadedPoints().size(), loaded_indecies_x.size(), loaded_indecies_y.size());
 
     /***********************************************************************************************/
     /***********************************************************************************************/
@@ -3141,13 +3146,35 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 
         /**************************************************** x direction apprx ***************************************************/
 
+        const SpacePoint sigma(hx, hy);
+        double loadedPart = 0.0;
+        for (size_t i=0; i<lps; i++)
+        {
+            const SpacePoint &mp = _loadedPoints[i];
+
+            SpacePoint p;
+            double uv = 0.0;
+            for (size_t m=minY[i]; m<=maxY[i]; m++)
+            {
+                p.y = m*hy;
+                for (size_t n=minX[i]; n<=maxX[i]; n++)
+                {
+                    p.x = n*hx;
+                    double w = DeltaFunction::gaussian(p, mp, sigma);
+                    uv += w * u00[j][i];
+                }
+            }
+            uv *= (hx*hy);
+            loadedPart += _d[i]*uv;
+        }
+
         for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
         {
             for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
             {
                 //double fx = f(sn, tn00);
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
-                dx[i] = k14*u00[j-1][i] + k15*u00[j][i] + k16*u00[j+1][i] + ht05*fx;
+                dx[i] = k14*u00[j-1][i] + k15*u00[j][i] + k16*u00[j+1][i] + ht05*fx + ht05*loadedPart;
             }
 
             sn.i = xmin; sn.x = xmin*hx;
@@ -3267,7 +3294,6 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
             }
 
             tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-            //for (unsigned int i=s; i<=e; i++) u05[j][i] = rx[i];
             memcpy(u05[j]+s, rx+s, sizeof (double*)*(e-s+1));
         }
 
@@ -3331,6 +3357,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         /**************************************************** x direction apprx ***************************************************/
 
         /**************************************************** y direction apprx ***************************************************/
+
+        for (unsigned int m=0; m<cols1_size; m++) for (unsigned int n=0; n<cols1_size; n++) w2[m][n] = 0.0;
 
         for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
         {

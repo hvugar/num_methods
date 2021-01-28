@@ -2,6 +2,7 @@
 #define PARABOLIC_IBVP_H
 
 #include "ibvp.h"
+#include "../deltagrid.h"
 #define PARABOLIC_IBVP_O2
 
 /**
@@ -140,6 +141,7 @@ public:
 
     void setLoadedPoints(const std::vector<SpacePoint> &loadedPoints);
     const std::vector<SpacePoint> loadedPoints() const;
+    std::vector<double> _d;
 
 private:
     std::vector<SpacePoint> _loadedPoints;
