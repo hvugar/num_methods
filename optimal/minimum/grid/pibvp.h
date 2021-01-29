@@ -3,6 +3,7 @@
 
 #include "ibvp.h"
 #include "../deltagrid.h"
+#include <algorithm>
 #define PARABOLIC_IBVP_O2
 
 /**
@@ -125,6 +126,12 @@ public:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
+struct MINIMUMSHARED_EXPORT LoadedSpacePoint : public SpacePoint
+{
+    LoadedSpacePoint(double x = 0.0, double y = 0.0, double z = 0.0, double d = 0.0) : SpacePoint(x, y, z), d(d) {}
+    double d;
+};
+
 class MINIMUMSHARED_EXPORT ILoadedHeatEquationIBVP : public IHeatEquationIBVP
 {
 public:
@@ -134,17 +141,40 @@ public:
     ILoadedHeatEquationIBVP& operator=(const ILoadedHeatEquationIBVP &);
 
     virtual void explicit_calculate_D1V1() const;// TO-DO
-    virtual void implicit_calculate_D1V1() const;// COMPLETED
+    virtual void implicit_calculate_D1V1() const;// TO-DO
 
     virtual void explicit_calculate_D2V1() const;// TO-DO
-    virtual void implicit_calculate_D2V1() const;// COMPLETED
+    virtual void implicit_calculate_D2V1() const;// TO-DO
 
-    void setLoadedPoints(const std::vector<SpacePoint> &loadedPoints);
-    const std::vector<SpacePoint> loadedPoints() const;
-    std::vector<double> _d;
+    void setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints);
+    const std::vector<LoadedSpacePoint> loadedPoints() const;
 
 private:
-    std::vector<SpacePoint> _loadedPoints;
+    std::vector<LoadedSpacePoint> _loadedPoints;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+class MINIMUMSHARED_EXPORT ILoadedHeatEquationFBVP : public IHeatEquationFBVP
+{
+public:
+    explicit ILoadedHeatEquationFBVP(double thermalDiffusivity = 1.0, double thermalConductivity = 0.0, double thermalConvection = 0.0);
+    ILoadedHeatEquationFBVP(const ILoadedHeatEquationFBVP &);
+    ILoadedHeatEquationFBVP& operator=(const ILoadedHeatEquationFBVP &);
+    virtual ~ILoadedHeatEquationFBVP();
+
+    virtual void explicit_calculate_D1V1() const;// TO-DO
+    virtual void implicit_calculate_D1V1() const;// TO-DO
+
+    virtual void explicit_calculate_D2V1() const;// TO-DO
+    virtual void implicit_calculate_D2V1() const;// TO-DO
+
+    void setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints);
+    const std::vector<LoadedSpacePoint> loadedPoints() const;
+
+private:
+    std::vector<LoadedSpacePoint> _loadedPoints;
+
 };
 
 

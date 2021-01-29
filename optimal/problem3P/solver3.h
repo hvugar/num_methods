@@ -32,6 +32,8 @@ private:
     double _enviroment_temperature = 0.5;
 
     Functional* _functional;
+
+    double _fx;
 };
 
 
@@ -79,16 +81,24 @@ public:
 
     auto spaceDimensionZ() const -> Dimension { return Dimension(0.01, 0, 100); }
 
-    size_t heat_source_number = 2;
+    size_t heating_point_number = 2;
     size_t measure_point_number = 4;
     double _lambda1 = 0.01;
+
+    DoubleMatrix k;
+    DoubleMatrix z;
+    std::vector<SpacePoint> measure_point;
 
     DoubleMatrix U;
     DoubleMatrix V;
 
     DoubleVector *pp = nullptr;
-    DoubleVector *px;
-    DoubleVector *py;
+    DoubleVector *px = nullptr;
+    DoubleVector *py = nullptr;
+
+    DoubleVector *uu = nullptr;
+    DoubleVector *ux = nullptr;
+    DoubleVector *uy = nullptr;
 
 
     SpacePoint tr(const TimeNodePDE &tn, size_t i) const;

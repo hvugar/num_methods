@@ -101,13 +101,29 @@ protected:
     virtual Dimension spaceDimensionX() const { return Dimension(0.01, 0, 100); }
     virtual Dimension spaceDimensionY() const { return Dimension(0.01, 0, 100); }
     virtual Dimension spaceDimensionZ() const { return Dimension(0.01, 0, 100); }
+};
 
-private:
-    Dimension _timeDimension;
-    Dimension _spaceDimensionX;
-    Dimension _spaceDimensionY;
-    Dimension _spaceDimensionZ;
+class BORDERSHARED_EXPORT LoadedHeatEquationFBVP : public ILoadedHeatEquationFBVP
+{
+public:
+    static void Main(int argc, char *argv[]);
 
+protected:
+    virtual double final(const SpaceNodePDE &sn, FinalCondition condition) const;
+    virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const;
+    virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const;
+
+    virtual void layerInfo(const DoubleVector&, const TimeNodePDE&) const;
+    virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
+
+protected:
+    double weight() const { return 0.5; }
+
+protected:
+    virtual Dimension timeDimension() const { return Dimension(0.01, 0, 100); }
+    virtual Dimension spaceDimensionX() const { return Dimension(0.01, 0, 100); }
+    virtual Dimension spaceDimensionY() const { return Dimension(0.01, 0, 100); }
+    virtual Dimension spaceDimensionZ() const { return Dimension(0.01, 0, 100); }
 };
 
 #endif // HEATEQUATIONIBVP_H

@@ -762,27 +762,24 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
     lheIBVP.setThermalConductivity(0.0);
     lheIBVP.setThermalConvection(0.0);
 
-    std::vector<SpacePoint> loadedPoints;
-    loadedPoints.push_back(SpacePoint(0.55, 0.35));
-    loadedPoints.push_back(SpacePoint(0.52, 0.32));
+    std::vector<LoadedSpacePoint> loadedPoints;
+    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, 0.1));
+    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, 0.1));
     lheIBVP.setLoadedPoints(loadedPoints);
-
-    std::vector<double> d;
-    d.push_back(0.1);
-    d.push_back(0.2);
-    lheIBVP._d = d;
 
     lheIBVP.implicit_calculate_D2V1();
 }
 
 double LoadedHeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 {
-    return sn.x*sn.x + sn.y*sn.y;
+    //return sn.x*sn.x + sn.y*sn.y;
+    return sn.x + sn.y;
 }
 
 double LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const
 {
-    bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+    //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+    bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x + sn.y + tn.t;
 }
 
 double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -791,13 +788,73 @@ double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) 
     const double b =  thermalConductivity();
     const double c =  thermalConvection();
 
-    return 2.0*tn.t - 4.0*a - 2.0*b*(sn.x+sn.y) - c*(sn.x*sn.x+sn.y*sn.y+tn.t*tn.t);
+    //return 2.0*tn.t - 4.0*a - 2.0*b*(sn.x+sn.y) - c*(sn.x*sn.x+sn.y*sn.y+tn.t*tn.t)
+    //        - 0.1*(0.2*0.2 + 0.2*0.2 + tn.t*tn.t)
+    //        - 0.1*(0.8*0.8 + 0.8*0.8 + tn.t*tn.t);
+
+    return 1.0 - 2.0*b - c*(sn.x+sn.y+tn.t)
+            - 0.1*(0.2 + 0.2 + tn.t)
+            - 0.1*(0.8 + 0.8 + tn.t);
 }
 
 void LoadedHeatEquationIBVP::layerInfo(const DoubleVector&, const TimeNodePDE&) const
 {}
 
-void LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix&, const TimeNodePDE&) const
+void LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE&) const
 {
+    IPrinter::printSeperatorLine();
+    IPrinter::printMatrix(u);
+}
 
+/***********************************************************************************************************************************/
+
+void LoadedHeatEquationFBVP::Main(int /*argc*/, char */*argv*/[])
+{
+    LoadedHeatEquationFBVP lheIBVP;
+    lheIBVP.setThermalDiffusivity(-1.0);
+    lheIBVP.setThermalConductivity(0.0);
+    lheIBVP.setThermalConvection(0.0);
+
+    std::vector<LoadedSpacePoint> loadedPoints;
+    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, +0.1));
+    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, +0.1));
+    lheIBVP.setLoadedPoints(loadedPoints);
+
+    lheIBVP.implicit_calculate_D2V1();
+}
+
+double LoadedHeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition) const
+{
+    //return sn.x*sn.x + sn.y*sn.y;
+    return sn.x + sn.y + 1.0;
+}
+
+double LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const
+{
+    //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
+    bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x + sn.y + tn.t;
+}
+
+double LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
+{
+    const double a =  thermalDiffusivity();
+    const double b =  thermalConductivity();
+    const double c =  thermalConvection();
+
+    //return 2.0*tn.t - 4.0*a - 2.0*b*(sn.x+sn.y) - c*(sn.x*sn.x+sn.y*sn.y+tn.t*tn.t)
+    //        - 0.1*(0.2*0.2 + 0.2*0.2 + tn.t*tn.t)
+    //        - 0.1*(0.8*0.8 + 0.8*0.8 + tn.t*tn.t);
+
+    return 1.0 - 2.0*b - c*(sn.x+sn.y+tn.t)
+            - 0.1*(0.2 + 0.2 + tn.t)
+            - 0.1*(0.8 + 0.8 + tn.t);
+}
+
+void LoadedHeatEquationFBVP::layerInfo(const DoubleVector&, const TimeNodePDE&) const
+{}
+
+void LoadedHeatEquationFBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE&) const
+{
+    IPrinter::printSeperatorLine();
+    IPrinter::printMatrix(u);
 }
