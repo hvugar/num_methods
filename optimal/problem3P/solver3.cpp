@@ -27,7 +27,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     fn->measure_point.push_back(SpacePoint(0.75, 0.75));
     fn->measure_point.push_back(SpacePoint(0.75, 0.25));
 
-    DoubleVector x(4*time_size + 2*fn->heating_point_number*fn->measure_point_number);
+    DoubleVector x(4*time_size + 2*fn->heating_point_number*fn->measure_point_number + 2*fn->measure_point_number);
 #else
 #ifdef OMTIMIZE_V
     DoubleVector x(4*time_size);
@@ -35,6 +35,8 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     DoubleVector x(6*time_size);
 #endif
 #endif
+
+    unsigned int w = 10, p = 4;
 
     for (unsigned int ln=0; ln<time_size; ln++)
     {
@@ -46,24 +48,6 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         x[1*time_size + ln] = +fn->R[0]*cos(2.0*t) + 0.50;/*+fn->R[0]*cos(fn->v(tn, 0)) + 0.50;*/
         x[2*time_size + ln] = -fn->R[1]*sin(2.0*t) + 0.50;/*-fn->R[1]*sin(fn->v(tn, 1)) + 0.50;*/
         x[3*time_size + ln] = +fn->R[1]*cos(2.0*t) + 0.50;/*+fn->R[1]*cos(fn->v(tn, 1)) + 0.50;*/
-
-        x[4*time_size +  0] = -20.4;
-        x[4*time_size +  1] = -20.4;
-        x[4*time_size +  2] = -20.4;
-        x[4*time_size +  3] = -20.4;
-        x[4*time_size +  4] = -20.4;
-        x[4*time_size +  5] = -20.4;
-        x[4*time_size +  6] = -20.4;
-        x[4*time_size +  7] = -20.4;
-
-        x[4*time_size +  8] = +4.5;
-        x[4*time_size +  9] = +4.5;
-        x[4*time_size + 10] = +4.5;
-        x[4*time_size + 11] = +4.5;
-        x[4*time_size + 12] = +4.5;
-        x[4*time_size + 13] = +4.5;
-        x[4*time_size + 14] = +4.5;
-        x[4*time_size + 15] = +4.5;
 
 #else
         x[0*time_size + ln] = 50.00;
@@ -80,19 +64,58 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 #endif
     }
 
-    unsigned int w = 10, p = 4;
+#ifdef SYNTEZ
+    x[4*time_size +  0] = -20.4*sin(rand());
+    x[4*time_size +  1] = -20.4*sin(rand());
+    x[4*time_size +  2] = -20.4*sin(rand());
+    x[4*time_size +  3] = -20.4*sin(rand());
+    x[4*time_size +  4] = -20.4*sin(rand());
+    x[4*time_size +  5] = -20.4*sin(rand());
+    x[4*time_size +  6] = -20.4*sin(rand());
+    x[4*time_size +  7] = -20.4*sin(rand());
+
+    x[4*time_size +  8] = +4.5*sin(rand());
+    x[4*time_size +  9] = +4.5*sin(rand());
+    x[4*time_size + 10] = +4.5*sin(rand());
+    x[4*time_size + 11] = +4.5*sin(rand());
+    x[4*time_size + 12] = +4.5*sin(rand());
+    x[4*time_size + 13] = +4.5*sin(rand());
+    x[4*time_size + 14] = +4.5*sin(rand());
+    x[4*time_size + 15] = +4.5*sin(rand());
+
+    x[4*time_size + 16] = 0.25;
+    x[4*time_size + 17] = 0.25;
+    x[4*time_size + 18] = 0.25;
+    x[4*time_size + 19] = 0.75;
+    x[4*time_size + 20] = 0.75;
+    x[4*time_size + 21] = 0.75;
+    x[4*time_size + 22] = 0.75;
+    x[4*time_size + 23] = 0.25;
+
+    IPrinter::printVector(w, p, x.mid(0,   100));
+    IPrinter::printVector(w, p, x.mid(101, 201));
+    IPrinter::printVector(w, p, x.mid(202, 302));
+    IPrinter::printVector(w, p, x.mid(303, 403));
+    IPrinter::print(x.mid(404, 411), 8, w, p);
+    IPrinter::print(x.mid(412, 419), 8, w, p);
+    IPrinter::print(x.mid(420, 427), 8, w, p);
+    IPrinter::printSeperatorLine();
+#endif
+
     {
         DoubleVector g0;
         fn->gradient(x, g0);
 
 #ifdef SYNTEZ
+
         g0[100] = g0[201] = g0[302] = g0[403] = 0.0;
         IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(202, 302).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(303, 403).L2Normalize());
-        IPrinter::printVector(w, p, g0.mid(404, 411)/*.L2Normalize()*/);
-        IPrinter::printVector(w, p, g0.mid(412, 419)/*.L2Normalize()*/);
+        IPrinter::print(g0.mid(404, 411).L2Normalize(), 8, w, p);
+        IPrinter::print(g0.mid(412, 419).L2Normalize(), 8, w, p);
+        IPrinter::print(g0.mid(420, 427).L2Normalize(), 8, w, p);
         IPrinter::printSeperatorLine();
 
 #else
@@ -134,8 +157,9 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         //IGradient::Gradient(fn, step, x, g1, 101, 201); /*g1[101] *= 2.0; g1[201] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
         //IGradient::Gradient(fn, step, x, g1, 202, 302); /*g1[202] *= 2.0; g1[302] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
         //IGradient::Gradient(fn, step, x, g1, 303, 403); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 404, 411); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(404, 411).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 412, 419); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(412, 419).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 404, 411); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::print(g1.mid(404, 411).L2Normalize(), 8, w, p);
+        IGradient::Gradient(fn, step, x, g1, 412, 419); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::print(g1.mid(412, 419).L2Normalize(), 8, w, p);
+        IGradient::Gradient(fn, step, x, g1, 420, 427); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::print(g1.mid(420, 427).L2Normalize(), 8, w, p);
 #else
         const double step = 0.01;
         IGradient::Gradient(fn, step, x, g1,   0, 100); /*g1[  0] *= 2.0; g1[100] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
@@ -288,7 +312,7 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
     setVector(x);
 
     const double time_step = timeDimension().step();
-    const unsigned int time_size = timeDimension().size();
+    const size_t time_size = timeDimension().size();
 
     ih->implicit_calculate_D2V2();
     fh->implicit_calculate_D2V2();
@@ -297,6 +321,12 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
     g.resize(x.length());
 
 #ifdef SYNTEZ
+
+    g[404] = g[405] = g[406] = g[407] = g[408] = g[409] = g[410] = g[411] = 0.0;
+    g[412] = g[413] = g[414] = g[415] = g[416] = g[417] = g[418] = g[419] = 0.0;
+
+    //g[420 + 2*j + 0] = 0.0;
+    //g[420 + 2*j + 1] = 0.0;
 
     for (unsigned int ln=0; ln<time_size; ln++)
     {
@@ -320,10 +350,27 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
                 g[3*time_size+ln] = -qi * py[1][ln];
             }
         }
+
+        for (size_t i=0; i<heating_point_number; i++)
+        {
+            for (size_t j=0; j<measure_point_number; j++)
+            {
+                g[404 + i*measure_point_number + j] += -pp[i][ln] * (uu[j][ln]-z.at(i,j)) * time_step;
+                g[412 + i*measure_point_number + j] -= -pp[i][ln] * k.at(i,j) * time_step;
+            }
+        }
+
+        for (size_t j=0; j<measure_point_number; j++)
+        {
+            for (size_t i=0; i<heating_point_number; i++)
+            {
+                g[420 + 2*j + 0] += -pp[i][ln] * ux[j][ln] * k.at(i,j) * time_step;
+                g[420 + 2*j + 1] += -pp[i][ln] * uy[j][ln] * k.at(i,j) * time_step;
+            }
+        }
+
     }
 
-    g[404] = g[405] = g[406] = g[407] = g[408] = g[409] = g[410] = g[411] = 0.0;
-    g[412] = g[413] = g[414] = g[415] = g[416] = g[417] = g[418] = g[419] = 0.0;
 
 #else
 
@@ -385,6 +432,15 @@ void Functional::setVector(const DoubleVector &x) const
     const_cast<Functional*>(this)->z.at(1,1) = x[4*time_size+13];
     const_cast<Functional*>(this)->z.at(1,2) = x[4*time_size+14];
     const_cast<Functional*>(this)->z.at(1,3) = x[4*time_size+15];
+
+    const_cast<Functional*>(this)->measure_point[0].x = x[4*time_size+16];
+    const_cast<Functional*>(this)->measure_point[0].y = x[4*time_size+17];
+    const_cast<Functional*>(this)->measure_point[1].x = x[4*time_size+18];
+    const_cast<Functional*>(this)->measure_point[1].y = x[4*time_size+19];
+    const_cast<Functional*>(this)->measure_point[2].x = x[4*time_size+20];
+    const_cast<Functional*>(this)->measure_point[2].y = x[4*time_size+21];
+    const_cast<Functional*>(this)->measure_point[3].x = x[4*time_size+22];
+    const_cast<Functional*>(this)->measure_point[3].y = x[4*time_size+23];
 }
 
 void Functional::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const

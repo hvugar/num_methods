@@ -256,6 +256,9 @@ double DoubleVector::max() const
 DoubleVector DoubleVector::mid(size_t s, size_t e) const
 {
     DoubleVector vector((e-s)+1);
+    //unsigned char *src = reinterpret_cast<unsigned char*>(mData) + s;
+    //unsigned char *dst = reinterpret_cast<unsigned char*>(vector.mData);
+    //std::memcpy(dst, src, static_cast<size_t>((e-s)+1));
     for (size_t i=s; i<=e; i++) vector.mData[i-s] = mData[i];
     return vector;
 }
