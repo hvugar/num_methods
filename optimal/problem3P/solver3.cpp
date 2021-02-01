@@ -19,6 +19,13 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     fn->V.resize(dimY_size, dimX_size, 5.0);
     fn->U.resize(dimY_size, dimX_size, 0.0);
 
+    fn->k.resize(fn->heating_point_number, fn->measure_point_number, -2.4);
+    fn->z.resize(fn->heating_point_number, fn->measure_point_number, +4.5);
+    fn->measure_point.push_back(SpacePoint(0.25, 0.25));
+    fn->measure_point.push_back(SpacePoint(0.25, 0.75));
+    fn->measure_point.push_back(SpacePoint(0.75, 0.75));
+    fn->measure_point.push_back(SpacePoint(0.75, 0.25));
+
 #ifdef SYNTEZ
     DoubleVector x(4*time_size);
 #else
@@ -35,10 +42,10 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         const TimeNodePDE tn(ln, t);
 
 #ifdef SYNTEZ
-        x[0*time_size + ln] = +fn->R[0]*sin(fn->v(tn, 0)) + 0.50;
-        x[1*time_size + ln] = +fn->R[0]*cos(fn->v(tn, 0)) + 0.50;
-        x[2*time_size + ln] = -fn->R[1]*sin(fn->v(tn, 1)) + 0.50;
-        x[3*time_size + ln] = +fn->R[1]*cos(fn->v(tn, 1)) + 0.50;
+        x[0*time_size + ln] = +fn->R[0]*sin(2.0*t) + 0.50;/*+fn->R[0]*sin(fn->v(tn, 0)) + 0.50;*/
+        x[1*time_size + ln] = +fn->R[0]*cos(2.0*t) + 0.50;/*+fn->R[0]*cos(fn->v(tn, 0)) + 0.50;*/
+        x[2*time_size + ln] = -fn->R[1]*sin(2.0*t) + 0.50;/*-fn->R[1]*sin(fn->v(tn, 1)) + 0.50;*/
+        x[3*time_size + ln] = +fn->R[1]*cos(2.0*t) + 0.50;/*+fn->R[1]*cos(fn->v(tn, 1)) + 0.50;*/
 #else
         x[0*time_size + ln] = 50.00;
         x[1*time_size + ln] = 50.00;
@@ -64,6 +71,8 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(202, 302).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(303, 403).L2Normalize());
+        IPrinter::printSeperatorLine();
+
 #else
 
         //IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
@@ -100,7 +109,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
 #ifdef SYNTEZ
         const double step = 0.01;
-        IGradient::Gradient(fn, step, x, g1,   0, 100); g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1,   0, 100); g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
         IGradient::Gradient(fn, step, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
         IGradient::Gradient(fn, step, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0; IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
         IGradient::Gradient(fn, step, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0; IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
@@ -148,8 +157,8 @@ SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
     SpacePoint sp;
 
 #ifdef SYNTEZ
-    if (i==0) { sp.x = x[2*time_size + tn.i]; sp.y = x[3*time_size + tn.i]; }
-    if (i==1) { sp.x = x[4*time_size + tn.i]; sp.y = x[5*time_size + tn.i]; }
+    if (i==0) { sp.x = x[0*time_size + tn.i]; sp.y = x[1*time_size + tn.i]; }
+    if (i==1) { sp.x = x[2*time_size + tn.i]; sp.y = x[3*time_size + tn.i]; }
 #else
 #ifdef OMTIMIZE_V
     switch (i)
@@ -266,6 +275,34 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
     g.clear();
     g.resize(x.length());
 
+#ifdef SYNTEZ
+
+    for (unsigned int ln=0; ln<time_size; ln++)
+    {
+        for (size_t i=0; i<heating_point_number; i++)
+        {
+            double qi = 0.0;
+            for (size_t j=0; j<measure_point_number; j++)
+            {
+                qi += k.at(i,j) * (uu[j][ln]-z.at(i,j));
+            }
+
+            if (i==0)
+            {
+                g[0*time_size+ln] = -qi * px[0][ln];
+                g[1*time_size+ln] = -qi * py[0][ln];
+            }
+
+            if (i==1)
+            {
+                g[2*time_size+ln] = -qi * px[1][ln];
+                g[3*time_size+ln] = -qi * py[1][ln];
+            }
+        }
+    }
+
+#else
+
     for (unsigned int ln=0; ln<time_size; ln++)
     {
         const double t = ln*time_step;
@@ -273,9 +310,13 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 
         for (size_t i=0; i<heating_point_number; i++)
         {
-            const double qi = q(tn, i);
+            double qi = 0.0;/*q(tn, i);*/
+            for (size_t j=0; j<measure_point_number; j++)
+            {
+                qi += k.at(i,j) * (uu[j][ln]-z.at(i,j));
+            }
 
-            g[i*time_size+ln] = -pp[i][ln];
+            //g[i*time_size+ln] = -pp[i][ln];
 
 
 #ifdef OMTIMIZE_V
@@ -296,6 +337,8 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 #endif
         }
     }
+
+#endif
 }
 
 void Functional::setVector(const DoubleVector &x) const
@@ -361,33 +404,49 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     const double dimY_step = spaceDimensionY().step();
     const size_t heating_point_number = _functional->heating_point_number;
     const size_t measure_point_number = _functional->measure_point_number;
+    const DoubleMatrix &k = _functional->k;
+    const DoubleMatrix &z = _functional->z;
+    const DoubleVector *uu = _functional->uu;
 
     double fx = -thermalConvection() * _enviroment_temperature;
+
+#ifdef SYNTEZ
+    double sum = 0.0;
+    double qi[] = { 0.0, 0.0 };
+    printf("t:%3zu x:%3zu y:%3zu ", tn.i, sn.i, sn.j);
+    for (size_t i=0; i<heating_point_number; i++)
+    {
+        const SpacePoint &zi = _functional->tr(tn, i);
+        const double w = DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
+        if (w>=0.0)
+        {
+            qi[i] = 0.0;
+            for (size_t j=0; j<measure_point_number; j++)
+            {
+                qi[i] += k[i][j] * ( uu[j][ln] - z[i][j] ) * w;
+            }
+            sum += qi[i];
+        }
+        if (i==0) printf("%.2f %.2f %.10f ", zi.x, zi.y, qi[i]);
+    }
+    puts("");
+
+#else
+
+    const unsigned dimX_size = spaceDimensionX().size();
+    const unsigned dimY_size = spaceDimensionY().size();
+
 
     double sum = 0.0;
     for (size_t i=0; i<heating_point_number; i++)
     {
         const SpacePoint &zi = _functional->tr(tn, i);
-
-        for (size_t j=0; j<measure_point_number; j++)
-        {
-            sum += _functional->k[i][j] * ( _functional->uu[j][ln] -  _functional->z[i][j] ) * DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
-        }
+        const double qi = _functional->q(tn, i);
+        sum += qi * DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
+        //sum += qi * DeltaFunction::nearest(sn, zi, dimX_step, dimY_step, dimX_size, dimY_size);
     }
 
-
-    //const unsigned dimX_size = spaceDimensionX().size();
-    //const unsigned dimY_size = spaceDimensionY().size();
-
-
-    //    double sum = 0.0;
-    //    for (size_t i=0; i<heating_point_number; i++)
-    //    {
-    //        const SpacePoint &zi = _functional->tr(tn, i);
-    //        const double qi = _functional->q(tn, i);
-    //        sum += qi * DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
-    //        //sum += qi * DeltaFunction::nearest(sn, zi, dimX_step, dimY_step, dimX_size, dimY_size);
-    //    }
+#endif
 
     return fx + sum;
 }
@@ -466,18 +525,21 @@ auto HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     const double dimY_step = spaceDimensionY().step();
     const size_t heating_point_number = _functional->heating_point_number;
     const size_t measure_point_number = _functional->measure_point_number;
+    const DoubleMatrix &k = _functional->k;
+    const DoubleVector *pp = _functional->pp;
 
     double sum = 0.0;
-
+#ifdef SYNTEZ
     for (size_t j=0; j<measure_point_number; j++)
     {
         const SpacePoint &mp = _functional->measure_point[j];
 
         for (size_t i=0; i<heating_point_number; i++)
         {
-            sum -= _functional->k[i][j] * _functional->pp[i][ln] * DeltaFunction::gaussian(sn, mp, SpacePoint(dimX_step, dimY_step));
+            sum -= k.at(i,j) * pp[i][ln] * DeltaFunction::gaussian(sn, mp, SpacePoint(dimX_step, dimY_step));
         }
     }
+#endif
 
     return fx + sum;
 }

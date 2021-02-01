@@ -1131,6 +1131,9 @@ double DeltaFunction::gaussian(double p, double m, double sigma, double &dx)
  */
 double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma)
 {
+    if (fabs(p.x-m.x)>5.0*sigma.x) return 0.0;
+    if (fabs(p.y-m.y)>5.0*sigma.y) return 0.0;
+
     const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);
     const double sigmax2 = 1.0/(2.0*sigma.x*sigma.x);
     const double sigmay2 = 1.0/(2.0*sigma.y*sigma.y);
@@ -1148,6 +1151,9 @@ double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const S
  */
 double DeltaFunction::gaussian(const SpacePoint &p, const SpacePoint &m, const SpacePoint &sigma, double &dx, double &dy)
 {
+    if (fabs(p.x-m.x)>5.0*sigma.x) return 0.0;
+    if (fabs(p.y-m.y)>5.0*sigma.y) return 0.0;
+
     const double factor1 = 1.0/(2.0*M_PI*sigma.x*sigma.y);
     const double sigmax2 = 1.0/(2.0*sigma.x*sigma.x);
     const double sigmay2 = 1.0/(2.0*sigma.y*sigma.y);
