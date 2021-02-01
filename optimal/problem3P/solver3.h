@@ -8,13 +8,13 @@ namespace p3p3
 
 class Functional;
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationIBVP : public IHeatEquationIBVP
+class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public ILoadedHeatEquationIBVP
 {
 public:
-    HeatEquationIBVP(Functional*);
-    HeatEquationIBVP(const HeatEquationIBVP &);
-    HeatEquationIBVP & operator =(const HeatEquationIBVP &);
-    virtual ~HeatEquationIBVP() override;
+    LoadedHeatEquationIBVP(Functional*);
+    LoadedHeatEquationIBVP(const LoadedHeatEquationIBVP &);
+    LoadedHeatEquationIBVP & operator =(const LoadedHeatEquationIBVP &);
+    virtual ~LoadedHeatEquationIBVP() override;
 
 protected:
     virtual auto initial(const SpaceNodePDE &sn, InitialCondition ic) const -> double override;
@@ -37,13 +37,13 @@ private:
 };
 
 
-class PROBLEM3P_SHARED_EXPORT HeatEquationFBVP : virtual public IHeatEquationFBVP
+class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationFBVP : virtual public ILoadedHeatEquationFBVP
 {
 public:
-    HeatEquationFBVP(Functional *function);
-    HeatEquationFBVP(const HeatEquationFBVP &);
-    HeatEquationFBVP & operator =(const HeatEquationFBVP &);
-    virtual ~HeatEquationFBVP() override;
+    LoadedHeatEquationFBVP(Functional *function);
+    LoadedHeatEquationFBVP(const LoadedHeatEquationFBVP &);
+    LoadedHeatEquationFBVP & operator =(const LoadedHeatEquationFBVP &);
+    virtual ~LoadedHeatEquationFBVP() override;
 
 protected:
     virtual auto final(const SpaceNodePDE &sn, FinalCondition condition) const -> double override;
@@ -70,7 +70,7 @@ public:
     Functional();
 
     virtual double fx(const DoubleVector &x) const;
-    auto integral(const DoubleMatrix &u) const -> double;
+    virtual auto integral(const DoubleMatrix &u) const -> double;
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
 
     auto timeDimension() const -> Dimension { return Dimension(0.01, 0, 100) /*Dimension(0.0000005, 0, 20000000)*/; }
@@ -87,6 +87,7 @@ public:
 
     DoubleMatrix k;
     DoubleMatrix z;
+    DoubleVector s;
     std::vector<SpacePoint> measure_point;
 
     DoubleMatrix U;
@@ -105,10 +106,8 @@ public:
     double v(const TimeNodePDE &tn, size_t i) const;
     double q(const TimeNodePDE &tn, size_t i) const;
 
-    HeatEquationIBVP *ih;
-    HeatEquationFBVP *fh;
-
-    DoubleVector x;
+    LoadedHeatEquationIBVP *ih;
+    LoadedHeatEquationFBVP *fh;
 
     void setVector(const DoubleVector &x) const;
 

@@ -1,7 +1,7 @@
 #include "solver3.h"
 
-//#define OMTIMIZE_V
 #define SYNTEZ
+//#define OMTIMIZE_V
 
 using namespace p3p3;
 
@@ -19,15 +19,15 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     fn->V.resize(dimY_size, dimX_size, 5.0);
     fn->U.resize(dimY_size, dimX_size, 0.0);
 
-    fn->k.resize(fn->heating_point_number, fn->measure_point_number, -2.4);
-    fn->z.resize(fn->heating_point_number, fn->measure_point_number, +4.5);
+#ifdef SYNTEZ
+    fn->k.resize(fn->heating_point_number, fn->measure_point_number, 0.0);
+    fn->z.resize(fn->heating_point_number, fn->measure_point_number, 0.0);
     fn->measure_point.push_back(SpacePoint(0.25, 0.25));
     fn->measure_point.push_back(SpacePoint(0.25, 0.75));
     fn->measure_point.push_back(SpacePoint(0.75, 0.75));
     fn->measure_point.push_back(SpacePoint(0.75, 0.25));
 
-#ifdef SYNTEZ
-    DoubleVector x(4*time_size);
+    DoubleVector x(4*time_size + 2*fn->heating_point_number*fn->measure_point_number);
 #else
 #ifdef OMTIMIZE_V
     DoubleVector x(4*time_size);
@@ -46,6 +46,25 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         x[1*time_size + ln] = +fn->R[0]*cos(2.0*t) + 0.50;/*+fn->R[0]*cos(fn->v(tn, 0)) + 0.50;*/
         x[2*time_size + ln] = -fn->R[1]*sin(2.0*t) + 0.50;/*-fn->R[1]*sin(fn->v(tn, 1)) + 0.50;*/
         x[3*time_size + ln] = +fn->R[1]*cos(2.0*t) + 0.50;/*+fn->R[1]*cos(fn->v(tn, 1)) + 0.50;*/
+
+        x[4*time_size +  0] = -20.4;
+        x[4*time_size +  1] = -20.4;
+        x[4*time_size +  2] = -20.4;
+        x[4*time_size +  3] = -20.4;
+        x[4*time_size +  4] = -20.4;
+        x[4*time_size +  5] = -20.4;
+        x[4*time_size +  6] = -20.4;
+        x[4*time_size +  7] = -20.4;
+
+        x[4*time_size +  8] = +4.5;
+        x[4*time_size +  9] = +4.5;
+        x[4*time_size + 10] = +4.5;
+        x[4*time_size + 11] = +4.5;
+        x[4*time_size + 12] = +4.5;
+        x[4*time_size + 13] = +4.5;
+        x[4*time_size + 14] = +4.5;
+        x[4*time_size + 15] = +4.5;
+
 #else
         x[0*time_size + ln] = 50.00;
         x[1*time_size + ln] = 50.00;
@@ -53,10 +72,10 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         x[2*time_size + ln] = 2.0*t*t;
         x[3*time_size + ln] = 2.0*t*t;
 #else
-        x[2*time_size + ln] = /*+0.8*t+0.1;*/ +fn->R[0]*sin(fn->v(tn, 0)) + 0.50;
-        x[3*time_size + ln] = /*+0.8*t+0.1;*/ +fn->R[0]*cos(fn->v(tn, 0)) + 0.50;
-        x[4*time_size + ln] = /*+0.8*t+0.1;*/ -fn->R[1]*sin(fn->v(tn, 1)) + 0.50;
-        x[5*time_size + ln] = /*-0.8*t+0.9;*/ +fn->R[1]*cos(fn->v(tn, 1)) + 0.50;
+        x[2*time_size + ln] = +fn->R[0]*sin(fn->v(tn, 0)) + 0.50; /*+0.8*t+0.1;*/
+        x[3*time_size + ln] = +fn->R[0]*cos(fn->v(tn, 0)) + 0.50; /*+0.8*t+0.1;*/
+        x[4*time_size + ln] = -fn->R[1]*sin(fn->v(tn, 1)) + 0.50; /*+0.8*t+0.1;*/
+        x[5*time_size + ln] = +fn->R[1]*cos(fn->v(tn, 1)) + 0.50; /*-0.8*t+0.9;*/
 #endif
 #endif
     }
@@ -67,16 +86,18 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         fn->gradient(x, g0);
 
 #ifdef SYNTEZ
+        g0[100] = g0[201] = g0[302] = g0[403] = 0.0;
         IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(202, 302).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(303, 403).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(404, 411)/*.L2Normalize()*/);
+        IPrinter::printVector(w, p, g0.mid(412, 419)/*.L2Normalize()*/);
         IPrinter::printSeperatorLine();
 
 #else
-
-        //IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
-        //IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(0,   100).L2Normalize());
+        IPrinter::printVector(w, p, g0.mid(101, 201).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(202, 302).L2Normalize());
         IPrinter::printVector(w, p, g0.mid(303, 403).L2Normalize());
 #ifndef OMTIMIZE_V
@@ -109,19 +130,21 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
 #ifdef SYNTEZ
         const double step = 0.01;
-        //IGradient::Gradient(fn, step, x, g1,   0, 100); g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0; IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0; IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1,   0, 100); /*g1[  0] *= 2.0; g1[100] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1, 101, 201); /*g1[101] *= 2.0; g1[201] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1, 202, 302); /*g1[202] *= 2.0; g1[302] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
+        //IGradient::Gradient(fn, step, x, g1, 303, 403); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 404, 411); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(404, 411).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 412, 419); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(412, 419).L2Normalize());
 #else
         const double step = 0.01;
-        //IGradient::Gradient(fn, step, x, g1,   0, 100); g1[  0] *= 2.0; g1[100] *= 2.0; IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
-        //IGradient::Gradient(fn, step, x, g1, 101, 201); g1[101] *= 2.0; g1[201] *= 2.0; IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 202, 302); g1[202] *= 2.0; g1[302] *= 2.0; IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 303, 403); g1[303] *= 2.0; g1[403] *= 2.0; IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1,   0, 100); /*g1[  0] *= 2.0; g1[100] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(  0, 100).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 101, 201); /*g1[101] *= 2.0; g1[201] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(101, 201).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 202, 302); /*g1[202] *= 2.0; g1[302] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(202, 302).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 303, 403); /*g1[303] *= 2.0; g1[403] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(303, 403).L2Normalize());
 #ifndef OMTIMIZE_V
-        IGradient::Gradient(fn, step, x, g1, 404, 504); g1[404] *= 2.0; g1[504] *= 2.0; IPrinter::printVector(w, p, g1.mid(404, 504).L2Normalize());
-        IGradient::Gradient(fn, step, x, g1, 505, 605); g1[505] *= 2.0; g1[605] *= 2.0; IPrinter::printVector(w, p, g1.mid(505, 605).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 404, 504); /*g1[404] *= 2.0; g1[504] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(404, 504).L2Normalize());
+        IGradient::Gradient(fn, step, x, g1, 505, 605); /*g1[505] *= 2.0; g1[605] *= 2.0;*/ IPrinter::printVector(w, p, g1.mid(505, 605).L2Normalize());
 #endif
         //        IPrinter::printSeperatorLine();
 
@@ -135,8 +158,8 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
 Functional::Functional()
 {
-    ih = new HeatEquationIBVP(this);
-    fh = new HeatEquationFBVP(this);
+    ih = new LoadedHeatEquationIBVP(this);
+    fh = new LoadedHeatEquationFBVP(this);
 
     const double a = 0.0001;
     const double lambda0 = 0.0;
@@ -157,8 +180,8 @@ SpacePoint Functional::tr(const TimeNodePDE &tn, size_t i) const
     SpacePoint sp;
 
 #ifdef SYNTEZ
-    if (i==0) { sp.x = x[0*time_size + tn.i]; sp.y = x[1*time_size + tn.i]; }
-    if (i==1) { sp.x = x[2*time_size + tn.i]; sp.y = x[3*time_size + tn.i]; }
+    if (i==0) { sp.x = s[0*time_size + tn.i]; sp.y = s[1*time_size + tn.i]; }
+    if (i==1) { sp.x = s[2*time_size + tn.i]; sp.y = s[3*time_size + tn.i]; }
 #else
 #ifdef OMTIMIZE_V
     switch (i)
@@ -197,9 +220,7 @@ double Functional::v(const TimeNodePDE &tn, size_t i) const
     return 2.0*tn.t;
 #else
 #ifndef OPTIMIZE_V
-    //    return 2.0*tn.t;
-    const size_t time_size = timeDimension().size();
-    return x[(2+i)*time_size + tn.i];
+    return 2.0*tn.t;
 #else
     const size_t time_size = timeDimension().size();
     return x[(2+i)*time_size + tn.i];
@@ -210,14 +231,14 @@ double Functional::v(const TimeNodePDE &tn, size_t i) const
 double Functional::q(const TimeNodePDE &tn, size_t i) const
 {
     const size_t time_size = timeDimension().size();
-    return x[i*time_size + tn.i];
+    return s[i*time_size + tn.i];
 }
 
 double Functional::fx(const DoubleVector &x) const
 {
     setVector(x);
 
-    ih->implicit_calculate_D2V1();
+    ih->implicit_calculate_D2V2();
 
     return integral(U);
 }
@@ -269,8 +290,8 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
     const double time_step = timeDimension().step();
     const unsigned int time_size = timeDimension().size();
 
-    ih->implicit_calculate_D2V1();
-    fh->implicit_calculate_D2V1();
+    ih->implicit_calculate_D2V2();
+    fh->implicit_calculate_D2V2();
 
     g.clear();
     g.resize(x.length());
@@ -301,6 +322,9 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
         }
     }
 
+    g[404] = g[405] = g[406] = g[407] = g[408] = g[409] = g[410] = g[411] = 0.0;
+    g[412] = g[413] = g[414] = g[415] = g[416] = g[417] = g[418] = g[419] = 0.0;
+
 #else
 
     for (unsigned int ln=0; ln<time_size; ln++)
@@ -310,13 +334,8 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 
         for (size_t i=0; i<heating_point_number; i++)
         {
-            double qi = 0.0;/*q(tn, i);*/
-            for (size_t j=0; j<measure_point_number; j++)
-            {
-                qi += k.at(i,j) * (uu[j][ln]-z.at(i,j));
-            }
-
-            //g[i*time_size+ln] = -pp[i][ln];
+            double qi = q(tn, i);
+            g[i*time_size+ln] = -pp[i][ln];
 
 
 #ifdef OMTIMIZE_V
@@ -343,7 +362,29 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 
 void Functional::setVector(const DoubleVector &x) const
 {
-    const_cast<Functional*>(this)->x = x;
+    const size_t time_size = timeDimension().size();
+
+    const_cast<Functional*>(this)->s = x.mid(0, 4*time_size-1);
+
+    const_cast<Functional*>(this)->k.at(0,0) = x[4*time_size+0];
+    const_cast<Functional*>(this)->k.at(0,1) = x[4*time_size+1];
+    const_cast<Functional*>(this)->k.at(0,2) = x[4*time_size+2];
+    const_cast<Functional*>(this)->k.at(0,3) = x[4*time_size+3];
+
+    const_cast<Functional*>(this)->k.at(1,0) = x[4*time_size+4];
+    const_cast<Functional*>(this)->k.at(1,1) = x[4*time_size+5];
+    const_cast<Functional*>(this)->k.at(1,2) = x[4*time_size+6];
+    const_cast<Functional*>(this)->k.at(1,3) = x[4*time_size+7];
+
+    const_cast<Functional*>(this)->z.at(0,0) = x[4*time_size+8];
+    const_cast<Functional*>(this)->z.at(0,1) = x[4*time_size+9];
+    const_cast<Functional*>(this)->z.at(0,2) = x[4*time_size+10];
+    const_cast<Functional*>(this)->z.at(0,3) = x[4*time_size+11];
+
+    const_cast<Functional*>(this)->z.at(1,0) = x[4*time_size+12];
+    const_cast<Functional*>(this)->z.at(1,1) = x[4*time_size+13];
+    const_cast<Functional*>(this)->z.at(1,2) = x[4*time_size+14];
+    const_cast<Functional*>(this)->z.at(1,3) = x[4*time_size+15];
 }
 
 void Functional::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const
@@ -379,17 +420,17 @@ void Functional::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeN
 
 /********************************************************************************************************************************************************/
 
-HeatEquationIBVP::HeatEquationIBVP(Functional *function) : _functional(function) {}
+LoadedHeatEquationIBVP::LoadedHeatEquationIBVP(Functional *function) : _functional(function) {}
 
-HeatEquationIBVP::HeatEquationIBVP(const HeatEquationIBVP &other) { *this = other; }
+LoadedHeatEquationIBVP::LoadedHeatEquationIBVP(const LoadedHeatEquationIBVP &other) { *this = other; }
 
-HeatEquationIBVP& HeatEquationIBVP::operator =(const HeatEquationIBVP &) { return *this; }
+LoadedHeatEquationIBVP& LoadedHeatEquationIBVP::operator =(const LoadedHeatEquationIBVP &) { return *this; }
 
-HeatEquationIBVP::~HeatEquationIBVP() {}
+LoadedHeatEquationIBVP::~LoadedHeatEquationIBVP() {}
 
-auto HeatEquationIBVP::initial(const SpaceNodePDE &/*sn*/, InitialCondition /*ic*/) const -> double { return _initial_temperature; }
+auto LoadedHeatEquationIBVP::initial(const SpaceNodePDE &/*sn*/, InitialCondition /*ic*/) const -> double { return _initial_temperature; }
 
-auto HeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
+auto LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
 {
     const double lambda1 = _functional->_lambda1;
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
@@ -397,23 +438,25 @@ auto HeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/
     bc = BoundaryConditionPDE::Robin(lambda1, +1.0, lambda1); return _enviroment_temperature;
 }
 
-auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
+auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     const size_t ln = static_cast<size_t>(tn.i);
     const double dimX_step = spaceDimensionX().step();
     const double dimY_step = spaceDimensionY().step();
     const size_t heating_point_number = _functional->heating_point_number;
+
+    double fx = -thermalConvection() * _enviroment_temperature;
+
+#ifdef SYNTEZ
     const size_t measure_point_number = _functional->measure_point_number;
     const DoubleMatrix &k = _functional->k;
     const DoubleMatrix &z = _functional->z;
     const DoubleVector *uu = _functional->uu;
 
-    double fx = -thermalConvection() * _enviroment_temperature;
 
-#ifdef SYNTEZ
     double sum = 0.0;
     double qi[] = { 0.0, 0.0 };
-    printf("t:%3zu x:%3zu y:%3zu ", tn.i, sn.i, sn.j);
+    //printf("t:%3zu x:%3zu y:%3zu ", tn.i, sn.i, sn.j);
     for (size_t i=0; i<heating_point_number; i++)
     {
         const SpacePoint &zi = _functional->tr(tn, i);
@@ -427,15 +470,12 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
             }
             sum += qi[i];
         }
-        if (i==0) printf("%.2f %.2f %.10f ", zi.x, zi.y, qi[i]);
+        //if (i==0) printf("%.2f %.2f %.10f ", zi.x, zi.y, qi[i]);
     }
-    puts("");
-
+    //puts("");
 #else
-
-    const unsigned dimX_size = spaceDimensionX().size();
-    const unsigned dimY_size = spaceDimensionY().size();
-
+    //const unsigned dimX_size = spaceDimensionX().size();
+    //const unsigned dimY_size = spaceDimensionY().size();
 
     double sum = 0.0;
     for (size_t i=0; i<heating_point_number; i++)
@@ -445,18 +485,17 @@ auto HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
         sum += qi * DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
         //sum += qi * DeltaFunction::nearest(sn, zi, dimX_step, dimY_step, dimX_size, dimY_size);
     }
-
 #endif
-
     return fx + sum;
 }
 
-auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
+auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
     if (static_cast<int>(tn.i) == timeDimension().max()) { _functional->U = u; }
 
     /****************************************************************************************************************************/
 
+#ifdef SYNTEZ
     const size_t measure_point_number = _functional->measure_point_number;
 
     if (_functional->uu == nullptr)
@@ -484,31 +523,33 @@ auto HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
         _functional->uy[j][tn.i] = dy;
     }
 
+#endif
+
     /****************************************************************************************************************************/
 }
 
-auto HeatEquationIBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
-auto HeatEquationIBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
-auto HeatEquationIBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
-auto HeatEquationIBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
+auto LoadedHeatEquationIBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
+auto LoadedHeatEquationIBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
+auto LoadedHeatEquationIBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
+auto LoadedHeatEquationIBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
 
 /********************************************************************************************************************************************************/
 
-HeatEquationFBVP::HeatEquationFBVP(Functional *function) :_functional(function) {}
+LoadedHeatEquationFBVP::LoadedHeatEquationFBVP(Functional *function) :_functional(function) {}
 
-HeatEquationFBVP::HeatEquationFBVP(const HeatEquationFBVP &other) { *this = other; }
+LoadedHeatEquationFBVP::LoadedHeatEquationFBVP(const LoadedHeatEquationFBVP &other) { *this = other; }
 
-HeatEquationFBVP& HeatEquationFBVP::operator =(const HeatEquationFBVP &) { return *this; }
+LoadedHeatEquationFBVP& LoadedHeatEquationFBVP::operator =(const LoadedHeatEquationFBVP &) { return *this; }
 
-HeatEquationFBVP::~HeatEquationFBVP() {}
+LoadedHeatEquationFBVP::~LoadedHeatEquationFBVP() {}
 
-auto HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition /*condition*/) const -> double
+auto LoadedHeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition /*condition*/) const -> double
 {
     const size_t i = static_cast<size_t>(sn.i), j = static_cast<size_t>(sn.j);
     return -2.0*(_functional->U[j][i] - _functional->V[j][i]);
 }
 
-auto HeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
+auto LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
 {
     const double lambda1 = _functional->_lambda1;
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
@@ -516,7 +557,7 @@ auto HeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/
     bc = BoundaryConditionPDE::Robin(lambda1, +1.0, lambda1); return 0.0;
 }
 
-auto HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
+auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     double fx = 0.0;
 
@@ -544,7 +585,7 @@ auto HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const ->
     return fx + sum;
 }
 
-auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
+auto LoadedHeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
 {
     /****************************************************************************************************************************/
 
@@ -578,7 +619,7 @@ auto HeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) c
     /****************************************************************************************************************************/
 }
 
-auto HeatEquationFBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
-auto HeatEquationFBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
-auto HeatEquationFBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
-auto HeatEquationFBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
+auto LoadedHeatEquationFBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
+auto LoadedHeatEquationFBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
+auto LoadedHeatEquationFBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
+auto LoadedHeatEquationFBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
