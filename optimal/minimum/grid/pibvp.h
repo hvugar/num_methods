@@ -4,7 +4,13 @@
 #include "ibvp.h"
 #include "../deltagrid.h"
 #include <algorithm>
-#define PARABOLIC_IBVP_O2
+
+#define PARABOLIC_IBVP_H_D2V1_BORDER_O2
+#define PARABOLIC_IBVP_H_D2V1_FX
+#define PARABOLIC_IBVP_H_D2V1_BR
+#define PARABOLIC_IBVP_H_D1V1_FX
+#define PARABOLIC_IBVP_H_D1V1_BR
+
 
 /**
  * @brief The IParabolicIBVP class
@@ -65,24 +71,20 @@ public:
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// COMPLETED
 
-    void init() const;
-    void next1() const;
-
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
     virtual double weight() const;  //
+
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность - heat transfer coefficient
     double _thermalConvection;      //
 
 public:
-    bool _userHalfValues = false;
-
-private:
-    void *initParams;
+    void init() const;
+    void next1() const;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -116,12 +118,10 @@ protected:
     virtual double f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const = 0;
 
     virtual double weight() const;  //
+
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность - heat transfer coefficient
     double _thermalConvection;      //
-
-public:
-    bool _userHalfValues = false;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//

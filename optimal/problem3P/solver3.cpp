@@ -22,10 +22,10 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 #ifdef SYNTEZ
     fn->k.resize(fn->heating_point_number, fn->measure_point_number, 0.0);
     fn->z.resize(fn->heating_point_number, fn->measure_point_number, 0.0);
-    fn->measure_point.push_back(SpacePoint(0.25, 0.25));
-    fn->measure_point.push_back(SpacePoint(0.25, 0.75));
+    fn->measure_point.push_back(SpacePoint(0.72, 0.72));
+    fn->measure_point.push_back(SpacePoint(0.77, 0.77));
     fn->measure_point.push_back(SpacePoint(0.75, 0.75));
-    fn->measure_point.push_back(SpacePoint(0.75, 0.25));
+    fn->measure_point.push_back(SpacePoint(0.70, 0.70));
 
     DoubleVector x(4*time_size + 2*fn->heating_point_number*fn->measure_point_number + 2*fn->measure_point_number);
 #else
@@ -324,9 +324,7 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
 
     g[404] = g[405] = g[406] = g[407] = g[408] = g[409] = g[410] = g[411] = 0.0;
     g[412] = g[413] = g[414] = g[415] = g[416] = g[417] = g[418] = g[419] = 0.0;
-
-    //g[420 + 2*j + 0] = 0.0;
-    //g[420 + 2*j + 1] = 0.0;
+    g[420] = g[421] = g[422] = g[423] = g[424] = g[425] = g[426] = g[427] = 0.0;
 
     for (unsigned int ln=0; ln<time_size; ln++)
     {
@@ -355,7 +353,9 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
         {
             for (size_t j=0; j<measure_point_number; j++)
             {
+                // k
                 g[404 + i*measure_point_number + j] += -pp[i][ln] * (uu[j][ln]-z.at(i,j)) * time_step;
+                // z
                 g[412 + i*measure_point_number + j] -= -pp[i][ln] * k.at(i,j) * time_step;
             }
         }
@@ -364,11 +364,12 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
         {
             for (size_t i=0; i<heating_point_number; i++)
             {
+                // u_x
                 g[420 + 2*j + 0] += -pp[i][ln] * ux[j][ln] * k.at(i,j) * time_step;
+                // u_y
                 g[420 + 2*j + 1] += -pp[i][ln] * uy[j][ln] * k.at(i,j) * time_step;
             }
         }
-
     }
 
 
@@ -512,7 +513,6 @@ auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) co
 
     double sum = 0.0;
     double qi[] = { 0.0, 0.0 };
-    //printf("t:%3zu x:%3zu y:%3zu ", tn.i, sn.i, sn.j);
     for (size_t i=0; i<heating_point_number; i++)
     {
         const SpacePoint &zi = _functional->tr(tn, i);
@@ -526,9 +526,7 @@ auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) co
             }
             sum += qi[i];
         }
-        //if (i==0) printf("%.2f %.2f %.10f ", zi.x, zi.y, qi[i]);
     }
-    //puts("");
 #else
     //const unsigned dimX_size = spaceDimensionX().size();
     //const unsigned dimY_size = spaceDimensionY().size();

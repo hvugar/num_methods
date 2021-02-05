@@ -36,11 +36,25 @@
 //#include "conjugate_gradinet_test.h"
 #include <QGuiApplication>
 
+#include <chrono>
+#include <thread>
+
+void foo() {
+    //std::cout << "foo function call..." << std::endl;
+}
+
+void bar(const SpacePoint &p, int n)
+{
+    std::this_thread::sleep_for (std::chrono::seconds(n));
+    std::cout << "bar function call..." << n <<  std::endl;
+    //std::cout << "x: " << p.x << " y: " << p.y  << std::endl;
+}
+
+
 int main(int argc, char *argv[])
 {
     //srand(static_cast<unsigned int>(time(nullptr)));
     QGuiApplication app(argc, argv);
-
 
     //ConjugateGradinetTest::Main(argc, argv);
 

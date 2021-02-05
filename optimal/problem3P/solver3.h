@@ -73,7 +73,7 @@ public:
     virtual auto integral(const DoubleMatrix &u) const -> double;
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
 
-    auto timeDimension() const -> Dimension { return Dimension(0.01, 0, 100) /*Dimension(0.0000005, 0, 20000000)*/; }
+    auto timeDimension() const -> Dimension { return Dimension(0.01, 0, 1000) /*Dimension(0.0000005, 0, 20000000)*/; }
 
     auto spaceDimensionX() const -> Dimension { return Dimension(0.01, 0, 100); }
 
