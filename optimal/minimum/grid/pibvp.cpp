@@ -1032,7 +1032,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 e = M;
-#ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2 // O(h2)
+#ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX
                 double fx = f(sn, tn10);
 #else
@@ -1117,7 +1117,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*/*(gamma/beta)**/value)/(2.0 + (alpha/beta)*hx);
+                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
 #else
                 u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
 #endif
