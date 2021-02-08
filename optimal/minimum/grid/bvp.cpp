@@ -28,38 +28,23 @@ BoundaryValueProblemPDE::~BoundaryValueProblemPDE() {}
 
 //**********************************************************************************************//
 
-BoundaryConditionPDE::BoundaryConditionPDE(BoundaryCondition condition, double alpha, double beta, double gamma)
+BoundaryConditionPDE::BoundaryConditionPDE(BoundaryCondition condition, double alpha, double beta)
 {
-    if (condition == BoundaryCondition::Dirichlet) { if (fabs(alpha) <= DBL_EPSILON || fabs(beta) >= DBL_EPSILON) { throw std::exception(); } } else
-    if (condition == BoundaryCondition::Neumann)   { if (fabs(alpha) >= DBL_EPSILON || fabs(beta) <= DBL_EPSILON) { throw std::exception(); } } else
-    if (condition == BoundaryCondition::Robin)     { if (fabs(alpha) <= DBL_EPSILON || fabs(beta) <= DBL_EPSILON) { throw std::exception(); } }
+    if (condition == BoundaryCondition::Robin)  { if (fabs(alpha) <= DBL_EPSILON || fabs(beta) <= DBL_EPSILON) { throw std::exception(); } }
 
     this->_boundaryCondition = condition;
     this->_alpha = alpha;
     this->_beta = beta;
-    this->_gamma = gamma;
 }
 
-BoundaryConditionPDE BoundaryConditionPDE::Dirichlet(double alpha, double gamma)
-{
-    return BoundaryConditionPDE(BoundaryCondition::Dirichlet, alpha, 0.0, gamma);
-}
+BoundaryConditionPDE BoundaryConditionPDE::Dirichlet() { return BoundaryConditionPDE(BoundaryCondition::Dirichlet); }
 
-BoundaryConditionPDE BoundaryConditionPDE::Neumann(double beta, double gamma)
-{
-    return BoundaryConditionPDE(BoundaryCondition::Neumann, 0.0, beta, gamma);
-}
+BoundaryConditionPDE BoundaryConditionPDE::Neumann() { return BoundaryConditionPDE(BoundaryCondition::Neumann); }
 
-BoundaryConditionPDE BoundaryConditionPDE::Robin(double alpha, double beta, double gamma)
-{
-    return BoundaryConditionPDE(BoundaryCondition::Robin, alpha, beta, gamma);
-}
+BoundaryConditionPDE BoundaryConditionPDE::Robin(double alpha, double beta) { return BoundaryConditionPDE(BoundaryCondition::Robin, alpha, beta); }
 
 BoundaryCondition BoundaryConditionPDE::boundaryCondition() const { return _boundaryCondition; }
 
 double BoundaryConditionPDE::alpha() const { return _alpha; }
 
 double BoundaryConditionPDE::beta() const { return _beta; }
-
-double BoundaryConditionPDE::gamma() const { return _gamma; }
-

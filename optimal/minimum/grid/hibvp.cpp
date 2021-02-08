@@ -110,7 +110,7 @@ void IWaveEquationIBVP::explicit_calculate_D1V1() const
         TimeNodePDE tn10; tn10.i = ln-1; tn10.t = tn10.i*ht;
         TimeNodePDE tn20; tn20.i = ln;   tn20.t = tn20.i*ht;
 
-        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+        BoundaryConditionPDE condition; double alpha, beta, /*gamma,*/ value;
 
         for (unsigned int n=1; n<=N-1; n++)
         {
@@ -123,56 +123,57 @@ void IWaveEquationIBVP::explicit_calculate_D1V1() const
 
         sn.i = static_cast<int>(0); sn.x = 0*hx;
         value = boundary(sn, tn10, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-            u20[0] = (gamma/alpha)*value;
+            u20[0] = /*(gamma/alpha)**/value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
-            u20[0]  = beta *(2.0*u10[0] - u00[0] + wvdsp_ht_05*u00[0]);
-            u20[0] += beta *(2.0*p_aa_htht__hxhx*(u10[1]-u10[0]));
-            u20[0] += beta *(ht_ht*f(sn,tn10));
-            u20[0] += gamma*(-2.0*p_aa_htht__hx)*value;
-            u20[0] /= beta*(1.0+wvdsp_ht_05);
+            u20[0]  = /*beta **/(2.0*u10[0] - u00[0] + wvdsp_ht_05*u00[0]);
+            u20[0] += /*beta **/(2.0*p_aa_htht__hxhx*(u10[1]-u10[0]));
+            u20[0] += /*beta **/(ht_ht*f(sn,tn10));
+            u20[0] += /*gamma**/(-2.0*p_aa_htht__hx)*value;
+            u20[0] /= /*beta **/(1.0+wvdsp_ht_05);
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
+            alpha = condition.alpha();
+            beta  = condition.beta();
+
             u20[0]  = beta *(2.0*u10[0] - u00[0] + wvdsp_ht_05*u00[0]);
             u20[0] += beta *(2.0*p_aa_htht__hxhx*(u10[1]-u10[0]));
             u20[0] += beta *(ht_ht*f(sn,tn10));
-            u20[0] += gamma*(-2.0*p_aa_htht__hx)*value;
+            u20[0] += /*gamma**/(-2.0*p_aa_htht__hx)*value;
             u20[0] += alpha*(+2.0*p_aa_htht__hx)*u10[0];
             u20[0] /= beta*(1.0+wvdsp_ht_05);
         }
 
         sn.i = static_cast<int>(N); sn.x = N*hx;
         value = boundary(sn, tn10, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-            u20[N] = (gamma/alpha)*value;
+            u20[N] = /*(gamma/alpha)**/value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
-            u20[N]  = beta *(2.0*u10[N] - u00[N] + wvdsp_ht_05*u00[N]);
-            u20[N] += beta *(2.0*p_aa_htht__hxhx*(u10[N-1]-u10[N]));
-            u20[N] += beta *(ht_ht*f(sn,tn10));
-            u20[N] += gamma*(+2.0*p_aa_htht__hx)*value;
-            u20[N] /= beta*(1.0+wvdsp_ht_05);
+            u20[N]  = /*beta **/(2.0*u10[N] - u00[N] + wvdsp_ht_05*u00[N]);
+            u20[N] += /*beta **/(2.0*p_aa_htht__hxhx*(u10[N-1]-u10[N]));
+            u20[N] += /*beta **/(ht_ht*f(sn,tn10));
+            u20[N] += /*gamma**/(+2.0*p_aa_htht__hx)*value;
+            u20[N] /= /*beta **/(1.0+wvdsp_ht_05);
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            /*gamma = condition.gamma();*/
+
             u20[N]  = beta *(2.0*u10[N] - u00[N] + wvdsp_ht_05*u00[N]);
             u20[N] += beta *(2.0*p_aa_htht__hxhx*(u10[N-1]-u10[N]));
             u20[N] += beta *(ht_ht*f(sn,tn10));
-            u20[N] += gamma*(+2.0*p_aa_htht__hx)*value;
+            u20[N] += /*gamma**/(+2.0*p_aa_htht__hx)*value;
             u20[N] += alpha*(-2.0*p_aa_htht__hx)*u10[N];
-            u20[N] /= beta*(1.0+wvdsp_ht_05);
+            u20[N] /= beta *(1.0+wvdsp_ht_05);
         }
         layerInfo(u20, tn20);
 
@@ -335,18 +336,16 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         }
 
         unsigned int s=0, e=N;
-        BoundaryConditionPDE condition; double alpha, beta, gamma, value;
+        BoundaryConditionPDE condition; double alpha, beta, /*gamma,*/ value;
 
         sn.i = xmin; sn.x = xmin*hx;
         value = boundary(sn, tn20, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
+
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
             s = 1;
 
-            u20[0] = (gamma/alpha)*value;
+            u20[0] = /*(gamma/alpha)**/value;
             dx[1] -= k11 * u20[0];
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
@@ -355,14 +354,14 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             s = 0;
 
             ax[s]  = 0.0;
-            bx[s]  = beta * b11 + alpha * b12;
-            cx[s]  = beta * b13;
+            bx[s]  = /*beta **/ b11 + alpha * b12;
+            cx[s]  = /*beta **/ b13;
 
-            dx[s]  = beta * b14 * u10[s] + beta * b16 * u10[s+1];
-            dx[s] += beta * b17 * u00[s] + beta * b19 * u00[s+1];
+            dx[s]  = /*beta **/ b14 * u10[s] + beta * b16 * u10[s+1];
+            dx[s] += /*beta **/ b17 * u00[s] + beta * b19 * u00[s+1];
 
-            dx[s] += gamma * b20 * boundary(sn, tn10, condition);
-            dx[s] += beta  * ht_ht*f(sn,tn10);
+            dx[s] += /*gamma **/ b20 * boundary(sn, tn10, condition);
+            dx[s] += /*beta  **/ ht_ht*f(sn,tn10);
 
             //dx[s] += gamma * b20 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
             //dx[s] += beta * (ht_ht*w1*f(sn, tn20) + ht_ht*w2*f(sn, tn10) + ht_ht*w3*f(sn, tn00));
@@ -370,6 +369,10 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             s = 0;
+
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            /*gamma = condition.gamma();*/
 
             //ax[s] = 0.0;
             //bx[s] = hx*alpha-beta;
@@ -383,7 +386,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[s]  = beta * b14 * u10[s] + alpha * b15 * u10[s] + beta * b16 * u10[s+1];
             dx[s] += beta * b17 * u00[s] + alpha * b18 * u00[s] + beta * b19 * u00[s+1];
 
-            dx[s] += gamma * b20 * boundary(sn, tn10, condition);
+            dx[s] += /*gamma * */b20 * boundary(sn, tn10, condition);
             dx[s] += beta  * ht_ht*f(sn,tn10);
 
             //dx[s] += gamma * b20 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
@@ -392,14 +395,12 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
 
         sn.i = xmax; sn.x = xmax*hx;
         value = boundary(sn, tn20, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
+
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
             e = N-1;
 
-            u20[N] = (gamma/alpha)*value;
+            u20[N] = /*(gamma/alpha)**/value;
             dx[N-1] -= k13 * u20[N];
             cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
         }
@@ -414,7 +415,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[e]  = beta * b24 * u10[e-1] + beta * b26 * u10[e];
             dx[e] += beta * b27 * u00[e-1] + beta * b29 * u00[e];
 
-            dx[e] += gamma * b30 * boundary(sn, tn10, condition);
+            dx[e] += /*gamma * */b30 * boundary(sn, tn10, condition);
             dx[e] += beta  * ht_ht*f(sn,tn10);
 
             //dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
@@ -423,6 +424,10 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
             e = N;
+
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            /*gamma = condition.gamma();*/
 
             //ax[e] = -beta;
             //bx[e] = hx*alpha+beta;
@@ -436,7 +441,7 @@ void IWaveEquationIBVP::implicit_calculate_D1V1() const
             dx[e]  = beta * b24 * u10[e-1] + alpha * b25 * u10[e] + beta * b26 * u10[e];
             dx[e] += beta * b27 * u00[e-1] + alpha * b28 * u00[e] + beta * b29 * u00[e];
 
-            dx[e] += gamma * b30 * boundary(sn, tn10, condition);
+            dx[e] += /*gamma * */b30 * boundary(sn, tn10, condition);
             dx[e] += beta  * ht_ht*f(sn,tn10);
 
             //dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
@@ -529,9 +534,6 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
         BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
         value = w->boundary(sn, tn, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
 
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
@@ -574,6 +576,10 @@ void IWaveEquationIBVP::explicit_calculate_D2V1() const
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            /*gamma = condition.gamma();*/
+
             if (sn.i==xmin && sn.j==ymin)
             {
 
@@ -933,7 +939,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
 
     unsigned int i=0, j=0, s=0, e=N;
     int n = 0, m = 0;
-    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+    BoundaryConditionPDE condition; double value/*, alpha, beta, gamma*/;
 
     for (m=ymin, sn.j = m, sn.y = m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
     {
@@ -1023,14 +1029,11 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
 
             sn.i = xmin; sn.x = xmin*hx;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-                u15[j][0] = (gamma/alpha)*value;
+                u15[j][0] = /*(gamma/alpha)**/value;
                 dx[1] -= k101 * u15[j][0];
                 ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
             }
@@ -1038,21 +1041,26 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
                 ax[0]  = 0.0;
-                bx[0]  = beta  * b111;
-                cx[0]  = beta  * b113;
+                bx[0]  = /*beta  **/ b111;
+                cx[0]  = /*beta  **/ b113;
 
-                dx[0]  = beta  * b114 * u10[j][0] + beta  * b116 * u10[j][1];
-                dx[0] += beta  * b117 * u05[j][0] + beta  * b119 * u05[j][1];
+                dx[0]  = /*beta  **/ b114 * u10[j][0] + /*beta  **/ b116 * u10[j][1];
+                dx[0] += /*beta  **/ b117 * u05[j][0] + /*beta  **/ b119 * u05[j][1];
 
-                dx[0] += beta  * b120 * (u10[j+1][0]-2.0*u10[j][0]+u10[j-1][0]);
-                dx[0] += beta  * b121 * (u10[j+1][0]-u10[j-1][0]);
+                dx[0] += /*beta  **/ b120 * (u10[j+1][0]-2.0*u10[j][0]+u10[j-1][0]);
+                dx[0] += /*beta  **/ b121 * (u10[j+1][0]-u10[j-1][0]);
 
-                dx[0] += beta  * htht_0250 * f(sn, tn10);
-                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+                dx[0] += /*beta  **/ htht_0250 * f(sn, tn10);
+                dx[0] += /*gamma **/ b122 * boundary(sn, tn10, condition);
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
+
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*double gamma = condition.gamma();*/
+
                 ax[0]  = 0.0;
                 bx[0]  = beta  * b111 + alpha * b112;
                 cx[0]  = beta  * b113;
@@ -1064,41 +1072,43 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dx[0] += beta  * b121 * (u10[j+1][0]-u10[j-1][0]);
 
                 dx[0] += beta  * htht_0250 * f(sn, tn10);
-                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+                dx[0] += /*gamma **/ b122 * boundary(sn, tn10, condition);
             }
 
             sn.i = xmax; sn.x = xmax*hx;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = N-1;
-                u15[j][N] = (gamma/alpha)*value;
+                u15[j][N] = /*(gamma/alpha)**/value;
                 dx[N-1] -= k103 * u15[j][N];
                 cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 e = N;
-                ax[N]  = beta  * b211;
-                bx[N]  = beta  * b213;
+                ax[N]  = /*beta  **/ b211;
+                bx[N]  = /*beta  **/ b213;
                 cx[N]  = 0.0;
 
-                dx[N]  = beta  * b214 * u10[j][N-1] + beta  * b216 * u10[j][N];
-                dx[N] += beta  * b217 * u05[j][N-1] + beta  * b219 * u05[j][N];
+                dx[N]  = /*beta  **/ b214 * u10[j][N-1] + /*beta  **/ b216 * u10[j][N];
+                dx[N] += /*beta  **/ b217 * u05[j][N-1] + /*beta  **/ b219 * u05[j][N];
 
-                dx[N] += beta  * b220 * (u10[j+1][N]-2.0*u10[j][N]+u10[j-1][N]);
-                dx[N] += beta  * b221 * (u10[j+1][N]-u10[j-1][N]);
+                dx[N] += /*beta  **/ b220 * (u10[j+1][N]-2.0*u10[j][N]+u10[j-1][N]);
+                dx[N] += /*beta  **/ b221 * (u10[j+1][N]-u10[j-1][N]);
 
-                dx[N] += beta  * htht_0250 * f(sn, tn10);
-                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+                dx[N] += /*beta  **/ htht_0250 * f(sn, tn10);
+                dx[N] += /*gamma **/ b222 * boundary(sn, tn10, condition);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = N;
+
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*double gamma = condition.gamma();*/
+
                 ax[N]  = beta  * b211;
                 bx[N]  = beta  * b213 + alpha * b212;
                 cx[N]  = 0.0;
@@ -1110,7 +1120,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dx[N] += beta  * b221 * (u10[j+1][N]-u10[j-1][N]);
 
                 dx[N] += beta  * htht_0250 * f(sn, tn10);
-                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+                dx[N] += /*gamma **/ b222 * boundary(sn, tn10, condition);
             }
 
             tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
@@ -1121,43 +1131,45 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
         {
             sn.j = ymin; sn.y = ymin*hy;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                u15[0][i] = (gamma/alpha)*value;
+                u15[0][i] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u15[0][i] = (3.5*u15[1][i] - 2.0*u15[2][i] + 0.5*u15[3][i] + hy*(gamma/beta)*value)/(2.0);
+                u15[0][i] = (3.5*u15[1][i] - 2.0*u15[2][i] + 0.5*u15[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
                 //u05[0][i] = (u05[1][i] + hy*(gamma/beta)*value));
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u15[0][i] = (3.5*u15[1][i] - 2.0*u15[2][i] + 0.5*u15[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*gamma = condition.gamma()*/;
+
+                u15[0][i] = (3.5*u15[1][i] - 2.0*u15[2][i] + 0.5*u15[3][i] + hy*/*(gamma/beta)**/value)/(2.0 + (alpha/beta)*hy);
                 //u05[0][i] = (u05[1][i] + hy*(gamma/beta)*value)/(1.0+hy*(alpha/beta));
             }
 
             sn.j = ymax; sn.y = ymax*hy;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                u15[M][i] = (gamma/alpha)*value;
+                u15[M][i] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u15[M][i] = (3.5*u15[M-1][i] - 2.0*u15[M-2][i] + 0.5*u15[M-3][i] + hy*(gamma/beta)*value)/(2.0);
+                u15[M][i] = (3.5*u15[M-1][i] - 2.0*u15[M-2][i] + 0.5*u15[M-3][i] + hy*/*(gamma/beta)**/value)/(2.0);
                 //u15[M][i] = (u15[M-1][i] + hy*(gamma/beta)*value));
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u15[M][i] = (3.5*u15[M-1][i] - 2.0*u15[M-2][i] + 0.5*u15[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+
+                u15[M][i] = (3.5*u15[M-1][i] - 2.0*u15[M-2][i] + 0.5*u15[M-3][i] + hy*(/*gamma*/1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
                 //u15[M][i] = (u15[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
             }
         }
@@ -1183,14 +1195,11 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
 
             sn.j = ymin; sn.y = ymin*hy;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-                u20[0][i] = (gamma/alpha)*value;
+                u20[0][i] = /*(gamma/alpha)**/value;
                 dy[1] -= k201 * u20[0][i];
                 ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
             }
@@ -1198,67 +1207,74 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
                 ay[0]  = 0.0;
-                by[0]  = beta  * b311;
-                cy[0]  = beta  * b313;
+                by[0]  = /*beta  **/ b311;
+                cy[0]  = /*beta  **/ b313;
 
-                dy[0]  = beta  * b314 * u15[0][i] + beta  * b316 * u15[1][i];
-                dy[0] += beta  * b317 * u10[0][i] + beta  * b319 * u10[1][i];
+                dy[0]  = /*beta  **/ b314 * u15[0][i] + /*beta  **/ b316 * u15[1][i];
+                dy[0] += /*beta  **/ b317 * u10[0][i] + /*beta  **/ b319 * u10[1][i];
 
-                dy[0] += beta  * b320 * (u15[0][i+1]-2.0*u15[0][i]+u15[0][i-1]);
-                dy[0] += beta  * b321 * (u15[0][i+1]-u15[0][i-1]);
+                dy[0] += /*beta  **/ b320 * (u15[0][i+1]-2.0*u15[0][i]+u15[0][i-1]);
+                dy[0] += /*beta  **/ b321 * (u15[0][i+1]-u15[0][i-1]);
 
-                dy[0] += beta  * htht_0250 * f(sn, tn15);
-                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+                dy[0] += /*beta  **/ htht_0250 * f(sn, tn15);
+                dy[0] += /*gamma **/ b322 * boundary(sn, tn15, condition);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
+
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+
                 ay[0]  = 0.0;
-                by[0]  = beta  * b311 + alpha * b312;
-                cy[0]  = beta  * b313;
+                by[0]  = /*beta  **/ b311 + alpha * b312;
+                cy[0]  = /*beta  **/ b313;
 
-                dy[0]  = beta  * b314 * u15[0][i] + alpha  * b315 * u15[0][i] + beta  * b316 * u15[1][i];
-                dy[0] += beta  * b317 * u10[0][i] + alpha  * b318 * u10[0][i] + beta  * b319 * u10[1][i];
+                dy[0]  = /*beta  **/ b314 * u15[0][i] + alpha  * b315 * u15[0][i] + beta  * b316 * u15[1][i];
+                dy[0] += /*beta  **/ b317 * u10[0][i] + alpha  * b318 * u10[0][i] + beta  * b319 * u10[1][i];
 
-                dy[0] += beta  * b320 * (u15[0][i+1]-2.0*u15[0][i]+u15[0][i-1]);
-                dy[0] += beta  * b321 * (u15[0][i+1]-u15[0][i-1]);
+                dy[0] += /*beta  **/ b320 * (u15[0][i+1]-2.0*u15[0][i]+u15[0][i-1]);
+                dy[0] += /*beta  **/ b321 * (u15[0][i+1]-u15[0][i-1]);
 
-                dy[0] += beta  * htht_0250 * f(sn, tn15);
-                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+                dy[0] += /*beta  **/ htht_0250 * f(sn, tn15);
+                dy[0] += /*gamma **/ b322 * boundary(sn, tn15, condition);
             }
 
             sn.j = ymax; sn.y = ymax*hy;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = M-1;
-                u20[M][i] = (gamma/alpha)*value;
+                u20[M][i] = /*(gamma/alpha)**/value;
                 dy[M-1] -= k203 * u20[M][i];
                 cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 e = M;
-                ay[M]  = beta  * b411;
-                by[M]  = beta  * b413;
+                ay[M]  = /*beta  **/ b411;
+                by[M]  = /*beta  **/ b413;
                 cy[M]  = 0.0;
 
-                dy[M]  = beta  * b414 * u15[M-1][i] + beta  * b416 * u15[M][i];
-                dy[M] += beta  * b417 * u10[M-1][i] + beta  * b419 * u10[M][i];
+                dy[M]  = /*beta  **/ b414 * u15[M-1][i] + /*beta  **/ b416 * u15[M][i];
+                dy[M] += /*beta  **/ b417 * u10[M-1][i] + /*beta  **/ b419 * u10[M][i];
 
-                dy[M] += beta  * b420 * (u15[M][i+1]-2.0*u15[M][i]+u15[M][i-1]);
-                dy[M] += beta  * b421 * (u15[M][i+1]-u15[M][i-1]);
+                dy[M] += /*beta  **/ b420 * (u15[M][i+1]-2.0*u15[M][i]+u15[M][i-1]);
+                dy[M] += /*beta  **/ b421 * (u15[M][i+1]-u15[M][i-1]);
 
-                dy[M] += beta  * htht_0250 * f(sn, tn15);
-                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+                dy[M] += /*beta  **/ htht_0250 * f(sn, tn15);
+                dy[M] += /*gamma **/ b422 * boundary(sn, tn15, condition);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = M;
+
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+
                 ay[M]  = beta  * b411;
                 by[M]  = beta  * b413 + alpha * b412;
                 cy[M]  = 0.0;
@@ -1270,7 +1286,7 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
                 dy[M] += beta  * b421 * (u15[M][i+1]-u15[M][i-1]);
 
                 dy[M] += beta  * htht_0250 * f(sn, tn15);
-                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+                dy[M] += /*gamma **/ b422 * boundary(sn, tn15, condition);
             }
 
             tomasAlgorithmLeft2Right(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
@@ -1281,43 +1297,45 @@ void IWaveEquationIBVP::implicit_calculate_D2V1() const
         {
             sn.i = xmin; sn.x = xmin*hx;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                u20[j][0] = (gamma/alpha)*value;
+                u20[j][0] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u20[j][0] = (3.5*u20[j][1] - 2.0*u20[j][2] + 0.5*u20[j][3] + hx*(gamma/beta)*value)/(2.0);
+                u20[j][0] = (3.5*u20[j][1] - 2.0*u20[j][2] + 0.5*u20[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
                 //u20[j][0] = (u20[j][1] + hx*(gamma/beta)*value);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u20[j][0] = (3.5*u20[j][1] - 2.0*u20[j][2] + 0.5*u20[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+
+                u20[j][0] = (3.5*u20[j][1] - 2.0*u20[j][2] + 0.5*u20[j][3] + hx*(/*gamma*/1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
                 //u20[j][0] = (u20[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
             }
 
             sn.i = xmax; sn.x = xmax*hx;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                u20[j][N] = (gamma/alpha)*value;
+                u20[j][N] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                u20[j][N] = (3.5*u20[j][N-1] - 2.0*u20[j][N-2] + 0.5*u20[j][N-3] + hx*(gamma/beta)*value)/(2.0);
+                u20[j][N] = (3.5*u20[j][N-1] - 2.0*u20[j][N-2] + 0.5*u20[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
                 //u20[j][N] = (u20[j][N-1] + hx*(gamma/beta)*value);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                u20[j][N] = (3.5*u20[j][N-1] - 2.0*u20[j][N-2] + 0.5*u20[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                double alpha = condition.alpha();
+                double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+
+                u20[j][N] = (3.5*u20[j][N-1] - 2.0*u20[j][N-2] + 0.5*u20[j][N-3] + hx*(/*gamma*/1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
                 //u20[j][N] = (u20[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
             }
         }
@@ -1559,14 +1577,12 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
 
         sn.i = xmin; sn.x = xmin*hx;
         value = boundary(sn, tn20, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
+
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
             s = 1;
 
-            p20[0] = (gamma/alpha)*value;
+            p20[0] = /*(gamma/alpha)**/value;
             dx[1] -= k11 * p20[0];
             ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
@@ -1591,6 +1607,10 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
         {
             s = 0;
 
+            double alpha = condition.alpha();
+            double beta  = condition.beta();
+            /*gamma = condition.gamma();*/
+
             //ax[s] = 0.0;
             //bx[s] = hx*alpha-beta;
             //cx[s] = beta;
@@ -1612,9 +1632,7 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
 
         sn.i = xmax; sn.x = xmax*hx;
         value = boundary(sn, tn20, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
+
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
             e = N-1;
@@ -1644,6 +1662,10 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
         {
             e = N;
 
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            /*gamma = condition.gamma();*/
+
             //ax[e] = -beta;
             //bx[e] = hx*alpha+beta;
             //cx[e] = 0.0;
@@ -1656,7 +1678,7 @@ void IWaveEquationFBVP::implicit_calculate_D1V1() const
             dx[e]  = beta * b24 * p10[e-1] + alpha * b25 * p10[e] + beta * b26 * p10[e];
             dx[e] += beta * b27 * p00[e-1] + alpha * b28 * p00[e] + beta * b29 * p00[e];
 
-            dx[e] += gamma * b30 * boundary(sn, tn10, condition);
+            dx[e] += /*gamma **/ b30 * boundary(sn, tn10, condition);
             dx[e] += beta  * ht_ht*f(sn,tn10);
 
             //dx[e] += gamma * b30 * (w1*value + w2*boundary(sn, tn10, condition) + w3*boundary(sn, tn00, condition));
@@ -1749,19 +1771,19 @@ void IWaveEquationFBVP::explicit_calculate_D2V1() const
         BoundaryConditionPDE condition; double value, alpha, beta, gamma;
 
         value = w->boundary(sn, tn, condition);
-        alpha = condition.alpha();
-        beta  = condition.beta();
-        gamma = condition.gamma();
 
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-            p[j][i] = (gamma/alpha)*value;
+            p[j][i] = /*(gamma/alpha)**/value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
         {
+            alpha = condition.alpha();
+            beta  = condition.beta();
+            /*gamma = condition.gamma();*/
         }
     };
 
@@ -2088,7 +2110,7 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
 
     unsigned int i=0, j=0, s=0, e=N;
     int n = 0, m = 0;
-    BoundaryConditionPDE condition; double value, alpha, beta, gamma;
+    BoundaryConditionPDE condition; double value/*, alpha, beta, gamma*/;
 
     for (m=ymin, sn.j = m, sn.y = m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
     {
@@ -2177,14 +2199,11 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
 
             sn.i = xmin; sn.x = xmin*hx;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-                p15[j][0] = (gamma/alpha)*value;
+                p15[j][0] = /*(gamma/alpha)**/value;
                 dx[1] -= k101 * p15[j][0];
                 ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
             }
@@ -2192,21 +2211,27 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
                 ax[0]  = 0.0;
-                bx[0]  = beta  * b111;
-                cx[0]  = beta  * b113;
+                bx[0]  = /*beta  **/ b111;
+                cx[0]  = /*beta  **/ b113;
 
-                dx[0]  = beta  * b114 * p10[j][0] + beta  * b116 * p10[j][1];
-                dx[0] += beta  * b117 * p05[j][0] + beta  * b119 * p05[j][1];
+                dx[0]  = /*beta  **/ b114 * p10[j][0] + /*beta  **/ b116 * p10[j][1];
+                dx[0] += /*beta  **/ b117 * p05[j][0] + /*beta  **/ b119 * p05[j][1];
 
-                dx[0] += beta  * b120 * (p10[j+1][0]-2.0*p10[j][0]+p10[j-1][0]);
-                dx[0] += beta  * b121 * (p10[j+1][0]-p10[j-1][0]);
+                dx[0] += /*beta  **/ b120 * (p10[j+1][0]-2.0*p10[j][0]+p10[j-1][0]);
+                dx[0] += /*beta  **/ b121 * (p10[j+1][0]-p10[j-1][0]);
 
-                dx[0] += beta  * htht_0250 * f(sn, tn10);
-                dx[0] += gamma * b122 * boundary(sn, tn10, condition);
+                dx[0] += /*beta  **/ htht_0250 * f(sn, tn10);
+                dx[0] += /*gamma **/ b122 * boundary(sn, tn10, condition);
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
+
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 ax[0]  = 0.0;
                 bx[0]  = beta  * b111 + alpha * b112;
                 cx[0]  = beta  * b113;
@@ -2223,36 +2248,39 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
 
             sn.i = xmax; sn.x = xmax*hx;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = N-1;
-                p15[j][N] = (gamma/alpha)*value;
+                p15[j][N] = /*(gamma/alpha)**/value;
                 dx[N-1] -= k103 * p15[j][N];
                 cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 e = N;
-                ax[N]  = beta  * b211;
-                bx[N]  = beta  * b213;
+                ax[N]  = /*beta  **/ b211;
+                bx[N]  = /*beta  **/ b213;
                 cx[N]  = 0.0;
 
-                dx[N]  = beta  * b214 * p10[j][N-1] + beta  * b216 * p10[j][N];
-                dx[N] += beta  * b217 * p05[j][N-1] + beta  * b219 * p05[j][N];
+                dx[N]  = /*beta  **/ b214 * p10[j][N-1] + /*beta  **/ b216 * p10[j][N];
+                dx[N] += /*beta  **/ b217 * p05[j][N-1] + /*beta  **/ b219 * p05[j][N];
 
-                dx[N] += beta  * b220 * (p10[j+1][N]-2.0*p10[j][N]+p10[j-1][N]);
-                dx[N] += beta  * b221 * (p10[j+1][N]-p10[j-1][N]);
+                dx[N] += /*beta  **/ b220 * (p10[j+1][N]-2.0*p10[j][N]+p10[j-1][N]);
+                dx[N] += /*beta  **/ b221 * (p10[j+1][N]-p10[j-1][N]);
 
-                dx[N] += beta  * htht_0250 * f(sn, tn10);
-                dx[N] += gamma * b222 * boundary(sn, tn10, condition);
+                dx[N] += /*beta  **/ htht_0250 * f(sn, tn10);
+                dx[N] += /*gamma **/ b222 * boundary(sn, tn10, condition);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = N;
+
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 ax[N]  = beta  * b211;
                 bx[N]  = beta  * b213 + alpha * b212;
                 cx[N]  = 0.0;
@@ -2275,42 +2303,46 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
         {
             sn.j = ymin; sn.y = ymin*hy;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                p15[0][i] = (gamma/alpha)*value;
+                p15[0][i] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                p15[0][i] = (3.5*p15[1][i] - 2.0*p15[2][i] + 0.5*p15[3][i] + hy*(gamma/beta)*value)/(2.0);
+                p15[0][i] = (3.5*p15[1][i] - 2.0*p15[2][i] + 0.5*p15[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
                 //p15[0][i] = (p15[1][i] + hy*(gamma/beta)*value));
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 p15[0][i] = (3.5*p15[1][i] - 2.0*p15[2][i] + 0.5*p15[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
                 //p15[0][i] = (p15[1][i] + hy*(gamma/beta)*value)/(1.0+hy*(alpha/beta));
             }
 
             sn.j = ymax; sn.y = ymax*hy;
             value = boundary(sn, tn15, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                p15[M][i] = (gamma/alpha)*value;
+                p15[M][i] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                p15[M][i] = (3.5*p15[M-1][i] - 2.0*p15[M-2][i] + 0.5*p15[M-3][i] + hy*(gamma/beta)*value)/(2.0);
+                p15[M][i] = (3.5*p15[M-1][i] - 2.0*p15[M-2][i] + 0.5*p15[M-3][i] + hy*/*(gamma/beta)**/value)/(2.0);
                 //p15[M][i] = (p15[M-1][i] + hy*(gamma/beta)*value));
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 p15[M][i] = (3.5*p15[M-1][i] - 2.0*p15[M-2][i] + 0.5*p15[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
                 //p15[M][i] = (p15[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
             }
@@ -2336,14 +2368,11 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
 
             sn.j = ymin; sn.y = ymin*hy;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-                p20[0][i] = (gamma/alpha)*value;
+                p20[0][i] = /*(gamma/alpha)**/value;
                 dy[1] -= k201 * p20[0][i];
                 ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
             }
@@ -2351,21 +2380,27 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
                 ay[0]  = 0.0;
-                by[0]  = beta  * b311;
-                cy[0]  = beta  * b313;
+                by[0]  = /*beta  **/ b311;
+                cy[0]  = /*beta  **/ b313;
 
-                dy[0]  = beta  * b314 * p15[0][i] + beta  * b316 * p15[1][i];
-                dy[0] += beta  * b317 * p10[0][i] + beta  * b319 * p10[1][i];
+                dy[0]  = /*beta  **/ b314 * p15[0][i] + /*beta  **/ b316 * p15[1][i];
+                dy[0] += /*beta  **/ b317 * p10[0][i] + /*beta  **/ b319 * p10[1][i];
 
-                dy[0] += beta  * b320 * (p15[0][i+1]-2.0*p15[0][i]+p15[0][i-1]);
-                dy[0] += beta  * b321 * (p15[0][i+1]-p15[0][i-1]);
+                dy[0] += /*beta  **/ b320 * (p15[0][i+1]-2.0*p15[0][i]+p15[0][i-1]);
+                dy[0] += /*beta  **/ b321 * (p15[0][i+1]-p15[0][i-1]);
 
-                dy[0] += beta  * htht_0250 * f(sn, tn15);
-                dy[0] += gamma * b322 * boundary(sn, tn15, condition);
+                dy[0] += /*beta  **/ htht_0250 * f(sn, tn15);
+                dy[0] += /*gamma **/ b322 * boundary(sn, tn15, condition);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 s = 0;
+
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 ay[0]  = 0.0;
                 by[0]  = beta  * b311 + alpha * b312;
                 cy[0]  = beta  * b313;
@@ -2382,36 +2417,39 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
 
             sn.j = ymax; sn.y = ymax*hy;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = M-1;
-                p20[M][i] = (gamma/alpha)*value;
+                p20[M][i] = /*(gamma/alpha)**/value;
                 dy[M-1] -= k203 * p20[M][i];
                 cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
                 e = M;
-                ay[M]  = beta  * b411;
-                by[M]  = beta  * b413;
+                ay[M]  = /*beta  **/ b411;
+                by[M]  = /*beta  **/ b413;
                 cy[M]  = 0.0;
 
-                dy[M]  = beta  * b414 * p15[M-1][i] + beta  * b416 * p15[M][i];
-                dy[M] += beta  * b417 * p10[M-1][i] + beta  * b419 * p10[M][i];
+                dy[M]  = /*beta  **/ b414 * p15[M-1][i] + /*beta  **/ b416 * p15[M][i];
+                dy[M] += /*beta  **/ b417 * p10[M-1][i] + /*beta  **/ b419 * p10[M][i];
 
-                dy[M] += beta  * b420 * (p15[M][i+1]-2.0*p15[M][i]+p15[M][i-1]);
-                dy[M] += beta  * b421 * (p15[M][i+1]-p15[M][i-1]);
+                dy[M] += /*beta  **/ b420 * (p15[M][i+1]-2.0*p15[M][i]+p15[M][i-1]);
+                dy[M] += /*beta  **/ b421 * (p15[M][i+1]-p15[M][i-1]);
 
-                dy[M] += beta  * htht_0250 * f(sn, tn15);
-                dy[M] += gamma * b422 * boundary(sn, tn15, condition);
+                dy[M] += /*beta  **/ htht_0250 * f(sn, tn15);
+                dy[M] += /*gamma **/ b422 * boundary(sn, tn15, condition);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 e = M;
+
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 ay[M]  = beta  * b411;
                 by[M]  = beta  * b413 + alpha * b412;
                 cy[M]  = 0.0;
@@ -2434,42 +2472,46 @@ void IWaveEquationFBVP::implicit_calculate_D2V1() const
         {
             sn.i = xmin; sn.x = xmin*hx;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                p20[j][0] = (gamma/alpha)*value;
+                p20[j][0] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                p20[j][0] = (3.5*p20[j][1] - 2.0*p20[j][2] + 0.5*p20[j][3] + hx*(gamma/beta)*value)/(2.0);
+                p20[j][0] = (3.5*p20[j][1] - 2.0*p20[j][2] + 0.5*p20[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
                 //p20[j][0] = (p20[j][1] + hx*(gamma/beta)*value);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 p20[j][0] = (3.5*p20[j][1] - 2.0*p20[j][2] + 0.5*p20[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
                 //p20[j][0] = (p20[j][1] + hx*(gamma/beta)*value)/(1.0+hx*(alpha/beta));
             }
 
             sn.i = xmax; sn.x = xmax*hx;
             value = boundary(sn, tn20, condition);
-            alpha = condition.alpha();
-            beta  = condition.beta();
-            gamma = condition.gamma();
 
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                p20[j][N] = (gamma/alpha)*value;
+                p20[j][N] = /*(gamma/alpha)**/value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                p20[j][N] = (3.5*p20[j][N-1] - 2.0*p20[j][N-2] + 0.5*p20[j][N-3] + hx*(gamma/beta)*value)/(2.0);
+                p20[j][N] = (3.5*p20[j][N-1] - 2.0*p20[j][N-2] + 0.5*p20[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
                 //p20[j][N] = (p20[j][N-1] + hx*(gamma/beta)*value);
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                /*gamma = condition.gamma();*/
+                const double gamma = 1.0;
+
                 p20[j][N] = (3.5*p20[j][N-1] - 2.0*p20[j][N-2] + 0.5*p20[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
                 //p20[j][N] = (p20[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
             }

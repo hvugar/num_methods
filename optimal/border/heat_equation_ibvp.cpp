@@ -67,7 +67,7 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     //h.explicit_calculate_D1V1();
 #endif
 #ifdef HEAT_DIMENSION_2
-    h.implicit_calculate_D2V1();
+    h.implicit_calculate_D2V2();
     //h.explicit_calculate_D2V1();
 #endif
     bm.tock();

@@ -16,23 +16,21 @@ enum class BoundaryCondition
 class MINIMUMSHARED_EXPORT BoundaryConditionPDE
 {
 public:
-    BoundaryConditionPDE(BoundaryCondition condition = BoundaryCondition::Dirichlet, double alpha = 1.0, double beta = 0.0, double gamma = 1.0);
+    BoundaryConditionPDE(BoundaryCondition condition = BoundaryCondition::Dirichlet, double alpha = 1.0, double beta = 0.0);
 
 public:
-    static BoundaryConditionPDE Dirichlet(double alpha = 1.0, double gamma = 1.0);
-    static BoundaryConditionPDE Neumann(double beta = 1.0, double gamma = 1.0);
-    static BoundaryConditionPDE Robin(double alpha = 1.0, double beta = 1.0, double gamma = 1.0);
+    static BoundaryConditionPDE Dirichlet();
+    static BoundaryConditionPDE Neumann();
+    static BoundaryConditionPDE Robin(double alpha = 1.0, double beta = 1.0);
 
     BoundaryCondition boundaryCondition() const;
     double alpha() const;
     double beta() const;
-    double gamma() const;
 
 private:
     BoundaryCondition _boundaryCondition;
     double _alpha;
     double _beta;
-    double _gamma;
 };
 
 /**

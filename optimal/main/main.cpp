@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    //HeatEquationIBVP::Main(argc, argv);
+    HeatEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     //p3p::Solver::Main(argc, argv);
     //p3p1::Solver1::Main(argc, argv);
     //p3p0::Functional::Main(argc, argv);
-    p3p3::Functional::Main(argc, argv);
+    ///p3p3::Functional::Main(argc, argv);
     //p3p2::Functional::Main(argc, argv);
     //p3p::HeatEquationIBVP1::Main(argc, argv);
 
