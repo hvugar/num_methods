@@ -67,7 +67,7 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
     //h.explicit_calculate_D1V1();
 #endif
 #ifdef HEAT_DIMENSION_2
-    h.implicit_calculate_D2V2();
+    h.implicit_calculate_D2V1();
     //h.explicit_calculate_D2V1();
 #endif
     bm.tock();
@@ -177,7 +177,7 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     //condition = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
     //condition = BoundaryConditionPDE(BoundaryCondition::Robin, _lambda, +1.00, _lambda); return _environmentTemperature;
     //condition = BoundaryConditionPDE::Robin(_lambda, -1.00, _lambda); return _environmentTemperature;
-    condition = BoundaryConditionPDE::Neumann(1.0, 0.00); return 0.0;
+    condition = BoundaryConditionPDE::Neumann(); return 0.0;
 #endif
 }
 
@@ -363,8 +363,8 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
 #endif
 #if defined(HEAT_NORMAL_ROBIN)
-    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-    return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 3, 3))/condition.gamma();
+    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0);
+    return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 3, 3));
 #endif
 #endif
 }
@@ -779,7 +779,7 @@ double LoadedHeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition)
 double LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const
 {
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
-    bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x + sn.y + tn.t;
+    bc = BoundaryConditionPDE::Dirichlet(); return sn.x + sn.y + tn.t;
 }
 
 double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -832,7 +832,7 @@ double LoadedHeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition) con
 double LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const
 {
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
-    bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x + sn.y + tn.t;
+    bc = BoundaryConditionPDE::Dirichlet(); return sn.x + sn.y + tn.t;
 }
 
 double LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const

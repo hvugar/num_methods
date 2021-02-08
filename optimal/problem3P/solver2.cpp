@@ -437,8 +437,8 @@ auto HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &/*tn*
 {
     const double _lmbd1 = common->lambda1();
     const double _theta = common->theta();
-    if (sn.i == spaceDimensionX().min()) { bc = BoundaryConditionPDE::Robin(_lmbd1, -1.0, _lmbd1); return _theta; }
-    if (sn.i == spaceDimensionX().max()) { bc = BoundaryConditionPDE::Robin(_lmbd1, +1.0, _lmbd1); return _theta; }
+    if (sn.i == spaceDimensionX().min()) { bc = BoundaryConditionPDE::Robin(_lmbd1, -1.0); return _lmbd1 * _theta; }
+    if (sn.i == spaceDimensionX().max()) { bc = BoundaryConditionPDE::Robin(_lmbd1, +1.0); return _lmbd1 * _theta; }
     //if (sn.i == spaceDimensionX().min()) { bc = BoundaryConditionPDE::Neumann(+1.0, 0.0); return 0.0; }
     //if (sn.i == spaceDimensionX().max()) { bc = BoundaryConditionPDE::Neumann(+1.0, 0.0); return 0.0; }
     throw std::exception();
@@ -540,8 +540,8 @@ auto HeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition /*ic*/) cons
 auto HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
 {
     const double _lmbd1 = common->lambda1();
-    if (sn.i == spaceDimensionX().min()) { bc = BoundaryConditionPDE::Robin(_lmbd1, -1.0, 0.0); return 0.0; }
-    if (sn.i == spaceDimensionX().max()) { bc = BoundaryConditionPDE::Robin(_lmbd1, +1.0, 0.0); return 0.0; }
+    if (sn.i == spaceDimensionX().min()) { bc = BoundaryConditionPDE::Robin(_lmbd1, -1.0); return 0.0; }
+    if (sn.i == spaceDimensionX().max()) { bc = BoundaryConditionPDE::Robin(_lmbd1, +1.0); return 0.0; }
     //if (sn.i == spaceDimensionX().min()) { bc = BoundaryConditionPDE::Neumann(+1.0, 0.0); return 0.0; }
     //if (sn.i == spaceDimensionX().max()) { bc = BoundaryConditionPDE::Neumann(+1.0, 0.0); return 0.0; }
     throw std::exception();
@@ -689,7 +689,7 @@ Functional::Functional(double thermalDiffusivity, double thermalConductivity, do
 
     forward.common = this;
     backward.common = this;
-    forward._userHalfValues = backward._userHalfValues = false;
+    //forward._userHalfValues = backward._userHalfValues = false;
 }
 
 /*virtual*/ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void

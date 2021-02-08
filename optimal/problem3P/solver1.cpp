@@ -361,13 +361,13 @@ double Solver1::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, Boundary
 {
     //cn = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
     //    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
-    cn = BoundaryConditionPDE::Robin(_lambda1, -1.0, _lambda1); return _environmentTemperature;
+    cn = BoundaryConditionPDE::Robin(_lambda1, -1.0); return _lambda1 * _environmentTemperature;
 }
 
 double Solver1::bcw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE &cn) const
 {
     //    cn = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
-    cn = BoundaryConditionPDE::Robin(_lambda1, -1.0, 0.0); return 0.0;
+    cn = BoundaryConditionPDE::Robin(_lambda1, -1.0); return 0.0;
 }
 
 void Solver1::frw_saveToImage(const DoubleMatrix &u UNUSED_PARAM, const TimeNodePDE &tn UNUSED_PARAM) const

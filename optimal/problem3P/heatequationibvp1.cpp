@@ -20,8 +20,8 @@ auto HeatEquationIBVP1::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &
 {
     //cn = BoundaryConditionPDE::Dirichlet(1.0, 1.0);
     //cn = BoundaryConditionPDE::Neumann(1.0, lambda1);
-    cn = BoundaryConditionPDE::Robin(lambda1, -1.0, lambda1);
-    return theta(tn);
+    cn = BoundaryConditionPDE::Robin(lambda1, -1.0);
+    return lambda1 * theta(tn);
 }
 
 auto HeatEquationIBVP1::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double

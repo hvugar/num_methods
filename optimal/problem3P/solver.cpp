@@ -408,7 +408,7 @@ double Solver::frw_initial(const SpaceNodePDE &, InitialCondition) const { retur
 double Solver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE & cn) const
 {
     //cn = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 1.0);
-    cn = BoundaryConditionPDE(BoundaryCondition::Neumann, 0.0, 1.0, 1.0);
+    cn = BoundaryConditionPDE(BoundaryCondition::Neumann);
     return 0.0;
 }
 
@@ -553,7 +553,7 @@ double Solver::bcw_final(const SpaceNodePDE &sn, FinalCondition) const
 double Solver::bcw_boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &cn) const
 {
     //cn = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 1.0);
-    cn = BoundaryConditionPDE(BoundaryCondition::Neumann, 0.0, 1.0, 1.0);
+    cn = BoundaryConditionPDE(BoundaryCondition::Neumann);
     return 0.0;
 }
 

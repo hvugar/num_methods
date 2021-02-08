@@ -492,7 +492,7 @@ auto LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNode
     const double lambda1 = _functional->_lambda1;
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
     //bc = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
-    bc = BoundaryConditionPDE::Robin(lambda1, +1.0, lambda1); return _enviroment_temperature;
+    bc = BoundaryConditionPDE::Robin(lambda1, +1.0); return lambda1 * _enviroment_temperature;
 }
 
 auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
@@ -608,7 +608,7 @@ auto LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNode
     const double lambda1 = _functional->_lambda1;
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
     //bc = BoundaryConditionPDE::Neumann(1.0, 0.0); return 0.0;
-    bc = BoundaryConditionPDE::Robin(lambda1, +1.0, lambda1); return 0.0;
+    bc = BoundaryConditionPDE::Robin(lambda1, +1.0); return 0.0;
 }
 
 auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double

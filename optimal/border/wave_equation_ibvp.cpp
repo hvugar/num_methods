@@ -150,8 +150,8 @@ double WaveEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 
 #if defined(WAVE_DIMENSION_2)
 #if defined(WAVE_NORM_DIRICHLET)
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
-    return ::u_fx(this, sn, tn, 0, 0, 0)*(condition.alpha()/condition.gamma());
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
+    return ::u_fx(this, sn, tn, 0, 0, 0)*2.0;
 #endif
 #if defined(WAVE_NORM_ROBIN)
     condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
@@ -600,8 +600,8 @@ double WaveEquationFBVP::boundary(const SpaceNodePDE &sn UNUSED_PARAM, const Tim
 
 #if defined(WAVE_DIMENSION_2)
 #if defined(WAVE_NORM_DIRICHLET)
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, +2.0, +0.0, +1.0);
-    return ::p_fx(this, sn, tn, 0, 0, 0)*(condition.alpha()/condition.gamma());
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
+    return ::p_fx(this, sn, tn, 0, 0, 0)*2.0;
 #endif
 #if defined(WAVE_NORM_ROBIN)
     condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
