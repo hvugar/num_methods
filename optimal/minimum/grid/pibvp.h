@@ -7,7 +7,7 @@
 #include <thread>
 #include <iostream>
 
-#define PARABOLIC_IBVP_H_D2V1_BORDER_O2
+//#define PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #define PARABOLIC_IBVP_H_D2V1_FX
 #define PARABOLIC_IBVP_H_D2V1_BR
 #define PARABOLIC_IBVP_H_D1V1_FX

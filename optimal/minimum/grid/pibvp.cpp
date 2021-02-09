@@ -739,6 +739,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
+                throw std::exception();
+
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX
@@ -756,13 +758,15 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma*/1.0 * hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                throw std::exception();
+
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
                 //const double gamma = condition.gamma();
@@ -807,6 +811,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
+                throw std::exception();
+
                 e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX
@@ -823,14 +829,16 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 dx[e] += /*beta  **/ ht05 * fx;
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                throw std::exception();
+
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
                 //const double gamma = condition.gamma();
@@ -879,10 +887,12 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
+                throw std::exception();
+
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                u05[0][i] = u05[1][i] + hy*(gamma/beta)*value;
+                u05[0][i] = u05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -915,7 +925,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                u05[M][i] = u05[M-1][i] + hy*(gamma/beta)*value;
+                u05[M][i] = u05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -981,9 +991,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 dy[s] += /*gamma **/ b217 * value;
 #else
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1047,10 +1057,10 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 dy[e] += /*beta  **/ ht05 * fx;
                 dy[e] += /*gamma **/ b227 * value;
 #else
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1106,7 +1116,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][0] = u10[j][1] + hx*(gamma/beta)*value;
+                u10[j][0] = u10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1139,7 +1149,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][N] = u10[j][N-1] + hx*(gamma/beta)*value;
+                u10[j][N] = u10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1373,9 +1383,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1440,10 +1450,10 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
                 dx[e] += /*beta  **/ ht05 * fx;
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1506,7 +1516,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                u05[0][i] = u05[1][i] + hy*(gamma/beta)*value;
+                u05[0][i] = u05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1539,7 +1549,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                u05[M][i] = u05[M-1][i] + hy*(gamma/beta)*value;
+                u05[M][i] = u05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1606,9 +1616,9 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
                 dy[s] += /*gamma **/ b217 * value;
 #else
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1673,10 +1683,10 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
                 dy[e] += /*beta  **/ ht05 * fx;
                 dy[e] += /*gamma **/ b227 * value;
 #else
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1732,7 +1742,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][0] = u10[j][1] + hx*(gamma/beta)*value;
+                u10[j][0] = u10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -1765,7 +1775,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][N] = u10[j][N-1] + hx*(gamma/beta)*value;
+                u10[j][N] = u10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -2861,9 +2871,9 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -2928,10 +2938,10 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
                 dx[e] += /*beta  **/ ht05 * fx;
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -2987,7 +2997,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                p05[0][i] = p05[1][i] + hy*(gamma/beta)*value;
+                p05[0][i] = p05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3020,7 +3030,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy/**(gamma/beta)*/*value)/(2.0 + /*(alpha/beta)**/hy);
 #else
-                p05[M][i] = p05[M-1][i] + hy*(gamma/beta)*value;
+                p05[M][i] = p05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3087,9 +3097,9 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
                 dy[s] += /*gamma **/ b217 * value;
 #else
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3154,10 +3164,10 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
                 dy[e] += /*beta  **/ ht05 * fx;
                 dy[e] += /*gamma **/ b227 * value;
 #else
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3213,11 +3223,16 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                p10[j][0] = p10[j][1] + hx*(gamma/beta)*value;
+                p10[j][0] = p10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
+                const double alpha = condition.alpha();
+                const double beta  = condition.beta();
+                //const double gamma = condition.gamma();
+                const double gamma = 1.0;
+
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx*/*(gamma/beta)**/value)/(2.0 + /*(alpha/beta)**/hx);
 #else
@@ -3241,7 +3256,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                p10[j][N] = p10[j][N-1] + hx*(gamma/beta)*value;
+                p10[j][N] = p10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3555,9 +3570,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3614,10 +3629,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 dx[e] += /*beta  **/ ht05 * fx;
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3666,7 +3681,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                u05[0][i] = u05[1][i] + hy*(gamma/beta)*value;
+                u05[0][i] = u05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3695,7 +3710,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*/*(gamma/beta)**/value)/(2.0);
 #else
-                u05[M][i] = u05[M-1][i] + hy*(gamma/beta)*value;
+                u05[M][i] = u05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3754,9 +3769,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #else
                 // O(h1)
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3815,10 +3830,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 dy[e] += /*gamma **/ b227 * value;
 #else
                 // O(h1)
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3869,7 +3884,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][0] = u10[j][1] + hx*(gamma/beta)*value;
+                u10[j][0] = u10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -3898,7 +3913,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][N] = u10[j][N-1] + hx*(gamma/beta)*value;
+                u10[j][N] = u10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4118,9 +4133,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4177,10 +4192,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
                 dx[e] += /*beta  **/ ht05 * fx;
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4230,7 +4245,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy/**(gamma/beta)*/*value)/(2.0);
 #else
-                u05[0][i] = u05[1][i] + hy*(gamma/beta)*value;
+                u05[0][i] = u05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4259,7 +4274,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy/**(gamma/beta)*/*value)/(2.0);
 #else
-                u05[M][i] = u05[M-1][i] + hy*(gamma/beta)*value;
+                u05[M][i] = u05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4318,9 +4333,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
 #else
                 // O(h1)
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4379,10 +4394,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
                 dy[e] += /*gamma **/ b227 * value;
 #else
                 // O(h1)
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4433,7 +4448,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx/**(gamma/beta)*/*value)/(2.0);
 #else
-                u10[j][0] = u10[j][1] + hx*(gamma/beta)*value;
+                u10[j][0] = u10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4462,7 +4477,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
 #else
-                u10[j][N] = u10[j][N-1] + hx*(gamma/beta)*value;
+                u10[j][N] = u10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4779,9 +4794,9 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4832,10 +4847,10 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
                 dx[e] += /*beta  **/ ht05 * f(sn, tn00);
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4882,7 +4897,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy/**(gamma/beta)*/*value)/(2.0);
 #else
-                p05[0][i] = p05[1][i] + hy*(gamma/beta)*value;
+                p05[0][i] = p05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
 
             }
@@ -4912,7 +4927,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy/**(gamma/beta)*/*value)/(2.0 + /*(alpha/beta)**/hy);
 #else
-                p05[M][i] = p05[M-1][i] + hy*(gamma/beta)*value;
+                p05[M][i] = p05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -4967,9 +4982,9 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
                 dy[s] += /*gamma **/ b217 * value;
 #else
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5020,10 +5035,10 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
                 dy[e] += /*beta  **/ ht05 * f(sn, tn10);
                 dy[e] += /*gamma **/ b227 * value;
 #else
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5070,7 +5085,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx/**(gamma/beta)*/*value)/(2.0);
 #else
-                p10[j][0] = p10[j][1] + hx*(gamma/beta)*value;
+                p10[j][0] = p10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5099,7 +5114,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V1() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx/**(gamma/beta)*/*value)/(2.0);
 #else
-                p10[j][N] = p10[j][N-1] + hx*(gamma/beta)*value;
+                p10[j][N] = p10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5319,9 +5334,9 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
                 dx[s] += /*gamma **/ b117 * value;
 #else
                 ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cx[s]  = -/*beta*/1.0;
+                dx[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5378,10 +5393,10 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
                 dx[e] += /*beta  **/ ht05 * fx;
                 dx[e] += /*gamma **/ b127 * value;
 #else
-                ax[e]  = -beta;
-                bx[e]  = +beta + alpha * hx;
+                ax[e]  = -/*beta*/1.0;
+                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                dx[e]  = /*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5431,7 +5446,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy/**(gamma/beta)*/*value)/(2.0);
 #else
-                p05[0][i] = p05[1][i] + hy*(gamma/beta)*value;
+                p05[0][i] = p05[1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5460,7 +5475,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy/**(gamma/beta)*/*value)/(2.0 + /*(alpha/beta)**/hy);
 #else
-                p05[M][i] = p05[M-1][i] + hy*(gamma/beta)*value;
+                p05[M][i] = p05[M-1][i] + hy/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5519,9 +5534,9 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
 #else
                 // O(h1)
                 ay[s]  = 0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
+                cy[s]  = -/*beta*/1.0;
+                dy[s]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5579,10 +5594,10 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
                 dy[e] += /*gamma **/ b227 * value;
 #else
                 // O(h1)
-                ay[e]  = -beta;
-                by[e]  = +beta + alpha * hx;
+                ay[e]  = -/*beta*/1.0;
+                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +/*gamma **/ hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5633,7 +5648,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx/**(gamma/beta)*/*value)/(2.0);
 #else
-                p10[j][0] = p10[j][1] + hx*(gamma/beta)*value;
+                p10[j][0] = p10[j][1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -5662,7 +5677,7 @@ void ILoadedHeatEquationFBVP::implicit_calculate_D2V2() const
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
                 p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx/**(gamma/beta)*/*value)/(2.0);
 #else
-                p10[j][N] = p10[j][N-1] + hx*(gamma/beta)*value;
+                p10[j][N] = p10[j][N-1] + hx/**(gamma/beta)*/*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
