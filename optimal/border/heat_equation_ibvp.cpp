@@ -19,8 +19,8 @@
 #endif
 
 #if defined(HEAT_QUADRATIC)
-#define HEAT_X1
-#define HEAT_Y1
+#define HEAT_X2
+#define HEAT_Y2
 #define HEAT_T1
 #endif
 
@@ -109,8 +109,7 @@ HeatEquationIBVP::HeatEquationIBVP() : IHeatEquationIBVP() {}
 double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 {
 #if defined(HEAT_QUADRATIC)
-    TimeNodePDE tn; tn.t = 0.0;
-    return ::u_fx(this, sn, tn);
+    TimeNodePDE tn; tn.t = 0.0; return ::u_fx(this, sn, tn);
 #endif
 #if defined(HEAT_DELTA)
     return 0.0;
@@ -149,8 +148,8 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 #if defined(HEAT_DIMENSION_2)
 
 #if defined(HEAT_NORMAL_DIRICHLET)
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet);
-    return ::u_fx(this, sn, tn);
+    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return sn.x + sn.y + tn.t;
+    //return ::u_fx(this, sn, tn);
 #endif
 #if defined(HEAT_NORMAL_NEUMANN)
 
@@ -187,14 +186,14 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double b = thermalConductivity();
     const double c = thermalConvection();
 
-    if (true) {
-        TimeNodePDE tn0; tn0.i = tn.i-1; tn0.t = tn0.i*0.010;
-        double f1 = ::u_fx(this,sn,tn0,+1,-1,-1)-::u_fx(this,sn,tn0,-1,+2,-1)*a-::u_fx(this,sn,tn0,-1,+1,-1)*b-::u_fx(this,sn,tn0,0,0,0)*c;
-        double f2 = ::u_fx(this,sn,tn,+1,-1,-1)-::u_fx(this,sn,tn,-1,+2,-1)*a-::u_fx(this,sn,tn,-1,+1,-1)*b-::u_fx(this,sn,tn,0,0,0)*c;
+    if (false) {
+        TimeNodePDE tn0; tn0.i = tn1.i-1; tn0.t = tn0.i*0.010;
+        double f1 = ::u_fx(this,sn,tn0,+1,-1,-1) - ::u_fx(this,sn,tn0,-1,+2,-1)*a - ::u_fx(this,sn,tn0,-1,+1,-1)*b - ::u_fx(this,sn,tn0,0,0,0)*c;
+        double f2 = ::u_fx(this,sn,tn1,+1,-1,-1) - ::u_fx(this,sn,tn1,-1,+2,-1)*a - ::u_fx(this,sn,tn1,-1,+1,-1)*b - ::u_fx(this,sn,tn1,0,0,0)*c;
         return (f1+f2)/2.0;
     }
     else {
-        return ::u_fx(this,sn,tn,+1,-1,-1) - ::u_fx(this,sn,tn,-1,+2,-1)*a - ::u_fx(this,sn,tn,-1,+1,-1)*b - ::u_fx(this,sn,tn,0,0,0)*c;
+        return ::u_fx(this,sn,tn1,+1,-1,-1) - ::u_fx(this,sn,tn1,-1,+2,-1)*a - ::u_fx(this,sn,tn1,-1,+1,-1)*b - ::u_fx(this,sn,tn1,0,0,0)*c;
     }
 #endif
 
@@ -228,41 +227,42 @@ void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
 
-    unsigned int time_size = timeDimension().size();
+    IPrinter::printVector(17, 8, u);
+//    unsigned int time_size = timeDimension().size();
 
-    if (tn.i % ((time_size-1)/10) == 0) IPrinter::printVector(16, 8, u); return;
+//    if (tn.i % ((time_size-1)/10) == 0) IPrinter::printVector(16, 8, u); return;
 
     //IPrinter::printVector(u);
-    if (tn.i==0 || tn.i==1 || tn.i==timeDimension().max()-1 || tn.i==timeDimension().max()) IPrinter::printVector(u);
+//    if (tn.i==0 || tn.i==1 || tn.i==timeDimension().max()-1 || tn.i==timeDimension().max()) IPrinter::printVector(u);
     return;
 
-    int min = spaceDimensionX().min();
-    int max = spaceDimensionX().max();
+//    int min = spaceDimensionX().min();
+//    int max = spaceDimensionX().max();
 
-    if (tn.i==0 || tn.i==1 || tn.i==99 || tn.i==100) IPrinter::printVector(u);
+//    if (tn.i==0 || tn.i==1 || tn.i==99 || tn.i==100) IPrinter::printVector(u);
 
-    if (tn.i==1001)
-    {
-        double L2Norm = 0.0;
-        double EuNorm = 0.0;
-        double L1Norm = 0.0;
-        TimeNodePDE tn; tn.t = 1.0;
-        SpaceNodePDE sn;
-        unsigned int n = 0;
-        for (int i=min; i<=max; i++, n++)
-        {
-            sn.i = static_cast<int>(i);
-            sn.x = sn.i*0.01;
+//    if (tn.i==1001)
+//    {
+//        double L2Norm = 0.0;
+//        double EuNorm = 0.0;
+//        double L1Norm = 0.0;
+//        TimeNodePDE tn; tn.t = 1.0;
+//        SpaceNodePDE sn;
+//        unsigned int n = 0;
+//        for (int i=min; i<=max; i++, n++)
+//        {
+//            sn.i = static_cast<int>(i);
+//            sn.x = sn.i*0.01;
 
-            double k = 1.0; if (i==min || i== max) k = 0.5;
-            L2Norm += 0.01*k*(u[n]-::u_fx(this, sn, tn))*(u[n]-::u_fx(this, sn, tn));
+//            double k = 1.0; if (i==min || i== max) k = 0.5;
+//            L2Norm += 0.01*k*(u[n]-::u_fx(this, sn, tn))*(u[n]-::u_fx(this, sn, tn));
 
-            EuNorm += (u[n]-u_fx(this, sn, tn))*(u[n]-u_fx(this, sn, tn));
+//            EuNorm += (u[n]-u_fx(this, sn, tn))*(u[n]-u_fx(this, sn, tn));
 
-            if (L1Norm < fabs(u[n]-::u_fx(this, sn, tn))) L1Norm = fabs(u[n]-::u_fx(this, sn, tn));
-        }
-        printf("L2Norm: %.10f EuNorm: %.10f L1Norm: %.10f\n", sqrt(L2Norm), sqrt(EuNorm), L1Norm);
-    }
+//            if (L1Norm < fabs(u[n]-::u_fx(this, sn, tn))) L1Norm = fabs(u[n]-::u_fx(this, sn, tn));
+//        }
+//        printf("L2Norm: %.10f EuNorm: %.10f L1Norm: %.10f\n", sqrt(L2Norm), sqrt(EuNorm), L1Norm);
+//    }
 }
 
 void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const

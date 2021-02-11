@@ -330,7 +330,7 @@ void tomasAlgorithmLeft2Right(const double *a, const double *b, const double *c,
     betta[1] = +d[0]/b[0];
     for (i=1; i<M; i++)
     {
-        if (fabs(b[i]) < fabs(a[i])+fabs(c[i])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f %20.8f\n", i, fabs(a[i]), fabs(b[i]), fabs(c[i])); assert(!(fabs(b[i]) < fabs(a[i])+fabs(c[i]))); }
+        if (fabs(b[i]) < fabs(a[i])+fabs(c[i])) { fprintf(stderr, "ERROR: %6zu %20.8f %20.8f %20.8f\n", i, fabs(a[i]), fabs(b[i]), fabs(c[i])); assert(!(fabs(b[i]) < fabs(a[i])+fabs(c[i]))); }
         if (fabs(a[i]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6zu %20.8f\n", i, fabs(a[i])); assert(!(fabs(a[i]) <= MY_EPSILON)); }
         if (fabs(c[i]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6zu %20.8f\n", i, fabs(c[i])); assert(!(fabs(c[i]) <= MY_EPSILON)); }
 
