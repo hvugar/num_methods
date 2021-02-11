@@ -86,4 +86,3 @@ void HeatEquationIBVP1::frw_saveToImage(const DoubleMatrix &u, const TimeNodePDE
     visualizeMatrixHeat(u, _min, _max, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
     pixmap.save(filename);
 }
-

@@ -55,8 +55,8 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 #endif
 
     h.setThermalDiffusivity(fa);
-    //h.setThermalConductivity(fb);
-    //h.setThermalConvection(-h._lambda0);
+    h.setThermalConductivity(fb);
+    h.setThermalConvection(fc);
 
     Benchmark bm;
     bm.tick();
@@ -81,7 +81,7 @@ void HeatEquationFBVP::Main(int argc UNUSED_PARAM, char *argv[] UNUSED_PARAM)
 #endif
 
     HeatEquationFBVP h;
-    h.setTimeDimension(Dimension(0.01, 0, 10000));
+    h.setTimeDimension(Dimension(0.01, 0, 100));
     h.setSpaceDimensionX(Dimension(0.010, 100, 200));
 #ifdef HEAT_DIMENSION_2
     h.setSpaceDimensionY(Dimension(0.010, 200, 300));
@@ -270,8 +270,7 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     C_UNUSED(u);
     C_UNUSED(tn);
 
-    if (tn.i % ((timeDimension().size())/10) == 0)
-    //if (tn.i == 0 || tn.i == 1)
+    if (tn.i % ((timeDimension().size())/10) == 0 || tn.i == 0 || tn.i == 1)
     {
         std::string msg = std::string("time: ") + std::to_string(tn.t) +
                           std::string(", min: ") + std::to_string(u.min()) +
@@ -382,8 +381,11 @@ double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double a2 = thermalDiffusivity();
     const double b1 = thermalConductivity();
     const double b2 = thermalConductivity();
-    const double c = thermalConvection();
-    return ::p_fx(this, sn,tn,+1,-1,-1) - ::p_fx(this, sn,tn,-1,+2,-1)*a1 - ::p_fx(this, sn,tn,-1,-1,+2)*a2 - ::p_fx(this, sn,tn,-1,+1,-1)*b1 - ::p_fx(this, sn,tn,-1,-1,+1)*b2 - ::p_fx(this, sn,tn,+0,+0,+0)*c;
+    const double c  = thermalConvection();
+    return ::p_fx(this, sn,tn,+1,-1,-1)
+            - ::p_fx(this, sn,tn,-1,+2,-1)*a1 - ::p_fx(this, sn,tn,-1,-1,+2)*a2
+            - ::p_fx(this, sn,tn,-1,+1,-1)*b1 - ::p_fx(this, sn,tn,-1,-1,+1)*b2
+            - ::p_fx(this, sn,tn,+0,+0,+0)*c;
 #endif
 }
 
@@ -400,22 +402,22 @@ void HeatEquationFBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
 
 void HeatEquationFBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
 {
-//    C_UNUSED(u);
-//    C_UNUSED(tn);
+    C_UNUSED(u);
+    C_UNUSED(tn);
 
-//    if (tn.i % (timeDimension().size() / 5) == 0)
-//    {
-//        IPrinter::printMatrix(16, 8, u);
-//        IPrinter::printSeperatorLine();
-//    }
-//    return;
+    if (tn.i % (timeDimension().size() / 5) == 0)
+    {
+        IPrinter::printMatrix(16, 8, u);
+        IPrinter::printSeperatorLine();
+    }
+    return;
 
-//    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
-//    {
-//        IPrinter::printMatrix(u);
-//        IPrinter::printSeperatorLine();
-//        if (tn.i%2==0) IPrinter::printSeperatorLine();
-//    }
+    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
+    {
+        IPrinter::printMatrix(u);
+        IPrinter::printSeperatorLine();
+        if (tn.i%2==0) IPrinter::printSeperatorLine();
+    }
 }
 
 double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt, int dx, int dy)

@@ -28,20 +28,30 @@ BoundaryValueProblemPDE::~BoundaryValueProblemPDE() {}
 
 //**********************************************************************************************//
 
-BoundaryConditionPDE::BoundaryConditionPDE(BoundaryCondition condition, double alpha, double beta)
+BoundaryConditionPDE::BoundaryConditionPDE(BoundaryCondition condition)
 {
-    if (condition == BoundaryCondition::Robin)  { if (fabs(alpha) <= DBL_EPSILON || fabs(beta) <= DBL_EPSILON) { throw std::exception(); } }
-
     this->_boundaryCondition = condition;
-    this->_alpha = alpha;
-    this->_beta = beta;
+    this->_alpha = 0.0;
+    this->_beta = 0.0;
 }
 
-BoundaryConditionPDE BoundaryConditionPDE::Dirichlet() { return BoundaryConditionPDE(BoundaryCondition::Dirichlet); }
+BoundaryConditionPDE BoundaryConditionPDE::Dirichlet()
+{
+    return BoundaryConditionPDE(BoundaryCondition::Dirichlet);
+}
 
-BoundaryConditionPDE BoundaryConditionPDE::Neumann() { return BoundaryConditionPDE(BoundaryCondition::Neumann); }
+BoundaryConditionPDE BoundaryConditionPDE::Neumann()
+{
+    return BoundaryConditionPDE(BoundaryCondition::Neumann);
+}
 
-BoundaryConditionPDE BoundaryConditionPDE::Robin(double alpha, double beta) { return BoundaryConditionPDE(BoundaryCondition::Robin, alpha, beta); }
+BoundaryConditionPDE BoundaryConditionPDE::Robin(double alpha, double beta)
+{
+    BoundaryConditionPDE condition(BoundaryCondition::Robin);
+    condition._alpha = alpha;
+    condition._beta = beta;
+    return condition;
+}
 
 BoundaryCondition BoundaryConditionPDE::boundaryCondition() const { return _boundaryCondition; }
 

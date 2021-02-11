@@ -16,7 +16,7 @@ enum class BoundaryCondition
 class MINIMUMSHARED_EXPORT BoundaryConditionPDE
 {
 public:
-    BoundaryConditionPDE(BoundaryCondition condition = BoundaryCondition::Dirichlet, double alpha = 1.0, double beta = 0.0);
+    BoundaryConditionPDE(BoundaryCondition condition = BoundaryCondition::Dirichlet);
 
 public:
     static BoundaryConditionPDE Dirichlet();

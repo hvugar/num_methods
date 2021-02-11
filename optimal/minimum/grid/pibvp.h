@@ -7,7 +7,7 @@
 #include <thread>
 #include <iostream>
 
-//#define PARABOLIC_IBVP_H_D2V1_BORDER_O2
+#define PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #define PARABOLIC_IBVP_H_D2V1_FX
 #define PARABOLIC_IBVP_H_D2V1_BR
 #define PARABOLIC_IBVP_H_D1V1_FX
@@ -73,8 +73,6 @@ public:
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// COMPLETED
 
-    virtual void implicit_calculate_D2V2() const;// COMPLETED
-
 protected:
     virtual double initial(const SpaceNodePDE &sn, InitialCondition condition) const = 0;
     virtual double boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &condition) const = 0;
@@ -85,10 +83,6 @@ protected:
     double _thermalDiffusivity;     // температуропроводность
     double _thermalConductivity;    // теплопроводность - heat transfer coefficient
     double _thermalConvection;      //
-
-public:
-    void init() const;
-    void next1() const;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -150,7 +144,7 @@ public:
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// TO-DO
 
-    virtual void implicit_calculate_D2V2() const;// TO-DO
+    void implicit_calculate_D2V2() const;// TO-DO
 
     void setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints);
     const std::vector<LoadedSpacePoint> loadedPoints() const;
@@ -175,7 +169,7 @@ public:
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// TO-DO
 
-    virtual void implicit_calculate_D2V2() const;// TO-DO
+    void implicit_calculate_D2V2() const;// TO-DO
 
     void setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints);
     const std::vector<LoadedSpacePoint> loadedPoints() const;
