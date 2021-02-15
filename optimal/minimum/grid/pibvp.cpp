@@ -252,7 +252,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         }
 
         size_t s=0, e=N;
-        BoundaryConditionPDE condition1; double value1/*, alpha, beta, gamma*/;
+        BoundaryConditionPDE condition1; double value1;
         BoundaryConditionPDE condition0; double value0;
 
         sn.i = xmin; sn.x = xmin*hx;
@@ -262,9 +262,9 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         if (condition1.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
             s = 1;
-            u1[0] = /*(gamma/alpha)**/value1;
+            u1[0]  = value1;
             dx[1] -= k11 * u1[0];
-            ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+            ax[1]  = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
         }
         else if (condition1.boundaryCondition() == BoundaryCondition::Neumann)
         {
@@ -717,7 +717,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
         {
             for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
             {
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
@@ -726,226 +726,199 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
 
             sn.i = xmin; sn.x = xmin*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
                 u05[j][0] = value;
-                dx[s] -= k11 * u05[j][0];
-                ax[s] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+                dx[1] -= k11 * u05[j][0];
+                ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::exception();
-
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[s]  = 0.0;
-                bx[s]  = /*beta  **/ b111;
-                cx[s]  = /*beta  **/ b113;
-                dx[s]  = /*beta  **/ b114 * u00[j][s];
-                dx[s] += /*beta  **/ b115 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
-                dx[s] += /*beta  * */b116 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
-                dx[s] += /*beta  **/ ht05 * fx;
-                dx[s] += /*gamma **/ b117 * value;
+                ax[0]  = 0.0;
+                bx[0]  = b111;
+                cx[0]  = b113;
+                dx[0]  = b114 * u00[j][0];
+                dx[0] += b115 * ((u00[j+1][0]-2.0*u00[j][0]+u00[j-1][0])/(hy*hy));
+                dx[0] += b116 * ((u00[j+1][0]-u00[j-1][0])/(2.0*hy));
+                dx[0] += ht05 * fx;
+                dx[0] += b117 * value;
 #else
-                ax[s]  = 0.0;
-                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cx[s]  = -/*beta*/1.0;
-                dx[s]  = +/*gamma*/1.0 * hx * value;
+                ax[0]  = +0.0;
+                bx[0]  = +1.0;
+                cx[0]  = -1.0;
+                dx[0]  = +hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[s]  = 0.0;
-                bx[s]  = beta  * b111 + alpha * b112;
-                cx[s]  = beta  * b113;
-                dx[s]  = beta  * b114 * u00[j][s];
-                dx[s] += beta  * b115 * ((u00[j+1][s]-2.0*u00[j][s]+u00[j-1][s])/(hy*hy));
-                dx[s] += beta  * b116 * ((u00[j+1][s]-u00[j-1][s])/(2.0*hy));
-                dx[s] += beta  * ht05 * fx;
-                dx[s] += gamma * b117 * value;
+                ax[0]  = 0.0;
+                bx[0]  = beta * b111 + alpha * b112;
+                cx[0]  = beta * b113;
+                dx[0]  = beta * b114 * u00[j][0];
+                dx[0] += beta * b115 * ((u00[j+1][0]-2.0*u00[j][0]+u00[j-1][0])/(hy*hy));
+                dx[0] += beta * b116 * ((u00[j+1][0]-u00[j-1][0])/(2.0*hy));
+                dx[0] += beta * ht05 * fx;
+                dx[0] += b117 * value;
 #else
-                ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                ax[0]  = +0.0;
+                bx[0]  = +beta + alpha * hx;
+                cx[0]  = -beta;
+                dx[0]  = +hx * value;
 #endif
             }
 
             sn.i = xmax; sn.x = xmax*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
+                e = N-1;
                 u05[j][N] = value;
                 dx[e] -= k13 * u05[j][N];
                 cx[e] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::exception();
-
                 e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[e]  = /*beta  **/ b121;
-                bx[e]  = /*beta  **/ b123;
+                ax[e]  = b121;
+                bx[e]  = b123;
                 cx[e]  = 0.0;
-                dx[e]  = /*beta  **/ b124 * u00[j][e];
-                dx[e] += /*beta  **/ b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
-                dx[e] += /*beta  **/ b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
-                dx[e] += /*beta  **/ ht05 * fx;
-                dx[e] += /*gamma **/ b127 * value;
+                dx[e]  = b124 * u00[j][e];
+                dx[e] += b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
+                dx[e] += b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
+                dx[e] += ht05 * fx;
+                dx[e] += b127 * value;
 #else
-                ax[e]  = -/*beta*/1.0;
-                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cx[e]  = 0.0;
-                dx[e]  = /*gamma **/ hx * value;
+                ax[e]  = -1.0;
+                bx[e]  = +1.0;
+                cx[e]  = +0.0;
+                dx[e]  = hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[e]  = beta  * b121;
-                bx[e]  = beta  * b123 + alpha * b122;
+                ax[e]  = beta * b121;
+                bx[e]  = beta * b123 + alpha * b122;
                 cx[e]  = 0.0;
-                dx[e]  = beta  * b124 * u00[j][e];
-                dx[e] += beta  * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
-                dx[e] += beta  * b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
-                dx[e] += beta  * ht05 * fx;
-                dx[e] += gamma * b127 * value;
+                dx[e]  = beta * b124 * u00[j][e];
+                dx[e] += beta * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
+                dx[e] += beta * b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
+                dx[e] += beta * ht05 * fx;
+                dx[e] += b127 * value;
 #else
                 ax[e]  = -beta;
                 bx[e]  = +beta + alpha * hx;
-                cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                cx[e]  = +0.0;
+                dx[e]  = +hx * value;
 #endif
             }
 
             tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, static_cast<unsigned int>(e-s+1));
-            for (size_t i=s; i<=e; i++) u05[j][i] = rx[i];
-            //memcpy(u05[j]+s, rx+s, sizeof (double*)*(e-s+1));
+            //for (size_t i=s; i<=e; i++) u05[j][i] = rx[i];
+            memcpy(u05[j]+s, rx+s, sizeof (double*)*(e-s+1));
         }
 
         for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
             sn.j = ymin; sn.y = ymin*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 u05[0][i] = value;
             }
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::exception();
-
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
+                u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*value)/(2.0);
 #else
-                u05[0][i] = u05[1][i] + hy/**(gamma/beta)*/*value;
+                u05[0][i] = u05[1][i] + hy*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
 #else
-                u05[0][i] = (u05[1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+                u05[0][i] = (beta*u05[1][i] + hy*value)/(beta + alpha*hy);
 #endif
             }
 
             sn.j = ymax; sn.y = ymax*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 u05[M][i] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::exception();
-
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*/*(gamma/beta)**/value)/(2.0);
+                u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*value)/(2.0);
 #else
-                u05[M][i] = u05[M-1][i] + hy/**(gamma/beta)*/*value;
+                u05[M][i] = u05[M-1][i] + hy*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
 #else
-                u05[M][i] = (u05[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+                u05[M][i] = (beta*u05[M-1][i] + hy*value)/(beta + alpha*hy);
 #endif
             }
         }
@@ -958,7 +931,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
         {
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
@@ -967,7 +940,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             }
 
             sn.j = ymin; sn.y = ymin*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
@@ -975,77 +948,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
-                u10[0][i] = /*(gamma/alpha)**/value;
-                dy[1] -= k21 * u10[0][i];
-                ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
-            }
-            else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
-            {
-                throw std::exception();
-
-                s = 0;
-#ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
-                double fx = f(sn, tn10);
-#else
-                double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
-#endif
-                ay[s]  = 0.0;
-                by[s]  = /*beta  **/ b211;
-                cy[s]  = /*beta  **/ b213;
-                dy[s]  = /*beta  **/ b214 * u05[s][i];
-                dy[s] += /*beta  **/ b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
-                dy[s] += /*beta  **/ b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
-                dy[s] += /*beta  **/ ht05 * fx;
-                dy[s] += /*gamma **/ b217 * value;
-#else
-                ay[s]  = 0.0;
-                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cy[s]  = -/*beta*/1.0;
-                dy[s]  = +/*gamma **/ hx * value;
-#endif
-            }
-            else if (condition.boundaryCondition() == BoundaryCondition::Robin)
-            {
-                const double alpha = condition.alpha();
-                const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
-
-#ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
-#else
-                u05[M][i] = (u05[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
-#endif
-            }
-        }
-
-        /**************************************************** x direction apprx ***************************************************/
-
-        /**************************************************** y direction apprx ***************************************************/
-
-        for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
-        {
-            for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
-            {
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
-                double fx = f(sn, tn10);
-#else
-                double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
-#endif
-                dy[j] = k24*u05[j][i-1] + k25*u05[j][i] + k26*u05[j][i+1] + ht05*fx;
-            }
-
-            sn.j = ymin; sn.y = ymin*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
-            value = boundary(sn, tn10, condition);
-#else
-            value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
-#endif
-            if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
-            {
-                s = 1;
-                u10[0][i] = /*(gamma/alpha)**/value;
+                u10[0][i] = value;
                 dy[1] -= k21 * u10[0][i];
                 ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
             }
@@ -1053,59 +956,56 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[s]  = 0.0;
-                by[s]  = /*beta  **/ b211;
-                cy[s]  = /*beta  **/ b213;
-                dy[s]  = /*beta  **/ b214 * u05[s][i];
-                dy[s] += /*beta  **/ b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
-                dy[s] += /*beta  **/ b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
-                dy[s] += /*beta  **/ ht05 * fx;
-                dy[s] += /*gamma **/ b217 * value;
+                ay[0]  = 0.0;
+                by[0]  = b211;
+                cy[0]  = b213;
+                dy[0]  = b214 * u05[0][i];
+                dy[0] += b215 * ((u05[0][i+1]-2.0*u05[0][i]+u05[0][i-1])/(hx*hx));
+                dy[0] += b216 * ((u05[0][i+1]-u05[0][i-1])/(2.0*hx));
+                dy[0] += ht05 * fx;
+                dy[0] += b217 * value;
 #else
-                ay[s]  = 0.0;
-                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cy[s]  = -/*beta*/1.0;
-                dy[s]  = +/*gamma **/ hx * value;
+                ay[0]  = +0.0;
+                by[0]  = +1.0;
+                cy[0]  = -1.0;
+                dy[0]  = +hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
+                s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
                 ay[s]  = 0.0;
-                by[s]  = beta  * b211 + alpha * b212;
-                cy[s]  = beta  * b213;
-                dy[s]  = beta  * b214 * u05[s][i];
-                dy[s] += beta  * b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
-                dy[s] += beta  * b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
-                dy[s] += beta  * ht05 * fx;
-                dy[s] += gamma * b217 * value;
+                by[s]  = beta * b211 + alpha * b212;
+                cy[s]  = beta * b213;
+                dy[s]  = beta * b214 * u05[s][i];
+                dy[s] += beta * b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
+                dy[s] += beta * b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
+                dy[s] += beta * ht05 * fx;
+                dy[s] += b217 * value;
 #else
-                ay[s]  = 0.0;
+                ay[s]  = +0.0;
                 by[s]  = +beta + alpha * hx;
                 cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                dy[s]  = +hx * value;
 #endif
             }
 
             sn.j = ymax; sn.y = ymax*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
@@ -1114,64 +1014,58 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 e = M-1;
                 u10[M][i] = value;
-                dy[M-1] -= k23 * u10[M][i];
-                cy[M-1] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
+                dy[e] -= k23 * u10[M][i];
+                cy[e] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::exception();
-
                 e = M;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[e]  = /*beta  **/ b221;
-                by[e]  = /*beta  **/ b223;
+                ay[e]  = b221;
+                by[e]  = b223;
                 cy[e]  = 0.0;
-                dy[e]  = /*beta  **/ b224 * u05[e][i];
-                dy[e] += /*beta  **/ b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
-                dy[e] += /*beta  **/ b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
-                dy[e] += /*beta  **/ ht05 * fx;
-                dy[e] += /*gamma **/ b227 * value;
+                dy[e]  = b224 * u05[e][i];
+                dy[e] += b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
+                dy[e] += b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
+                dy[e] += ht05 * fx;
+                dy[e] += b227 * value;
 #else
-                ay[e]  = -/*beta*/1.0;
-                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cy[e]  = 0.0;
-                dy[e]  = +/*gamma **/ hx * value;
+                ay[e]  = -1.0;
+                by[e]  = +1.0;
+                cy[e]  = +0.0;
+                dy[e]  = +hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 e = M;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[e]  = beta  * b221;
-                by[e]  = beta  * b223 + alpha * b222;
+                ay[e]  = beta * b221;
+                by[e]  = beta * b223 + alpha * b222;
                 cy[e]  = 0.0;
-                dy[e]  = beta  * b224 * u05[e][i];
-                dy[e] += beta  * b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
-                dy[e] += beta  * b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
-                dy[e] += beta  * ht05 * fx;
-                dy[e] += gamma * b227 * value;
-#else // O(h1)
+                dy[e]  = beta * b224 * u05[e][i];
+                dy[e] += beta * b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
+                dy[e] += beta * b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
+                dy[e] += beta * ht05 * fx;
+                dy[e] += b227 * value;
+#else
                 ay[e]  = -beta;
                 by[e]  = +beta + alpha * hx;
-                cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                cy[e]  = +0.0;
+                dy[e]  = +hx * value;
 #endif
             }
 
@@ -1183,72 +1077,62 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
         for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
         {
             sn.i = xmin; sn.x = xmin*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                u10[j][0] = /*(gamma/alpha)**/value;
+                u10[j][0] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
+                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*value)/(2.0);
 #else
-                u10[j][0] = u10[j][1] + hx/**(gamma/beta)*/*value;
+                u10[j][0] = u10[j][1] + hx*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
 #else
-                u10[j][0] = (u10[j][1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+                u10[j][0] = (beta*u10[j][1] + hx*value)/(beta + alpha*hx);
 #endif
             }
 
             sn.i = xmax; sn.x = xmax*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                u10[j][N] = /*(gamma/alpha)**/value;
+                u10[j][N] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                throw std::exception();
-
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
+                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*value)/(2.0);
 #else
-                u10[j][N] = u10[j][N-1] + hx/**(gamma/beta)*/*value;
+                u10[j][N] = u10[j][N-1] + hx*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
-                throw std::exception();
-
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
 #else
-                u10[j][N] = (u10[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+                u10[j][N] = (beta*u10[j][N-1] + hx*value)/(beta + alpha*hx);
 #endif
             }
         }
@@ -1792,7 +1676,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
         {
             for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
             {
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
@@ -1801,12 +1685,11 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             }
 
             sn.i = xmin; sn.x = xmin*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5*( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
@@ -1818,63 +1701,60 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[s]  = 0.0;
-                bx[s]  = /*beta  **/ b111;
-                cx[s]  = /*beta  **/ b113;
-                dx[s]  = /*beta  **/ b114 * p00[j][s];
-                dx[s] += /*beta  **/ b115 * ((p00[j+1][s]-2.0*p00[j][s]+p00[j-1][s])/(hy*hy));
-                dx[s] += /*beta  **/ b116 * ((p00[j+1][s]-p00[j-1][s])/(2.0*hy));
-                dx[s] += /*beta  **/ ht05 * fx;
-                dx[s] += /*gamma **/ b117 * value;
+                ax[0]  = 0.0;
+                bx[0]  = b111;
+                cx[0]  = b113;
+                dx[0]  = b114 * p00[j][0];
+                dx[0] += b115 * ((p00[j+1][0]-2.0*p00[j][0]+p00[j-1][0])/(hy*hy));
+                dx[0] += b116 * ((p00[j+1][0]-p00[j-1][0])/(2.0*hy));
+                dx[0] += ht05 * fx;
+                dx[0] += b117 * value;
 #else
-                ax[s]  = 0.0;
-                bx[s]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cx[s]  = -/*beta*/1.0;
-                dx[s]  = +/*gamma **/ hx * value;
+                ax[0]  = +0.0;
+                bx[0]  = +1.0;
+                cx[0]  = -1.0;
+                dx[0]  = +hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[s]  = 0.0;
-                bx[s]  = beta  * b111 + alpha * b112;
-                cx[s]  = beta  * b113;
-                dx[s]  = beta  * b114 * p00[j][s];
-                dx[s] += beta  * b115 * ((p00[j+1][s]-2.0*p00[j][s]+p00[j-1][s])/(hy*hy));
-                dx[s] += beta  * b116 * ((p00[j+1][s]-p00[j-1][s])/(2.0*hy));
-                dx[s] += beta  * ht05 * fx;
-                dx[s] += gamma * b117 * value;
+                ax[0]  = 0.0;
+                bx[0]  = beta * b111 + alpha * b112;
+                cx[0]  = beta * b113;
+                dx[0]  = beta * b114 * p00[j][0];
+                dx[0] += beta * b115 * ((p00[j+1][0]-2.0*p00[j][0]+p00[j-1][0])/(hy*hy));
+                dx[0] += beta * b116 * ((p00[j+1][0]-p00[j-1][0])/(2.0*hy));
+                dx[0] += beta * ht05 * fx;
+                dx[0] += b117 * value;
 #else
-                ax[s]  = 0.0;
-                bx[s]  = +beta + alpha * hx;
-                cx[s]  = -beta;
-                dx[s]  = +gamma * hx * value;
+                ax[0]  = +0.0;
+                bx[0]  = +beta + alpha * hx;
+                cx[0]  = -beta;
+                dx[0]  = +hx * value;
 #endif
             }
 
             sn.i = xmax; sn.x = xmax*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = N-1;
@@ -1886,53 +1766,51 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             {
                 e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[e]  = /*beta  **/ b121;
-                bx[e]  = /*beta  **/ b123;
+                ax[e]  = b121;
+                bx[e]  = b123;
                 cx[e]  = 0.0;
-                dx[e]  = /*beta  **/ b124 * p00[j][e];
-                dx[e] += /*beta  **/ b125 * ((p00[j+1][e]-2.0*p00[j][e]+p00[j-1][e])/(hy*hy));
-                dx[e] += /*beta  **/ b126 * ((p00[j+1][e]-p00[j-1][e])/(2.0*hy));
-                dx[e] += /*beta  **/ ht05 * fx;
-                dx[e] += /*gamma **/ b127 * value;
+                dx[e]  = b124 * p00[j][e];
+                dx[e] += b125 * ((p00[j+1][e]-2.0*p00[j][e]+p00[j-1][e])/(hy*hy));
+                dx[e] += b126 * ((p00[j+1][e]-p00[j-1][e])/(2.0*hy));
+                dx[e] += ht05 * fx;
+                dx[e] += b127 * value;
 #else
-                ax[e]  = -/*beta*/1.0;
-                bx[e]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cx[e]  = 0.0;
-                dx[e]  = /*gamma **/ hx * value;
+                ax[e]  = -1.0;
+                bx[e]  = +1.0;
+                cx[e]  = +0.0;
+                dx[e]  = hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[e]  = beta  * b121;
-                bx[e]  = beta  * b123 + alpha * b122;
+                ax[e]  = beta * b121;
+                bx[e]  = beta * b123 + alpha * b122;
                 cx[e]  = 0.0;
-                dx[e]  = beta  * b124 * p00[j][e];
-                dx[e] += beta  * b125 * ((p00[j+1][e]-2.0*p00[j][e]+p00[j-1][e])/(hy*hy));
-                dx[e] += beta  * b126 * ((p00[j+1][e]-p00[j-1][e])/(2.0*hy));
-                dx[e] += beta  * ht05 * fx;
-                dx[e] += gamma * b127 * value;
+                dx[e]  = beta * b124 * p00[j][e];
+                dx[e] += beta * b125 * ((p00[j+1][e]-2.0*p00[j][e]+p00[j-1][e])/(hy*hy));
+                dx[e] += beta * b126 * ((p00[j+1][e]-p00[j-1][e])/(2.0*hy));
+                dx[e] += beta * ht05 * fx;
+                dx[e] += b127 * value;
 #else
                 ax[e]  = -beta;
                 bx[e]  = +beta + alpha * hx;
-                cx[e]  = 0.0;
-                dx[e]  = gamma * hx * value;
+                cx[e]  = +0.0;
+                dx[e]  = +hx * value;
 #endif
             }
 
@@ -1944,12 +1822,11 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
         for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
             sn.j = ymin; sn.y = ymin*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 p05[0][i] = value;
@@ -1957,32 +1834,29 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy*/*(gamma/beta)**/value)/(2.0);
+                p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy*value)/(2.0);
 #else
-                p05[0][i] = p05[1][i] + hy/**(gamma/beta)*/*value;
+                p05[0][i] = p05[1][i] + hy*value;
 #endif
             }
             if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                p05[0][i] = (3.5*p05[1][i] - 2.0*p05[2][i] + 0.5*p05[3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
 #else
-                p05[0][i] = (p05[1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+                p05[0][i] = (beta*p05[1][i] + hy*value)/(beta + alpha*hy);
 #endif
             }
 
             sn.j = ymax; sn.y = ymax*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_X
             value = boundary(sn, tn00, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 p05[M][i] = value;
@@ -1990,22 +1864,20 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy/**(gamma/beta)*/*value)/(2.0 + /*(alpha/beta)**/hy);
+                p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy*value)/(2.0);
 #else
-                p05[M][i] = p05[M-1][i] + hy/**(gamma/beta)*/*value;
+                p05[M][i] = p05[M-1][i] + hy*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy*(gamma/beta)*value)/(2.0 + (alpha/beta)*hy);
+                p05[M][i] = (3.5*p05[M-1][i] - 2.0*p05[M-2][i] + 0.5*p05[M-3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
 #else
-                p05[M][i] = (p05[M-1][i] + hy*(gamma/beta)*value)/(1.0 + hy*(alpha/beta));
+                p05[M][i] = (beta*p05[M-1][i] + hy*value)/(beta + alpha*hy);
 #endif
             }
         }
@@ -2018,7 +1890,7 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
         {
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
@@ -2027,12 +1899,11 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             }
 
             sn.j = ymin; sn.y = ymin*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 s = 1;
@@ -2044,63 +1915,60 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             {
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[s]  = 0.0;
-                by[s]  = /*beta  **/ b211;
-                cy[s]  = /*beta  **/ b213;
-                dy[s]  = /*beta  **/ b214 * p05[s][i];
-                dy[s] += /*beta  **/ b215 * ((p05[s][i+1]-2.0*p05[s][i]+p05[s][i-1])/(hx*hx));
-                dy[s] += /*beta  **/ b216 * ((p05[s][i+1]-p05[s][i-1])/(2.0*hx));
-                dy[s] += /*beta  **/ ht05 * fx;
-                dy[s] += /*gamma **/ b217 * value;
+                ay[0]  = 0.0;
+                by[0]  = b211;
+                cy[0]  = b213;
+                dy[0]  = b214 * p05[0][i];
+                dy[0] += b215 * ((p05[0][i+1]-2.0*p05[0][i]+p05[0][i-1])/(hx*hx));
+                dy[0] += b216 * ((p05[0][i+1]-p05[0][i-1])/(2.0*hx));
+                dy[0] += ht05 * fx;
+                dy[0] += b217 * value;
 #else
-                ay[s]  = 0.0;
-                by[s]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cy[s]  = -/*beta*/1.0;
-                dy[s]  = +/*gamma **/ hx * value;
+                ay[0]  = +0.0;
+                by[0]  = +1.0;
+                cy[0]  = -1.0;
+                dy[0]  = +hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
                 ay[s]  = 0.0;
-                by[s]  = beta  * b211 + alpha * b212;
-                cy[s]  = beta  * b213;
-                dy[s]  = beta  * b214 * p05[s][i];
-                dy[s] += beta  * b215 * ((p05[s][i+1]-2.0*p05[s][i]+p05[s][i-1])/(hx*hx));
-                dy[s] += beta  * b216 * ((p05[s][i+1]-p05[s][i-1])/(2.0*hx));
-                dy[s] += beta  * ht05 * fx;
-                dy[s] += gamma * b217 * value;
+                by[s]  = beta * b211 + alpha * b212;
+                cy[s]  = beta * b213;
+                dy[s]  = beta * b214 * p05[s][i];
+                dy[s] += beta * b215 * ((p05[s][i+1]-2.0*p05[s][i]+p05[s][i-1])/(hx*hx));
+                dy[s] += beta * b216 * ((p05[s][i+1]-p05[s][i-1])/(2.0*hx));
+                dy[s] += beta * ht05 * fx;
+                dy[s] += b217 * value;
 #else
-                ay[s]  = 0.0;
+                ay[s]  = +0.0;
                 by[s]  = +beta + alpha * hx;
                 cy[s]  = -beta;
-                dy[s]  = +gamma * hx * value;
+                dy[s]  = +hx * value;
 #endif
             }
 
             sn.j = ymax; sn.y = ymax*hy;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 e = M-1;
@@ -2112,53 +1980,51 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             {
                 e = M;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[e]  = /*beta  **/ b221;
-                by[e]  = /*beta  **/ b223;
+                ay[e]  = b221;
+                by[e]  = b223;
                 cy[e]  = 0.0;
-                dy[e]  = /*beta  **/ b224 * p05[e][i];
-                dy[e] += /*beta  **/ b225 * ((p05[e][i+1]-2.0*p05[e][i]+p05[e][i-1])/(hx*hx));
-                dy[e] += /*beta  **/ b226 * ((p05[e][i+1]-p05[e][i-1])/(2.0*hx));
-                dy[e] += /*beta  **/ ht05 * fx;
-                dy[e] += /*gamma **/ b227 * value;
+                dy[e]  = b224 * p05[e][i];
+                dy[e] += b225 * ((p05[e][i+1]-2.0*p05[e][i]+p05[e][i-1])/(hx*hx));
+                dy[e] += b226 * ((p05[e][i+1]-p05[e][i-1])/(2.0*hx));
+                dy[e] += ht05 * fx;
+                dy[e] += b227 * value;
 #else
-                ay[e]  = -/*beta*/1.0;
-                by[e]  = +/*beta*/1.0 + /*alpha **/ hx;
-                cy[e]  = 0.0;
-                dy[e]  = +/*gamma **/ hx * value;
+                ay[e]  = -1.0;
+                by[e]  = +1.0;
+                cy[e]  = +0.0;
+                dy[e]  = +hx * value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
                 e = M;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-#ifdef PARABOLIC_IBVP_H_D2V1_FX
+#ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[e]  = beta  * b221;
-                by[e]  = beta  * b223 + alpha * b222;
+                ay[e]  = beta * b221;
+                by[e]  = beta * b223 + alpha * b222;
                 cy[e]  = 0.0;
-                dy[e]  = beta  * b224 * p05[e][i];
-                dy[e] += beta  * b225 * ((p05[e][i+1]-2.0*p05[e][i]+p05[e][i-1])/(hx*hx));
-                dy[e] += beta  * b226 * ((p05[e][i+1]-p05[e][i-1])/(2.0*hx));
-                dy[e] += beta  * ht05 * fx;
-                dy[e] += gamma * b227 * value;
+                dy[e]  = beta * b224 * p05[e][i];
+                dy[e] += beta * b225 * ((p05[e][i+1]-2.0*p05[e][i]+p05[e][i-1])/(hx*hx));
+                dy[e] += beta * b226 * ((p05[e][i+1]-p05[e][i-1])/(2.0*hx));
+                dy[e] += beta * ht05 * fx;
+                dy[e] += b227 * value;
 #else
                 ay[e]  = -beta;
                 by[e]  = +beta + alpha * hx;
                 cy[e]  = 0.0;
-                dy[e]  = +gamma * hx * value;
+                dy[e]  = +hx * value;
 #endif
             }
 
@@ -2170,45 +2036,41 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
         for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
         {
             sn.i = xmin; sn.x = xmin*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                p10[j][0] = /*(gamma/alpha)**/value;
+                p10[j][0] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx*/*(gamma/beta)**/value)/(2.0);
+                p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx*value)/(2.0);
 #else
-                p10[j][0] = p10[j][1] + hx/**(gamma/beta)*/*value;
+                p10[j][0] = p10[j][1] + hx*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx*/*(gamma/beta)**/value)/(2.0 + /*(alpha/beta)**/hx);
+                p10[j][0] = (3.5*p10[j][1] - 2.0*p10[j][2] + 0.5*p10[j][3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
 #else
-                p10[j][0] = (p10[j][1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+                p10[j][0] = (beta*p10[j][1] + hx*value)/(beta + alpha*hx);
 #endif
             }
 
             sn.i = xmax; sn.x = xmax*hx;
-#ifdef PARABOLIC_IBVP_H_D2V1_BR
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
             value = boundary(sn, tn10, condition);
 #else
             value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
 #endif
-
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
                 p10[j][N] = value;
@@ -2216,22 +2078,20 @@ void IHeatEquationFBVP::implicit_calculate_D2V1() const
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx*/*(gamma/beta)**/value)/(2.0);
+                p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx*value)/(2.0);
 #else
-                p10[j][N] = p10[j][N-1] + hx/**(gamma/beta)*/*value;
+                p10[j][N] = p10[j][N-1] + hx*value;
 #endif
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Robin)
             {
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
-                //const double gamma = condition.gamma();
-                const double gamma = 1.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx*(gamma/beta)*value)/(2.0 + (alpha/beta)*hx);
+                p10[j][N] = (3.5*p10[j][N-1] - 2.0*p10[j][N-2] + 0.5*p10[j][N-3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
 #else
-                p10[j][N] = (p10[j][N-1] + hx*(gamma/beta)*value)/(1.0 + hx*(alpha/beta));
+                p10[j][N] = (beta*p10[j][N-1] + hx*value)/(beta + alpha*hx);
 #endif
             }
         }

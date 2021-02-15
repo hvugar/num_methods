@@ -104,6 +104,7 @@ HEADERS += border_global.h \
     #ode/first_order_nonlinear_ode.h \
     ode/first_order_linear_ode.h \
     ode/second_order_linear_ode.h \
+    test_function.h \
     wave_equation_ibvp.h
 
 HEADERS += \
@@ -115,6 +116,7 @@ SOURCES += \
            #ode/first_order_nonlinear_ode.cpp \
            ode/first_order_linear_ode.cpp \
            ode/second_order_linear_ode.cpp \
+           test_function.cpp \
            wave_equation_ibvp.cpp
 
 
