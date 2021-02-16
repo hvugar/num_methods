@@ -28,8 +28,8 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
 double p_fx(const IParabolicFBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &tn, int dt = 0, int dx = 0, int dy = 0);
 
 const double fa = +1.0;   // must be plus for forward
-const double fb = +0.5;   // must be minus or plus for forward -  some problems on high values
-const double fc = -0.5;   // must be minus for forward
+const double fb = +0.0;   // must be minus or plus for forward -  some problems on high values
+const double fc = -0.0;   // must be minus for forward
 
 const double ba = -1.0;   // must be minus for backward
 const double bb = -0.0;   // must be minus or plus for forward -  some problems on high values
@@ -45,9 +45,9 @@ void HeatEquationIBVP::Main(int argc, char *argv[])
 
     HeatEquationIBVP h;
     h.setTimeDimension(Dimension(0.010, 0, 100));
-    h.setSpaceDimensionX(Dimension(0.010, 100, 200));
+    h.setSpaceDimensionX(Dimension(0.10, 10, 20));
 #ifdef HEAT_DIMENSION_2
-    h.setSpaceDimensionY(Dimension(0.010, 200, 300));
+    h.setSpaceDimensionY(Dimension(0.10, 20, 30));
 #if defined(HEAT_DELTA)
     h.deltaGrid.initGrid(h.spaceDimensionX(), h.spaceDimensionY());
     h.deltaGrid.reset();
@@ -225,41 +225,41 @@ void HeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE& tn) c
     C_UNUSED(tn);
 
     IPrinter::printVector(17, 8, u);
-//    unsigned int time_size = timeDimension().size();
+    //    unsigned int time_size = timeDimension().size();
 
-//    if (tn.i % ((time_size-1)/10) == 0) IPrinter::printVector(16, 8, u); return;
+    //    if (tn.i % ((time_size-1)/10) == 0) IPrinter::printVector(16, 8, u); return;
 
     //IPrinter::printVector(u);
-//    if (tn.i==0 || tn.i==1 || tn.i==timeDimension().max()-1 || tn.i==timeDimension().max()) IPrinter::printVector(u);
+    //    if (tn.i==0 || tn.i==1 || tn.i==timeDimension().max()-1 || tn.i==timeDimension().max()) IPrinter::printVector(u);
     return;
 
-//    int min = spaceDimensionX().min();
-//    int max = spaceDimensionX().max();
+    //    int min = spaceDimensionX().min();
+    //    int max = spaceDimensionX().max();
 
-//    if (tn.i==0 || tn.i==1 || tn.i==99 || tn.i==100) IPrinter::printVector(u);
+    //    if (tn.i==0 || tn.i==1 || tn.i==99 || tn.i==100) IPrinter::printVector(u);
 
-//    if (tn.i==1001)
-//    {
-//        double L2Norm = 0.0;
-//        double EuNorm = 0.0;
-//        double L1Norm = 0.0;
-//        TimeNodePDE tn; tn.t = 1.0;
-//        SpaceNodePDE sn;
-//        unsigned int n = 0;
-//        for (int i=min; i<=max; i++, n++)
-//        {
-//            sn.i = static_cast<int>(i);
-//            sn.x = sn.i*0.01;
+    //    if (tn.i==1001)
+    //    {
+    //        double L2Norm = 0.0;
+    //        double EuNorm = 0.0;
+    //        double L1Norm = 0.0;
+    //        TimeNodePDE tn; tn.t = 1.0;
+    //        SpaceNodePDE sn;
+    //        unsigned int n = 0;
+    //        for (int i=min; i<=max; i++, n++)
+    //        {
+    //            sn.i = static_cast<int>(i);
+    //            sn.x = sn.i*0.01;
 
-//            double k = 1.0; if (i==min || i== max) k = 0.5;
-//            L2Norm += 0.01*k*(u[n]-::u_fx(this, sn, tn))*(u[n]-::u_fx(this, sn, tn));
+    //            double k = 1.0; if (i==min || i== max) k = 0.5;
+    //            L2Norm += 0.01*k*(u[n]-::u_fx(this, sn, tn))*(u[n]-::u_fx(this, sn, tn));
 
-//            EuNorm += (u[n]-u_fx(this, sn, tn))*(u[n]-u_fx(this, sn, tn));
+    //            EuNorm += (u[n]-u_fx(this, sn, tn))*(u[n]-u_fx(this, sn, tn));
 
-//            if (L1Norm < fabs(u[n]-::u_fx(this, sn, tn))) L1Norm = fabs(u[n]-::u_fx(this, sn, tn));
-//        }
-//        printf("L2Norm: %.10f EuNorm: %.10f L1Norm: %.10f\n", sqrt(L2Norm), sqrt(EuNorm), L1Norm);
-//    }
+    //            if (L1Norm < fabs(u[n]-::u_fx(this, sn, tn))) L1Norm = fabs(u[n]-::u_fx(this, sn, tn));
+    //        }
+    //        printf("L2Norm: %.10f EuNorm: %.10f L1Norm: %.10f\n", sqrt(L2Norm), sqrt(EuNorm), L1Norm);
+    //    }
 }
 
 void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const
@@ -271,42 +271,42 @@ void HeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) c
     if (tn.i % delimet == 0 || tn.i == 0 || tn.i == 1)
     {
         std::string msg = std::string("time: ") + std::to_string(tn.t) +
-                          std::string(", min: ") + std::to_string(u.min()) +
-                          std::string(", max: ") + std::to_string(u.max());
+                std::string(", min: ") + std::to_string(u.min()) +
+                std::string(", max: ") + std::to_string(u.max());
         IPrinter::printSeperatorLine(msg.data());
         IPrinter::printMatrix(16, 8, u, 10, 10, msg.data());
     }
     return;
 
-//    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
-//    {
-//        IPrinter::printMatrix(u);
-//        IPrinter::printSeperatorLine();
-//        if (tn.i%2==0) IPrinter::printSeperatorLine();
-//    }
-//    return;
+    //    if (tn.i==0 || tn.i==1 || tn.i==2 || tn.i==198 || tn.i==199 || tn.i==200)
+    //    {
+    //        IPrinter::printMatrix(u);
+    //        IPrinter::printSeperatorLine();
+    //        if (tn.i%2==0) IPrinter::printSeperatorLine();
+    //    }
+    //    return;
 
-//    if (tn.i==40000)
-//    {
-//        double norm = 0.0;
-//        double max = 0.0;
-//        TimeNodePDE tn; tn.t = 1.0;
-//        SpaceNodePDE sn;
-//        for (unsigned int j=0; j<=100; j++)
-//        {
-//            for (unsigned int i=0; i<=100; i++)
-//            {
-//                sn.x = i*0.01;
-//                sn.y = j*0.01;
-//                double k1 = 1.0; if (j==0 || j== 100) k1 = 0.5;
-//                double k2 = 1.0; if (i==0 || i== 100) k2 = 0.5;
-//                norm += 0.01*0.01*k1*k2*(u[j][i]-::u_fx(this,sn, tn))*(u[j][i]-::u_fx(this,sn, tn));
+    //    if (tn.i==40000)
+    //    {
+    //        double norm = 0.0;
+    //        double max = 0.0;
+    //        TimeNodePDE tn; tn.t = 1.0;
+    //        SpaceNodePDE sn;
+    //        for (unsigned int j=0; j<=100; j++)
+    //        {
+    //            for (unsigned int i=0; i<=100; i++)
+    //            {
+    //                sn.x = i*0.01;
+    //                sn.y = j*0.01;
+    //                double k1 = 1.0; if (j==0 || j== 100) k1 = 0.5;
+    //                double k2 = 1.0; if (i==0 || i== 100) k2 = 0.5;
+    //                norm += 0.01*0.01*k1*k2*(u[j][i]-::u_fx(this,sn, tn))*(u[j][i]-::u_fx(this,sn, tn));
 
-//                if (max < fabs(u[j][i]-::u_fx(this, sn, tn))) max = fabs(u[j][i]-::u_fx(this, sn, tn));
-//            }
-//        }
-//        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
-//    }
+    //                if (max < fabs(u[j][i]-::u_fx(this, sn, tn))) max = fabs(u[j][i]-::u_fx(this, sn, tn));
+    //            }
+    //        }
+    //        printf("norm: %.10f max: %.10f\n", sqrt(norm), max);
+    //    }
 }
 
 //---------------------------------------------------------------------------------------------//
@@ -326,21 +326,21 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     if (sn.i == spaceDimensionX().min())
     {
 #if defined(HEAT_LEFT_DIRICHLET)
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return ::p_fx(this, sn, tn);
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return ::p_fx(this, sn, tn);
 #endif
 #if defined(HEAT_LEFT_ROBIN)
-    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
-    return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
+        return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
 #endif
     }
     if (sn.i == spaceDimensionX().max())
     {
 #if defined(HEAT_RGHT_DIRICHLET)
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return ::p_fx(this, sn, tn);
+        condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return ::p_fx(this, sn, tn);
 #endif
 #if defined(HEAT_RGHT_ROBIN)
-    condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-    return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
 #endif
     }
 
@@ -437,19 +437,24 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         const int ymin = p->spaceDimensionY().min();
         const int ymax = p->spaceDimensionY().max();
 
-        if (tn.i%2==1)
-        {
-            if (sn.i == xmin && sn.j != ymin && sn.j != ymax) res += -1.0;
-            if (sn.i == xmax && sn.j != ymin && sn.j != ymax) res += +1.0;
-        }
-        else
-        {
-            if (sn.i == xmin) res += -1.0;
-            if (sn.i == xmax) res += +1.0;
-        }
+        //        if (tn.i%2==1)
+        //        {
+        //            if (sn.i == xmin && sn.j != ymin && sn.j != ymax) res += -1.0;
+        //            if (sn.i == xmax && sn.j != ymin && sn.j != ymax) res += +1.0;
+        //        }
+        //        else
+        //        {
+        //            if (sn.i == xmin) res += -1.0;
+        //            if (sn.i == xmax) res += +1.0;
+        //        }
+
+        if (sn.i == xmin && sn.j != ymin && sn.j != ymax) res += -1.0;
+        if (sn.i == xmax && sn.j != ymin && sn.j != ymax) res += +1.0;
+
+        //if (sn.i == xmin && (sn.j == ymin || sn.j == ymax)) return -1.0;
+        //if (sn.i == xmax && (sn.j == ymin || sn.j == ymax)) return +1.0;
     }
 #endif
-
 #if defined(HEAT_X2)
     if (dx == 0) res += sn.x*sn.x;
     if (dx == 1) res += 2.0*sn.x;
@@ -509,16 +514,22 @@ double u_fx(const IParabolicIBVP *p, const SpaceNodePDE &sn, const TimeNodePDE &
         const int ymin = p->spaceDimensionY().min();
         const int ymax = p->spaceDimensionY().max();
 
-        if (tn.i%2==0)
-        {
-            if (sn.j == ymin && sn.i != xmin && sn.i != xmax) res += -1.0;
-            if (sn.j == ymax && sn.i != xmin && sn.i != xmax) res += +1.0;
-        }
-        else
-        {
-            if (sn.j == ymin) res += -1.0;
-            if (sn.j == ymax) res += +1.0;
-        }
+        //        if (tn.i%2==0)
+        //        {
+        //            if (sn.j == ymin && sn.i != xmin && sn.i != xmax) res += -1.0;
+        //            if (sn.j == ymax && sn.i != xmin && sn.i != xmax) res += +1.0;
+        //        }
+        //        else
+        //        {
+        //            if (sn.j == ymin) res += -1.0;
+        //            if (sn.j == ymax) res += +1.0;
+        //        }
+
+        if (sn.j == ymin && sn.i != xmin && sn.i != xmax) res += -1.0;
+        if (sn.j == ymax && sn.i != xmin && sn.i != xmax) res += +1.0;
+
+        if (sn.j == ymin && (sn.i == xmin || sn.i == xmax)) return -1.0;
+        if (sn.j == ymax && (sn.i == xmin || sn.i == xmax)) return +1.0;
     }
 #endif
 #if defined(HEAT_Y2)

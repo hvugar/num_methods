@@ -886,7 +886,8 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double beta  = condition.beta();
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
+                //u05[0][i] = (3.5*u05[1][i] - 2.0*u05[2][i] + 0.5*u05[3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
+                u05[0][i] = (4.0*beta*u05[1][i] - beta*u05[2][i] + 2.0*hy*value)/(2.0*alpha*hy+3.0*beta);
 #else
                 u05[0][i] = (beta*u05[1][i] + hy*value)/(beta + alpha*hy);
 #endif
@@ -916,12 +917,15 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double beta  = condition.beta();
 
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
+                //u05[M][i] = (3.5*u05[M-1][i] - 2.0*u05[M-2][i] + 0.5*u05[M-3][i] + hy*(1.0/beta)*value)/(2.0 + (alpha/beta)*hy);
+                u05[M][i] = (4.0*beta*u05[M-1][i] - beta*u05[M-2][i] + 2.0*hy*value)/(2.0*alpha*hy+3.0*beta);
 #else
                 u05[M][i] = (beta*u05[M-1][i] + hy*value)/(beta + alpha*hy);
 #endif
             }
         }
+
+        layerInfo(DoubleMatrix(u05, M+1, N+1), tn00);
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -1099,8 +1103,11 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
 
+                //u10[j][0] = 0.0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //u10[j][0] = (3.5*u10[j][1] - 2.0*u10[j][2] + 0.5*u10[j][3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
+                u10[j][0] = (4.0*beta*u10[j][1] - beta*u10[j][2] + 2.0*hx*value)/(2.0*alpha*hx+3.0*beta);
+                //u10[j][0] = (beta*u10[j][1] + hx*value)/(beta + alpha*hx);
 #else
                 u10[j][0] = (beta*u10[j][1] + hx*value)/(beta + alpha*hx);
 #endif
@@ -1129,8 +1136,11 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
 
+                //u10[j][N] = 0.0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
-                u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //u10[j][N] = (3.5*u10[j][N-1] - 2.0*u10[j][N-2] + 0.5*u10[j][N-3] + hx*(1.0/beta)*value)/(2.0 + (alpha/beta)*hx);
+                //u10[j][N] = (4.0*beta*u10[j][N-1] - beta*u10[j][N-2] + 2.0*hx*value)/(2.0*alpha*hx+3.0*beta);
+                //u10[j][N] = (beta*u10[j][N-1] + hx*value)/(beta + alpha*hx);
 #else
                 u10[j][N] = (beta*u10[j][N-1] + hx*value)/(beta + alpha*hx);
 #endif
@@ -1141,6 +1151,7 @@ void IHeatEquationIBVP::implicit_calculate_D2V1() const
 
         /**************************************************** y direction apprx ***************************************************/
         double **_tmp = u00; u00 = u10; u10 = _tmp;
+        exit(-1);
     }
 
     for (size_t i=0; i<=M; i++) { free(u00[i]); free(u05[i]); free(u10[i]); }
