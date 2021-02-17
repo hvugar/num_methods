@@ -147,8 +147,6 @@ public:
     virtual void explicit_calculate_D2V1() const;// TO-DO
     virtual void implicit_calculate_D2V1() const;// TO-DO
 
-    void implicit_calculate_D2V2() const;// TO-DO
-
     void setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints);
     const std::vector<LoadedSpacePoint> loadedPoints() const;
 

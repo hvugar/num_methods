@@ -785,8 +785,8 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
     lheIBVP.setThermalConvection(0.0);
 
     std::vector<LoadedSpacePoint> loadedPoints;
-    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, 0.1));
-    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, 0.1));
+    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, 1.0));
+    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, 1.0));
     lheIBVP.setLoadedPoints(loadedPoints);
 
     lheIBVP.implicit_calculate_D2V1();
@@ -815,8 +815,8 @@ double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) 
     //        - 0.1*(0.8*0.8 + 0.8*0.8 + tn.t*tn.t);
 
     return 1.0 - 2.0*b - c*(sn.x+sn.y+tn.t)
-            - 0.1*(0.2 + 0.2 + tn.t)
-            - 0.1*(0.8 + 0.8 + tn.t);
+            - 1.0*(0.2 + 0.2 + tn.t)
+            - 1.0*(0.8 + 0.8 + tn.t);
 }
 
 void LoadedHeatEquationIBVP::layerInfo(const DoubleVector&, const TimeNodePDE&) const
