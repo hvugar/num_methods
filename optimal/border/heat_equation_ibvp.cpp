@@ -1,5 +1,7 @@
 #include "heat_equation_ibvp.h"
 
+#include "test_function.h"
+
 #define HEAT_DIMENSION_2
 //#define HEAT_HOMOGENIOUS
 #define HEAT_QUADRATIC
@@ -109,7 +111,9 @@ HeatEquationIBVP::HeatEquationIBVP() : IHeatEquationIBVP() {}
 double HeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 {
 #if defined(HEAT_QUADRATIC)
-    TimeNodePDE tn; tn.t = 0.0; return ::u_fx(this, sn, tn);
+    TimeNodePDE tn; tn.t = 0.0;
+    //return ::u_fx(this, sn, tn);
+    return TestFunction::u(tn, sn, TestFunction::FunctionValue);
 #endif
 #if defined(HEAT_DELTA)
     return 0.0;
@@ -163,7 +167,11 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
 
 #endif
 #if defined(HEAT_NORMAL_ROBIN)
-    condition = BoundaryConditionPDE::Robin(+1.0, +2.0); return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 3, 3));
+    const double alpha = 1.0, beta = 2.0;
+    condition = BoundaryConditionPDE::Robin(alpha, beta);
+    //return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 3, 3));
+    return alpha * TestFunction::u(tn, sn, TestFunction::FunctionValue)
+          + beta * TestFunction::u(tn, sn, TestFunction::SpaceNorm, spaceDimensionX(), spaceDimensionY());
 #endif
 #endif
 
@@ -201,10 +209,12 @@ double HeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
     const double b1 = thermalConductivity();
     const double b2 = thermalConductivity();
     const double c  = thermalConvection();
-    return ::u_fx(this, sn,tn,+1,-1,-1)
-            - ::u_fx(this, sn,tn,-1,+2,-1)*a1 - ::u_fx(this, sn,tn,-1,-1,+2)*a2
-            - ::u_fx(this, sn,tn,-1,+1,-1)*b1 - ::u_fx(this, sn,tn,-1,-1,+1)*b2
-            - ::u_fx(this, sn,tn,+0,+0,+0)*c;
+    return TestFunction::u(tn, sn, TestFunction::TimeFirstDerivative)
+            - TestFunction::u(tn, sn, TestFunction::SpaceSecondDerivativeX) * a1
+            - TestFunction::u(tn, sn, TestFunction::SpaceSecondDerivativeY) * a2
+            - TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeX) * b1
+            - TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeY) * b2
+            - TestFunction::u(tn, sn, TestFunction::FunctionValue) * c;
 #endif
 #if defined(HEAT_DELTA)
     double q = 0.1;

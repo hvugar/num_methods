@@ -11,13 +11,14 @@ public:
         FunctionValue = 0,
         TimeFirstDerivative,
         TimeSecondDerivative,
-        SpaceFirstDerivativeX1,
-        SpaceSecondDerivativeX1,
-        SpaceFirstDerivativeX2,
-        SpaceSecondDerivativeX2,
+        SpaceFirstDerivativeX,
+        SpaceSecondDerivativeX,
+        SpaceFirstDerivativeY,
+        SpaceSecondDerivativeY,
+        SpaceNorm
     };
 
-    static double u(const TimeNodePDE &tn, const SpaceNodePDE &sn, Derivative derivative);
+    static double u(const TimeNodePDE &tn, const SpaceNodePDE &sn, Derivative derivative, const Dimension &dimX = 0, const Dimension &dimY = 0);
 };
 
 #endif // TESTFUNCTION_H
