@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
     //FirstOrderNonLinearODErEx1::Main(argc, argv);
     //SecondOrderLinearODEEx1::Main(argc, argv);
 
-    //HeatEquationIBVP::Main(argc, argv);
+    HeatEquationIBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
     //HeatEquationFBVP::Main(argc, argv);
     //IPrinter::printSeperatorLine();
-    LoadedHeatEquationIBVP::Main(argc, argv);
+    //LoadedHeatEquationIBVP::Main(argc, argv);
     //LoadedHeatEquationFBVP::Main(argc, argv);
 
     //WaveEquationIBVP::Main(argc, argv);
