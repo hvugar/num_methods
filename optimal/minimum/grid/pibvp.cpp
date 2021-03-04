@@ -258,7 +258,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         size_t s=0, e=N;
 
         sn.i = xmin; sn.x = xmin*hx;
-#ifdef PARABOLIC_IBVP_H_D1V1_BR
+#ifdef PARABOLIC_IBVP_H_D1V1_BR_LEFT
         value = boundary(sn, tn1, condition);
 #else
         value = w1*boundary(sn, tn1, condition) + w2*boundary(sn, tn0, condition);
@@ -315,7 +315,7 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
         }
 
         sn.i = xmax; sn.x = xmax*hx;
-#ifdef PARABOLIC_IBVP_H_D1V1_BR
+#ifdef PARABOLIC_IBVP_H_D1V1_BR_RIGHT
         value = boundary(sn, tn1, condition);
 #else
         value = w1*boundary(sn, tn1, condition) + w2*boundary(sn, tn0, condition);
