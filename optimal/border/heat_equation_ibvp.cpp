@@ -8,9 +8,11 @@
 //#define HEAT_DELTA
 
 #if defined(HEAT_DIMENSION_1)
-#define HEAT_LEFT_DIRICHLET
+//#define HEAT_LEFT_DIRICHLET
 #define HEAT_RGHT_DIRICHLET
-//#define HEAT_LEFT_ROBIN
+//#define HEAT_LEFT_NEUMAN
+//#define HEAT_RGHT_NEUMAN
+#define HEAT_LEFT_ROBIN
 //#define HEAT_RGHT_ROBIN
 #endif
 
@@ -132,8 +134,9 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return TestFunction::u(tn, sn, TestFunction::FunctionValue);
 #endif
 #if defined(HEAT_LEFT_ROBIN)
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
-        return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+        condition = BoundaryConditionPDE::Robin(+1.0, -1.0);
+        return condition.alpha()*TestFunction::u(tn, sn, TestFunction::FunctionValue)
+                +condition.beta()*TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeX);
 #endif
     }
     if (sn.i == spaceDimensionX().max())
@@ -142,8 +145,9 @@ double HeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return TestFunction::u(tn, sn, TestFunction::FunctionValue);
 #endif
 #if defined(HEAT_RGHT_ROBIN)
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-        return (condition.alpha()*::u_fx(this, sn, tn)+condition.beta()*::u_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+        condition = BoundaryConditionPDE::Robin(+1.0, +1.0);
+        return condition.alpha()*TestFunction::u(tn, sn, TestFunction::FunctionValue)
+                +condition.beta()*TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeX);
 #endif
     }
 #endif
@@ -348,8 +352,8 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return ::p_fx(this, sn, tn);
 #endif
 #if defined(HEAT_LEFT_ROBIN)
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
-        return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, -2.0, +1.0);
+        //return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
 #endif
     }
     if (sn.i == spaceDimensionX().max())
@@ -358,8 +362,8 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
         condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet); return ::p_fx(this, sn, tn);
 #endif
 #if defined(HEAT_RGHT_ROBIN)
-        condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
-        return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
+        //condition = BoundaryConditionPDE(BoundaryCondition::Robin, +4.0, +2.0, +1.0);
+        //return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 1, -1))/condition.gamma();
 #endif
     }
 
