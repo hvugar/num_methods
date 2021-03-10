@@ -72,12 +72,12 @@ void GaussianElimination2(const DoubleMatrix &A, const DoubleVector &b, DoubleVe
 
     // Поставленная задача будет решаться методом Гаусса с выбором главного элемента по столбцу
 
-//    IPrinter::printSeperatorLine(nullptr, '=');
-//    IPrinter::print(A1, A1.rows(), A1.cols());
-//    IPrinter::printSeperatorLine(nullptr, '=');
-//
+    //    IPrinter::printSeperatorLine(nullptr, '=');
+    //    IPrinter::print(A1, A1.rows(), A1.cols());
+    //    IPrinter::printSeperatorLine(nullptr, '=');
+    //
 
-//    IPrinter::print(b1, b1.length());
+    //    IPrinter::print(b1, b1.length());
 
     for (unsigned int c=0; c<size; c++)
     {
@@ -110,10 +110,10 @@ void GaussianElimination2(const DoubleMatrix &A, const DoubleVector &b, DoubleVe
             }
             A1[r][c] = 0.0;
         }
-//        IPrinter::printSeperatorLine(nullptr, '=');
-//        IPrinter::print(A1, A1.rows(), A1.cols());
-//        IPrinter::printSeperatorLine();
-//        IPrinter::print(b1, b1.length());
+        //        IPrinter::printSeperatorLine(nullptr, '=');
+        //        IPrinter::print(A1, A1.rows(), A1.cols());
+        //        IPrinter::printSeperatorLine();
+        //        IPrinter::print(b1, b1.length());
     }
 
     for (unsigned int i=0, r=size-1; i<size; i++, r--)
@@ -121,12 +121,70 @@ void GaussianElimination2(const DoubleMatrix &A, const DoubleVector &b, DoubleVe
         x[r] = b1[r];
         for (unsigned int j=0, c=size-1; j<i; j++, c--) x[r] -= A1[r][c]*x[c];
     }
+}
 
+void GaussianElimination3(const double** A, const double* b, double* x, size_t N)
+{
+    double** A1 = new double*[N];
+    for (size_t i=0; i<N; i++)
+    {
+        A1[i] = new double[N];
+        memcpy(A1[i], A[i], sizeof (double)*N);
+    }
+    double* b1 = new double[N];
+    memcpy(b1, b, sizeof (double)*N);
+
+    // Поставленная задача будет решаться методом Гаусса с выбором главного элемента по столбцу
+    for (size_t c=0; c<N; c++)
+    {
+        size_t i = c;
+        double max = fabs(A1[i][c]);
+        for (size_t r=c; r<N; r++)
+        {
+            if (fabs(A1[r][c]) > max) { max = fabs(A1[r][c]); i = r; }
+        }
+        if (i != c)
+        {
+            double *tmp = A1[i]; A1[i] = A1[c]; A1[c] = tmp;
+            double  sw  = b1[i]; b1[i] = b1[c]; b1[c] = sw;
+        }
+
+        b1[c] /= A1[c][c];
+        for (size_t s=c+1; s<N; s++)
+        {
+            A1[c][s] /= A1[c][c];
+        }
+        A1[c][c] = 1.0;
+
+        for (size_t r=c+1; r<N; r++)
+        {
+            b1[r] -= A1[r][c]*b1[c];
+            for (size_t s=c+1; s<N; s++)
+            {
+                A1[r][s] -= A1[r][c]*A1[c][s];
+            }
+            A1[r][c] = 0.0;
+        }
+    }
+
+    for (size_t i=0, r=N-1; i<N; i++, r--)
+    {
+        x[r] = b1[r];
+        for (size_t j=0, c=N-1; j<i; j++, c--) x[r] -= A1[r][c]*x[c];
+    }
+
+    for (size_t i=0; i<N; i++)
+    {
+        delete [] A1[i];
+    }
+    delete [] A1;
+    delete [] b1;
 }
 
 void LinearEquation::GaussianElimination(const DoubleMatrix& m, const DoubleVector& b, DoubleVector& x)
 {
-    GaussianElimination2(m,b,x);
+    //GaussianElimination2(m,b,x);
+    GaussianElimination3(m.data(), b.data(), x.data(), x.length());
 }
 
 void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, const double *b, const double *c, const double *d, unsigned int N)
@@ -222,7 +280,7 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
     M.clear();
     A.clear();
     u.clear();
-//    for (unsigned int sc=0; sc<selectedColsSize; sc++) free(w[sc]);
+    //    for (unsigned int sc=0; sc<selectedColsSize; sc++) free(w[sc]);
     for (unsigned int sc=0; sc<selectedColsSize; sc++) delete [] w[sc];
     delete [] w;
     delete [] v;

@@ -38,11 +38,15 @@
 
 #include <chrono>
 #include <thread>
+#include "../border/test_function.h"
 
 int main(int argc, char *argv[])
 {
     //srand(static_cast<unsigned int>(time(nullptr)));
     QGuiApplication app(argc, argv);
+
+    test1();
+    return 0;
 
     //ConjugateGradinetTest::Main(argc, argv);
 

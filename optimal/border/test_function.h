@@ -21,4 +21,6 @@ public:
     static double u(const TimeNodePDE &tn, const SpaceNodePDE &sn, Derivative derivative, const Dimension &dimX = 0, const Dimension &dimY = 0);
 };
 
+double BORDERSHARED_EXPORT test1();
+
 #endif // TESTFUNCTION_H
