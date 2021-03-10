@@ -266,10 +266,16 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-            s = 1;
-            u1[0]  = value;
-            dx[1] -= k11 * u1[0];
-            ax[1]  = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+//            s = 1;
+//            u1[0]  = value;
+//            dx[1] -= k11 * u1[0];
+//            ax[1]  = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+
+            s = 0;
+            ax[0] = 0.0;
+            bx[0] = 1.0;
+            cx[0] = 0.0;
+            dx[0] = value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
@@ -286,6 +292,11 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             dx[s]  = b14*u0[s] + b16*u0[s+1];
             dx[s] += b19*value;
             dx[s] += ht*fx;
+#else
+            ax[s]  = 0.0;
+            bx[s]  = -1.0;
+            cx[s]  = +1.0;
+            dx[s]  = ht*value;
 #endif
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)
@@ -323,10 +334,16 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-            e = N-1;
-            u1[N] = value;
-            dx[N-1] -= k13 * u1[N];
-            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+//            e = N-1;
+//            u1[N] = value;
+//            dx[N-1] -= k13 * u1[N];
+//            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+
+            e = N;
+            ax[N] = 0.0;
+            bx[N] = 1.0;
+            cx[N] = 0.0;
+            dx[N] = value;
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
         {
@@ -343,6 +360,11 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
             dx[e]  = b24 * u0[e-1] + b26 * u0[e];
             dx[e] += b29 * value;
             dx[e] += ht*fx;
+#else
+            ax[e]  = -1.0;
+            bx[e]  = +1.0;
+            cx[e]  = 0.0;
+            dx[e]  = ht*value;
 #endif
         }
         else if (condition.boundaryCondition() == BoundaryCondition::Robin)

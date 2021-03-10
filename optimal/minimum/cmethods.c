@@ -320,8 +320,8 @@ void tomasAlgorithmLeft2Right(const double *a, const double *b, const double *c,
     if (fabs(b[0]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6d b0=%20.8f\n", 0, fabs(b[0])); assert(!(fabs(b[0]) <= MY_EPSILON)); }
     if (fabs(b[M]) <= MY_EPSILON) { fprintf(stderr, "ERROR: %6zu bN=%20.8f\n", M, fabs(b[M])); assert(!(fabs(b[M]) <= MY_EPSILON)); }
 
-    if (fabs(c[0]) < MY_EPSILON) { fprintf(stderr, "ERROR: %6d c0=%20.8f<0.0\n", 0, fabs(c[0])); assert(!(fabs(c[0]) < MY_EPSILON)); }
-    if (fabs(a[M]) < MY_EPSILON) { fprintf(stderr, "ERROR: %6zu aN=%20.8f<0.0\n", M, fabs(a[M])); assert(!(fabs(a[M]) < MY_EPSILON)); }
+    //if (fabs(c[0]) < MY_EPSILON) { fprintf(stderr, "ERROR: %6d c0=%20.8f<0.0\n", 0, fabs(c[0])); assert(!(fabs(c[0]) < MY_EPSILON)); }
+    //if (fabs(a[M]) < MY_EPSILON) { fprintf(stderr, "ERROR: %6zu aN=%20.8f<0.0\n", M, fabs(a[M])); assert(!(fabs(a[M]) < MY_EPSILON)); }
 
     if (fabs(b[0]) < fabs(c[0])) { fprintf(stderr, "ERROR: %6d %20.8f %20.8f\n", 0, fabs(b[0]), fabs(c[0])); assert(!(fabs(b[0]) < fabs(c[0]))); }
     if (fabs(b[M]) < fabs(a[M])) { fprintf(stderr, "ERROR: %6zu %20.8f %20.8f\n", M, fabs(b[M]), fabs(a[M])); assert(!(fabs(b[M]) < fabs(a[M]))); }
