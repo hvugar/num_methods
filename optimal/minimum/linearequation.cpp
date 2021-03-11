@@ -183,8 +183,8 @@ void GaussianElimination3(const double** A, const double* b, double* x, size_t N
 
 void LinearEquation::GaussianElimination(const DoubleMatrix& m, const DoubleVector& b, DoubleVector& x)
 {
-    //GaussianElimination2(m,b,x);
-    GaussianElimination3(m.data(), b.data(), x.data(), x.length());
+    GaussianElimination2(m,b,x);
+    //GaussianElimination3(m.data(), b.data(), x.data(), x.length());
 }
 
 void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, const double *b, const double *c, const double *d, unsigned int N)

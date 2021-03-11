@@ -150,10 +150,14 @@ public:
     virtual void implicit_calculate_D2V1() const;// TO-DO
 
     void setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints);
+    void setLoadedPoints0(const std::vector<LoadedSpacePoint> &loadedPoints);
+    void setLoadedPoints1(const std::vector<LoadedSpacePoint> &loadedPoints);
     const std::vector<LoadedSpacePoint> loadedPoints() const;
 
 private:
     std::vector<LoadedSpacePoint> _loadedPoints;
+    std::vector<LoadedSpacePoint> _loadedPoints0;
+    std::vector<LoadedSpacePoint> _loadedPoints1;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------//

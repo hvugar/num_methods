@@ -266,10 +266,10 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-//            s = 1;
-//            u1[0]  = value;
-//            dx[1] -= k11 * u1[0];
-//            ax[1]  = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+            //            s = 1;
+            //            u1[0]  = value;
+            //            dx[1] -= k11 * u1[0];
+            //            ax[1]  = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
 
             s = 0;
             ax[0] = 0.0;
@@ -334,10 +334,10 @@ void IHeatEquationIBVP::implicit_calculate_D1V1() const
 
         if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
         {
-//            e = N-1;
-//            u1[N] = value;
-//            dx[N-1] -= k13 * u1[N];
-//            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+            //            e = N-1;
+            //            u1[N] = value;
+            //            dx[N-1] -= k13 * u1[N];
+            //            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
 
             e = N;
             ax[N] = 0.0;
@@ -2194,7 +2194,323 @@ ILoadedHeatEquationIBVP& ILoadedHeatEquationIBVP::operator=(const ILoadedHeatEqu
 
 void ILoadedHeatEquationIBVP::explicit_calculate_D1V1() const {}
 
-void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const {}
+void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
+{
+    const size_t N = static_cast<size_t>(spaceDimensionX().size()) - 1;
+    const size_t L = static_cast<size_t>(timeDimension().size()) - 1;
+
+    const int xmin = spaceDimensionX().min();
+    const int xmax = spaceDimensionX().max();
+    //const int tmin = timeDimension().min();
+    //const int tmax = timeDimension().max();
+
+    const double hx = spaceDimensionX().step();
+    const double ht = timeDimension().step();
+
+    const double a = thermalDiffusivity();
+    const double b = thermalConductivity();
+    const double c = thermalConvection();
+    const double w1 = weight();
+    const double w2 = 1.0 - w1;
+
+    // equation parameters
+    const double k11 = -((a*ht)/(hx*hx))*w1 + ((b*ht)/(2.0*hx))*w1; // i-1
+    const double k12 = +1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1;    // i
+    const double k13 = -((a*ht)/(hx*hx))*w1 - ((b*ht)/(2.0*hx))*w1; // i+1
+    const double k21 = +((a*ht)/(hx*hx))*w2 - ((b*ht)/(2.0*hx))*w2; // i-1
+    const double k22 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;    // i
+    const double k23 = +((a*ht)/(hx*hx))*w2 + ((b*ht)/(2.0*hx))*w2; // i+1
+
+    // left border condition parameters
+    const double b11 = +1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1;
+    const double b12 = -((2.0*a*ht)/hx)*w1 + b*ht*w1;
+    const double b13 = -((2.0*a*ht)/(hx*hx))*w1;
+    const double b14 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
+    const double b15 = +((2.0*a*ht)/hx)*w2 - b*ht*w2;
+    const double b16 = +((2.0*a*ht)/(hx*hx))*w2;
+    const double b19 = -((2.0*a*ht)/hx) + b*ht;
+    //const double b17 = -((2.0*a*ht)/hx)*w1 + b*ht*w1;
+    //const double b18 = -((2.0*a*ht)/hx)*w2 + b*ht*w2;
+
+    // right border condition parameters
+    const double b21 = -((2.0*a*ht)/(hx*hx))*w1;
+    const double b22 = +((2.0*a*ht)/hx)*w1 + b*ht*w1;
+    const double b23 = +1.0 + ((2.0*a*ht)/(hx*hx))*w1 - c*ht*w1;
+    const double b24 = +((2.0*a*ht)/(hx*hx))*w2;
+    const double b25 = -((2.0*a*ht)/hx)*w2 - b*ht*w2;
+    const double b26 = +1.0 - ((2.0*a*ht)/(hx*hx))*w2 + c*ht*w2;
+    const double b29 = +((2.0*a*ht)/hx) + b*ht;
+    //const double b27 = +((2.0*a*ht)/hx)*w1 + b*ht*w1;
+    //const double b28 = +((2.0*a*ht)/hx)*w2 + b*ht*w2;
+
+    // common parameters
+    //const double ht_w1 = +ht*w1;
+    //const double ht_w2 = +ht*w2;
+
+    double *ax = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *bx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *cx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+
+    /////////////// TO-DO
+
+    const size_t lps = loadedPoints().size();
+    size_t* minX = new size_t[lps];
+    size_t* maxX = new size_t[lps];
+
+    std::vector<size_t> loaded_indecies;
+    const size_t k1 = 0;
+    for (size_t i=0; i<lps; i++)
+    {
+        const SpacePoint &p = _loadedPoints[i];
+        const size_t rx = static_cast<size_t>(round(p.x/hx));
+        minX[i] = rx - k1;
+        maxX[i] = rx + k1;
+        for (size_t n=minX[i]; n<=maxX[i]; n++)
+        {
+            if ( std::find(loaded_indecies.begin(), loaded_indecies.end(), n) == loaded_indecies.end() )
+            {
+                loaded_indecies.push_back(n);
+            }
+        }
+    }
+    sort(loaded_indecies.begin(), loaded_indecies.end());
+
+    double **wx = static_cast<double**>(malloc(sizeof(double*)*(N+1)));
+    for (size_t i=0; i<=N; i++)
+    {
+        wx[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+        for (size_t j=0; j<=N; j++) wx[i][j] = 0.0;
+    }
+
+    //size_t row_size = loaded_indecies.size();
+
+    const double sigma = hx;
+    double loadedPart = 0.0;
+    for (size_t i=0; i<lps; i++)
+    {
+        const LoadedSpacePoint &lp = _loadedPoints[i];
+
+        SpacePoint p;
+        double uv = 0.0;
+        for (size_t n=minX[i]; n<=maxX[i]; n++)
+        {
+            p.x = n*hx;
+            double w = DeltaFunction::gaussian(p, lp, sigma);
+            uv += w;
+        }
+        uv *= hx;
+        loadedPart += lp.d * uv;
+    }
+
+    /////////////// TO-DO
+
+    for (size_t n=0; n<=N; n++)
+    {
+        ax[n] = k11;
+        bx[n] = k12;
+        cx[n] = k13;
+    }
+    ax[0] = 0.0; cx[N] = 0.0;
+
+    double *u0 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+    double *u1 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    SpaceNodePDE sn;
+    unsigned int i = 0;
+    unsigned int k = static_cast<unsigned int>(timeDimension().min());
+    for (int n=xmin; n<=xmax; n++, i++)
+    {
+        sn.i = n; sn.x = n*hx;
+        u0[i] = initial(sn, InitialCondition::InitialValue);
+    }
+    TimeNodePDE tn; tn.i = k; tn.t = tn.i*ht; k++;
+    layerInfo(DoubleVector(u0, N+1), tn);
+
+    /***********************************************************************************************/
+    /***********************************************************************************************/
+
+    BoundaryConditionPDE condition; double value;
+
+    for (size_t ln=1; ln<=L; ln++, k++)
+    {
+        TimeNodePDE tn0; tn0.i = static_cast<unsigned int>(k-1); tn0.t = tn0.i*ht;
+        TimeNodePDE tn1; tn1.i = static_cast<unsigned int>(k  ); tn1.t = tn1.i*ht;
+
+        size_t i = 1;
+        for (int n=xmin+1; n<=xmax-1; n++, i++)
+        {
+            sn.i = n; sn.x = n*hx;
+
+#ifdef PARABOLIC_IBVP_H_D1V1_FX
+            double fx = f(sn, tn1);
+#else
+            double fx = w1*f(sn, tn1) + w2*f(sn, tn0);
+#endif
+            dx[i] = k21*u0[i-1] + k22*u0[i] + k23*u0[i+1] + ht*fx;
+        }
+
+        size_t s=0, e=N;
+
+        sn.i = xmin; sn.x = xmin*hx;
+#ifdef PARABOLIC_IBVP_H_D1V1_BR_LEFT
+        value = boundary(sn, tn1, condition);
+#else
+        value = w1*boundary(sn, tn1, condition) + w2*boundary(sn, tn0, condition);
+#endif
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            //            s = 1;
+            //            u1[0]  = value;
+            //            dx[1] -= k11 * u1[0];
+            //            ax[1]  = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+
+            s = 0;
+            ax[0] = 0.0;
+            bx[0] = 1.0;
+            cx[0] = 0.0;
+            dx[0] = value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            s = 0;
+#ifdef PARABOLIC_IBVP_H_D1V1_BORDER_O2
+#ifdef PARABOLIC_IBVP_H_D1V1_FX
+            double fx = f(sn, tn1);
+#else
+            double fx = w1*f(sn, tn1) + w2*f(sn, tn0);
+#endif
+            ax[s]  = 0.0;
+            bx[s]  = b11;
+            cx[s]  = b13;
+            dx[s]  = b14*u0[s] + b16*u0[s+1];
+            dx[s] += b19*value;
+            dx[s] += ht*fx;
+#else
+            ax[s]  = 0.0;
+            bx[s]  = -1.0;
+            cx[s]  = +1.0;
+            dx[s]  = ht*value;
+#endif
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            const double alpha = condition.alpha();
+            const double beta  = condition.beta();
+
+            s = 0;
+#ifdef PARABOLIC_IBVP_H_D1V1_BORDER_O2
+#ifdef PARABOLIC_IBVP_H_D1V1_FX
+            double fx = f(sn, tn1);
+#else
+            double fx = w1*f(sn, tn1) + w2*f(sn, tn0);
+#endif
+            ax[s]  = 0.0;
+            bx[s]  = beta*b11 + alpha*b12;
+            cx[s]  = beta*b13;
+            dx[s]  = beta*b14*u0[s] + alpha*b15*u0[s] + beta*b16*u0[s+1];
+            dx[s] += b19*value;
+            dx[s] += beta*ht*fx;
+#else
+            ax[s]  = 0.0;
+            bx[s]  = alpha*ht - beta;
+            cx[s]  = beta;
+            dx[s]  = ht*value;
+#endif
+        }
+
+        sn.i = xmax; sn.x = xmax*hx;
+#ifdef PARABOLIC_IBVP_H_D1V1_BR_RIGHT
+        value = boundary(sn, tn1, condition);
+#else
+        value = w1*boundary(sn, tn1, condition) + w2*boundary(sn, tn0, condition);
+#endif
+
+        if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+        {
+            //            e = N-1;
+            //            u1[N] = value;
+            //            dx[N-1] -= k13 * u1[N];
+            //            cx[N-1] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+
+            e = N;
+            ax[N] = 0.0;
+            bx[N] = 1.0;
+            cx[N] = 0.0;
+            dx[N] = value;
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
+        {
+            e = N;
+#ifdef PARABOLIC_IBVP_H_D1V1_BORDER_O2
+#ifdef PARABOLIC_IBVP_H_D1V1_FX
+            double fx = f(sn, tn1);
+#else
+            double fx = w1*f(sn, tn1) + w2*f(sn, tn0);
+#endif
+            ax[e]  = b21;
+            bx[e]  = b23;
+            cx[e]  = 0.0;
+            dx[e]  = b24 * u0[e-1] + b26 * u0[e];
+            dx[e] += b29 * value;
+            dx[e] += ht*fx;
+#else
+            ax[e]  = -1.0;
+            bx[e]  = +1.0;
+            cx[e]  = 0.0;
+            dx[e]  = ht*value;
+#endif
+        }
+        else if (condition.boundaryCondition() == BoundaryCondition::Robin)
+        {
+            const double alpha = condition.alpha();
+            const double beta  = condition.beta();
+
+            e = N;
+#ifdef PARABOLIC_IBVP_H_D1V1_BORDER_O2
+#ifdef PARABOLIC_IBVP_H_D1V1_FX
+            double fx = f(sn, tn1);
+#else
+            double fx = w1*f(sn, tn1) + w2*f(sn, tn0);
+#endif
+            ax[e]  = beta*b21;
+            bx[e]  = alpha*b22 + beta*b23;
+            cx[e]  = 0.0;
+            dx[e]  = beta*b24*u0[e-1] + alpha*b25*u0[e] + beta*b26*u0[e];
+            dx[e]  += b29*value;
+            dx[e]  += beta*ht*fx;
+#else
+            ax[e]  = -beta;
+            bx[e]  = alpha*ht + beta;
+            cx[e]  = 0.0;
+            dx[e]  = ht*value;
+#endif
+        }
+
+        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, static_cast<unsigned int>(e-s+1));
+        memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
+        //for (unsigned int n=s; n<=e; n++) u1[n] = rx[n];
+
+        layerInfo(DoubleVector(u1, N+1), tn1);
+
+        double *tmp_u = u0; u0 = u1; u1 = tmp_u;
+    }
+
+    free(u0);
+    free(u1);
+
+    free(rx);
+    free(dx);
+    free(cx);
+    free(bx);
+    free(ax);
+
+}
 
 void ILoadedHeatEquationIBVP::explicit_calculate_D2V1() const {}
 
@@ -2887,6 +3203,16 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 }
 
 void ILoadedHeatEquationIBVP::setLoadedPoints(const std::vector<LoadedSpacePoint> &loadedPoints)
+{
+    this->_loadedPoints = loadedPoints;
+}
+
+void ILoadedHeatEquationIBVP::setLoadedPoints0(const std::vector<LoadedSpacePoint> &loadedPoints)
+{
+    this->_loadedPoints = loadedPoints;
+}
+
+void ILoadedHeatEquationIBVP::setLoadedPoints1(const std::vector<LoadedSpacePoint> &loadedPoints)
 {
     this->_loadedPoints = loadedPoints;
 }

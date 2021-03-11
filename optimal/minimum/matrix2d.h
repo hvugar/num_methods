@@ -79,8 +79,8 @@ public:
     void inverse();
     DoubleMatrix minor(size_t row, size_t col) const;
 
-    double** data() const;
     double** data();
+    double** data() const;
 
     void switchRows(size_t row1, size_t row2);
     void switchCols(size_t col1, size_t col2);

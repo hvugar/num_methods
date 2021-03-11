@@ -221,12 +221,12 @@ void DoubleMatrix::setRow(size_t r, const DoubleVector &row)
     }
 }
 
-double** DoubleMatrix::data() const
+double** DoubleMatrix::data()
 {
     return mData;
 }
 
-double** DoubleMatrix::data()
+double** DoubleMatrix::data() const
 {
     return mData;
 }
