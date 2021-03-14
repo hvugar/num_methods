@@ -2277,32 +2277,49 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
     }
     sort(loaded_indecies.begin(), loaded_indecies.end());
 
-    double **wx = static_cast<double**>(malloc(sizeof(double*)*(N+1)));
-    for (size_t i=0; i<=N; i++)
+    //std::for_each(loaded_indecies.begin(), loaded_indecies.end(), [](size_t &n) { printf("%d\n", n); } );
+    //return;
+
+    double **wx = new double*[N+1];
+    for (size_t j=0; j<=N; j++)
     {
-        wx[i] = static_cast<double*>(malloc(sizeof(double)*(N+1)));
-        for (size_t j=0; j<=N; j++) wx[i][j] = 0.0;
+        wx[j] = new double[N+1];
+        for (size_t i=0; i<=N; i++) wx[j][i] = 0.0;
     }
+
+    for (size_t j=1; j<N; j++)
+    {
+        wx[j][20] -= (ht/hx) * (w1+w2) * loadedPoints().at(0).d;
+        wx[j][80] -= (ht/hx) * (w1+w2) * loadedPoints().at(1).d;
+    }
+
+//    for (size_t i=0; i<loaded_indecies.size(); i++)
+//    {
+//        for (size_t j=0; j<=N; j++)
+//        {
+//            wx[j][i] += (1.0/hx) * ht * w1 * loadedPoints().at(i)
+//        }
+//    }
 
     //size_t row_size = loaded_indecies.size();
 
-    const double sigma = hx;
-    double loadedPart = 0.0;
-    for (size_t i=0; i<lps; i++)
-    {
-        const LoadedSpacePoint &lp = _loadedPoints[i];
+//    const double sigma = hx;
+//    double loadedPart = 0.0;
+//    for (size_t i=0; i<lps; i++)
+//    {
+//        const LoadedSpacePoint &lp = _loadedPoints[i];
 
-        SpacePoint p;
-        double uv = 0.0;
-        for (size_t n=minX[i]; n<=maxX[i]; n++)
-        {
-            p.x = n*hx;
-            double w = DeltaFunction::gaussian(p, lp, sigma);
-            uv += w;
-        }
-        uv *= hx;
-        loadedPart += lp.d * uv;
-    }
+//        SpacePoint p;
+//        double uv = 0.0;
+//        for (size_t n=minX[i]; n<=maxX[i]; n++)
+//        {
+//            p.x = n*hx;
+//            double w = DeltaFunction::gaussian(p, lp, sigma);
+//            uv += w;
+//        }
+//        uv *= hx;
+//        loadedPart += lp.d * uv;
+//    }
 
     /////////////// TO-DO
 
@@ -2492,8 +2509,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
 #endif
         }
 
-        tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, static_cast<unsigned int>(e-s+1));
-        memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
+        //tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, static_cast<unsigned int>(e-s+1));
+        LinearEquation::func1(ax, bx, cx, dx, wx, rx, N+1);
+        std::memcpy(u1+s, rx+s, sizeof(double)*(e-s+1));
         //for (unsigned int n=s; n<=e; n++) u1[n] = rx[n];
 
         layerInfo(DoubleVector(u1, N+1), tn1);

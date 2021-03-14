@@ -220,10 +220,6 @@ void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, 
 
 void LinearEquation::func1(const double *a, const double *b, const double *c, const double *d, double **e, double *x, unsigned int N)
 {
-    double *v = new double[N];
-    //double *v = (double*) malloc(sizeof(double)*N);
-    tomasAlgorithm(a, b, c, d, v, N);
-
     std::vector<unsigned int> selectedCols;
     for (unsigned int col=0; col<N; col++)
     {
@@ -238,51 +234,63 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
     }
     size_t selectedColsSize = selectedCols.size();
 
-    //double **w = (double**) malloc(sizeof(double*) * selectedColsSize);
-    double **w = new double*[selectedColsSize];
-
-    for (unsigned int i=0; i<selectedColsSize; i++)
+    if (selectedColsSize == 0)
     {
-        //w[i] = (double*) malloc(sizeof(double)*N);
-        w[i] = new double[N];
+        tomasAlgorithm(a, b, c, d, x, N);
     }
-
-    for (unsigned int sc=0; sc<selectedColsSize; sc++)
+    else
     {
-        for (unsigned int row=0; row<N; row++)
+
+        double *v = new double[N];
+        //double *v = (double*) malloc(sizeof(double)*N);
+        tomasAlgorithm(a, b, c, d, v, N);
+
+        //double **w = (double**) malloc(sizeof(double*) * selectedColsSize);
+        double **w = new double*[selectedColsSize];
+
+        for (unsigned int i=0; i<selectedColsSize; i++)
         {
-            w[sc][row] = -e[row][selectedCols[sc]];
+            //w[i] = (double*) malloc(sizeof(double)*N);
+            w[i] = new double[N];
         }
-        tomasAlgorithm(a, b, c, w[sc], w[sc], N);
-    }
 
-    DoubleMatrix M(selectedColsSize, selectedColsSize, 0.0);
-    DoubleVector A(selectedColsSize);
-    DoubleVector u(selectedColsSize, 0.0);
-    for (unsigned int scr=0; scr<selectedColsSize; scr++)
-    {
-        A[scr] = v[selectedCols[scr]];
-        for (unsigned int scc=0; scc<selectedColsSize; scc++)
+        for (unsigned int sc=0; sc<selectedColsSize; sc++)
         {
-            M[scr][scc] = -w[scc][selectedCols[scr]];
-            if (scr==scc) M[scr][scc] += 1.0;
+            for (unsigned int row=0; row<N; row++)
+            {
+                w[sc][row] = -e[row][selectedCols[sc]];
+            }
+            tomasAlgorithm(a, b, c, w[sc], w[sc], N);
         }
+
+        DoubleMatrix M(selectedColsSize, selectedColsSize, 0.0);
+        DoubleVector A(selectedColsSize);
+        DoubleVector u(selectedColsSize, 0.0);
+        for (unsigned int scr=0; scr<selectedColsSize; scr++)
+        {
+            A[scr] = v[selectedCols[scr]];
+            for (unsigned int scc=0; scc<selectedColsSize; scc++)
+            {
+                M[scr][scc] = -w[scc][selectedCols[scr]];
+                if (scr==scc) M[scr][scc] += 1.0;
+            }
+        }
+
+        LinearEquation::GaussianElimination(M, A, u);
+
+        for (unsigned int i=0; i<N; i++)
+        {
+            x[i] = v[i];
+            for (unsigned int sc=0; sc<selectedColsSize; sc++) x[i] += w[sc][i]*u[sc];
+        }
+
+        M.clear();
+        A.clear();
+        u.clear();
+        //    for (unsigned int sc=0; sc<selectedColsSize; sc++) free(w[sc]);
+        for (unsigned int sc=0; sc<selectedColsSize; sc++) delete [] w[sc];
+        delete [] w;
+        delete [] v;
+        selectedCols.clear();
     }
-
-    LinearEquation::GaussianElimination(M, A, u);
-
-    for (unsigned int i=0; i<N; i++)
-    {
-        x[i] = v[i];
-        for (unsigned int sc=0; sc<selectedColsSize; sc++) x[i] += w[sc][i]*u[sc];
-    }
-
-    M.clear();
-    A.clear();
-    u.clear();
-    //    for (unsigned int sc=0; sc<selectedColsSize; sc++) free(w[sc]);
-    for (unsigned int sc=0; sc<selectedColsSize; sc++) delete [] w[sc];
-    delete [] w;
-    delete [] v;
-    selectedCols.clear();
 }

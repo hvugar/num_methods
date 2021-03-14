@@ -149,6 +149,7 @@ double TestFunction::u(const TimeNodePDE &tn, const SpaceNodePDE &sn, Derivative
 
 double test1()
 {
+    srand(time(nullptr));
     const size_t N = 1000;
     const double ht = 0.001;
     const double hx = 0.001;
@@ -173,8 +174,8 @@ double test1()
         for (size_t j=0; j<=N; j++) w[i][j] = 0.0;
     }
 
-    w[0][30] = +325.0; w[0][60] = -128.0; w[0][90] = +229.0;
-    w[N][20] = -127.0; w[N][40] = +285.0; w[N][80] = +568.0;
+    //w[0][30] = +325.0; w[0][60] = -128.0; w[0][90] = +229.0;
+    //w[N][20] = -127.0; w[N][40] = +285.0; w[N][80] = +568.0;
 
     for (size_t i=0; i<=N; i++) { w[i][30] = rand()%100; w[i][50] = rand()%100; w[i][70] = rand()%100; }
 
@@ -194,7 +195,7 @@ double test1()
         //for (size_t i=0; i<=N; i++) { d[N] += w[N][i] * x[i]; }
     }
 
-    FILE *file = fopen("f:/data.txt", "w");
+    FILE *file = fopen("d:/data.txt", "w");
 
     for (size_t i=0; i<=N; i++) { fprintf(file, "%10.2f", a[i]); } fputs("\n", file);
     for (size_t i=0; i<=N; i++) { fprintf(file, "%10.2f", b[i]); } fputs("\n", file);

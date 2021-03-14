@@ -368,23 +368,28 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
     lheIBVP.setThermalConvection(0.0);
 
     std::vector<LoadedSpacePoint> loadedPoints;
-    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, 1.0));
-    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, 1.0));
+//    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, 1.0));
+//    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, 1.0));
+    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.00, 0.00, +0.04));
+    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.00, 0.00, +0.05));
     lheIBVP.setLoadedPoints(loadedPoints);
 
-    lheIBVP.implicit_calculate_D2V1();
+    //lheIBVP.implicit_calculate_D2V1();
+    lheIBVP.implicit_calculate_D1V1();
 }
 
 double LoadedHeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
 {
+    return sn.x*sn.x;
     //return sn.x*sn.x + sn.y*sn.y;
-    return sn.x + sn.y;
+    //return sn.x + sn.y;
 }
 
 double LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const
 {
+    bc = BoundaryConditionPDE::Dirichlet(); return sn.x*sn.x + tn.t;
     //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return sn.x*sn.x + sn.y*sn.y + tn.t*tn.t;
-    bc = BoundaryConditionPDE::Dirichlet(); return sn.x + sn.y + tn.t;
+    //bc = BoundaryConditionPDE::Dirichlet(); return sn.x + sn.y + tn.t;
 }
 
 double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const
@@ -397,13 +402,19 @@ double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) 
     //        - 0.1*(0.2*0.2 + 0.2*0.2 + tn.t*tn.t)
     //        - 0.1*(0.8*0.8 + 0.8*0.8 + tn.t*tn.t);
 
-    return 1.0 - 2.0*b - c*(sn.x+sn.y+tn.t)
-            - 1.0*(0.2 + 0.2 + tn.t)
-            - 1.0*(0.8 + 0.8 + tn.t);
+//    return 1.0 - 2.0*b - c*(sn.x+sn.y+tn.t)
+//            - 1.0*(0.2 + 0.2 + tn.t)
+//            - 1.0*(0.8 + 0.8 + tn.t);
+
+    return 1.0 - 2.0*a - 2.0*sn.x*b - c*(sn.x*sn.x+tn.t)
+            - loadedPoints().at(0).d*(0.2*0.2 + tn.t)
+            - loadedPoints().at(1).d*(0.8*0.8 + tn.t);
 }
 
-void LoadedHeatEquationIBVP::layerInfo(const DoubleVector&, const TimeNodePDE&) const
-{}
+void LoadedHeatEquationIBVP::layerInfo(const DoubleVector& u, const TimeNodePDE&) const
+{
+    IPrinter::printVector(u);
+}
 
 void LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix& u, const TimeNodePDE&) const
 {
