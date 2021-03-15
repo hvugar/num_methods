@@ -1,9 +1,5 @@
 #include "test_function.h"
 
-#define FUNCTION_T1
-#define FUNCTION_X1
-#define FUNCTION_Y1
-
 double TestFunction::u(const TimeNodePDE &tn, const SpaceNodePDE &sn, Derivative derivative, const Dimension &dimX, const Dimension &dimY)
 {
     double res = 0.0;

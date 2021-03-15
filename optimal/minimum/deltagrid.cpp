@@ -1100,9 +1100,7 @@ auto DeltaFunction::nearest(const SpaceNodePDE &p, const SpacePoint &m, double h
  */
 double DeltaFunction::gaussian(double p, double m, double sigma)
 {
-    const double factor = 1.0/(sqrt(2.0*M_PI)*sigma);
-    const double sigma2 = 1.0/(2.0*sigma*sigma);
-    return factor * exp(-(sigma2*(p-m)*(p-m)));
+    return exp(- ((p-m)*(p-m)) / (2.0*sigma*sigma) ) / (sqrt(2.0*M_PI)*sigma);
 }
 
 /**

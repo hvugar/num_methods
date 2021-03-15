@@ -2194,6 +2194,135 @@ ILoadedHeatEquationIBVP& ILoadedHeatEquationIBVP::operator=(const ILoadedHeatEqu
 
 void ILoadedHeatEquationIBVP::explicit_calculate_D1V1() const {}
 
+double spreadPoint(double **wx, size_t N, double hx, double ht, double w1, const double *u, std::vector<size_t> &loaded_indecies, const std::vector<LoadedSpacePoint> &_loadedPoints)
+{
+    for (size_t n=0; n<loaded_indecies.size(); n++)
+    {
+        const size_t node = loaded_indecies[n];
+        for (size_t j=0; j<=N; j++) wx[j][node] = 0.0;
+    }
+    loaded_indecies.clear();
+
+    double val = 0.0;
+
+    #define VARIANT2
+
+#ifdef VARIANT1
+    for (size_t j=1; j<N; j++)
+    {
+        wx[j][20] -= ht * w1 * loadedPoints().at(0).d;
+        wx[j][80] -= ht * w1 * loadedPoints().at(1).d;
+    }
+#endif
+
+#ifdef VARIANT2
+
+    const size_t lps = _loadedPoints.size();
+    for (size_t i=0; i<lps; i++)
+    {
+        const double p = _loadedPoints[i].x;
+        const double d = _loadedPoints[i].d;
+        const size_t rx = static_cast<size_t>(floor(p/hx));
+
+        for (size_t j=1; j<N; j++)
+        {
+            wx[j][rx]   -= ((rx+1)*hx-p)/hx * d * ht * w1;
+            wx[j][rx+1] -= (p-(rx+0)*hx)/hx * d * ht * w1;
+
+            val += ((rx+1)*hx-p)/hx * d * ht * (1.0-w1) * u[rx];
+            val += (p-(rx+0)*hx)/hx * d * ht * (1.0-w1) * u[rx+1];
+        }
+
+        if ( std::find(loaded_indecies.begin(), loaded_indecies.end(), rx)   == loaded_indecies.end() ) { loaded_indecies.push_back(rx); }
+        if ( std::find(loaded_indecies.begin(), loaded_indecies.end(), rx+1) == loaded_indecies.end() ) { loaded_indecies.push_back(rx+1); }
+    }
+
+#endif
+
+#ifdef VARIANT3
+
+    const size_t lps = _loadedPoints.size();
+    size_t* minX = new size_t[lps];
+    size_t* maxX = new size_t[lps];
+
+    std::vector<size_t> loaded_indecies;
+    const size_t k1 = 3;
+    for (size_t i=0; i<lps; i++)
+    {
+        const SpacePoint &p = _loadedPoints[i];
+        const size_t rx = static_cast<size_t>(round(p.x/hx));
+        minX[i] = rx - k1;
+        maxX[i] = rx + k1;
+        for (size_t n=minX[i]; n<=maxX[i]; n++)
+        {
+            if ( std::find(loaded_indecies.begin(), loaded_indecies.end(), n) == loaded_indecies.end() )
+            {
+                loaded_indecies.push_back(n);
+            }
+        }
+    }
+
+    delete [] minX;
+    delete [] maxX;
+
+    sort(loaded_indecies.begin(), loaded_indecies.end());
+
+    //    std::for_each(loaded_indecies.begin(), loaded_indecies.end(), [](size_t &n) { printf("%d\n", n); } );
+    //    return;
+
+    const double sigma = hx;
+    for (size_t n=0; n<loaded_indecies.size(); n++)
+    {
+        const size_t node = loaded_indecies[n];
+        const double p = node*hx;
+        double w = 0.0;
+        for (size_t i=0; i<lps; i++)
+        {
+            const double lp = loadedPoints().at(i).x;
+            const double dp = loadedPoints().at(i).d;
+            w += w1 * DeltaFunction::gaussian(p, lp, sigma) * dp * ht * hx;
+        }
+
+        for (size_t j=1; j<N; j++)
+        {
+            wx[j][node] -= w;
+        }
+    }
+
+    loaded_indecies.clear();
+
+#endif
+
+#ifdef VARIANT4
+    const double sigma = hx;
+    const size_t lps = _loadedPoints.size();
+    const size_t k1 = 4;
+    for (size_t i=0; i<lps; i++)
+    {
+        const SpacePoint &p = _loadedPoints[i];
+        const size_t rx = static_cast<size_t>(round(p.x/hx));
+        for (size_t n= rx - k1; n<=rx + k1; n++)
+        {
+            const double p = n*hx;
+            double w = 0.0;
+            for (size_t i=0; i<lps; i++)
+            {
+                const double lp = loadedPoints().at(i).x;
+                const double dp = loadedPoints().at(i).d;
+                w += w1 * DeltaFunction::gaussian(p, lp, sigma) * dp * ht * hx;
+            }
+
+            for (size_t j=1; j<N; j++)
+            {
+                wx[j][n] -= w;
+            }
+        }
+    }
+#endif
+
+    return val;
+}
+
 void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
 {
     const size_t N = static_cast<size_t>(spaceDimensionX().size()) - 1;
@@ -2253,32 +2382,13 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
     double *dx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *rx = static_cast<double*>(malloc(sizeof(double)*(N+1)));
 
-    /////////////// TO-DO
-
-    const size_t lps = loadedPoints().size();
-    size_t* minX = new size_t[lps];
-    size_t* maxX = new size_t[lps];
-
-    std::vector<size_t> loaded_indecies;
-    const size_t k1 = 0;
-    for (size_t i=0; i<lps; i++)
+    for (size_t n=0; n<=N; n++)
     {
-        const SpacePoint &p = _loadedPoints[i];
-        const size_t rx = static_cast<size_t>(round(p.x/hx));
-        minX[i] = rx - k1;
-        maxX[i] = rx + k1;
-        for (size_t n=minX[i]; n<=maxX[i]; n++)
-        {
-            if ( std::find(loaded_indecies.begin(), loaded_indecies.end(), n) == loaded_indecies.end() )
-            {
-                loaded_indecies.push_back(n);
-            }
-        }
+        ax[n] = k11;
+        bx[n] = k12;
+        cx[n] = k13;
     }
-    sort(loaded_indecies.begin(), loaded_indecies.end());
-
-    //std::for_each(loaded_indecies.begin(), loaded_indecies.end(), [](size_t &n) { printf("%d\n", n); } );
-    //return;
+    ax[0] = 0.0; cx[N] = 0.0;
 
     double **wx = new double*[N+1];
     for (size_t j=0; j<=N; j++)
@@ -2287,49 +2397,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
         for (size_t i=0; i<=N; i++) wx[j][i] = 0.0;
     }
 
-    for (size_t j=1; j<N; j++)
-    {
-        wx[j][20] -= (ht/hx) * (w1+w2) * loadedPoints().at(0).d;
-        wx[j][80] -= (ht/hx) * (w1+w2) * loadedPoints().at(1).d;
-    }
-
-//    for (size_t i=0; i<loaded_indecies.size(); i++)
-//    {
-//        for (size_t j=0; j<=N; j++)
-//        {
-//            wx[j][i] += (1.0/hx) * ht * w1 * loadedPoints().at(i)
-//        }
-//    }
-
-    //size_t row_size = loaded_indecies.size();
-
-//    const double sigma = hx;
-//    double loadedPart = 0.0;
-//    for (size_t i=0; i<lps; i++)
-//    {
-//        const LoadedSpacePoint &lp = _loadedPoints[i];
-
-//        SpacePoint p;
-//        double uv = 0.0;
-//        for (size_t n=minX[i]; n<=maxX[i]; n++)
-//        {
-//            p.x = n*hx;
-//            double w = DeltaFunction::gaussian(p, lp, sigma);
-//            uv += w;
-//        }
-//        uv *= hx;
-//        loadedPart += lp.d * uv;
-//    }
-
-    /////////////// TO-DO
-
-    for (size_t n=0; n<=N; n++)
-    {
-        ax[n] = k11;
-        bx[n] = k12;
-        cx[n] = k13;
-    }
-    ax[0] = 0.0; cx[N] = 0.0;
+    std::vector<size_t> loaded_indecies;
 
     double *u0 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
     double *u1 = static_cast<double*>(malloc(sizeof(double)*(N+1)));
@@ -2355,6 +2423,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
 
     for (size_t ln=1; ln<=L; ln++, k++)
     {
+        double val = spreadPoint(wx, N, hx, ht, w1, u0, loaded_indecies, _loadedPoints);
+
         TimeNodePDE tn0; tn0.i = static_cast<unsigned int>(k-1); tn0.t = tn0.i*ht;
         TimeNodePDE tn1; tn1.i = static_cast<unsigned int>(k  ); tn1.t = tn1.i*ht;
 
@@ -2368,7 +2438,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D1V1() const
 #else
             double fx = w1*f(sn, tn1) + w2*f(sn, tn0);
 #endif
-            dx[i] = k21*u0[i-1] + k22*u0[i] + k23*u0[i+1] + ht*fx;
+            dx[i] = k21*u0[i-1] + k22*u0[i] + k23*u0[i+1] + ht*fx + val;
         }
 
         size_t s=0, e=N;

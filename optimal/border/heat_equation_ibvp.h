@@ -94,7 +94,7 @@ protected:
     virtual void layerInfo(const DoubleMatrix&, const TimeNodePDE&) const;
 
 protected:
-    double weight() const { return 1.0; }
+    double weight() const { return 0.5; }
 
 protected:
     virtual Dimension timeDimension() const { return Dimension(0.01, 0, 100); }

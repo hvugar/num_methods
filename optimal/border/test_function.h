@@ -3,6 +3,10 @@
 
 #include "border_global.h"
 
+#define FUNCTION_T1
+#define FUNCTION_X2
+#define FUNCTION_Y1
+
 class BORDERSHARED_EXPORT TestFunction
 {
 public:
