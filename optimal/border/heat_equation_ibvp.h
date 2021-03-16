@@ -98,8 +98,8 @@ protected:
 
 protected:
     virtual Dimension timeDimension() const { return Dimension(0.01, 0, 100); }
-    virtual Dimension spaceDimensionX() const { return Dimension(0.01, 0, 100); }
-    virtual Dimension spaceDimensionY() const { return Dimension(0.01, 0, 100); }
+    virtual Dimension spaceDimensionX() const { return Dimension(0.01, 200, 300); }
+    virtual Dimension spaceDimensionY() const { return Dimension(0.01, 300, 400); }
     virtual Dimension spaceDimensionZ() const { return Dimension(0.01, 0, 100); }
 };
 

@@ -2,7 +2,7 @@
 
 #include "test_function.h"
 
-#define HEAT_DIMENSION_1
+#define HEAT_DIMENSION_2
 #define HEAT_QUADRATIC
 //#define HEAT_HOMOGENIOUS
 //#define HEAT_DELTA
@@ -364,19 +364,33 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
 {
     LoadedHeatEquationIBVP lheIBVP;
     lheIBVP.setThermalDiffusivity(1.0);
-    lheIBVP.setThermalConductivity(0.0);
-    lheIBVP.setThermalConvection(0.0);
+    lheIBVP.setThermalConductivity(0.4);
+    lheIBVP.setThermalConvection(0.5);
 
     std::vector<LoadedSpacePoint> loadedPoints;
-    //    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.20, 0.00, 1.0));
-    //    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.80, 0.00, 1.0));
-    loadedPoints.push_back(LoadedSpacePoint(0.20, 0.00, 0.00, -0.4));
-    loadedPoints.push_back(LoadedSpacePoint(0.80, 0.00, 0.00, -0.5));
-    loadedPoints.push_back(LoadedSpacePoint(0.50, 0.00, 0.00, -0.3));
+
+#ifdef HEAT_DIMENSION_1
+    //loadedPoints.push_back(LoadedSpacePoint(0.20, 0.00, 0.00, -0.4));
+    //loadedPoints.push_back(LoadedSpacePoint(0.80, 0.00, 0.00, -0.5));
+    //loadedPoints.push_back(LoadedSpacePoint(0.50, 0.00, 0.00, -0.3));
+#endif
+
+#ifdef HEAT_DIMENSION_2
+    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.20, 0.00, 0.4));
+    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.70, 0.00, 0.6));
+    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.50, 0.00, 0.5));
+    loadedPoints.push_back(LoadedSpacePoint(2.50, 3.50, 0.00, 0.4));
+#endif
+
     lheIBVP.setLoadedPoints(loadedPoints);
 
-    //lheIBVP.implicit_calculate_D2V1();
+#ifdef HEAT_DIMENSION_1
     lheIBVP.implicit_calculate_D1V1();
+#endif
+
+#ifdef HEAT_DIMENSION_2
+    lheIBVP.implicit_calculate_D2V1();
+#endif
 }
 
 double LoadedHeatEquationIBVP::initial(const SpaceNodePDE &sn, InitialCondition) const
@@ -398,7 +412,10 @@ double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) 
     const double b =  thermalConductivity();
     const double c =  thermalConvection();
 
-    double r = TestFunction::u(tn, sn, TestFunction::TimeFirstDerivative)
+    double r = 0.0;
+
+#ifdef HEAT_DIMENSION_1
+    r = TestFunction::u(tn, sn, TestFunction::TimeFirstDerivative)
             - TestFunction::u(tn, sn, TestFunction::SpaceSecondDerivativeX) * a
             - TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeX) * b
             - TestFunction::u(tn, sn, TestFunction::FunctionValue) * c;
@@ -408,6 +425,25 @@ double LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) 
         SpaceNodePDE sn2; sn2.x = loadedPoints().at(i).x;
         r -= TestFunction::u(tn, sn2, TestFunction::FunctionValue) * loadedPoints().at(i).d;
     }
+#endif
+
+#ifdef HEAT_DIMENSION_2
+    r = TestFunction::u(tn, sn, TestFunction::TimeFirstDerivative)
+            - TestFunction::u(tn, sn, TestFunction::SpaceSecondDerivativeX) * a
+            - TestFunction::u(tn, sn, TestFunction::SpaceSecondDerivativeY) * a
+            - TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeX) * b
+            - TestFunction::u(tn, sn, TestFunction::SpaceFirstDerivativeY) * b
+            - TestFunction::u(tn, sn, TestFunction::FunctionValue) * c;
+
+    for (size_t i=0; i<loadedPoints().size(); i++)
+    {
+        SpaceNodePDE sn2;
+        sn2.x = loadedPoints().at(i).x;
+        sn2.y = loadedPoints().at(i).y;
+        r -= TestFunction::u(tn, sn2, TestFunction::FunctionValue) * loadedPoints().at(i).d;
+    }
+#endif
+
     return r;
 }
 
