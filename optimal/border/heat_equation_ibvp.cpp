@@ -378,8 +378,8 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
 #ifdef HEAT_DIMENSION_2
     loadedPoints.push_back(LoadedSpacePoint(2.30, 3.20, 0.00, 0.4));
     loadedPoints.push_back(LoadedSpacePoint(2.80, 3.70, 0.00, 0.6));
-    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.50, 0.00, 0.5));
-    loadedPoints.push_back(LoadedSpacePoint(2.50, 3.50, 0.00, 0.4));
+//    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.50, 0.00, 0.5));
+//    loadedPoints.push_back(LoadedSpacePoint(2.50, 3.50, 0.00, 0.4));
 #endif
 
     lheIBVP.setLoadedPoints(loadedPoints);

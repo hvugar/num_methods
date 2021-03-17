@@ -2867,7 +2867,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 
     TimeNodePDE tn00, tn10;
     SpaceNodePDE sn;
-    unsigned int i=0, j=0, s=0, e=N;
+    unsigned int i=0, j=0;//, s=0, e=N;
     int n = 0, m = 0;
 
     for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
@@ -2882,7 +2882,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
     layerInfo(DoubleMatrix(u00, M+1, N+1), tn00);
 
     /***********************************************************************************************/
-    BoundaryConditionPDE condition; double value/*, alpha, beta, gamma*/;
+    BoundaryConditionPDE condition; double value;
 
     for (unsigned int ln=1; ln<=L; ln++)
     {
@@ -2928,14 +2928,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                s = 1;
-                u05[j][0] = value;
-                dx[1] -= k11 * u05[j][0];
-                ax[1] = ax[0] = bx[0] = cx[0] = dx[0] = rx[0] = 0.0;
+                ax[0] = 0.0; bx[0] = 1.0; cx[0] = 0.0; dx[0] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
@@ -2962,7 +2958,6 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
 
-                s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
@@ -2993,28 +2988,24 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                e = N-1;
-                u05[j][N] = value;
-                dx[e] -= k13 * u05[j][N];
-                cx[e] = ax[N] = bx[N] = cx[N] = dx[N] = rx[N] = 0.0;
+                ax[N] = 0.0; bx[N] = 1.0; cx[N] = 0.0; dx[N] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[e]  = b121;
-                bx[e]  = b123;
-                cx[e]  = 0.0;
-                dx[e]  = b124 * u00[j][e];
-                dx[e] += b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
-                dx[e] += b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
-                dx[e] += ht05 * fx;
-                dx[e] += b127 * value;
+                ax[N]  = b121;
+                bx[N]  = b123;
+                cx[N]  = 0.0;
+                dx[N]  = b124 * u00[j][N];
+                dx[N] += b125 * ((u00[j+1][N]-2.0*u00[j][N]+u00[j-1][N])/(hy*hy));
+                dx[N] += b126 * ((u00[j+1][N]-u00[j-1][N])/(2.0*hy));
+                dx[N] += ht05 * fx;
+                dx[N] += b127 * value;
 #else
                 ax[e]  = -1.0;
                 bx[e]  = +1.0;
@@ -3027,21 +3018,20 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
 
-                e = N;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_X
                 double fx = f(sn, tn00);
 #else
                 double fx = 0.5 * ( f(sn, tn00) + f(sn, tn10) );
 #endif
-                ax[e]  = beta * b121;
-                bx[e]  = beta * b123 + alpha * b122;
-                cx[e]  = 0.0;
-                dx[e]  = beta * b124 * u00[j][e];
-                dx[e] += beta * b125 * ((u00[j+1][e]-2.0*u00[j][e]+u00[j-1][e])/(hy*hy));
-                dx[e] += beta * b126 * ((u00[j+1][e]-u00[j-1][e])/(2.0*hy));
-                dx[e] += beta * ht05 * fx;
-                dx[e] += b127 * value;
+                ax[N]  = beta * b121;
+                bx[N]  = beta * b123 + alpha * b122;
+                cx[N]  = 0.0;
+                dx[N]  = beta * b124 * u00[j][N];
+                dx[N] += beta * b125 * ((u00[j+1][N]-2.0*u00[j][N]+u00[j-1][N])/(hy*hy));
+                dx[N] += beta * b126 * ((u00[j+1][N]-u00[j-1][N])/(2.0*hy));
+                dx[N] += beta * ht05 * fx;
+                dx[N] += b127 * value;
 #else
                 ax[e]  = -beta;
                 bx[e]  = +beta + alpha * hx;
@@ -3050,9 +3040,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
             }
 
-            tomasAlgorithmLeft2Right(ax+s, bx+s, cx+s, dx+s, rx+s, e-s+1);
-            //for (size_t i=s; i<=e; i++) u05[j][i] = rx[i];
-            memcpy(u05[j]+s, rx+s, sizeof (double*)*(e-s+1));
+            tomasAlgorithmLeft2Right(ax, bx, cx, dx, rx, N+1);
+            std::memcpy(u05[j], rx, sizeof (double*)*(N+1));
         }
 
         for (n=xmin, sn.i=n, sn.x=n*hx, i=0; n<=xmax; ++n, sn.i=n, sn.x=n*hx, ++i)
@@ -3125,15 +3114,18 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 
         /**************************************************** y direction apprx ***************************************************/
 
+        /**************************************************************************************************************************/
+
         for (size_t lx=0; lx<loaded_indecies_x.size(); lx++)
         {
-            size_t n = loaded_indecies_x.at(lx);
-            size_t i = n-xmin;
-            sn.i = n;
+            size_t n = static_cast<size_t>(loaded_indecies_x.at(lx));
+            size_t i = n-static_cast<size_t>(xmin);
+
+            sn.i = static_cast<int>(n); sn.x = sn.i*hx;
 
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
-                size_t offset = j*(M+1);
+                size_t offset = lx*(M+1);
 
                 al[offset+j] = k21;
                 bl[offset+j] = k22;
@@ -3146,16 +3138,61 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
+                dl[offset+j] = k24*u05[j][i-1] + k25*u05[j][i] + k26*u05[j][i+1] + ht05*fx;
 
-                dl[offset+j] = k24*u05[j][i-1]
-                        + k25*u05[j][i]
-                        + k26*u05[j][i+1] + ht05*fx;
+                sn.j = ymin; sn.y = ymin*hy;
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
+                value = boundary(sn, tn10, condition);
+#else
+                value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
+#endif
+                if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+                {
+                    al[offset] = 0.0; bl[offset] = 1.0; cl[offset] = 0.0; dl[offset] = value;
+                }
 
-
+                sn.j = ymax; sn.y = ymax*hy;
+#ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
+                value = boundary(sn, tn10, condition);
+#else
+                value = 0.5 * ( boundary(sn, tn00, condition) + boundary(sn, tn10, condition) );
+#endif
+                if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
+                {
+                    al[offset+M] = 0.0; bl[offset+M] = 1.0; cl[offset+M] = 0.0; dl[offset] = value;
+                }
             }
 
+            const size_t size = loaded_indecies_x.size() * (M+1);
+            for (size_t ly=0; ly<loaded_indecies_y.size(); ly++)
+            {
+                size_t m = static_cast<size_t>(loaded_indecies_y.at(ly));
+                size_t i = m-static_cast<size_t>(ymin);
+
+                for (size_t j=1; j<size; ++j)
+                {
+                    //size_t offset = ly*(M+1);
+                    //w[j][i] = 1.0;
+                }
+            }
         }
 
+        FILE* file = fopen("d:/data1.txt", "w");
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", al[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", bl[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", cl[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", dl[i]); } fputs("\n", file);
+
+//        fputs("-----\n", file);
+//        const size_t size1 = loaded_indecies_x.size() * (M+1);
+//        for (size_t j=0; j<=size1; ++j)
+//        {
+//            for (size_t i=0; i<=size1; ++i) { fprintf(file, "%10.4f ", w[j][i]); } fputs("\n", file);
+//        }
+
+        fclose(file);
+
+        /**************************************************************************************************************************/
 
         for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
@@ -3177,14 +3214,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                s = 1;
-                u10[0][i] = value;
-                dy[1] -= k21 * u10[0][i];
-                ay[1] = ay[0] = by[0] = cy[0] = dy[0] = ry[0] = 0.0;
+                ay[0] = 0.0; by[0] = 1.0; cy[0] = 0.0; dy[0] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
@@ -3211,26 +3244,25 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
 
-                s = 0;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[s]  = 0.0;
-                by[s]  = beta * b211 + alpha * b212;
-                cy[s]  = beta * b213;
-                dy[s]  = beta * b214 * u05[s][i];
-                dy[s] += beta * b215 * ((u05[s][i+1]-2.0*u05[s][i]+u05[s][i-1])/(hx*hx));
-                dy[s] += beta * b216 * ((u05[s][i+1]-u05[s][i-1])/(2.0*hx));
-                dy[s] += beta * ht05 * fx;
-                dy[s] += b217 * value;
+                ay[0]  = 0.0;
+                by[0]  = beta * b211 + alpha * b212;
+                cy[0]  = beta * b213;
+                dy[0]  = beta * b214 * u05[0][i];
+                dy[0] += beta * b215 * ((u05[0][i+1]-2.0*u05[0][i]+u05[0][i-1])/(hx*hx));
+                dy[0] += beta * b216 * ((u05[0][i+1]-u05[0][i-1])/(2.0*hx));
+                dy[0] += beta * ht05 * fx;
+                dy[0] += b217 * value;
 #else
-                ay[s]  = +0.0;
-                by[s]  = +beta + alpha * hx;
-                cy[s]  = -beta;
-                dy[s]  = +hx * value;
+                ay[0]  = +0.0;
+                by[0]  = +beta + alpha * hx;
+                cy[0]  = -beta;
+                dy[0]  = +hx * value;
 #endif
             }
 
@@ -3242,28 +3274,24 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
             if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
             {
-                e = M-1;
-                u10[M][i] = value;
-                dy[e] -= k23 * u10[M][i];
-                cy[e] = ay[M] = by[M] = cy[M] = dy[M] = ry[M] = 0.0;
+                ay[M] = 0.0; by[M] = 1.0; cy[M] = 0.0; dy[M] = value;
             }
             else if (condition.boundaryCondition() == BoundaryCondition::Neumann)
             {
-                e = M;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[e]  = b221;
-                by[e]  = b223;
-                cy[e]  = 0.0;
-                dy[e]  = b224 * u05[e][i];
-                dy[e] += b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
-                dy[e] += b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
-                dy[e] += ht05 * fx;
-                dy[e] += b227 * value;
+                ay[M]  = b221;
+                by[M]  = b223;
+                cy[M]  = 0.0;
+                dy[M]  = b224 * u05[M][i];
+                dy[M] += b225 * ((u05[M][i+1]-2.0*u05[M][i]+u05[M][i-1])/(hx*hx));
+                dy[M] += b226 * ((u05[M][i+1]-u05[M][i-1])/(2.0*hx));
+                dy[M] += ht05 * fx;
+                dy[M] += b227 * value;
 #else
                 ay[e]  = -1.0;
                 by[e]  = +1.0;
@@ -3276,21 +3304,20 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 const double alpha = condition.alpha();
                 const double beta  = condition.beta();
 
-                e = M;
 #ifdef PARABOLIC_IBVP_H_D2V1_BORDER_O2
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
 #else
                 double fx = 0.5 * ( f(sn, tn00)+f(sn, tn10) );
 #endif
-                ay[e]  = beta * b221;
-                by[e]  = beta * b223 + alpha * b222;
-                cy[e]  = 0.0;
-                dy[e]  = beta * b224 * u05[e][i];
-                dy[e] += beta * b225 * ((u05[e][i+1]-2.0*u05[e][i]+u05[e][i-1])/(hx*hx));
-                dy[e] += beta * b226 * ((u05[e][i+1]-u05[e][i-1])/(2.0*hx));
-                dy[e] += beta * ht05 * fx;
-                dy[e] += b227 * value;
+                ay[M]  = beta * b221;
+                by[M]  = beta * b223 + alpha * b222;
+                cy[M]  = 0.0;
+                dy[M]  = beta * b224 * u05[M][i];
+                dy[M] += beta * b225 * ((u05[M][i+1]-2.0*u05[M][i]+u05[M][i-1])/(hx*hx));
+                dy[M] += beta * b226 * ((u05[M][i+1]-u05[M][i-1])/(2.0*hx));
+                dy[M] += beta * ht05 * fx;
+                dy[M] += b227 * value;
 #else
                 ay[e]  = -beta;
                 by[e]  = +beta + alpha * hx;
@@ -3299,9 +3326,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
             }
 
-            tomasAlgorithmLeft2Right(ay+s, by+s, cy+s, dy+s, ry+s, e-s+1);
-            for (unsigned int j=s; j<=e; j++) u10[j][i] = ry[j];
-            //memcpy(u10[i]+s, ry+s, sizeof(double*)*(e-s+1));
+            tomasAlgorithmLeft2Right(ay, by, cy, dy, ry, M+1);
+            for (unsigned int j=0; j<=M; j++) u10[j][i] = ry[j];
         }
 
         for (m=ymin, sn.j=m, sn.y=m*hy, j=0; m<=ymax; ++m, sn.j=m, sn.y=m*hy, ++j)
