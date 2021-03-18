@@ -2897,6 +2897,14 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                                               loaded_indecies_x,
                                               loaded_indecies_y);
 
+        LoadedSpacePoint lsp;
+        struct ExtendedLoadedSpacePoint : public LoadedSpacePoint
+        {
+            size_t **coords = { };
+            double **weight = { };
+        };
+
+
         size_t size = loaded_indecies_x.size() * (M+1);
         if (al != nullptr) delete [] al; al = new double[size];
         if (bl != nullptr) delete [] bl; bl = new double[size];
@@ -3163,18 +3171,20 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 }
             }
 
-            const size_t size = loaded_indecies_x.size() * (M+1);
-            for (size_t ly=0; ly<loaded_indecies_y.size(); ly++)
+            for (size_t lx=0; lx<loaded_indecies_x.size(); lx++)
             {
-                size_t m = static_cast<size_t>(loaded_indecies_y.at(ly));
-                size_t i = m-static_cast<size_t>(ymin);
+                size_t n = static_cast<size_t>(loaded_indecies_x.at(lx));
+
+                //printf("%d ", m);
+                size_t i = n-static_cast<size_t>(ymin);
 
                 for (size_t j=1; j<size; ++j)
                 {
-                    //size_t offset = ly*(M+1);
-                    //w[j][i] = 1.0;
+                    size_t offset = lx*(M+1);
+                    w[j][i] = 1.0;
                 }
             }
+            //puts("");
         }
 
         FILE* file = fopen("d:/data1.txt", "w");
@@ -3183,12 +3193,15 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", cl[i]); } fputs("\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", dl[i]); } fputs("\n", file);
 
-//        fputs("-----\n", file);
-//        const size_t size1 = loaded_indecies_x.size() * (M+1);
-//        for (size_t j=0; j<=size1; ++j)
-//        {
-//            for (size_t i=0; i<=size1; ++i) { fprintf(file, "%10.4f ", w[j][i]); } fputs("\n", file);
-//        }
+        fputs("-----\n", file);
+        for (size_t j=0; j<size; ++j)
+        {
+            for (size_t i=0; i<size; ++i)
+            {
+                fprintf(file, "%10.4f ", w[j][i]);
+            }
+            fputs("\n", file);
+        }
 
         fclose(file);
 
