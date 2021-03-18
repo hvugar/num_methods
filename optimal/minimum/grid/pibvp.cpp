@@ -2891,11 +2891,64 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 
         std::vector<size_t> loaded_indecies_x;
         std::vector<size_t> loaded_indecies_y;
-        double loadedPart = speadLoadedPoints(_loadedPoints, w, u00,
-                                              spaceDimensionX(),
-                                              spaceDimensionY(),
-                                              loaded_indecies_x,
-                                              loaded_indecies_y);
+        //double loadedPart = speadLoadedPoints(_loadedPoints, w, u00, spaceDimensionX(), spaceDimensionY(), loaded_indecies_x, loaded_indecies_y);
+
+        /***********************************************************************************************/
+
+        const size_t lps = _loadedPoints.size();
+        double loadedPart = 0.0;
+
+#define VARINAT1_2D
+
+#ifdef VARINAT1_2D
+
+        struct LoadedSpacePointExt : public LoadedSpacePoint
+        {
+            size_t xmin;
+            size_t ymin;
+            size_t xmax;
+            size_t ymax;
+
+            DoubleMatrix weight;
+        };
+
+        LoadedSpacePointExt* loadedSpacePointExt = new LoadedSpacePointExt[lps];
+
+        for (size_t k=0; k<lps; k++)
+        {
+            const LoadedSpacePoint &lp = _loadedPoints[k];
+            const size_t rx = static_cast<size_t>(round(lp.x/hx));
+            const size_t ry = static_cast<size_t>(round(lp.y/hy));
+            //std::cout << rx << " " << ry << std::endl;
+
+            loadedSpacePointExt[k].x = _loadedPoints[k].x;
+            loadedSpacePointExt[k].y = _loadedPoints[k].y;
+            loadedSpacePointExt[k].d = _loadedPoints[k].d;
+            loadedSpacePointExt[k].xmin = rx;
+            loadedSpacePointExt[k].xmax = rx;
+            loadedSpacePointExt[k].ymin = ry;
+            loadedSpacePointExt[k].ymax = ry;
+            loadedSpacePointExt[k].xmax = rx;
+            loadedSpacePointExt[k].weight.resize(1,1,_loadedPoints[k].d);
+
+            for (size_t n=loadedSpacePointExt[k].xmin; n<=loadedSpacePointExt[k].xmax; n++)
+            {
+                for (size_t m=loadedSpacePointExt[k].ymin; m<=loadedSpacePointExt[k].ymax; m++)
+                {
+                    loadedPart += lp.d * u00[ry-static_cast<size_t>(ymin)][rx-static_cast<size_t>(xmin)];
+                }
+            }
+
+            for (size_t n=loadedSpacePointExt[k].xmin; n<=loadedSpacePointExt[k].xmax; n++) if (std::find(loaded_indecies_x.begin(), loaded_indecies_x.end(), n) == loaded_indecies_x.end()) loaded_indecies_x.push_back(n);
+            for (size_t m=loadedSpacePointExt[k].ymin; m<=loadedSpacePointExt[k].ymax; m++) if (std::find(loaded_indecies_y.begin(), loaded_indecies_y.end(), m) == loaded_indecies_y.end()) loaded_indecies_y.push_back(m);
+        }
+        std::sort(loaded_indecies_x.begin(), loaded_indecies_x.end());
+        std::sort(loaded_indecies_y.begin(), loaded_indecies_y.end());
+
+        for (size_t i=0; i<loaded_indecies_x.size(); i++) printf("%zu ", loaded_indecies_x.at(i)); puts("");
+        for (size_t i=0; i<loaded_indecies_y.size(); i++) printf("%zu ", loaded_indecies_y.at(i)); puts("");
+
+#endif
 
         LoadedSpacePoint lsp;
         struct ExtendedLoadedSpacePoint : public LoadedSpacePoint
@@ -2913,6 +2966,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         if (rl != nullptr) delete [] rl; rl = new double[size];
         if (w != nullptr) { for (size_t i=0; i<size; i++) { delete [] w[i]; } delete [] w; }
         w = new double* [size]; for (size_t i=0; i<size; i++) { w[i] = new double[size]; for (size_t j=0; j<size; j++) w[i][j] = 0.0; }
+
+        /***********************************************************************************************/
 
         /**************************************************** x direction apprx ***************************************************/
 
@@ -3119,6 +3174,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 
         /**************************************************** x direction apprx ***************************************************/
 
+        IPrinter::printSeperatorLine();
+        IPrinter::printMatrix(DoubleMatrix(u05, M+1, N+1));
+        IPrinter::printSeperatorLine();
 
         /**************************************************** y direction apprx ***************************************************/
 
@@ -3130,6 +3188,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
             size_t i = n-static_cast<size_t>(xmin);
 
             sn.i = static_cast<int>(n); sn.x = sn.i*hx;
+            std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y << std::endl;
 
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
@@ -3148,7 +3207,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
                 dl[offset+j] = k24*u05[j][i-1] + k25*u05[j][i] + k26*u05[j][i+1] + ht05*fx;
 
-                sn.j = ymin; sn.y = ymin*hy;
+                sn.j = ymin; sn.y = sn.j*hy;
+                std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y  << " " << ymin << " " << ymax <<  std::endl;
 #ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 value = boundary(sn, tn10, condition);
 #else
@@ -3159,7 +3219,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                     al[offset] = 0.0; bl[offset] = 1.0; cl[offset] = 0.0; dl[offset] = value;
                 }
 
-                sn.j = ymax; sn.y = ymax*hy;
+                sn.j = ymax; sn.y = sn.j*hy;
+                std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y  << " " << ymin << " " << ymax <<  std::endl;
 #ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 value = boundary(sn, tn10, condition);
 #else
@@ -3167,7 +3228,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
                 if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
                 {
-                    al[offset+M] = 0.0; bl[offset+M] = 1.0; cl[offset+M] = 0.0; dl[offset] = value;
+                    al[offset+M] = 0.0; bl[offset+M] = 1.0; cl[offset+M] = 0.0; dl[offset+M] = value;
                 }
             }
 
@@ -3175,35 +3236,45 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
             {
                 size_t n = static_cast<size_t>(loaded_indecies_x.at(lx));
 
-                //printf("%d ", m);
-                size_t i = n-static_cast<size_t>(ymin);
-
-                for (size_t j=1; j<size; ++j)
+                for (size_t p=0; p<lps; p++)
                 {
-                    size_t offset = lx*(M+1);
-                    w[j][i] = 1.0;
+                    if (loadedSpacePointExt[p].xmin <= n && n <= loadedSpacePointExt[p].xmax)
+                    {
+                        for (size_t m1=loadedSpacePointExt[p].ymin; m1<=loadedSpacePointExt[p].ymax; m1++)
+                        {
+                            for (size_t lx1=0; lx1<loaded_indecies_x.size(); lx1++)
+                            for (size_t j1=1; j1<M; j1++)
+                            {
+                                w[j1+lx1*(M+1)][lx*(M+1)+m1-ymin] += loadedSpacePointExt[p].d;
+                            }
+                        }
+                    }
                 }
             }
-            //puts("");
         }
 
+        LinearEquation::func1(al, bl, cl, dl, w, rl, size);
+
         FILE* file = fopen("d:/data1.txt", "w");
-        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", al[i]); } fputs("\n", file);
-        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", bl[i]); } fputs("\n", file);
-        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", cl[i]); } fputs("\n", file);
-        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%10.4f ", dl[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", al[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", bl[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", cl[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", dl[i]); } fputs("\n", file);
+        for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", rl[i]); } fputs("\n", file);
 
         fputs("-----\n", file);
         for (size_t j=0; j<size; ++j)
         {
             for (size_t i=0; i<size; ++i)
             {
-                fprintf(file, "%10.4f ", w[j][i]);
+                fprintf(file, "%8.4f ", w[j][i]);
             }
             fputs("\n", file);
         }
 
         fclose(file);
+
+        exit(-1);
 
         /**************************************************************************************************************************/
 

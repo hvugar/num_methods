@@ -100,7 +100,7 @@ protected:
     virtual Dimension timeDimension() const { return Dimension(0.1, 0, 10); }
     virtual Dimension spaceDimensionX() const { return Dimension(0.1, 20, 30); }
     virtual Dimension spaceDimensionY() const { return Dimension(0.1, 30, 40); }
-    virtual Dimension spaceDimensionZ() const { return Dimension(0.1, 0, 10); }
+    virtual Dimension spaceDimensionZ() const { return Dimension(0.1,  0, 10); }
 };
 
 class BORDERSHARED_EXPORT LoadedHeatEquationFBVP : public ILoadedHeatEquationFBVP

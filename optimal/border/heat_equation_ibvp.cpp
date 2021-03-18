@@ -364,8 +364,8 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
 {
     LoadedHeatEquationIBVP lheIBVP;
     lheIBVP.setThermalDiffusivity(1.0);
-    lheIBVP.setThermalConductivity(0.4);
-    lheIBVP.setThermalConvection(0.5);
+    lheIBVP.setThermalConductivity(0.0);
+    lheIBVP.setThermalConvection(0.0);
 
     std::vector<LoadedSpacePoint> loadedPoints;
 
@@ -376,10 +376,19 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
 #endif
 
 #ifdef HEAT_DIMENSION_2
-    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.20, 0.00, 0.4));
-    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.70, 0.00, 0.6));
-//    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.50, 0.00, 0.5));
-//    loadedPoints.push_back(LoadedSpacePoint(2.50, 3.50, 0.00, 0.4));
+    //    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.20, 0.00, 0.4));
+    //    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.70, 0.00, 0.6));
+    //    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.50, 0.00, 0.5));
+    //    loadedPoints.push_back(LoadedSpacePoint(2.50, 3.50, 0.00, 0.4));
+
+
+    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.30, 0.00, 0.1));
+    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.80, 0.00, 0.2));
+    //loadedPoints.push_back(LoadedSpacePoint(2.50, 3.10, 0.00, 0.3));
+    //loadedPoints.push_back(LoadedSpacePoint(2.60, 3.60, 0.00, 0.4));
+    //loadedPoints.push_back(LoadedSpacePoint(2.80, 3.30, 0.00, 0.5));
+    //loadedPoints.push_back(LoadedSpacePoint(2.80, 3.90, 0.00, 0.6));
+
 #endif
 
     lheIBVP.setLoadedPoints(loadedPoints);
