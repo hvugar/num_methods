@@ -3188,7 +3188,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
             size_t i = n-static_cast<size_t>(xmin);
 
             sn.i = static_cast<int>(n); sn.x = sn.i*hx;
-            std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y << std::endl;
+            //std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y << std::endl;
 
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
@@ -3198,7 +3198,8 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 bl[offset+j] = k22;
                 cl[offset+j] = k23;
 
-                al[offset+0] = 0.0; cl[offset+M] = 0.0;
+                al[offset+0] = 0.0;
+                cl[offset+M] = 0.0;
 
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
                 double fx = f(sn, tn10);
@@ -3208,7 +3209,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 dl[offset+j] = k24*u05[j][i-1] + k25*u05[j][i] + k26*u05[j][i+1] + ht05*fx;
 
                 sn.j = ymin; sn.y = sn.j*hy;
-                std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y  << " " << ymin << " " << ymax <<  std::endl;
+                //std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y  << " " << ymin << " " << ymax <<  std::endl;
 #ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 value = boundary(sn, tn10, condition);
 #else
@@ -3216,11 +3217,11 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 #endif
                 if (condition.boundaryCondition() == BoundaryCondition::Dirichlet)
                 {
-                    al[offset] = 0.0; bl[offset] = 1.0; cl[offset] = 0.0; dl[offset] = value;
+                    al[offset+0] = 0.0; bl[offset+0] = 1.0; cl[offset+0] = 0.0; dl[offset+0] = value;
                 }
 
                 sn.j = ymax; sn.y = sn.j*hy;
-                std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y  << " " << ymin << " " << ymax <<  std::endl;
+                //std::cout << sn.i << " " << sn.x << " " << sn.j << " " << sn.y  << " " << ymin << " " << ymax <<  std::endl;
 #ifdef PARABOLIC_IBVP_H_D2V1_BR_Y
                 value = boundary(sn, tn10, condition);
 #else
@@ -3245,7 +3246,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                             for (size_t lx1=0; lx1<loaded_indecies_x.size(); lx1++)
                             for (size_t j1=1; j1<M; j1++)
                             {
-                                w[j1+lx1*(M+1)][lx*(M+1)+m1-ymin] += loadedSpacePointExt[p].d;
+                                w[j1+lx1*(M+1)][lx*(M+1)+m1-ymin] += -ht05*loadedSpacePointExt[p].d;
                             }
                         }
                     }
@@ -3259,7 +3260,10 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", al[i]); } fputs("\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", bl[i]); } fputs("\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", cl[i]); } fputs("\n", file);
+
+        fputs("-----\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", dl[i]); } fputs("\n", file);
+        fputs("-----\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", rl[i]); } fputs("\n", file);
 
         fputs("-----\n", file);
