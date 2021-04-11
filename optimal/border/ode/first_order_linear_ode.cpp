@@ -1,10 +1,14 @@
 #include "first_order_linear_ode.h"
 
-#define EXAMPLE_31
+#define EXAMPLE_33
+
+#define TIME_MAX 100
+#define TIME_STEP 0.01
 
 void FirstOrderLinearODEIVP::Main(int argc UNUSED_PARAM, char **argv UNUSED_PARAM)
 {
-    CauchyProblemExample();
+    //CauchyProblemExample();
+    NonLocalConditionExample();
 }
 
 void FirstOrderLinearODEIVP::CauchyProblemExample()
@@ -73,16 +77,18 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     const size_t M = nl.count();
     const size_t N = TIME_MAX;
     const double h = TIME_STEP;
+    const size_t k = 6;
     //const size_t order = 2;
 
-    double p1 = N*h;
-    int p2 = N/100;
+    //double p1 = N*h;
+    //int p2 = N/100;
     std::vector<NonLocalCondition> C;
-    C.push_back(NonLocalCondition(0, PointNodeODE(0.00*p1,    0*p2), DoubleMatrix(M,M,+1.8)));
+    C.push_back(NonLocalCondition(0, PointNodeODE(0.00,  0),  DoubleMatrix(M, M, +0.8)));
+    //C.push_back(NonLocalCondition(2, PointNodeODE(0.50, 50),  DoubleMatrix(M, M, -0.5)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(1.00, 100), DoubleMatrix(M, M, +0.4)));
+
     //    C.push_back(NonLocalCondition(1, PointNodeODE(0.25*p1,   25*p2), DoubleMatrix(M,M,+1.5)));
-    //    C.push_back(NonLocalCondition(2, PointNodeODE(0.50*p1,   50*p2), DoubleMatrix(M,M,-2.5)));
     //    C.push_back(NonLocalCondition(3, PointNodeODE(0.75*p1,   75*p2), DoubleMatrix(M,M,+4.3)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(1.00*p1,  100*p2), DoubleMatrix(M,M,+3.4)));
     DoubleVector d(M, 0.0);
 
     for (size_t s=0; s<C.size(); s++)
@@ -92,7 +98,7 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
         DoubleVector x; for (size_t m=1; m<=M; m++) x << nl.x(C[s].n, m);
         d += C[s].m*x;
     }
-    IPrinter::printVector(d, nullptr, d.length());
+    IPrinter::printVector(d, "d: ", d.length());
     IPrinter::printSeperatorLine();
 
     std::vector<DoubleVector> x;
@@ -102,16 +108,14 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     {
         for (size_t n=0; n<=N; n++)
         {
-            //if (n%(N/100)==0) printf("%14.10f ", nl.x(n*h, m+1));
             if (n%(N/10)==0) printf("%14.8f ", nl.x(n*h, m+1));
-            //printf("%14.10f ", nl.x(n*h, m+1));
         }
         puts("");
     }
     IPrinter::printSeperatorLine();
 
-    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", nl.x((N-4)*h, 1), nl.x((N-3)*h, 1), nl.x((N-2)*h, 1), nl.x((N-1)*h, 1), nl.x((N)*h, 1));
-    printf("***** %14.8f %14.8f %14.8f %14.8f %14.8f\n", nl.x((0)*h, 1),   nl.x((1)*h, 1),   nl.x((2)*h, 1),   nl.x((3)*h, 1),   nl.x((4)*h, 1));
+    for (size_t i=1; i<=M; i++) { printf("%zu *** ", i); for (size_t j=0; j<=k; j++) printf("%14.8f ", nl.x((N-k+j)*h, i)); puts(""); }
+    //for (size_t i=1; i<=M; i++) { printf("%zu *** ", i); for (size_t j=0; j<=k; j++) printf("%14.8f ", nl.x((j)*h, i)); puts(""); }
 
     //    puts("===== transferOfCondition =====");
     //    x.clear();
@@ -125,17 +129,19 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     //    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     //    IPrinter::printSeperatorLine();
 
-    const double epsilon = 0.0000001;
-    printf(">>>> %20.14f %20.14f %20.14f\n", nl.x(0.50-epsilon, 1), nl.x(0.50, 1), nl.x(0.50+epsilon, 1));
-    printf(">>>> %20.14f %20.14f %20.14f\n", nl.dt(0.50-epsilon, 1), nl.dt(0.50, 1), nl.dt(0.50+epsilon, 1));
-    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d2t(0.50-epsilon, 1), nl.d2t(0.50, 1), nl.d2t(0.50+epsilon, 1));
-    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d3t(0.50-epsilon, 1), nl.d3t(0.50, 1), nl.d3t(0.50+epsilon, 1));
-    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d4t(0.50-epsilon, 1), nl.d4t(0.50, 1), nl.d4t(0.50+epsilon, 1));
-    //    printf(">>>> %20.14f %20.14f %20.14f\n", nl.d5t(0.50-epsilon, 1), nl.d5t(0.50, 1), nl.d5t(0.50+epsilon, 1));
+    //const double epsilon = 0.0000001;
+    //printf(">>>> %20.14f %20.14f %20.14f\n", nl.x(0.50-epsilon, 1), nl.x(0.50, 1), nl.x(0.50+epsilon, 1));
+    //printf(">>>> %20.14f %20.14f %20.14f\n", nl.dt(0.50-epsilon, 1), nl.dt(0.50, 1), nl.dt(0.50+epsilon, 1));
+    //printf(">>>> %20.14f %20.14f %20.14f\n", nl.d2t(0.50-epsilon, 1), nl.d2t(0.50, 1), nl.d2t(0.50+epsilon, 1));
+    //printf(">>>> %20.14f %20.14f %20.14f\n", nl.d3t(0.50-epsilon, 1), nl.d3t(0.50, 1), nl.d3t(0.50+epsilon, 1));
+    //printf(">>>> %20.14f %20.14f %20.14f\n", nl.d4t(0.50-epsilon, 1), nl.d4t(0.50, 1), nl.d4t(0.50+epsilon, 1));
+    //printf(">>>> %20.14f %20.14f %20.14f\n", nl.d5t(0.50-epsilon, 1), nl.d5t(0.50, 1), nl.d5t(0.50+epsilon, 1));
 
     puts("===== transferOfConditionN 4 0 =====");
     x.clear();
-    nl.transferOfConditionP(C, d, x, 4, 1);
+    nl.transferOfConditionP(C, d, x, k, 1);
+    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) { if (n%(N/10)==0) printf("%14.8f ", nl.x(n*h, m+1)); } puts(""); }
+    IPrinter::printSeperatorLine();
     for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
@@ -263,7 +269,15 @@ double FirstOrderLinearODEIVP::A(const PointNodeODE &node, size_t r, size_t c) c
     return -1.0;
 #endif
 
-    throw std::exception();
+#if defined (EXAMPLE_33) | defined (EXAMPLE_331) | defined (EXAMPLE_332) | defined (EXAMPLE_333)
+    return -1.0;
+    const double x = node.x;
+    if (r==1 && c == 1) return +x;   if (r==1 && c == 2) return +1.0; if (r==1 && c == 3) return +2.0;
+    if (r==2 && c == 1) return +0.0; if (r==2 && c == 2) return +x*x; if (r==2 && c == 3) return +3.0;
+    if (r==3 && c == 1) return +x;   if (r==3 && c == 2) return -2.0; if (r==3 && c == 3) return +x*x;
+#endif
+
+    throw std::runtime_error("double FirstOrderLinearODEIVP::A(const PointNodeODE &node, size_t r, size_t c) const");
 }
 
 double FirstOrderLinearODEIVP::B(const PointNodeODE &node, size_t r) const
@@ -289,12 +303,17 @@ size_t FirstOrderLinearODEIVP::count() const
     return 1;
 #endif
 
-    throw std::exception();
+#if defined(EXAMPLE_33)
+    return 3;
+#endif
+#if defined(EXAMPLE_331) | defined(EXAMPLE_332) | defined(EXAMPLE_333)
+    return 1;
+#endif
+
+    throw std::runtime_error("size_t FirstOrderLinearODEIVP::count() const");
 }
 
 auto FirstOrderLinearODEIVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
-
-auto FirstOrderLinearODEFVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
 
 auto FirstOrderLinearODEIVP::initial(InitialCondition, size_t r) const -> double
 {
@@ -385,6 +404,8 @@ size_t FirstOrderLinearODEFVP::count() const
     throw std::exception();
 }
 
+auto FirstOrderLinearODEFVP::dimension() const -> Dimension { return Dimension(TIME_STEP, 0, TIME_MAX); }
+
 auto FirstOrderLinearODEFVP::final(FinalCondition, size_t r) const -> double
 {
     PointNodeODE node; node.i = dimension().max(); node.x = dimension().max()*dimension().step();
@@ -446,6 +467,20 @@ double FirstOrderLinearSample::x(const PointNodeODE &node, size_t r UNUSED_PARAM
     if (r == 1) return sin(6.0*M_PI*t);
     if (r == 2) return cos(8.0*M_PI*t);
     if (r == 3) return exp(-6.0*t);
+#endif
+#ifdef EXAMPLE_33
+    if (r == 1) return sin(4.0*M_PI*t) + 3.0*t*cos(4.0*M_PI*t) + 0.1;
+    if (r == 2) return cos(4.0*M_PI*t) + exp(t) - 1.0;
+    if (r == 3) return 2.0*t*sin(4.0*M_PI*t) - 0.2;
+#endif
+#ifdef EXAMPLE_331
+    if (r == 1) return sin(4.0*M_PI*t) + 3.0*t*cos(4.0*M_PI*t) + 0.1;
+#endif
+#ifdef EXAMPLE_332
+    if (r == 1) return cos(4.0*M_PI*t) + exp(t) - 1.0;
+#endif
+#ifdef EXAMPLE_333
+    if (r == 1) return 2.0 * t* sin(4.0*M_PI*t) - 0.2;
 #endif
 #ifdef EXAMPLE_5
     if (r == 1) return 0.4*sin(12.0*t) + 0.2*t + cos(t*t) - 0.5;
@@ -515,6 +550,20 @@ double FirstOrderLinearSample::dt(const PointNodeODE &node, size_t r UNUSED_PARA
     if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
     if (r == 3) return -6.0*exp(-6.0*t);
 #endif
+#ifdef EXAMPLE_33
+    if (r == 1) return +4.0*M_PI*cos(4.0*M_PI*t) + 3.0*cos(4.0*M_PI*t) - 12.0*M_PI*t*sin(4.0*M_PI*t);
+    if (r == 2) return -4.0*M_PI*sin(4.0*M_PI*t) + exp(t);
+    if (r == 3) return +2.0*sin(4.0*M_PI*t) + 8.0*M_PI*t*cos(4.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_331
+    if (r == 1) return +4.0*M_PI*cos(4.0*M_PI*t) + 3.0*cos(4.0*M_PI*t) - 12.0*M_PI*t*sin(4.0*M_PI*t);
+#endif
+#ifdef EXAMPLE_332
+    if (r == 1) return -4.0*M_PI*sin(4.0*M_PI*t) + exp(t);
+#endif
+#ifdef EXAMPLE_333
+    if (r == 1) return +2.0*sin(4.0*M_PI*t) + 8.0*M_PI*t*cos(4.0*M_PI*t);
+#endif
 #ifdef EXAMPLE_5
     if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;
     if (r == 2) return 2.4*cos(4.0*t) + exp(t) + 24.0*t*t*cos(10.0*t*t*t);
@@ -582,6 +631,11 @@ double FirstOrderLinearSample::d2t(const PointNodeODE &node, size_t r UNUSED_PAR
     if (r == 1) return +6.0*M_PI*cos(6.0*M_PI*t);
     if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
     if (r == 3) return -6.0*exp(-6.0*t);
+#endif
+#ifdef EXAMPLE_33
+    if (r == 1) return +16.0*M_PI*M_PI*sin(4.0*M_PI*t) - 48.0*M_PI*M_PI*t*cos(4.0*M_PI*t);
+    if (r == 2) return -16.0*M_PI*M_PI*cos(4.0*M_PI*t) + exp(t);
+    if (r == 3) return +32.0*M_PI*M_PI*t*sin(4.0*M_PI*t);
 #endif
 #ifdef EXAMPLE_5
     if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;
@@ -651,6 +705,11 @@ double FirstOrderLinearSample::d3t(const PointNodeODE &node, size_t r UNUSED_PAR
     if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
     if (r == 3) return -6.0*exp(-6.0*t);
 #endif
+#ifdef EXAMPLE_33
+    if (r == 1) return +64.0*M_PI*M_PI*M_PI*cos(4.0*M_PI*t) + 48.0*4.0*M_PI*M_PI*M_PI*t*sin(4.0*M_PI*t);
+    if (r == 2) return +64.0*M_PI*M_PI*M_PI*sin(4.0*M_PI*t) + exp(t);
+    if (r == 3) return +32.0*4.0*M_PI*M_PI*M_PI*t*cos(4.0*M_PI*t);
+#endif
 #ifdef EXAMPLE_5
     if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;
     if (r == 2) return 2.4*cos(4.0*t) + exp(t) + 24.0*t*t*cos(10.0*t*t*t);
@@ -718,6 +777,11 @@ double FirstOrderLinearSample::d4t(const PointNodeODE &node, size_t r UNUSED_PAR
     if (r == 1) return +6.0*M_PI*cos(6.0*M_PI*t);
     if (r == 2) return -8.0*M_PI*sin(8.0*M_PI*t);
     if (r == 3) return -6.0*exp(-6.0*t);
+#endif
+#ifdef EXAMPLE_33
+    if (r == 1) return -64.0*4.0*M_PI*M_PI*M_PI*M_PI*sin(4.0*M_PI*t) - 48.0*4.0*4.0*M_PI*M_PI*M_PI*M_PI*t*cos(4.0*M_PI*t);
+    if (r == 2) return +64.0*4.0*M_PI*M_PI*M_PI*M_PI*cos(4.0*M_PI*t) + exp(t);
+    if (r == 3) return -32.0*4.0*4.0*M_PI*M_PI*M_PI*M_PI*t*sin(4.0*M_PI*t);
 #endif
 #ifdef EXAMPLE_5
     if (r == 1) return 4.8*cos(12.0*t) - 2.0*t*sin(t*t) + 0.2;

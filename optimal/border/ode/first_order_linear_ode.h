@@ -3,9 +3,6 @@
 
 #include "../border_global.h"
 
-#define TIME_MAX 100
-#define TIME_STEP 0.01
-
 class FirstOrderLinearSample
 {
 public:

@@ -382,12 +382,12 @@ void LoadedHeatEquationIBVP::Main(int /*argc*/, char */*argv*/[])
     //    loadedPoints.push_back(LoadedSpacePoint(2.50, 3.50, 0.00, 0.4));
 
 
-    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.30, 0.00, 0.1));
     loadedPoints.push_back(LoadedSpacePoint(2.30, 3.80, 0.00, 0.2));
+    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.90, 0.00, 0.6));
+    loadedPoints.push_back(LoadedSpacePoint(2.30, 3.30, 0.00, 0.1));
+    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.60, 0.00, 0.4));
     loadedPoints.push_back(LoadedSpacePoint(2.50, 3.10, 0.00, 0.3));
-//    loadedPoints.push_back(LoadedSpacePoint(2.60, 3.60, 0.00, 0.4));
-//    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.30, 0.00, 0.5));
-//    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.90, 0.00, 0.6));
+    loadedPoints.push_back(LoadedSpacePoint(2.80, 3.30, 0.00, 0.5));
 
 #endif
 

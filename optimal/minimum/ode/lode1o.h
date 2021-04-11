@@ -6,13 +6,13 @@
 struct MINIMUMSHARED_EXPORT NonLocalCondition
 {
     NonLocalCondition();
-    NonLocalCondition(unsigned int i, const PointNodeODE &node, const DoubleMatrix &m);
+    NonLocalCondition(size_t i, const PointNodeODE &node, const DoubleMatrix &m);
     virtual ~NonLocalCondition();
 
     /**
      * @brief i index of non-local condition
      */
-    unsigned int i;
+    size_t i;
     /**
      * @brief n point-node on grid
      */

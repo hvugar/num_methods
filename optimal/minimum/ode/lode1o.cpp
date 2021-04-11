@@ -12,7 +12,7 @@
 
 NonLocalCondition::NonLocalCondition() {}
 
-NonLocalCondition::NonLocalCondition(unsigned int i, const PointNodeODE &node, const DoubleMatrix &m) : i(i), n(node), m(m)  {}
+NonLocalCondition::NonLocalCondition(size_t i, const PointNodeODE &node, const DoubleMatrix &m) : i(i), n(node), m(m)  {}
 
 NonLocalCondition::~NonLocalCondition()
 {
@@ -211,7 +211,6 @@ void IFirstOrderLinearODEIVP::transferOfCondition(const std::vector<NonLocalCond
                 alpha[3].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[3])[m][m] = +16.0; }               alpha[3] = mx*alpha[3];
                 alpha[4].resize(M, M, 0.0); for (unsigned int m=0; m<M; m++) { (alpha[4])[m][m] = -3.0; }                alpha[4] = mx*alpha[4];
                 mx.clear();
-
             }
 
             if (k==6)
@@ -2129,13 +2128,13 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
     const unsigned int N = static_cast<unsigned int>(max - min);
     const unsigned int size = static_cast<unsigned int>( dimension().size() );
     const unsigned int end = static_cast<unsigned int>( size-(k+1) );
-    const unsigned int M = count();
+    const size_t M = count();
 
     std::vector<NonLocalCondition> C = co;
     //discritize(co, C);
 
-    unsigned int sizeM = size*M;
-    unsigned int sizeK = (k+1)*M*sizeof(double);
+    size_t sizeM = size*M;
+    size_t sizeK = (k+1)*M*sizeof(double);
 
     // begin allocating memory
 
@@ -2484,6 +2483,7 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
         IPrinter::print(f, f.length(), 12, 6);
 
         DoubleVector xf((k+1)*M);
+        //LinearEquation::GaussianElimination(Mx, f, xf);
         LinearEquation::GaussianElimination(Mx, f, xf);
 
         Mx.clear();
@@ -2541,7 +2541,7 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
 
     if (k==6)
     {
-        const unsigned int Mx0=0, Mx1=M, Mx2=2*M, Mx3=3*M, Mx4=4*M, Mx5=5*M, Mx6=6*M;
+        const size_t Mx0=0, Mx1=M, Mx2=2*M, Mx3=3*M, Mx4=4*M, Mx5=5*M, Mx6=6*M;
 
         for (unsigned int i=0; i<end; i++)
         {
@@ -2553,32 +2553,31 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
             const PointNodeODE node5((i+5)*h, static_cast<int>(i+5));
             const PointNodeODE node6((i+6)*h, static_cast<int>(i+6));
 
-            const unsigned int Mi0=i*M, Mi1=Mi0+M, Mi2=Mi1+M, Mi3=Mi2+M, Mi4=Mi3+M, Mi5=Mi4+M, Mi6=Mi5+M;
+            const size_t Mi0=i*M, Mi1=Mi0+M, Mi2=Mi1+M, Mi3=Mi2+M, Mi4=Mi3+M, Mi5=Mi4+M, Mi6=Mi5+M;
 
-            for (unsigned int r=0; r<M; r++)
+            for (size_t r=0; r<M; r++)
             {
-                const unsigned int rw = i*M+r;
-                //double *pAlpha = alpha[rw];
+                const size_t rw = i*M+r;
 
                 for (unsigned int c=0; c<M; c++)
                 {
                     alpha[rw][Mx0+c] = +0.0;
-                    alpha[rw][Mx1+c] = -2.4*h*A(node1, r+1, c+1);
-                    alpha[rw][Mx2+c] = +2.4*h*A(node2, r+1, c+1);
-                    alpha[rw][Mx3+c] = -2.4*h*A(node3, r+1, c+1);
+                    alpha[rw][Mx1+c] = +0.0;
+                    alpha[rw][Mx2+c] = +0.0;
+                    alpha[rw][Mx3+c] = +0.0;
                     alpha[rw][Mx4+c] = +0.0;
-                    alpha[rw][Mx5+c] = -2.4*h*A(node3, r+1, c+1);
-                    alpha[rw][Mx6+c] = +0.0;
+                    alpha[rw][Mx5+c] = +0.0;
+                    alpha[rw][Mx6+c] = +6.0*h*A(node6, r+1, c+1);
                 }
 
-                alpha[rw][Mx0+r] += +1.0;
-                alpha[rw][Mx1+r] += +0.8;
-                alpha[rw][Mx2+r] += +0.0;
-                alpha[rw][Mx3+r] += -0.8;
-                alpha[rw][Mx4+r] += +1.0;
-                alpha[rw][Mx5+r] += -0.8;
-                alpha[rw][Mx6+r] += +1.0;
-                betta[rw] = -2.4*h*(B(node1, r+1) - B(node2, r+1) + B(node3, r+1));
+                alpha[rw][Mx0+r] +=  1.0;
+                alpha[rw][Mx1+r] +=  7.2;
+                alpha[rw][Mx2+r] -= 22.5;
+                alpha[rw][Mx3+r] += 40.0;
+                alpha[rw][Mx4+r] -= 45.0;
+                alpha[rw][Mx5+r] += 36.0;
+                alpha[rw][Mx6+r] -= 14.7;
+                betta[rw] = 6.0*h*B(node6, r+1);
 
                 for (unsigned int r1=0; r1<M; r1++)
                 {
@@ -2593,109 +2592,58 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
                     }
                     delta[r1] -= gamma[r1][rw]*betta[rw];
                 }
-
-                // normalizing...
-
-                //double mm = 0.0;
-                //for (unsigned int r1=0; r1<M; r1++)
-                //{
-                //    for (unsigned int c=0; c<M; c++)
-                //    {
-                //        if (mm<fabs(gamma[r1][Mi1+c])) { mm = fabs(gamma[r1][Mi1+c]); }
-                //        if (mm<fabs(gamma[r1][Mi2+c])) { mm = fabs(gamma[r1][Mi2+c]); }
-                //        if (mm<fabs(gamma[r1][Mi3+c])) { mm = fabs(gamma[r1][Mi3+c]); }
-                //        if (mm<fabs(gamma[r1][Mi4+c])) { mm = fabs(gamma[r1][Mi4+c]); }
-                //    }
-                //    if (mm<fabs(delta[r1])) { mm = fabs(delta[r1]); }
-                //}
-
-                //if ( mm > 1000.0 )
-                //{
-                //    for (unsigned int r1=0; r1<M; r1++)
-                //    {
-                //        for (unsigned int c=0; c<M; c++)
-                //        {
-                //            gamma[r1][Mi1+c] /= mm;
-                //            gamma[r1][Mi2+c] /= mm;
-                //            gamma[r1][Mi3+c] /= mm;
-                //            gamma[r1][Mi4+c] /= mm;
-                //        }
-                //        delta[r1] /= mm;
-                //        gamma[r1][N*M] /= mm;
-                //    }
-                //}
             }
         }
 
-        const unsigned int N0=N, N1=N-1, N2=N-2, N3=N-3, N4=N-4;
+        const unsigned int N0=N, N1=N-1, N2=N-2, N3=N-3, N4=N-4, N5=N-5, N6=N-6;
+        const PointNodeODE nodeN6(N6*h, static_cast<int>(N6));
+        const PointNodeODE nodeN5(N5*h, static_cast<int>(N5));
         const PointNodeODE nodeN4(N4*h, static_cast<int>(N4));
         const PointNodeODE nodeN3(N3*h, static_cast<int>(N3));
         const PointNodeODE nodeN2(N2*h, static_cast<int>(N2));
         const PointNodeODE nodeN1(N1*h, static_cast<int>(N1));
         const PointNodeODE nodeN0(N0*h, static_cast<int>(N0));
 
-        DoubleMatrix Mx((k+1)*M, (k+1));
-        DoubleVector f((k+1));
+        DoubleMatrix Mx((k+1)*M, (k+1)*M);
+        DoubleVector f((k+1)*M);
 
         for (unsigned int r=0; r<M; r++)
         {
             for (unsigned int c=0; c<M; c++)
             {
-                //Mx[Mx0+r][Mx0+c] = -25.0 - 12.0*h*A(nodeN4, r+1, c+1);;
-                //Mx[Mx0+r][Mx1+c] = +48.0;
-                //Mx[Mx0+r][Mx2+c] = -36.0;
-                //Mx[Mx0+r][Mx3+c] = +16.0;
-                //Mx[Mx0+r][Mx4+c] = -3.0;
+                Mx[Mx0+r][Mx1+c] = Mx[Mx0+r][Mx2+c] = Mx[Mx0+r][Mx3+c] = Mx[Mx0+r][Mx4+c] = Mx[Mx0+r][Mx5+c] = Mx[Mx0+r][Mx6+c] = 0.0; Mx[Mx0+r][Mx0+c] = -60.0*h*A(nodeN6, r+1, c+1);
+                Mx[Mx1+r][Mx0+c] = Mx[Mx1+r][Mx2+c] = Mx[Mx1+r][Mx3+c] = Mx[Mx1+r][Mx4+c] = Mx[Mx1+r][Mx5+c] = Mx[Mx1+r][Mx6+c] = 0.0; Mx[Mx1+r][Mx1+c] = -60.0*h*A(nodeN5, r+1, c+1);
+                Mx[Mx2+r][Mx0+c] = Mx[Mx2+r][Mx1+c] = Mx[Mx2+r][Mx3+c] = Mx[Mx2+r][Mx4+c] = Mx[Mx2+r][Mx5+c] = Mx[Mx2+r][Mx6+c] = 0.0; Mx[Mx2+r][Mx2+c] = -60.0*h*A(nodeN4, r+1, c+1);
+                Mx[Mx3+r][Mx0+c] = Mx[Mx3+r][Mx1+c] = Mx[Mx3+r][Mx2+c] = Mx[Mx3+r][Mx4+c] = Mx[Mx3+r][Mx5+c] = Mx[Mx3+r][Mx6+c] = 0.0; Mx[Mx3+r][Mx3+c] = -60.0*h*A(nodeN3, r+1, c+1);
+                Mx[Mx4+r][Mx0+c] = Mx[Mx4+r][Mx1+c] = Mx[Mx4+r][Mx2+c] = Mx[Mx4+r][Mx3+c] = Mx[Mx4+r][Mx5+c] = Mx[Mx4+r][Mx6+c] = 0.0; Mx[Mx4+r][Mx4+c] = -60.0*h*A(nodeN2, r+1, c+1);
+                Mx[Mx5+r][Mx0+c] = Mx[Mx5+r][Mx1+c] = Mx[Mx5+r][Mx2+c] = Mx[Mx5+r][Mx3+c] = Mx[Mx5+r][Mx4+c] = Mx[Mx5+r][Mx6+c] = 0.0; Mx[Mx5+r][Mx5+c] = -60.0*h*A(nodeN1, r+1, c+1);
+                Mx[Mx6+r][Mx0+c] = Mx[Mx6+r][Mx1+c] = Mx[Mx6+r][Mx2+c] = Mx[Mx6+r][Mx3+c] = Mx[Mx6+r][Mx4+c] = Mx[Mx6+r][Mx5+c] = 0.0; Mx[Mx6+r][Mx6+c] = -60.0*h*A(nodeN0, r+1, c+1);
 
-                //Mx[Mx0+r][Mx0+c] = gamma[r][N0*M+c];
-                //Mx[Mx0+r][Mx1+c] = gamma[r][N3*M+c];
-                //Mx[Mx0+r][Mx2+c] = gamma[r][N2*M+c];
-                //Mx[Mx0+r][Mx3+c] = gamma[r][N1*M+c];
-                //Mx[Mx0+r][Mx4+c] = gamma[r][N0*M+c];
-
-                Mx[Mx0+r][Mx0+c] = 0.0;
-                Mx[Mx0+r][Mx1+c] = 0.0;
-                Mx[Mx0+r][Mx2+c] = 0.0;
-                Mx[Mx0+r][Mx3+c] = 0.0;
-                Mx[Mx0+r][Mx4+c] = -12.0*h*A(nodeN0, r+1, c+1);
-
-                Mx[Mx1+r][Mx0+c] = 0.0;
-                Mx[Mx1+r][Mx1+c] = 0.0;
-                Mx[Mx1+r][Mx2+c] = 0.0;
-                Mx[Mx1+r][Mx3+c] = -12.0*h*A(nodeN1, r+1, c+1);
-                Mx[Mx1+r][Mx4+c] = 0.0;
-
-                Mx[Mx2+r][Mx0+c] = 0.0;
-                Mx[Mx2+r][Mx1+c] = 0.0;
-                Mx[Mx2+r][Mx2+c] = -12.0*h*A(nodeN2, r+1, c+1);
-                Mx[Mx2+r][Mx3+c] = 0.0;
-                Mx[Mx2+r][Mx4+c] = 0.0;
-
-                Mx[Mx3+r][Mx0+c] = 0.0;
-                Mx[Mx3+r][Mx1+c] = -12.0*h*A(nodeN3, r+1, c+1);
-                Mx[Mx3+r][Mx2+c] = 0.0;
-                Mx[Mx3+r][Mx3+c] = 0.0;
-                Mx[Mx3+r][Mx4+c] = 0.0;
-
-                //Mx[Mx4+r][Mx0+c] = 0.0;
-                Mx[Mx4+r][Mx0+c] = gamma[r][N4*M+c];
-                Mx[Mx4+r][Mx1+c] = gamma[r][N3*M+c];
-                Mx[Mx4+r][Mx2+c] = gamma[r][N2*M+c];
-                Mx[Mx4+r][Mx3+c] = gamma[r][N1*M+c];
-                Mx[Mx4+r][Mx4+c] = gamma[r][N0*M+c];
+//                Mx[Mx6+r][Mx0+c] = gamma[r][N0*M+c];
+//                Mx[Mx6+r][Mx1+c] = gamma[r][N1*M+c];
+//                Mx[Mx6+r][Mx2+c] = gamma[r][N2*M+c];
+//                Mx[Mx6+r][Mx3+c] = gamma[r][N3*M+c];
+//                Mx[Mx6+r][Mx4+c] = gamma[r][N4*M+c];
+//                Mx[Mx6+r][Mx5+c] = gamma[r][N5*M+c];
+//                Mx[Mx6+r][Mx6+c] = gamma[r][N6*M+c];
             }
 
-            //f[0*M+r] = +12.0*h*B(nodeN4, r+1);
-            f[Mx0+r] = +12.0*h*B(nodeN0, r+1);
-            f[Mx1+r] = +12.0*h*B(nodeN1, r+1);
-            f[Mx2+r] = +12.0*h*B(nodeN2, r+1);
-            f[Mx3+r] = +12.0*h*B(nodeN3, r+1);
-            f[Mx4+r] = delta[r];
+            f[Mx0+r] = +60.0*h*B(nodeN6, r+1);
+            f[Mx1+r] = +60.0*h*B(nodeN5, r+1);
+            f[Mx2+r] = +60.0*h*B(nodeN4, r+1);
+            f[Mx3+r] = +60.0*h*B(nodeN3, r+1);
+            f[Mx4+r] = +60.0*h*B(nodeN2, r+1);
+            f[Mx5+r] = +60.0*h*B(nodeN1, r+1);
+            f[Mx6+r] = +60.0*h*B(nodeN0, r+1);
+//            f[Mx6+r] = delta[r];
 
-            Mx[Mx0+r][Mx0+r] += +3.0; Mx[Mx0+r][Mx1+r] += -16.0; Mx[Mx0+r][Mx2+r] += +36.0; Mx[Mx0+r][Mx3+r] += -48.0; Mx[Mx0+r][Mx4+r] += +25.0;
-            Mx[Mx1+r][Mx0+r] += -1.0; Mx[Mx1+r][Mx1+r] += +6.00; Mx[Mx1+r][Mx2+r] += -18.0; Mx[Mx1+r][Mx3+r] += +10.0; Mx[Mx1+r][Mx4+r] += +3.00;
-            Mx[Mx2+r][Mx0+r] += +1.0; Mx[Mx2+r][Mx1+r] += -8.00; Mx[Mx2+r][Mx2+r] += +0.00; Mx[Mx2+r][Mx3+r] += +8.00; Mx[Mx2+r][Mx4+r] += -1.00;
-            Mx[Mx3+r][Mx0+r] += -3.0; Mx[Mx3+r][Mx1+r] += -10.0; Mx[Mx3+r][Mx2+r] += +18.0; Mx[Mx3+r][Mx3+r] += -6.00; Mx[Mx3+r][Mx4+r] += +1.00;
+            Mx[Mx0+r][Mx0+r] -= 147.0; Mx[Mx0+r][Mx1+r] += 360.0; Mx[Mx0+r][Mx2+r] -= 450.0; Mx[Mx0+r][Mx3+r] += 400.0; Mx[Mx0+r][Mx4+r] -= 225.0; Mx[Mx0+r][Mx5+r] +=  72.0; Mx[Mx0+r][Mx6+r] -=  10.0;
+            Mx[Mx1+r][Mx0+r] -=  10.0; Mx[Mx1+r][Mx1+r] -=  77.0; Mx[Mx1+r][Mx2+r] += 150.0; Mx[Mx1+r][Mx3+r] -= 100.0; Mx[Mx1+r][Mx4+r] +=  50.0; Mx[Mx1+r][Mx5+r] -=  15.0; Mx[Mx1+r][Mx6+r] +=   2.0;
+            Mx[Mx2+r][Mx0+r] +=   2.0; Mx[Mx2+r][Mx1+r] -=  24.0; Mx[Mx2+r][Mx2+r] -=  35.0; Mx[Mx2+r][Mx3+r] +=  80.0; Mx[Mx2+r][Mx4+r] -=  30.0; Mx[Mx2+r][Mx5+r] +=   8.0; Mx[Mx2+r][Mx6+r] -=   1.0;
+            Mx[Mx3+r][Mx0+r] -=   1.0; Mx[Mx3+r][Mx1+r] +=   9.0; Mx[Mx3+r][Mx2+r] -=  45.0; Mx[Mx3+r][Mx3+r] +=   0.0; Mx[Mx3+r][Mx4+r] +=  45.0; Mx[Mx3+r][Mx5+r] -=   9.0; Mx[Mx3+r][Mx6+r] +=   1.0;
+            Mx[Mx4+r][Mx0+r] +=   1.0; Mx[Mx4+r][Mx1+r] -=   8.0; Mx[Mx4+r][Mx2+r] +=  30.0; Mx[Mx4+r][Mx3+r] -=  80.0; Mx[Mx4+r][Mx4+r] +=  35.0; Mx[Mx4+r][Mx5+r] +=  24.0; Mx[Mx4+r][Mx6+r] -=   2.0;
+            Mx[Mx5+r][Mx0+r] -=   2.0; Mx[Mx5+r][Mx1+r] +=  15.0; Mx[Mx5+r][Mx2+r] -=  50.0; Mx[Mx5+r][Mx3+r] += 100.0; Mx[Mx5+r][Mx4+r] -= 150.0; Mx[Mx5+r][Mx5+r] +=  77.0; Mx[Mx5+r][Mx6+r] +=  10.0;
+            Mx[Mx6+r][Mx0+r] +=  10.0; Mx[Mx6+r][Mx1+r] -=  72.0; Mx[Mx6+r][Mx2+r] += 225.0; Mx[Mx6+r][Mx3+r] -= 400.0; Mx[Mx6+r][Mx4+r] += 450.0; Mx[Mx6+r][Mx5+r] -= 360.0; Mx[Mx6+r][Mx6+r] += 147.0;
         }
 
         ///////////////////////////////////////////////////////////////////////////

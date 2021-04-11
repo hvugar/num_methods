@@ -3233,7 +3233,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                 }
             }
 
-            for (size_t lx=0; lx<loaded_indecies_x.size(); lx++)
+            //for (size_t lx=0; lx<loaded_indecies_x.size(); lx++)
             {
                 size_t n = static_cast<size_t>(loaded_indecies_x.at(lx));
 
@@ -3246,7 +3246,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
                             for (size_t lx1=0; lx1<loaded_indecies_x.size(); lx1++)
                             for (size_t j1=1; j1<M; j1++)
                             {
-                                w[j1+lx1*(M+1)][lx*(M+1)+m1-ymin] += -ht05*loadedSpacePointExt[p].d;
+                                size_t kj = j1+lx1*(M+1);
+                                size_t ki = lx*(M+1)+m1-ymin;
+                                w[kj][ki] += -ht05*loadedSpacePointExt[p].d;
                             }
                         }
                     }
@@ -3257,6 +3259,7 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         LinearEquation::func1(al, bl, cl, dl, w, rl, size);
 
         FILE* file = fopen("d:/data1.txt", "w");
+//        FILE *file = stdout;
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", al[i]); } fputs("\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", bl[i]); } fputs("\n", file);
         for (size_t i=0; i<loaded_indecies_x.size()*(M+1); i++) { fprintf(file, "%8.4f ", cl[i]); } fputs("\n", file);
@@ -3278,12 +3281,31 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
 
         fclose(file);
 
-        exit(-1);
+        loadedPart = 0.0;
+        for (size_t lx=0; lx<loaded_indecies_x.size(); lx++)
+        {
+            size_t n = static_cast<size_t>(loaded_indecies_x.at(lx));
+            size_t i = n-static_cast<size_t>(xmin);
+
+            for (size_t j1=0; j1<=M; j1++)
+            {
+                u10[j1][i] = rl[lx*(M+1)+j1];
+                loadedPart += u10[j1][i]*ht05;
+            }
+
+        }
+
 
         /**************************************************************************************************************************/
 
         for (n=xmin+1, sn.i=n, sn.x=n*hx, i=1; n<=xmax-1; ++n, sn.i=n, sn.x=n*hx, ++i)
         {
+            for (size_t lx=0; lx<loaded_indecies_x.size(); lx++)
+            {
+                size_t n1 = static_cast<size_t>(loaded_indecies_x.at(lx));
+                if (n == n1) continue;
+            }
+
             for (m=ymin+1, sn.j=m, sn.y=m*hy, j=1; m<=ymax-1; ++m, sn.j=m, sn.y=m*hy, ++j)
             {
 #ifdef PARABOLIC_IBVP_H_D2V1_FX_Y
@@ -3485,6 +3507,9 @@ void ILoadedHeatEquationIBVP::implicit_calculate_D2V1() const
         }
 
         layerInfo(DoubleMatrix(u10, M+1, N+1), tn10);
+
+
+        exit(-1);
 
         /**************************************************** y direction apprx ***************************************************/
         double **_tmp = u00; u00 = u10; u10 = _tmp;
