@@ -77,8 +77,8 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     const size_t M = nl.count();
     const size_t N = TIME_MAX;
     const double h = TIME_STEP;
-    const size_t k = 6;
-    //const size_t order = 2;
+    const size_t k = 2;
+    const size_t schema = 0;
 
     //double p1 = N*h;
     //int p2 = N/100;
@@ -108,7 +108,7 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     {
         for (size_t n=0; n<=N; n++)
         {
-            if (n%(N/10)==0) printf("%14.8f ", nl.x(n*h, m+1));
+            if (n%(N/10)==0) printf("%8.4f ", nl.x(n*h, m+1));
         }
         puts("");
     }
@@ -139,10 +139,10 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
 
     puts("===== transferOfConditionN 4 0 =====");
     x.clear();
-    nl.transferOfConditionP(C, d, x, k, 1);
-    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) { if (n%(N/10)==0) printf("%14.8f ", nl.x(n*h, m+1)); } puts(""); }
+    nl.transferOfConditionP(C, d, x, k, schema);
+    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) { if (n%(N/10)==0) printf("%8.4f ", nl.x(n*h, m+1)); } puts(""); }
     IPrinter::printSeperatorLine();
-    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%14.8f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
+    for (size_t m=0; m<M; m++) { for (size_t n=0; n<=N; n++) if (n%(N/10)==0) printf("%8.4f ", x[n][m]); printf("\n"); /*nl.printNorms(x);*/ }
     IPrinter::printSeperatorLine();
 
     //    puts("===== transferOfConditionN 4 1 =====");
@@ -273,7 +273,7 @@ double FirstOrderLinearODEIVP::A(const PointNodeODE &node, size_t r, size_t c) c
     return -1.0;
     const double x = node.x;
     if (r==1 && c == 1) return +x;   if (r==1 && c == 2) return +1.0; if (r==1 && c == 3) return +2.0;
-    if (r==2 && c == 1) return +0.0; if (r==2 && c == 2) return +x*x; if (r==2 && c == 3) return +3.0;
+    if (r==2 && c == 1) return -1.0; if (r==2 && c == 2) return +x*x; if (r==2 && c == 3) return +3.0;
     if (r==3 && c == 1) return +x;   if (r==3 && c == 2) return -2.0; if (r==3 && c == 3) return +x*x;
 #endif
 

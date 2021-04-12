@@ -2158,10 +2158,10 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
 
     // setting non-separated conditions
 
-    for (unsigned int s=0; s<C.size(); s++)
+    for (size_t s=0; s<C.size(); s++)
     {
-        unsigned int i = static_cast<unsigned int>(C[s].n.i);
-        unsigned int offset = i*M;
+        size_t i = static_cast<size_t>(C[s].n.i);
+        size_t offset = i*M;
         for (unsigned int r=0; r<M; r++)
         {
             for (unsigned int c=0; c<M; c++)
@@ -2175,7 +2175,7 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
 
     if (k==2)
     {
-        const unsigned int Mx0=0, Mx1=M, Mx2=2*M;
+        const size_t Mx0=0, Mx1=M, Mx2=2*M;
 
         for (unsigned int i=0; i<end; i++)
         {
@@ -2183,31 +2183,54 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
             const PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
             const PointNodeODE node2((i+2)*h, static_cast<int>(i+2));
 
-            const unsigned int Mi0=i*M, Mi1=Mi0+M, Mi2=Mi1+M;
-            for (unsigned int r=0; r<M; r++)
+            const size_t Mi0=i*M, Mi1=Mi0+M, Mi2=Mi1+M;
+            for (size_t r=0; r<M; r++)
             {
-                const unsigned int rw = i*M+r;
+                const size_t rw = i*M+r;
 
-                for (unsigned int c=0; c<M; c++)
+                for (size_t c=0; c<M; c++)
                 {
-                    alpha[rw][Mx0+c] = +0.0;
-                    alpha[rw][Mx1+c] = -1.6*h*A(node1, r+1, c+1);
-                    alpha[rw][Mx2+c] = +0.4*h*A(node2, r+1, c+1);
-
-                    //alpha[rw][Mx0+c] = +0.0;
-                    //alpha[rw][Mx1+c] = -1.8*h*A(node1, r+1, c+1);
-                    //alpha[rw][Mx2+c] = +0.2*h*A(node2, r+1, c+1);
+                    if (schema == 0)
+                    {
+                        alpha[rw][Mx0+c] = +0.0;
+                        alpha[rw][Mx1+c] = +0.0;
+                        alpha[rw][Mx2+c] = +2.0*h*A(node2, r+1, c+1);
+                    }
+                    else if (schema == 1)
+                    {
+                        alpha[rw][Mx0+c] = +0.0;
+                        alpha[rw][Mx1+c] = -1.6*h*A(node1, r+1, c+1);
+                        alpha[rw][Mx2+c] = +0.4*h*A(node2, r+1, c+1);
+                    }
+                    else if (schema == 2)
+                    {
+                        alpha[rw][Mx0+c] = +0.0;
+                        alpha[rw][Mx1+c] = -1.8*h*A(node1, r+1, c+1);
+                        alpha[rw][Mx2+c] = +0.2*h*A(node2, r+1, c+1);
+                    }
                 }
 
-                alpha[rw][Mx0+r] += +1.0;
-                alpha[rw][Mx1+r] += +0.8;
-                alpha[rw][Mx2+r] += +0.2;
-                betta[rw] = -0.4*h*(4.0*B(node1, r+1)-B(node2, r+1));
-
-                //alpha[rw][Mx0+r] += +1.0;
-                //alpha[rw][Mx1+r] += +0.4;
-                //alpha[rw][Mx2+r] += +0.6;
-                //betta[rw] = -0.2*h*(9.0*B(node1, r+1)-B(node2, r+1));
+                if (schema == 0)
+                {
+                    alpha[rw][Mx0+r] += 1.0;
+                    alpha[rw][Mx1+r] += 4.0;
+                    alpha[rw][Mx2+r] -= 3.0;
+                    betta[rw] = 2.0*h*B(node2, r+1);
+                }
+                else if (schema == 1)
+                {
+                    alpha[rw][Mx0+r] += +1.0;
+                    alpha[rw][Mx1+r] += +0.8;
+                    alpha[rw][Mx2+r] += +0.2;
+                    betta[rw] = -0.4*h*(4.0*B(node1, r+1)-B(node2, r+1));
+                }
+                else if (schema == 2)
+                {
+                    alpha[rw][Mx0+r] += +1.0;
+                    alpha[rw][Mx1+r] += +0.4;
+                    alpha[rw][Mx2+r] += +0.6;
+                    betta[rw] = -0.2*h*(9.0*B(node1, r+1)-B(node2, r+1));
+                }
 
                 for (unsigned int r1=0; r1<M; r1++)
                 {
@@ -2253,9 +2276,6 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
             Mx[Mx0+r][Mx0+r] += -3.0; Mx[Mx0+r][Mx1+r] += +4.0; Mx[Mx0+r][Mx2+r] += -1.0;
             Mx[Mx1+r][Mx0+r] += -1.0; Mx[Mx1+r][Mx1+r] += +0.0; Mx[Mx1+r][Mx2+r] += +1.0;
         }
-
-
-
 
         ///////////////////////////////////////////////////////////////////////////
         IPrinter::printSeperatorLine("Mx");
@@ -2320,9 +2340,9 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
 
     if (k==4)
     {
-        const unsigned int Mx0=0, Mx1=M, Mx2=2*M, Mx3=3*M, Mx4=4*M;
+        const size_t Mx0=0, Mx1=M, Mx2=2*M, Mx3=3*M, Mx4=4*M;
 
-        for (unsigned int i=0; i<end; i++)
+        for (size_t i=0; i<end; i++)
         {
             const PointNodeODE node0((i+0)*h, static_cast<int>(i+0));
             const PointNodeODE node1((i+1)*h, static_cast<int>(i+1));
@@ -2330,54 +2350,75 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
             const PointNodeODE node3((i+3)*h, static_cast<int>(i+3));
             const PointNodeODE node4((i+4)*h, static_cast<int>(i+4));
 
-            const unsigned int Mi0=i*M, Mi1=Mi0+M, Mi2=Mi1+M, Mi3=Mi2+M, Mi4=Mi3+M;
+            const size_t Mi0=i*M, Mi1=Mi0+M, Mi2=Mi1+M, Mi3=Mi2+M, Mi4=Mi3+M;
 
-            for (unsigned int r=0; r<M; r++)
+            for (size_t r=0; r<M; r++)
             {
-                const unsigned int rw = i*M+r;
-                //double *pAlpha = alpha[rw];
+                const size_t rw = i*M+r;
 
                 for (unsigned int c=0; c<M; c++)
                 {
-                    alpha[rw][Mx0+c] = +0.0;
-                    alpha[rw][Mx1+c] = -2.4*h*A(node1, r+1, c+1);
-                    alpha[rw][Mx2+c] = +2.4*h*A(node2, r+1, c+1);
-                    alpha[rw][Mx3+c] = -2.4*h*A(node3, r+1, c+1);
-                    alpha[rw][Mx4+c] = +0.0;
+                    if (schema == 0)
+                    {
 
-                    //alpha[rw][Mx0+c] = +0.0;
-                    //alpha[rw][Mx1+c] = -2.6666666666666667*h*A(node1, r+1, c+1);
-                    //alpha[rw][Mx2+c] = +1.3333333333333333*h*A(node2, r+1, c+1);
-                    //alpha[rw][Mx3+c] = -2.6666666666666667*h*A(node3, r+1, c+1);
-                    //alpha[rw][Mx4+c] = +0.0;
-
-                    //alpha[rw][Mx0+c] = +0.0;
-                    //alpha[rw][Mx1+c] = -2.6*h*A(node1, r+1, c+1);
-                    //alpha[rw][Mx2+c] = +2.0*h*A(node2, r+1, c+1);
-                    //alpha[rw][Mx3+c] = -2.2*h*A(node3, r+1, c+1);
-                    //alpha[rw][Mx4+c] = +0.0;
+                    }
+                    else if (schema == 1)
+                    {
+                        alpha[rw][Mx0+c] = +0.0;
+                        alpha[rw][Mx1+c] = -2.4*h*A(node1, r+1, c+1);
+                        alpha[rw][Mx2+c] = +2.4*h*A(node2, r+1, c+1);
+                        alpha[rw][Mx3+c] = -2.4*h*A(node3, r+1, c+1);
+                        alpha[rw][Mx4+c] = +0.0;
+                    }
+                    else if (schema == 2)
+                    {
+                        //alpha[rw][Mx0+c] = +0.0;
+                        //alpha[rw][Mx1+c] = -2.6666666666666667*h*A(node1, r+1, c+1);
+                        //alpha[rw][Mx2+c] = +1.3333333333333333*h*A(node2, r+1, c+1);
+                        //alpha[rw][Mx3+c] = -2.6666666666666667*h*A(node3, r+1, c+1);
+                        //alpha[rw][Mx4+c] = +0.0;
+                    }
+                    else if (schema == 3)
+                    {
+                        //alpha[rw][Mx0+c] = +0.0;
+                        //alpha[rw][Mx1+c] = -2.6*h*A(node1, r+1, c+1);
+                        //alpha[rw][Mx2+c] = +2.0*h*A(node2, r+1, c+1);
+                        //alpha[rw][Mx3+c] = -2.2*h*A(node3, r+1, c+1);
+                        //alpha[rw][Mx4+c] = +0.0;
+                    }
                 }
 
-                alpha[rw][Mx0+r] += +1.0;
-                alpha[rw][Mx1+r] += +0.8;
-                alpha[rw][Mx2+r] += +0.0;
-                alpha[rw][Mx3+r] += -0.8;
-                alpha[rw][Mx4+r] += +1.0;
-                betta[rw] = -2.4*h*(B(node1, r+1) - B(node2, r+1) + B(node3, r+1));
+                if (schema == 0)
+                {
 
-                //alpha[rw][Mx0+r] += +1.0;
-                //alpha[rw][Mx1+r] += +0.0;
-                //alpha[rw][Mx2+r] += +0.0;
-                //alpha[rw][Mx3+r] += -0.0;
-                //alpha[rw][Mx4+r] += +1.0;
-                //betta[rw] = -1.3333333333333333*h*(2.0*B(node1, r+1)-B(node2, r+1)+2.0*B(node3, r+1));
-
-                //alpha[rw][Mx0+r] += +1.0;
-                //alpha[rw][Mx1+r] += +0.266666666666666667;
-                //alpha[rw][Mx2+r] += +0.6;
-                //alpha[rw][Mx3+r] += -0.8;
-                //alpha[rw][Mx4+r] += +0.933333333333333333;
-                //betta[rw] = -2.6*h*B(node1, r+1) + 2.0*h*B(node2, r+1) - 2.2*h*B(node3, r+1);
+                }
+                else if (schema == 1)
+                {
+                    alpha[rw][Mx0+r] += +1.0;
+                    alpha[rw][Mx1+r] += +0.8;
+                    alpha[rw][Mx2+r] += +0.0;
+                    alpha[rw][Mx3+r] += -0.8;
+                    alpha[rw][Mx4+r] += +1.0;
+                    betta[rw] = -2.4*h*(B(node1, r+1) - B(node2, r+1) + B(node3, r+1));
+                }
+                else if (schema == 2)
+                {
+                    //alpha[rw][Mx0+r] += +1.0;
+                    //alpha[rw][Mx1+r] += +0.0;
+                    //alpha[rw][Mx2+r] += +0.0;
+                    //alpha[rw][Mx3+r] += -0.0;
+                    //alpha[rw][Mx4+r] += +1.0;
+                    //betta[rw] = -1.3333333333333333*h*(2.0*B(node1, r+1)-B(node2, r+1)+2.0*B(node3, r+1));
+                }
+                else if (schema == 3)
+                {
+                    //alpha[rw][Mx0+r] += +1.0;
+                    //alpha[rw][Mx1+r] += +0.266666666666666667;
+                    //alpha[rw][Mx2+r] += +0.6;
+                    //alpha[rw][Mx3+r] += -0.8;
+                    //alpha[rw][Mx4+r] += +0.933333333333333333;
+                    //betta[rw] = -2.6*h*B(node1, r+1) + 2.0*h*B(node2, r+1) - 2.2*h*B(node3, r+1);
+                }
 
                 for (unsigned int r1=0; r1<M; r1++)
                 {
@@ -2438,18 +2479,6 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
         {
             for (unsigned int c=0; c<M; c++)
             {
-                //Mx[Mx0+r][Mx0+c] = -25.0 - 12.0*h*A(nodeN4, r+1, c+1);;
-                //Mx[Mx0+r][Mx1+c] = +48.0;
-                //Mx[Mx0+r][Mx2+c] = -36.0;
-                //Mx[Mx0+r][Mx3+c] = +16.0;
-                //Mx[Mx0+r][Mx4+c] = -3.0;
-
-                //Mx[Mx0+r][Mx0+c] = gamma[r][N0*M+c];
-                //Mx[Mx0+r][Mx1+c] = gamma[r][N3*M+c];
-                //Mx[Mx0+r][Mx2+c] = gamma[r][N2*M+c];
-                //Mx[Mx0+r][Mx3+c] = gamma[r][N1*M+c];
-                //Mx[Mx0+r][Mx4+c] = gamma[r][N0*M+c];
-
                 Mx[Mx0+r][Mx0+c] = Mx[Mx0+r][Mx1+c] = Mx[Mx0+r][Mx2+c] = Mx[Mx0+r][Mx3+c] = 0.0; Mx[Mx0+r][Mx4+c] = -12.0*h*A(nodeN0, r+1, c+1);
                 Mx[Mx1+r][Mx0+c] = Mx[Mx1+r][Mx1+c] = Mx[Mx1+r][Mx2+c] = Mx[Mx1+r][Mx4+c] = 0.0; Mx[Mx1+r][Mx3+c] = -12.0*h*A(nodeN1, r+1, c+1);
                 Mx[Mx2+r][Mx0+c] = Mx[Mx2+r][Mx1+c] = Mx[Mx2+r][Mx3+c] = Mx[Mx2+r][Mx4+c] = 0.0; Mx[Mx2+r][Mx2+c] = -12.0*h*A(nodeN2, r+1, c+1);
@@ -2462,7 +2491,6 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
                 Mx[Mx4+r][Mx4+c] = gamma[r][N0*M+c];
             }
 
-            //f[0*M+r] = +12.0*h*B(nodeN4, r+1);
             f[Mx0+r] = +12.0*h*B(nodeN0, r+1);
             f[Mx1+r] = +12.0*h*B(nodeN1, r+1);
             f[Mx2+r] = +12.0*h*B(nodeN2, r+1);
@@ -2493,10 +2521,10 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
         IPrinter::print(xf, xf.length(), 12, 6);
         IPrinter::printSeperatorLine();
 
-        for (unsigned int i=0; i<=k; i++)
+        for (size_t i=0; i<=k; i++)
         {
             printf("***** ");
-            for (unsigned int r=1; r<=M; r++)
+            for (size_t r=1; r<=M; r++)
             {
                 printf("%4d %20.16f ", i*M+M-r, xf[i*M+M-r]);
             }
@@ -2504,13 +2532,13 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
         }
 
         x.clear();
-        x.resize(size); for (unsigned int n=0; n<size; n++) x[n].resize(M);
+        x.resize(size); for (size_t n=0; n<size; n++) x[n].resize(M);
 
-        unsigned int s = xf.length()-M;
-        unsigned int e = xf.length()-1;
+        size_t s = xf.length()-M;
+        size_t e = xf.length()-1;
 
         IPrinter::printSeperatorLine();
-        for (unsigned int n=size-1; n>=end; n--)
+        for (size_t n=size-1; n>=end; n--)
         {
             x[n] = xf.mid(s, e);
             s -= M;
@@ -2520,14 +2548,14 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
         IPrinter::printSeperatorLine();
         xf.clear();
 
-        for (unsigned int j=0, i=N-(k+1); j<=N-(k+1); j++, i--)
+        for (size_t j=0, i=N-(k+1); j<=N-(k+1); j++, i--)
         {
-            for (unsigned int eq=0; eq<M; eq++)
+            for (size_t eq=0; eq<M; eq++)
             {
-                unsigned int rw = i*M+eq;
+                size_t rw = i*M+eq;
 
                 x[i][eq] = betta[rw];
-                for (unsigned int c=0; c<M; c++)
+                for (size_t c=0; c<M; c++)
                 {
                     x[i][eq] += alpha[rw][Mx1+c]*x[i+1][c] + alpha[rw][Mx2+c]*x[i+2][c]
                             + alpha[rw][Mx3+c]*x[i+3][c] + alpha[rw][Mx4+c]*x[i+4][c];
@@ -2619,13 +2647,13 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
                 Mx[Mx5+r][Mx0+c] = Mx[Mx5+r][Mx1+c] = Mx[Mx5+r][Mx2+c] = Mx[Mx5+r][Mx3+c] = Mx[Mx5+r][Mx4+c] = Mx[Mx5+r][Mx6+c] = 0.0; Mx[Mx5+r][Mx5+c] = -60.0*h*A(nodeN1, r+1, c+1);
                 Mx[Mx6+r][Mx0+c] = Mx[Mx6+r][Mx1+c] = Mx[Mx6+r][Mx2+c] = Mx[Mx6+r][Mx3+c] = Mx[Mx6+r][Mx4+c] = Mx[Mx6+r][Mx5+c] = 0.0; Mx[Mx6+r][Mx6+c] = -60.0*h*A(nodeN0, r+1, c+1);
 
-//                Mx[Mx6+r][Mx0+c] = gamma[r][N0*M+c];
-//                Mx[Mx6+r][Mx1+c] = gamma[r][N1*M+c];
-//                Mx[Mx6+r][Mx2+c] = gamma[r][N2*M+c];
-//                Mx[Mx6+r][Mx3+c] = gamma[r][N3*M+c];
-//                Mx[Mx6+r][Mx4+c] = gamma[r][N4*M+c];
-//                Mx[Mx6+r][Mx5+c] = gamma[r][N5*M+c];
-//                Mx[Mx6+r][Mx6+c] = gamma[r][N6*M+c];
+                //                Mx[Mx6+r][Mx0+c] = gamma[r][N0*M+c];
+                //                Mx[Mx6+r][Mx1+c] = gamma[r][N1*M+c];
+                //                Mx[Mx6+r][Mx2+c] = gamma[r][N2*M+c];
+                //                Mx[Mx6+r][Mx3+c] = gamma[r][N3*M+c];
+                //                Mx[Mx6+r][Mx4+c] = gamma[r][N4*M+c];
+                //                Mx[Mx6+r][Mx5+c] = gamma[r][N5*M+c];
+                //                Mx[Mx6+r][Mx6+c] = gamma[r][N6*M+c];
             }
 
             f[Mx0+r] = +60.0*h*B(nodeN6, r+1);
@@ -2635,7 +2663,7 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
             f[Mx4+r] = +60.0*h*B(nodeN2, r+1);
             f[Mx5+r] = +60.0*h*B(nodeN1, r+1);
             f[Mx6+r] = +60.0*h*B(nodeN0, r+1);
-//            f[Mx6+r] = delta[r];
+            //            f[Mx6+r] = delta[r];
 
             Mx[Mx0+r][Mx0+r] -= 147.0; Mx[Mx0+r][Mx1+r] += 360.0; Mx[Mx0+r][Mx2+r] -= 450.0; Mx[Mx0+r][Mx3+r] += 400.0; Mx[Mx0+r][Mx4+r] -= 225.0; Mx[Mx0+r][Mx5+r] +=  72.0; Mx[Mx0+r][Mx6+r] -=  10.0;
             Mx[Mx1+r][Mx0+r] -=  10.0; Mx[Mx1+r][Mx1+r] -=  77.0; Mx[Mx1+r][Mx2+r] += 150.0; Mx[Mx1+r][Mx3+r] -= 100.0; Mx[Mx1+r][Mx4+r] +=  50.0; Mx[Mx1+r][Mx5+r] -=  15.0; Mx[Mx1+r][Mx6+r] +=   2.0;
