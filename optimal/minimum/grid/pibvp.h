@@ -135,6 +135,8 @@ struct MINIMUMSHARED_EXPORT LoadedSpacePoint : public SpacePoint
     double d;
 };
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 class MINIMUMSHARED_EXPORT ILoadedHeatEquationIBVP : public IHeatEquationIBVP
 {
 public:

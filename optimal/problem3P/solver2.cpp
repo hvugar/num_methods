@@ -1,6 +1,6 @@
 #include "solver2.h"
 
-using namespace p3p0;
+using namespace p3p2;
 
 void Functional::Main(int /*argc*/, char **/*argv*/)
 {

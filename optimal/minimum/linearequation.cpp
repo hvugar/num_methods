@@ -220,6 +220,7 @@ void LinearEquation::FirstRowLoaded(const double *e, double f, const double *a, 
 
 void LinearEquation::func1(const double *a, const double *b, const double *c, const double *d, double **e, double *x, unsigned int N)
 {
+    printf(">>> %d\n", N);
     std::vector<unsigned int> selectedCols;
     for (unsigned int col=0; col<N; col++)
     {
@@ -236,6 +237,7 @@ void LinearEquation::func1(const double *a, const double *b, const double *c, co
 
     if (selectedColsSize == 0)
     {
+        printf(">>> %d %d\n", N, selectedColsSize);
         tomasAlgorithm(a, b, c, d, x, N);
     }
     else

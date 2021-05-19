@@ -262,7 +262,7 @@ double Functional::fx(const DoubleVector &x) const
 {
     setVector(x);
 
-    ih->implicit_calculate_D2V2();
+    ih->implicit_calculate_D2V1();
 
     return integral(U);
 }
@@ -314,8 +314,8 @@ void Functional::gradient(const DoubleVector &x, DoubleVector &g) const
     const double time_step = timeDimension().step();
     const size_t time_size = timeDimension().size();
 
-    ih->implicit_calculate_D2V2();
-    fh->implicit_calculate_D2V2();
+    ih->implicit_calculate_D2V1();
+    fh->implicit_calculate_D2V1();
 
     g.clear();
     g.resize(x.length());
@@ -509,7 +509,6 @@ auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) co
     const DoubleMatrix &k = _functional->k;
     const DoubleMatrix &z = _functional->z;
     const DoubleVector *uu = _functional->uu;
-
 
     double sum = 0.0;
     double qi[] = { 0.0, 0.0 };

@@ -17,7 +17,7 @@
 //#define OPTIMIZE_ETA
 #endif
 
-namespace p3p0
+namespace p3p2
 {
 
 class CommonParameter
