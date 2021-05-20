@@ -8,7 +8,7 @@ namespace p3p5
 
 class Functional;
 
-class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public ILoadedHeatEquationIBVP
+class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public IHeatEquationIBVP /*public ILoadedHeatEquationIBVP*/
 {
 public:
     LoadedHeatEquationIBVP(Functional*);
@@ -35,6 +35,28 @@ private:
     double _fx;
 };
 
+class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationFBVP : public IHeatEquationFBVP /*public ILoadedHeatEquationFBVP*/
+{
+public:
+    LoadedHeatEquationFBVP(Functional*);
+    LoadedHeatEquationFBVP(const LoadedHeatEquationFBVP &);
+    LoadedHeatEquationFBVP & operator =(const LoadedHeatEquationFBVP &);
+    virtual ~LoadedHeatEquationFBVP() override;
+
+protected:
+    virtual auto final(const SpaceNodePDE &sn, FinalCondition fc) const -> double override;
+    virtual auto boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn, BoundaryConditionPDE &bc) const -> double override;
+    virtual auto f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double override;
+
+    virtual auto layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void override;
+    virtual auto timeDimension() const -> Dimension override;
+    virtual auto spaceDimensionX() const -> Dimension override;
+    virtual auto spaceDimensionY() const -> Dimension override;
+    virtual auto spaceDimensionZ() const -> Dimension override;
+
+    Functional* _functional;
+};
+
 class PROBLEM3P_SHARED_EXPORT Functional /*: public RnFunction, public IGradient, public IProjection, public IPrinter*/
 {
 public:
@@ -43,12 +65,14 @@ public:
     double lambda0 = 0.10;
     double lambda1 = 0.01;
     double initial_temperature = 0.0;
-    double envrmnt_temperature = 1.0;
+    double envrmnt_temperature = 5.0;
 
     size_t heating_point_number = 2;
 
     auto q(const TimeNodePDE &tn, size_t i) const -> double;
     auto z(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
+    DoubleMatrix U;
+    DoubleMatrix V;
 
     auto timeDimension() const -> Dimension { return Dimension(0.01, 0, 1000); }
 

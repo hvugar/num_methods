@@ -7,11 +7,19 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     Functional f;
 
     LoadedHeatEquationIBVP lhe(&f);
-    lhe.setThermalDiffusivity(1.0);
+    lhe.setThermalDiffusivity(0.01);
     lhe.setThermalConvection(-f.lambda0);
     lhe.setThermalConductivity(0.0);
     lhe.implicit_calculate_D2V1();
+
+    LoadedHeatEquationFBVP lheb(&f);
+    lheb.setThermalDiffusivity(-0.01);
+    lheb.setThermalConvection(f.lambda0);
+    lheb.setThermalConductivity(0.0);
+    lheb.implicit_calculate_D2V1();
 }
+
+/*********************************************************************************************************************************************/
 
 LoadedHeatEquationIBVP::LoadedHeatEquationIBVP(Functional*f) : _functional(f) {}
 
@@ -29,16 +37,17 @@ auto LoadedHeatEquationIBVP::initial(const SpaceNodePDE &/*sn*/, InitialConditio
 
 auto LoadedHeatEquationIBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
 {
-    //const double lambda = _functional->lambda1;
-    //const double envrmnt_temperature = _functional->envrmnt_temperature;
-    //bc = BoundaryConditionPDE::Dirichlet(1.0, 1.0); return 0.0;
-    bc = BoundaryConditionPDE::Neumann(); return 0.0;
-    //bc = BoundaryConditionPDE::Robin(lambda, +1.0); return lambda * envrmnt_temperature;
+    //bc = BoundaryConditionPDE::Dirichlet(); return 0.0;
+    //bc = BoundaryConditionPDE::Neumann(); return 0.0;
+    {
+        const double lambda = _functional->lambda1;
+        const double envrmnt_temperature = _functional->envrmnt_temperature;
+        bc = BoundaryConditionPDE::Robin(lambda, +1.0); return lambda * envrmnt_temperature;
+    }
 }
 
 auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
-    const size_t ln = static_cast<size_t>(tn.i);
     const double envrmnt_temperature = _functional->envrmnt_temperature;
     const double lambda0 = _functional->lambda0;
     const double dimX_step = spaceDimensionX().step();
@@ -62,29 +71,32 @@ auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) co
 
 auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
-    static double MIN = +10000.0;
-    static double MAX = -10000.0;
-    if (u.max()>MAX) MAX = u.max();
-    if (u.min()<MIN) MIN = u.min();
-    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, u.min(), u.max(), MIN, MAX);
+    if (tn.i == timeDimension().max()) { _functional->U = u; _functional->V = u; }
+
+
+    //static double MIN = +10000.0;
+    //static double MAX = -10000.0;
+    //if (u.max()>MAX) MAX = u.max();
+    //if (u.min()<MIN) MIN = u.min();
+    //printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, u.min(), u.max(), MIN, MAX);
 
     //if (tn.i%10==0)
-//    {
-        QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
-        QPixmap pixmap;
-        visualizeMatrixHeat(u, -5.0,  15.0, pixmap, 101, 101);
-//        //visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-//        //visualizeMatrixHeat(u, 0.50, 2.32, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-//        visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+    //    {
+    //QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
+    //QPixmap pixmap;
+    //visualizeMatrixHeat(u, 0.0, 14.864, pixmap, 101, 101);
+    //visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+    //visualizeMatrixHeat(u, 0.50, 2.32, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
 
-//                QPainter painter(&pixmap);
-//                painter.setFont(QFont("Consolas", 12));
-//                painter.setPen(Qt::white);
+    //QPainter painter(&pixmap);
+    //painter.setFont(QFont("Consolas", 12));
+    //painter.setPen(Qt::white);
 
-//                painter.drawText(2, 30, QString("time: ")+QString::number(tn.t, 'f', 3));
-//                painter.drawText(2, 60, QString("temp: ")+QString::number(u.max(), 'f', 3)+QString(" max temp: ")+QString::number(MAX, 'f', 3));
-        pixmap.save(filename);
-//    }
+    //painter.drawText(2, 30, QString("time: ")+QString::number(tn.t, 'f', 3));
+    //painter.drawText(2, 60, QString("temp: ")+QString::number(u.max(), 'f', 3)+QString(" max temp: ")+QString::number(MAX, 'f', 3));
+    //pixmap.save(filename);
+    //    }
 }
 
 auto LoadedHeatEquationIBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
@@ -95,20 +107,87 @@ auto LoadedHeatEquationIBVP::spaceDimensionY() const -> Dimension { return _func
 
 auto LoadedHeatEquationIBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
 
-auto Functional::q(const TimeNodePDE &tn, size_t i) const -> double
+/*********************************************************************************************************************************************/
+
+LoadedHeatEquationFBVP::LoadedHeatEquationFBVP(Functional*f) : _functional(f) {}
+
+LoadedHeatEquationFBVP::LoadedHeatEquationFBVP(const LoadedHeatEquationFBVP &) {}
+
+LoadedHeatEquationFBVP::~LoadedHeatEquationFBVP() {}
+
+LoadedHeatEquationFBVP& LoadedHeatEquationFBVP::operator =(const LoadedHeatEquationFBVP &) {}
+
+auto LoadedHeatEquationFBVP::final(const SpaceNodePDE &sn, FinalCondition /*ic*/) const -> double
 {
-    return 1.0;
+    return -2.0 * ( _functional->U[sn.j][sn.i] /*- _functional->V[sn.j][sn.i]*/ );
+}
+
+auto LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/, BoundaryConditionPDE &bc) const -> double
+{
+    //bc = BoundaryConditionPDE::Dirichlet(); return 0.0;
+    //bc = BoundaryConditionPDE::Neumann(); return 0.0;
+    {
+        const double lambda = _functional->lambda1;
+        bc = BoundaryConditionPDE::Robin(lambda, +1.0); return 0.0;
+    }
+}
+
+auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &/*sn*/, const TimeNodePDE &tn) const -> double
+{
+    return 0.0;
+}
+
+auto LoadedHeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
+{
+    static double MIN = +10000.0;
+    static double MAX = -10000.0;
+    if (p.max()>MAX) MAX = p.max();
+    if (p.min()<MIN) MIN = p.min();
+    printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, p.min(), p.max(), MIN, MAX);
+
+    //if (tn.i%10==0)
+    //    {
+    QString filename = QString("data/problem3P/b/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
+    QPixmap pixmap;
+    visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 101, 101);
+    //visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+    //visualizeMatrixHeat(u, 0.50, 2.32, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+
+    //                QPainter painter(&pixmap);
+    //                painter.setFont(QFont("Consolas", 12));
+    //                painter.setPen(Qt::white);
+
+    //                painter.drawText(2, 30, QString("time: ")+QString::number(tn.t, 'f', 3));
+    //                painter.drawText(2, 60, QString("temp: ")+QString::number(u.max(), 'f', 3)+QString(" max temp: ")+QString::number(MAX, 'f', 3));
+    pixmap.save(filename);
+    //    }
+}
+
+auto LoadedHeatEquationFBVP::timeDimension() const -> Dimension { return _functional->timeDimension(); }
+
+auto LoadedHeatEquationFBVP::spaceDimensionX() const -> Dimension { return _functional->spaceDimensionX(); }
+
+auto LoadedHeatEquationFBVP::spaceDimensionY() const -> Dimension { return _functional->spaceDimensionY(); }
+
+auto LoadedHeatEquationFBVP::spaceDimensionZ() const -> Dimension { return _functional->spaceDimensionZ(); }
+
+/*********************************************************************************************************************************************/
+
+auto Functional::q(const TimeNodePDE &tn, size_t /*i*/) const -> double
+{
+    return 0.05*tn.t;
 }
 
 auto Functional::z(const TimeNodePDE &tn, size_t i) const -> SpacePoint
 {
     SpacePoint sp;
     const double t = tn.t;
-    const double v = 2.0*M_PI*t;
+    const double v = 2.0*M_PI/**t*/;
     switch (i) {
     case 0: {
-        sp.x = 0.4*sin(v*t) + 0.5;
-        sp.y = 0.4*cos(v*t) + 0.5;
+        sp.x = /*0.2*/0.4*sin(v*t) + 0.5;;
+        sp.y = /*0.2*/0.4*cos(v*t) + 0.5;;
     } break;
     case 1: {
         sp.x = -0.2*sin(v*t) + 0.5;
