@@ -8,10 +8,33 @@ namespace p3p5
 
 class Functional;
 
-class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public IHeatEquationIBVP /*public ILoadedHeatEquationIBVP*/
+class Shared
 {
 public:
-    LoadedHeatEquationIBVP(Functional*);
+    double lambda1 = 0.01;
+    double initial_temperature = 0.0;
+    double envrmnt_temperature = 5.0;
+
+    size_t heating_point_number = 2;
+
+    DoubleMatrix U;
+    DoubleMatrix V = DoubleMatrix(100, 100, 0.0);
+
+    auto q(const TimeNodePDE &tn, size_t i) const -> double;
+    auto z(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
+
+protected:
+
+    Dimension _timeDimension   = Dimension(0.01, 0, 1000);
+    Dimension _spaceDimensionX = Dimension(0.01, 0, 100);
+    Dimension _spaceDimensionY = Dimension(0.01, 0, 100);
+    Dimension _spaceDimensionZ = Dimension(0.01, 0, 100);
+};
+
+class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public IHeatEquationIBVP, public virtual Shared /*public ILoadedHeatEquationIBVP*/
+{
+public:
+    LoadedHeatEquationIBVP(double a = 1.0, double lambda0 = 0.0, double lambda1 = 0.0);
     LoadedHeatEquationIBVP(const LoadedHeatEquationIBVP &);
     LoadedHeatEquationIBVP & operator =(const LoadedHeatEquationIBVP &);
     virtual ~LoadedHeatEquationIBVP() override;
@@ -26,19 +49,12 @@ protected:
     virtual auto spaceDimensionX() const -> Dimension override;
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
-
-private:
-    double _initial_temperature = 0.0;
-    double _enviroment_temperature = 0.5;
-
-    Functional* _functional;
-    double _fx;
 };
 
-class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationFBVP : public IHeatEquationFBVP /*public ILoadedHeatEquationFBVP*/
+class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationFBVP : public IHeatEquationFBVP, public virtual Shared /*public ILoadedHeatEquationFBVP*/
 {
 public:
-    LoadedHeatEquationFBVP(Functional*);
+    LoadedHeatEquationFBVP(double a = -1.0, double lambda0 = 0.0, double lambda1 = 0.0);
     LoadedHeatEquationFBVP(const LoadedHeatEquationFBVP &);
     LoadedHeatEquationFBVP & operator =(const LoadedHeatEquationFBVP &);
     virtual ~LoadedHeatEquationFBVP() override;
@@ -53,37 +69,16 @@ protected:
     virtual auto spaceDimensionX() const -> Dimension override;
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
-
-    Functional* _functional;
 };
 
-class PROBLEM3P_SHARED_EXPORT Functional /*: public RnFunction, public IGradient, public IProjection, public IPrinter*/
+
+class PROBLEM3P_SHARED_EXPORT Functional : public LoadedHeatEquationIBVP, public LoadedHeatEquationFBVP /*: public RnFunction, public IGradient, public IProjection, public IPrinter*/
 {
 public:
     static void Main(int argc, char** argv);
 
-    double lambda0 = 0.10;
-    double lambda1 = 0.01;
-    double initial_temperature = 0.0;
-    double envrmnt_temperature = 5.0;
-
-    size_t heating_point_number = 2;
-
-    auto q(const TimeNodePDE &tn, size_t i) const -> double;
-    auto z(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
-    DoubleMatrix U;
-    DoubleMatrix V;
-
-    auto timeDimension() const -> Dimension { return Dimension(0.01, 0, 1000); }
-
-    auto spaceDimensionX() const -> Dimension { return Dimension(0.01, 0, 100); }
-
-    auto spaceDimensionY() const -> Dimension { return Dimension(0.01, 0, 100); }
-
-    auto spaceDimensionZ() const -> Dimension { return Dimension(0.01, 0, 100); }
+    Functional(double diffusivity, double convection, double conductivity = 0.0, double lambda = 0.0);
 };
-
-
 
 }
 
