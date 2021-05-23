@@ -15,11 +15,11 @@ public:
 
 public:
 
-    static void printVector(const DoubleVector &x, const char *s = nullptr, unsigned int n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
+    static void printVector(const DoubleVector &x, const char *s = nullptr, size_t n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
     static void printVector(const std::vector<double> &x, const char *s = nullptr, unsigned int n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
     static void printVector(double *x, unsigned int size, const char *s = nullptr, unsigned int n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
     static void printVector(double *x, unsigned int size, const char *s, unsigned int n, unsigned int start, unsigned int end, const char *filename);
-    static void printVector(unsigned int width, unsigned int presicion, const DoubleVector &x, const char *s = nullptr, unsigned int n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
+    static void printVector(unsigned int width, unsigned int presicion, const DoubleVector &x, const char *s = nullptr, size_t n = 10, unsigned int start = 0, unsigned int end = 0, FILE *file = stdout);
 
     static void printMatrix(const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);
     static void printMatrix(unsigned int width, unsigned int presicion, const DoubleMatrix &x, unsigned int m = 10, unsigned int n = 10, const char* s = nullptr, FILE* f = stdout);

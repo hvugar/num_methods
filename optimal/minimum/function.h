@@ -75,6 +75,8 @@ struct MINIMUMSHARED_EXPORT IGradient
     static void GradientR(const RnFunction *f, double step, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
 
     static void GradientF(const RnFunction *f, double factor, const DoubleVector &x, DoubleVector &g, size_t start, size_t end);
+
+    static void Gradient(double step, const RnFunction *f, const DoubleVector &x, DoubleVector &g, const std::vector<size_t> &index);
 };
 
 #endif // FUNCTION_H

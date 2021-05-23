@@ -76,7 +76,7 @@ void IPrinter::printAsMatrix(const DoubleVector &x, unsigned int M, unsigned int
     fflush(f);
 }
 
-void IPrinter::printVector(const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+void IPrinter::printVector(const DoubleVector &x, const char *s, size_t n, unsigned int start, unsigned int end, FILE *file)
 {
     if (s!=nullptr) fprintf(file, "%s", s);
     if (start != 0 || end != 0)
@@ -170,7 +170,7 @@ void IPrinter::printVector(double *x, unsigned int size, const char *s, unsigned
     fflush(file);
 }
 
-void IPrinter::printVector(unsigned int width, unsigned int presicion, const DoubleVector &x, const char *s, unsigned int n, unsigned int start, unsigned int end, FILE *file)
+void IPrinter::printVector(unsigned int width, unsigned int presicion, const DoubleVector &x, const char *s, size_t n, unsigned int start, unsigned int end, FILE *file)
 {
     char format[10] = {0};
     int sz = sprintf(format, "%%%d.%df ", width, presicion);

@@ -3,6 +3,17 @@
 
 #include "global.h"
 
+#undef TIME_STEP
+#define TIME_STEP 0.01
+#undef TIME_MAX
+#define TIME_MAX 200
+#define DIMX_STEP 0.01
+#define DIMX_MAX 100
+#define DIMY_STEP 0.01
+#define DIMY_MAX 100
+#define NUM_GRAD_STEP 0.01
+
+
 namespace p3p5
 {
 
@@ -11,24 +22,30 @@ class Functional;
 class Shared
 {
 public:
-    double lambda1 = 0.01;
-    double initial_temperature = 0.0;
-    double envrmnt_temperature = 5.0;
-
-    size_t heating_point_number = 2;
-
     DoubleMatrix U;
-    DoubleMatrix V = DoubleMatrix(100, 100, 0.0);
+    DoubleMatrix V = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
 
     auto q(const TimeNodePDE &tn, size_t i) const -> double;
     auto z(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
 
-protected:
+    DoubleVector qv = DoubleVector(2*(TIME_MAX+1), 0.0);
+    //DoubleVector zv = DoubleVector(2*(TIME_MAX+1), 0.0);
+    DoubleVector pv = DoubleVector(2*(TIME_MAX+1), 0.0);
 
-    Dimension _timeDimension   = Dimension(0.01, 0, 1000);
-    Dimension _spaceDimensionX = Dimension(0.01, 0, 100);
-    Dimension _spaceDimensionY = Dimension(0.01, 0, 100);
-    Dimension _spaceDimensionZ = Dimension(0.01, 0, 100);
+
+protected:
+    Dimension _timeDimension   = Dimension(TIME_STEP, 0, TIME_MAX);
+    Dimension _spaceDimensionX = Dimension(DIMX_STEP, 0, DIMX_MAX);
+    Dimension _spaceDimensionY = Dimension(DIMY_STEP, 0, DIMY_MAX);
+    Dimension _spaceDimensionZ = Dimension(DIMX_STEP, 0, DIMX_MAX);
+
+public:
+    double lambda1 = 0.01;
+    double initial_temperature = 0.0;
+    double envrmnt_temperature = 5.0;
+    size_t heating_point_number = 2;
+
+    bool drawImages = false;
 };
 
 class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public IHeatEquationIBVP, public virtual Shared /*public ILoadedHeatEquationIBVP*/
@@ -72,12 +89,28 @@ protected:
 };
 
 
-class PROBLEM3P_SHARED_EXPORT Functional : public LoadedHeatEquationIBVP, public LoadedHeatEquationFBVP /*: public RnFunction, public IGradient, public IProjection, public IPrinter*/
+class PROBLEM3P_SHARED_EXPORT Functional :
+        public LoadedHeatEquationIBVP,
+        public LoadedHeatEquationFBVP,
+        public RnFunction,
+        public IGradient,
+        public IProjection,
+        public IPrinter
 {
 public:
     static void Main(int argc, char** argv);
 
-    Functional(double diffusivity, double convection, double conductivity = 0.0, double lambda = 0.0);
+    Functional(double diffusivity = 1.0, double conductivity = 0.0, double convection = 0.0, double lambda = 0.0);
+
+    virtual auto fx(const DoubleVector &x) const -> double;
+    virtual auto integral(const DoubleMatrix &U) const -> double;
+    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+
+    virtual auto project(DoubleVector &x, size_t index) -> void;
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
+
+    GradientBasedMethod *gm;
+    double lastFx = 0.0;
 };
 
 }

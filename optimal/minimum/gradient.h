@@ -224,6 +224,7 @@ protected:
     double m_functionTolerance;
     double m_stepTolerance;
     double m_constraintTolerance;
+public:
     double min_step;
     double min_epsilon;
     bool m_show_end_message;

@@ -303,6 +303,7 @@ double HeatEquationFBVP::boundary(const SpaceNodePDE &sn, const TimeNodePDE &tn,
     //return (condition.alpha()*::p_fx(this, sn, tn)+condition.beta()*::p_fx(this, sn, tn, -1, 3, 3));
 #endif
 #endif
+    return 0.0;
 }
 
 double HeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const

@@ -2501,6 +2501,34 @@ void IFirstOrderLinearODEIVP::transferOfConditionP(const std::vector<NonLocalCon
             Mx[Mx1+r][Mx0+r] += -1.0; Mx[Mx1+r][Mx1+r] += +6.00; Mx[Mx1+r][Mx2+r] += -18.0; Mx[Mx1+r][Mx3+r] += +10.0; Mx[Mx1+r][Mx4+r] += +3.00;
             Mx[Mx2+r][Mx0+r] += +1.0; Mx[Mx2+r][Mx1+r] += -8.00; Mx[Mx2+r][Mx2+r] += +0.00; Mx[Mx2+r][Mx3+r] += +8.00; Mx[Mx2+r][Mx4+r] += -1.00;
             Mx[Mx3+r][Mx0+r] += -3.0; Mx[Mx3+r][Mx1+r] += -10.0; Mx[Mx3+r][Mx2+r] += +18.0; Mx[Mx3+r][Mx3+r] += -6.00; Mx[Mx3+r][Mx4+r] += +1.00;
+
+//            for (unsigned int c=0; c<M; c++)
+//            {
+//                Mx[Mx0+r][Mx1+c] = Mx[Mx0+r][Mx2+c] = Mx[Mx0+r][Mx3+c] = Mx[Mx0+r][Mx4+c] = 0.0; Mx[Mx0+r][Mx0+c] = -12.0*h*A(nodeN4, r+1, c+1);
+//                Mx[Mx1+r][Mx0+c] = Mx[Mx1+r][Mx2+c] = Mx[Mx1+r][Mx3+c] = Mx[Mx1+r][Mx4+c] = 0.0; Mx[Mx1+r][Mx1+c] = -12.0*h*A(nodeN3, r+1, c+1);
+//                Mx[Mx2+r][Mx0+c] = Mx[Mx2+r][Mx1+c] = Mx[Mx2+r][Mx3+c] = Mx[Mx2+r][Mx4+c] = 0.0; Mx[Mx2+r][Mx2+c] = -12.0*h*A(nodeN2, r+1, c+1);
+//                Mx[Mx3+r][Mx0+c] = Mx[Mx3+r][Mx1+c] = Mx[Mx3+r][Mx2+c] = Mx[Mx3+r][Mx4+c] = 0.0; Mx[Mx3+r][Mx3+c] = -12.0*h*A(nodeN1, r+1, c+1);
+////                Mx[Mx4+r][Mx0+c] = Mx[Mx4+r][Mx1+c] = Mx[Mx4+r][Mx2+c] = Mx[Mx4+r][Mx3+c] = 0.0; Mx[Mx4+r][Mx4+c] = -12.0*h*A(nodeN0, r+1, c+1);//
+
+//                Mx[Mx4+r][Mx0+c] = gamma[r][N4*M+c];
+//                Mx[Mx4+r][Mx1+c] = gamma[r][N3*M+c];
+//                Mx[Mx4+r][Mx2+c] = gamma[r][N2*M+c];
+//                Mx[Mx4+r][Mx3+c] = gamma[r][N1*M+c];
+//                Mx[Mx4+r][Mx4+c] = gamma[r][N0*M+c];
+//            }
+
+//            f[Mx0+r] = +12.0*h*B(nodeN4, r+1);
+//            f[Mx1+r] = +12.0*h*B(nodeN3, r+1);
+//            f[Mx2+r] = +12.0*h*B(nodeN2, r+1);
+//            f[Mx3+r] = +12.0*h*B(nodeN1, r+1);
+////            f[Mx4+r] = +12.0*h*B(nodeN0, r+1);//
+//            f[Mx4+r] = delta[r];
+
+//            Mx[Mx0+r][Mx0+r] -= 25.0; Mx[Mx0+r][Mx1+r] += 48.0; Mx[Mx0+r][Mx2+r] -= 36.0; Mx[Mx0+r][Mx3+r] += 16.0; Mx[Mx0+r][Mx4+r] -=  3.0;
+//            Mx[Mx1+r][Mx0+r] -=  3.0; Mx[Mx1+r][Mx1+r] += 10.0; Mx[Mx1+r][Mx2+r] += 18.0; Mx[Mx1+r][Mx3+r] -=  6.0; Mx[Mx1+r][Mx4+r] +=  1.0;
+//            Mx[Mx2+r][Mx0+r] +=  1.0; Mx[Mx2+r][Mx1+r] -=  8.0; Mx[Mx2+r][Mx2+r] +=  0.0; Mx[Mx2+r][Mx3+r] +=  8.0; Mx[Mx2+r][Mx4+r] -=  1.0;
+//            Mx[Mx3+r][Mx0+r] -=  1.0; Mx[Mx3+r][Mx1+r] +=  6.0; Mx[Mx3+r][Mx2+r] -= 18.0; Mx[Mx3+r][Mx3+r] += 10.0; Mx[Mx3+r][Mx4+r] +=  3.0;
+////            Mx[Mx4+r][Mx0+r] +=  3.0; Mx[Mx4+r][Mx1+r] -= 16.0; Mx[Mx4+r][Mx2+r] += 36.0; Mx[Mx4+r][Mx3+r] -= 48.0; Mx[Mx4+r][Mx4+r] += 25.0;//
         }
 
 

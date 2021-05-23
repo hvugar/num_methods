@@ -77,15 +77,15 @@ void FirstOrderLinearODEIVP::NonLocalConditionExample()
     const size_t M = nl.count();
     const size_t N = TIME_MAX;
     const double h = TIME_STEP;
-    const size_t k = 2;
-    const size_t schema = 0;
+    const size_t k = 4;
+    const size_t schema = 1;
 
     //double p1 = N*h;
     //int p2 = N/100;
     std::vector<NonLocalCondition> C;
     C.push_back(NonLocalCondition(0, PointNodeODE(0.00,  0),  DoubleMatrix(M, M, +0.8)));
     //C.push_back(NonLocalCondition(2, PointNodeODE(0.50, 50),  DoubleMatrix(M, M, -0.5)));
-    C.push_back(NonLocalCondition(1, PointNodeODE(1.00, 100), DoubleMatrix(M, M, +0.4)));
+    C.push_back(NonLocalCondition(1, PointNodeODE(1.00, N), DoubleMatrix(M, M, +0.4)));
 
     //    C.push_back(NonLocalCondition(1, PointNodeODE(0.25*p1,   25*p2), DoubleMatrix(M,M,+1.5)));
     //    C.push_back(NonLocalCondition(3, PointNodeODE(0.75*p1,   75*p2), DoubleMatrix(M,M,+4.3)));

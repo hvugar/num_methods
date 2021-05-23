@@ -45,7 +45,7 @@
 #endif
 
 #if (__cplusplus == 201703L)
-#define NOEXCEPT
+#define NOEXCEPT noexcept
 #endif
 
 #endif

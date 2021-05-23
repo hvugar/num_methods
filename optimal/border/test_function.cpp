@@ -238,4 +238,6 @@ double test1()
     delete [] c;
     delete [] b;
     delete [] a;
+
+    return 0.0;
 }
