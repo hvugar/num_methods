@@ -111,6 +111,8 @@ public:
 
     GradientBasedMethod *gm;
     double lastFx = 0.0;
+
+    size_t functionCount = 0;
 };
 
 }

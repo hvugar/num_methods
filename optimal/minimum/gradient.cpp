@@ -206,12 +206,11 @@ unsigned int GradientBasedMethod::maxFunctionEvaluationNumber() const
  * @param fxb      Величина функции в точке b.
  * @param unimodal
  */
-void GradientBasedMethod::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
+size_t GradientBasedMethod::straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
-    unsigned int iteration = 0; C_UNUSED(iteration);
-    unsigned int fx_count = 0;
+    size_t fx_count = 0;
 
-    if ( step <= 0.0 )
+    if ( step <= DBL_EPSILON )
     {
         std::string msg = "in function \"stranghLineSearch\" step value is less than zero.";
         throw std::invalid_argument(msg);
@@ -225,54 +224,40 @@ void GradientBasedMethod::straightLineSearch(double x, double step, double &a, d
     fxb = fx(b);        fx_count++;
     double fxx = fx(x); fx_count++;
 
-    //if (mcallback) mcallback->straightLineSearchCallback(iteration, x, a, b, fxa, fxb, fx_count);
-
     // if fxa and fxb are both greater than fxx, then minimum point is inside a and b
     if (fxa >= fxx && fxb >= fxx)
     {
         unimodal = true;
-        //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        return;
+        return fx_count;
     }
 
     if (fxa < fxx && fxx > fxb)
     {
         unimodal = false;
-        //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-        //fputs("Function is not unimodal\n", stderr);
-        return;
+        fputs("Function is not unimodal\n", stderr);
+        return fx_count;
     }
 
     // from left to right -->>
     if ( fxa >= fxx && fxx >= fxb )
     {
-        //puts("---------------->>");
-        //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
-        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", iteration, a, x, b, fxa, fxx, fxb);
         while ( fxx > fxb)
         {
-            x = x + fstep;
-            a = x - fstep;
+            x = x + fstep; //a = x;
+            a = x - fstep; //x = b;
             b = x + fstep;
 
             fxa = fxx;
             fxx = fxb;
             fxb = fx(b); fx_count++;
-
-            //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", ++iteration, a, x, b, fxa, fxx, fxb);
-            //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         unimodal = true;
-        return;
+        return fx_count;
     }
 
     // from right to left <<--
     if ( fxa <= fxx && fxx <= fxb )
     {
-        //puts("<<----------------");
-        //straightLineSearchCallback(iteration, x, a, b, fxa, fxb);
-        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", iteration, a, x, b, fxa, fxx, fxb);
         while ( fxa < fxx )
         {
             x = x - fstep;
@@ -282,13 +267,12 @@ void GradientBasedMethod::straightLineSearch(double x, double step, double &a, d
             fxb = fxx;
             fxx = fxa;
             fxa = fx(a); fx_count++;
-
-            //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", ++iteration, a, x, b, fxa, fxx, fxb);
-            //if (mcallback) mcallback->straightLineSearchCallback(++iteration, x, a, b, fxa, fxb, fx_count);
         }
         unimodal = true;
-        return;
+        return fx_count;
     }
+
+    return fx_count;
 }
 
 /**
@@ -301,12 +285,11 @@ void GradientBasedMethod::straightLineSearch(double x, double step, double &a, d
  * @param fxb      Величина функции в точке b.
  * @param unimodal
  */
-void GradientBasedMethod::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
+size_t GradientBasedMethod::swann(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const
 {
-    unsigned int iteration = 0; C_UNUSED(iteration);
-    unsigned int fx_count = 0;
+    size_t fx_count = 0;
 
-    if ( step <= 0.0 )
+    if ( step <= DBL_EPSILON )
     {
         std::string msg = "in function \"swann\" step value is less than zero.";
         throw std::invalid_argument(msg);
@@ -320,70 +303,59 @@ void GradientBasedMethod::swann(double x, double step, double &a, double &b, dou
     fxb = fx(b);        fx_count++;
     double fxx = fx(x); fx_count++;
 
-    //if (mcallback) mcallback->swannCallback(iteration, x, a, b, fxa, fxb, fx_count);
-
-    // if fxa and fxb are both greater than fxx, then minimum point is inside a and b
-    // начальный интервал неопределенности найден
+    // if fxa and fxb are both greater than fxx, then minimum point is inside a and b // начальный интервал неопределенности найден
     if (fxa >= fxx && fxb >= fxx)
     {
         unimodal = true;
-        //if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        return;
+        return fx_count;
     }
 
     if (fxa < fxx && fxx > fxb)
     {
         unimodal = false;
-        //if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-        //fprintf(stderr, "%4d %8.4f %8.4f %8.4f %10.6f %10.6f %10.6f\n", -2, a, x, b, fxa, fxx, fxb);
-        //fprintf(stderr, "e %4d a:%10.6f x:%10.6f b:%10.6f fxa:%10.6f fxx:%10.6f fxb:%10.6f fx_c:nt%4d\n", -2, a, x, b, fxa, fxx, fxb, fx_count);
         fputs("Function is not unimodal\n", stderr);
-        return;
+        return fx_count;
     }
 
     // from left to right -->>
     if ( fxa >= fxx && fxx >= fxb )
     {
-        puts("---------------->>");
         unsigned int k = 1;
         while ( fxx > fxb )
         {
             a = x;
             x = b;
             b = x + pow(2.0, k) * fstep;
-            k++;
 
             fxa = fxx;
             fxx = fxb;
             fxb = fx(b); fx_count++;
-
-            //if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
+            k++;
         }
         unimodal = true;
-        return;
+        return fx_count;
     }
 
     // from right to left <<--
-//    if ( fxa <= fxx && fxx <= fxb )
-//    {
-//        puts("<<----------------");
-//        unsigned int k = 1;
-//        while ( fxa < fxx )
-//        {
-//            b = x;
-//            x = a;
-//            a = x - pow(2.0, k) * fstep;
-//            k++;
+    if ( fxa <= fxx && fxx <= fxb )
+    {
+        unsigned int k = 1;
+        while ( fxa < fxx )
+        {
+            b = x;
+            x = a;
+            a = x - pow(2.0, k) * fstep;
 
-//            fxb = fxx;
-//            fxx = fxa;
-//            fxa = mfunction->fx(a); fx_count++;
+            fxb = fxx;
+            fxx = fxa;
+            fxa = fx(a); fx_count++;
+            k++;
+        }
+        unimodal = true;
+        return fx_count;
+    }
 
-//            if (mcallback) mcallback->swannCallback(++iteration, x, a, b, fxa, fxb, fx_count);
-//        }
-//        unimodal = true;
-//        return;
-//    }
+    return fx_count;
 }
 
 /**
@@ -399,10 +371,10 @@ void GradientBasedMethod::swann(double x, double step, double &a, double &b, dou
  * @param b        Конечнная точка отрезка.
  * @param epsilon  Число эпсилон для останова метода.
  */
-void GradientBasedMethod::goldenSectionSearch(double &x, double &a, double &b, double epsilon) const
+size_t GradientBasedMethod::goldenSectionSearch(double &x, double &a, double &b, double epsilon) const
 {
-    unsigned int iteration = 0;
-    unsigned int fx__count = 0;
+    size_t iteration = 0;
+    size_t fx__count = 0;
 
     if ( epsilon <= DBL_EPSILON )
     {
@@ -423,7 +395,6 @@ void GradientBasedMethod::goldenSectionSearch(double &x, double &a, double &b, d
     double y2 = 0.0;
 
     x = (a+b)/2.0;
-    //if (mcallback) mcallback->goldenSectionSearchCallback(iteration, NAN, a, b, NAN, NAN, NAN, fx__count);
 
     // Lazimi epsilon deqiqliyini alana qeder iterasiyalari davam edirik
     while ( fabs(b-a) > epsilon )
@@ -457,9 +428,8 @@ void GradientBasedMethod::goldenSectionSearch(double &x, double &a, double &b, d
             check_x1 = true; // x1 novbeti iterasiyada axtarilacaq
         }
 
-        x = (b+a)/2.0;
+        x = 0.5*(b+a);
         iteration++;
-        //if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
     }
 
     //double c = (a+b)/2.0;
@@ -469,6 +439,8 @@ void GradientBasedMethod::goldenSectionSearch(double &x, double &a, double &b, d
     //if (fa>fb)  c = b;
     //x = c;
     //return c;
+
+    return fx__count;
 }
 
 /**

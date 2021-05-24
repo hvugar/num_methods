@@ -152,6 +152,11 @@ public:
 
     unsigned int maxFunctionEvaluationNumber() const;
 
+    size_t search_function_count = 0;
+    size_t golden_function_count = 0;
+    size_t total__function_count = 0;
+
+
 protected:
     /**
      * @brief minimize
@@ -169,8 +174,9 @@ protected:
      * @param fxa      Величина функции в точке a.
      * @param fxb      Величина функции в точке b.
      * @param unimodal
+     * @return
      */
-    void straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
+    size_t straightLineSearch(double x, double step, double &a, double &b, double &fxa, double &fxb, bool &unimodal) const;
     /**
      * @brief          Метод Свенна. Установления границ интервала.
      * @param x        Произвольно выбранная начальная точка.
@@ -181,7 +187,7 @@ protected:
      * @param fxb      Величина функции в точке b.
      * @param unimodal
      */
-    void swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
+    size_t swann(double x, double step, double &a, double &b, double &fx, double &fxb, bool &unimodal) const;
     /**
      * @brief          Метод золотого сечения.
      *                 Метод относится к последовательным стратегиям. Задается начальный интервал неопределенности и
@@ -194,8 +200,9 @@ protected:
      * @param a        Начальная точка отрезка.
      * @param b        Конечнная точка отрезка.
      * @param epsilon  Число эпсилон для останова метода.
+     * @return
      */
-    void goldenSectionSearch(double &x, double &a, double &b, double epsilon) const;
+    size_t goldenSectionSearch(double &x, double &a, double &b, double epsilon) const;
     /**
      * @brief          Метод деления интервала пополам.
      *                 Метод относится к последовательным стратегиям и позволяет исключить из дальнейшего

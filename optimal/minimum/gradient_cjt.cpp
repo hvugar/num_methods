@@ -228,30 +228,28 @@ void ConjugateGradient::calculate(DoubleVector& x)
     s.clear();
 }
 
-double ConjugateGradient::minimize(const DoubleVector &x, const DoubleVector &s) const
+double ConjugateGradient::minimize(const DoubleVector &/*x*/, const DoubleVector &/*s*/) const
 {
-    C_UNUSED(x);
-    C_UNUSED(s);
-
     double alpha0 = 0.0;
     double a=0.0, b=0.0, alpha=0.0;
 
     double fxa = 0.0, fxb = 0.0;
     bool unimodal = false;
 
-    straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
-    //swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    const_cast<ConjugateGradient*>(this)->search_function_count = straightLineSearch(alpha0, min_step, a, b, fxa, fxb, unimodal);
+    //const_cast<ConjugateGradient*>(this)->search_function_count = swann(alpha0, min_step, a, b, fxa, fxb, unimodal);
 
     if (unimodal)
     {
-        goldenSectionSearch(alpha, a, b, min_epsilon);
+        const_cast<ConjugateGradient*>(this)->golden_function_count = goldenSectionSearch(alpha, a, b, min_epsilon);
     }
     else
     {
         fxa < fxb ? alpha = a : alpha = b;
     }
 
-    if (fx(alpha) > fx(alpha0)) alpha = alpha0;
+    //if (fx(alpha) > fx(alpha0)) alpha = alpha0;
+    const_cast<ConjugateGradient*>(this)->total__function_count = search_function_count + golden_function_count;
 
     return alpha;
 }
