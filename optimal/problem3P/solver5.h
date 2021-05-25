@@ -6,12 +6,14 @@
 #undef TIME_STEP
 #define TIME_STEP 0.01
 #undef TIME_MAX
-#define TIME_MAX 200
+#define TIME_MAX 300
 #define DIMX_STEP 0.01
 #define DIMX_MAX 100
 #define DIMY_STEP 0.01
 #define DIMY_MAX 100
 #define NUM_GRAD_STEP 0.01
+
+#define OPTIMIZE_Q
 
 
 namespace p3p5
@@ -26,12 +28,14 @@ public:
     DoubleMatrix V = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
 
     auto q(const TimeNodePDE &tn, size_t i) const -> double;
-    auto z(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
+    auto s(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
 
     DoubleVector qv = DoubleVector(2*(TIME_MAX+1), 0.0);
     //DoubleVector zv = DoubleVector(2*(TIME_MAX+1), 0.0);
     DoubleVector pv = DoubleVector(2*(TIME_MAX+1), 0.0);
 
+    DoubleMatrix k;
+    DoubleMatrix z;
 
 protected:
     Dimension _timeDimension   = Dimension(TIME_STEP, 0, TIME_MAX);
@@ -43,7 +47,9 @@ public:
     double lambda1 = 0.01;
     double initial_temperature = 0.0;
     double envrmnt_temperature = 5.0;
-    size_t heating_point_number = 2;
+    const size_t heating_source_number = 2;
+    const size_t meausere_point_number = 2;
+    SpacePoint *measurePoint;
 
     bool drawImages = false;
 };
