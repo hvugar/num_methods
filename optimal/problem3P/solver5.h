@@ -13,8 +13,8 @@
 #define DIMY_MAX 100
 #define NUM_GRAD_STEP 0.01
 
-#define OPTIMIZE_Q
-
+//#define OPTIMIZE_Q
+#define OPTIMIZE_Y
 
 namespace p3p5
 {
@@ -34,8 +34,10 @@ public:
     //DoubleVector zv = DoubleVector(2*(TIME_MAX+1), 0.0);
     DoubleVector pv = DoubleVector(2*(TIME_MAX+1), 0.0);
 
+#ifdef OPTIMIZE_Y
     DoubleMatrix k;
     DoubleMatrix z;
+#endif
 
 protected:
     Dimension _timeDimension   = Dimension(TIME_STEP, 0, TIME_MAX);

@@ -6,18 +6,11 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 {
     Functional f(0.01, 0.0, 0.01, 0.0001);
 
-    //    std::cout << std::setprecision(6) << f.LoadedHeatEquationIBVP::thermalDiffusivity() << " "
-    //              << f.LoadedHeatEquationIBVP::thermalConductivity() << " " << f.LoadedHeatEquationIBVP::thermalConvection() << " " << f.lambda1 << std::endl;
-    //    std::cout << std::setprecision(6) << f.LoadedHeatEquationFBVP::thermalDiffusivity() << " "
-    //              << f.LoadedHeatEquationFBVP::thermalConductivity() << " " << f.LoadedHeatEquationFBVP::thermalConvection() << " " << f.lambda1 << std::endl;
-
-    //    f.LoadedHeatEquationIBVP::implicit_calculate_D2V1();
-    //    f.LoadedHeatEquationFBVP::implicit_calculate_D2V1();
-
     size_t time_size = f._timeDimension.size();
     const size_t heating_source_number = f.heating_source_number;
     const size_t meausere_point_number = f.meausere_point_number;
 
+#ifdef OPTIMIZE_Q
 
     //double x1[] = {4.281320,4.015598,4.094010,4.487715,5.165369,6.065671,7.126982,8.267653,9.400826,10.436499,11.292881,11.895477,12.192561,12.151197,11.771056,11.084692,10.143746,9.023558,7.806453,6.581709,5.432876,4.435138,3.640652,3.098134,2.827804,2.847890,3.158956,3.758098,4.625613,5.742473,7.057111,8.517783,10.044295,11.545338,12.919116,14.068094,14.898064,15.341176,15.350635,14.920771,14.088449,12.916095,11.497830,9.937732,8.349308,6.838864,5.502558,4.406904,3.615646,3.156957,3.058021,3.326407,3.965251,4.957713,6.285717,7.889860,9.706647,11.634315,13.554807,15.334914,16.845764,17.961839,18.592386,18.672837,18.190862,17.188110,15.739137,13.959683,11.979232,9.940281,7.977120,6.212277,4.730436,3.611580,2.889952,2.594968,2.732480,3.299355,4.270740,5.618373,7.271003,9.151123,11.139858,13.099967,14.877105,16.321468,17.290284,17.683081,17.436737,16.553218,15.101373,13.189094,10.974168,8.622295,6.301977,4.156853,2.300565,0.792480,-0.334286,-1.091902,-1.508038,-1.618225,-1.462646,-1.076040,-0.488491,0.261422,1.132275,2.060794,2.971168,3.773892,4.379822,4.706178,4.705529,4.362403,3.709629,2.826567,1.817596,0.814210,-0.063084,-0.717807,-1.097588,-1.198663,-1.070461,-0.793532,-0.468378,-0.183869,-0.001721,0.056426,0.008469,-0.091928,-0.189081,-0.228202,-0.186857,-0.073392,0.072186,0.192901,0.225130,0.132871,-0.098378,-0.447421,-0.860947,-1.271062,-1.594623,-1.765061,-1.745233,-1.541470,-1.203301,-0.824181,-0.508780,-0.364731,-0.460826,-0.815055,-1.388230,-2.094890,-2.818320,-3.451729,-3.909174,-4.154431,-4.193381,-4.070107,-3.847800,-3.601367,-3.375115,-3.205211,-3.103266,-3.059040,-3.049975,-3.033423,-2.969122,-2.827788,-2.601918,-2.304797,-1.981321,-1.678693,-1.455804,-1.347259,-1.360482,-1.474490,-1.643368,-1.803473,-1.912552,-1.945172,-1.921696,-1.886483,-1.889900,-1.956254,-2.072045,-2.168048,-2.170378,-2.027666,-1.740088,-1.370868,-0.999354,-0.693550,-0.463723,-0.255163,0.014587,0.346803,0.605990,0.482308,-0.258083};
     //double x2[] = {3.158009,3.184737,3.233357,3.302677,3.387367,3.482846,3.581328,3.679663,3.768907,3.845587,3.901365,3.932497,3.937601,3.914573,3.863813,3.788365,3.690446,3.574667,3.450023,3.320842,3.196287,3.080140,2.980047,2.900626,2.846679,2.818525,2.816534,2.839257,2.885022,2.948258,3.023320,3.102096,3.180397,3.248726,3.302995,3.334617,3.339575,3.316043,3.262359,3.179218,3.069188,2.935191,2.781939,2.618157,2.447508,2.278792,2.115349,1.962862,1.826106,1.707721,1.608317,1.527951,1.465341,1.419639,1.388185,1.366480,1.351376,1.341406,1.332127,1.323747,1.312707,1.298839,1.281927,1.264286,1.247407,1.231604,1.219140,1.211147,1.210983,1.216489,1.228873,1.245157,1.262592,1.280468,1.295013,1.302047,1.298945,1.283192,1.254290,1.212668,1.156715,1.088962,1.013840,0.933207,0.854155,0.778812,0.712310,0.657749,0.621251,0.605551,0.609400,0.633992,0.677127,0.738125,0.809102,0.885778,0.959606,1.021730,1.068001,1.090251,1.082005,1.039741,0.961162,0.847738,0.703545,0.529702,0.334411,0.126715,-0.086015,-0.291611,-0.483410,-0.652437,-0.793747,-0.898019,-0.961500,-0.987186,-0.973682,-0.925022,-0.844709,-0.743866,-0.630273,-0.515067,-0.411991,-0.326785,-0.271832,-0.255568,-0.283298,-0.358595,-0.481286,-0.645358,-0.850081,-1.083412,-1.333371,-1.588268,-1.829641,-2.044465,-2.216782,-2.336144,-2.384123,-2.351057,-2.237013,-2.036326,-1.752663,-1.390966,-0.967690,-0.499067,-0.006668,0.481381,0.946955,1.362130,1.700628,1.943587,2.075154,2.087622,1.983687,1.761311,1.437981,1.037585,0.583361,0.113844,-0.344427,-0.757655,-1.102206,-1.344889,-1.468641,-1.477577,-1.367288,-1.150847,-0.842006,-0.476174,-0.080762,0.308629,0.654673,0.939638,1.137432,1.233002,1.224681,1.118357,0.930891,0.691085,0.415098,0.136679,-0.113603,-0.320798,-0.458328,-0.529295,-0.534665,-0.493377,-0.405221,-0.286442,-0.167386,-0.049582,0.058734,0.163545,0.239074,0.263544,0.177669,-0.088068,-0.510898,-0.695372,1.048845};
@@ -36,15 +29,26 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     //double x1[] = { 7.451066,0.144655,0.000000,0.000000,0.000000,4.500493,11.229386,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,10.148721,2.009863,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,5.354878,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,5.141441,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.409377,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,7.101104,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.517332,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,12.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,6.295595,10.264398,11.495359,9.899854,5.655380,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,5.427408,9.122624,9.267102,5.710251,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,5.298900,7.193311,2.226720,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.181510,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.732691,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000907,0.029014 };
     //double x2[] = { 0.000000,0.000000,0.000000,0.000000,0.729750,1.607605,2.537964,3.452616,4.266681,4.914243,5.324855,5.446295,5.246104,4.705046,3.829942,2.650151,1.213648,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.032427,2.956524,4.666570,6.055373,7.041679,7.572311,7.617894,7.180154,6.296200,5.021521,3.438679,1.654112,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.315056,0.795527,1.107407,1.244447,1.231443,1.089027,0.858899,0.549767,0.203841,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.088014,0.656046,0.956802,0.918988,0.650008,0.202894,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.790168,2.252108,3.541718,4.426600,4.864694,4.607913,3.535847,1.595249,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.399045,3.983265,4.927374,4.041128,1.269360,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.263407,3.069966,2.960644,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,1.963261,1.660397,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000 };
 
-//    DoubleVector x(heating_source_number*time_size);
+    //    DoubleVector x(heating_source_number*time_size);
 
-//    for (size_t ln=0; ln<time_size; ln++)
-//    {
-//        x[0*time_size+ln] = x1[ln];
-//        x[1*time_size+ln] = x2[ln];
-//    }
+    //    for (size_t ln=0; ln<time_size; ln++)
+    //    {
+    //        x[0*time_size+ln] = x1[ln];
+    //        x[1*time_size+ln] = x2[ln];
+    //    }
 
-    DoubleVector x(1*heating_source_number*meausere_point_number);
+    //    for (size_t i=0; i<heating_point_number; i++)
+    //    {
+    //        for (size_t ln=0; ln<time_size; ln++)
+    //        {
+    //            x[i*time_size+ln] = 0.0;//0.05*0.001*ln;
+    //        }
+    //    }
+
+#endif
+
+#ifdef OPTIMIZE_Y
+    DoubleVector x(2 * heating_source_number * meausere_point_number);
     for (size_t i=0; i<heating_source_number; i++)
     {
         for (size_t j=0; j<meausere_point_number; j++)
@@ -54,14 +58,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
         }
     }
 
-
-//    for (size_t i=0; i<heating_point_number; i++)
-//    {
-//        for (size_t ln=0; ln<time_size; ln++)
-//        {
-//            x[i*time_size+ln] = 0.0;//0.05*0.001*ln;
-//        }
-//    }
+#endif
 
     //    IPrinter::printVector(x.mid(   0, 1000));
     //    IPrinter::printVector(x.mid(1001, 2001));
@@ -105,29 +102,35 @@ Functional::Functional(double diffusivity, double conductivity, double convectio
     LoadedHeatEquationFBVP(-diffusivity, conductivity, +convection)
 {
     this->lambda1 = lambda;
+
     measurePoint = new SpacePoint[4];
     measurePoint[0] = SpacePoint(0.4, 0.6);
     measurePoint[1] = SpacePoint(0.8, 0.3);
     measurePoint[2] = SpacePoint(0.2, 0.7);
     measurePoint[3] = SpacePoint(0.5, 0.2);
 
-    k = DoubleMatrix(heating_source_number, meausere_point_number);
-    z = DoubleMatrix(heating_source_number, meausere_point_number);
+    k = DoubleMatrix(heating_source_number, meausere_point_number, -0.1);
+    z = DoubleMatrix(heating_source_number, meausere_point_number, +0.2);
 }
 
 auto Functional::fx(const DoubleVector &x) const -> double
 {
     const_cast<Functional*>(this)->functionCount++;
-    //const_cast<Functional*>(this)->qv = x;
 
+#ifdef OPTIMIZE_Q
+    const_cast<Functional*>(this)->qv = x;
+#endif
+
+#ifdef OPTIMIZE_Y
     for (size_t i=0; i<heating_source_number; i++)
     {
         for (size_t j=0; j<meausere_point_number; j++)
         {
-            const_cast<Functional*>(this)->k.at(i,j) = x[0*heating_source_number*meausere_point_number + i*heating_source_number + j];
-            const_cast<Functional*>(this)->z.at(i,j) = x[1*heating_source_number*meausere_point_number + i*heating_source_number + j];
+            const_cast<Functional*>(this)->k.at(i,j) = x.at(0*heating_source_number*meausere_point_number + i*heating_source_number + j);
+            const_cast<Functional*>(this)->z.at(i,j) = x.at(1*heating_source_number*meausere_point_number + i*heating_source_number + j);
         }
     }
+#endif
 
     LoadedHeatEquationIBVP::implicit_calculate_D2V1();
     double integralU = integral(U);
@@ -174,8 +177,11 @@ auto Functional::integral(const DoubleMatrix &) const -> double
 
 auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
-    //const_cast<Functional*>(this)->qv = x;
+#ifdef OPTIMIZE_Q
+    const_cast<Functional*>(this)->qv = x;
+#endif
 
+#ifdef OPTIMIZE_Y
     for (size_t i=0; i<heating_source_number; i++)
     {
         for (size_t j=0; j<meausere_point_number; j++)
@@ -184,11 +190,13 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
             const_cast<Functional*>(this)->z.at(i,j) = x[1*heating_source_number*meausere_point_number + i*heating_source_number + j];
         }
     }
+#endif
 
     g.resize(x.length());
     LoadedHeatEquationIBVP::implicit_calculate_D2V1();
     LoadedHeatEquationFBVP::implicit_calculate_D2V1();
 
+#ifdef OPTIMIZE_Q
     size_t time_size = _timeDimension.size();
     for (size_t i=0; i<heating_source_number; i++)
     {
@@ -197,12 +205,26 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
             /*if (ln%100==0)*/ g[i*time_size+ln] = -pv[i*time_size+ln];
         }
     }
+#endif
+
+#ifdef OPTIMIZE_Y
+    for (size_t i=0; i<heating_source_number; i++)
+    {
+        for (size_t j=0; j<meausere_point_number; j++)
+        {
+            g[0*heating_source_number*meausere_point_number + i*heating_source_number + j] = 0.0;
+            g[1*heating_source_number*meausere_point_number + i*heating_source_number + j] = 0.0;
+        }
+    }
+#endif
 }
 
 auto Functional::project(DoubleVector &x, size_t index) -> void
 {
-//    if (x[index] <=  0.0) x[index] =  0.0;
-//    if (x[index] >= 12.0) x[index] = 12.0;
+#ifdef OPTIMIZE_Q
+    if (x[index] <=  0.0) x[index] =  0.0;
+    if (x[index] >= 12.0) x[index] = 12.0;
+#endif
 }
 
 auto Functional::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult /*result*/) const -> void
@@ -211,7 +233,6 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
     //if (fabs(f - lastFx) <= 0.10000) { const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(0.100, 0.0100); }
     //if (fabs(f - lastFx) <= 0.00100) { const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(0.010, 0.0010); }
     //if (fabs(f - lastFx) <= 0.00001) { const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(0.001, 0.0001); }
-
 
     const_cast<Functional*>(this)->lastFx = f;
 
@@ -236,13 +257,13 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
     }
 
 
-//    const_cast<Functional*>(this)->drawImages = true;
-//    const_cast<Functional*>(this)->qv = x;
-//    LoadedHeatEquationIBVP::implicit_calculate_D2V1();
-//    const_cast<Functional*>(this)->drawImages = false;
-//    std::string path = "E:\\project\\hvugar\\num_methods\\trunk\\optimal\\bin\\data\\problem3P\\f\\png\\";
-//    system(std::string("mkdir ").append(path).append(std::to_string(iteration)).append(" >nul").data());
-//    system(std::string("move  ").append(path).append("*.png ").append(path).append(std::to_string(iteration)).append("\\ >nul").data());
+    //    const_cast<Functional*>(this)->drawImages = true;
+    //    const_cast<Functional*>(this)->qv = x;
+    //    LoadedHeatEquationIBVP::implicit_calculate_D2V1();
+    //    const_cast<Functional*>(this)->drawImages = false;
+    //    std::string path = "E:\\project\\hvugar\\num_methods\\trunk\\optimal\\bin\\data\\problem3P\\f\\png\\";
+    //    system(std::string("mkdir ").append(path).append(std::to_string(iteration)).append(" >nul").data());
+    //    system(std::string("move  ").append(path).append("*.png ").append(path).append(std::to_string(iteration)).append("\\ >nul").data());
 }
 
 /*********************************************************************************************************************************************/
@@ -280,12 +301,7 @@ auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) co
     {
         const SpacePoint &zi = s(tn, i);
         const double w = DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
-        if (w > 0.0)
-        {
-            const double qi = q(tn, i);
-            sum += qi * w;
-        }
-        //sum += qi * DeltaFunction::nearest(sn, zi, dimX_step, dimY_step, dimX_size, dimY_size);
+        if (w > 0.0) { sum += q(tn, i) * w; }
     }
 
     return fx + sum;
@@ -295,6 +311,22 @@ auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE 
 {
     LoadedHeatEquationIBVP* lhe = const_cast<LoadedHeatEquationIBVP*>(this);
     if (static_cast<int>(tn.i) == timeDimension().max()) { lhe->Shared::U = u; }
+
+#ifdef OPTIMIZE_Y
+    const double time_size = spaceDimensionY().size();
+    for (size_t i=0; i<heating_source_number; i++)
+    {
+        double qi = 0.0;
+        for (size_t j=0; j<meausere_point_number; j++)
+        {
+            const SpacePoint &mp = measurePoint[j];
+            double up = DeltaFunction::lumpedPointG(u, mp, _spaceDimensionX, _spaceDimensionY);
+            qi += k.at(i,j)*(up - z.at(i,j));
+        }
+        lhe->qv[i*time_size + tn.i+1] = qi;
+        if (tn.i==0) lhe->qv[i*time_size + tn.i] = qi;
+    }
+#endif
 
     if (drawImages)
     {
@@ -306,21 +338,7 @@ auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE 
         pixmap.save(filename);
     }
 
-    {
-        const double time_size = spaceDimensionY().size();
-        for (size_t i=0; i<heating_source_number; i++)
-        {
-            double qi = 0.0;
-            for (size_t j=0; j<meausere_point_number; j++)
-            {
-                const SpacePoint &mp = measurePoint[j];
-                double up = DeltaFunction::lumpedPointG(u, mp, _spaceDimensionX, _spaceDimensionY);
-                qi += k.at(i,j)*(up - z.at(i,j));
-            }
-            lhe->qv[i*time_size + tn.i+1] = qi;
-            if (tn.i==0) lhe->qv[i*time_size + tn.i] = qi;
-        }
-    }
+
 
     //static double MIN = +10000.0;
     //static double MAX = -10000.0;
@@ -383,20 +401,34 @@ auto LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNode
     bc = BoundaryConditionPDE::Robin(lambda1, +1.0); return 0.0;
 }
 
-auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &/*sn*/, const TimeNodePDE &/*tn*/) const -> double
+auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &/*tn*/) const -> double
 {
+    const double dimX_step = spaceDimensionX().step();
+    const double dimY_step = spaceDimensionY().step();
+
+    double sum = 0.0;
+    for (size_t j=0; j<meausere_point_number; j++)
+    {
+        const SpacePoint &mp = measurePoint[j];
+        const double w = DeltaFunction::gaussian(sn, mp, SpacePoint(dimX_step, dimY_step));
+        if (w > 0.0) { sum += q(tn, i) * w; }
+    }
+
     return 0.0;
 }
 
 auto LoadedHeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
 {
     LoadedHeatEquationFBVP* lhe = const_cast<LoadedHeatEquationFBVP*>(this);
+
+#if defined(OPTIMIZE_Q) || defined(OPTIMIZE_Y)
     size_t time_size = timeDimension().size();
     for (size_t i=0; i<heating_source_number; i++)
     {
         const SpacePoint &zi = s(tn, i);
         lhe->Shared::pv[i*time_size+tn.i] = DeltaFunction::lumpedPointG(p, zi, _spaceDimensionX, _spaceDimensionY, 1, 4);
     }
+#endif
 
     //static double MIN = +10000.0;
     //static double MAX = -10000.0;
