@@ -24,15 +24,16 @@ class Functional;
 class Shared
 {
 public:
-    DoubleMatrix U;
-    DoubleMatrix V = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
-
     auto q(const TimeNodePDE &tn, size_t i) const -> double;
     auto s(const TimeNodePDE &tn, size_t i) const -> SpacePoint;
 
+public:
+    DoubleMatrix U = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
+    DoubleMatrix V = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
+
     DoubleVector qv = DoubleVector(2*(TIME_MAX+1), 0.0);
-    //DoubleVector zv = DoubleVector(2*(TIME_MAX+1), 0.0);
     DoubleVector pv = DoubleVector(2*(TIME_MAX+1), 0.0);
+    //DoubleVector zv = DoubleVector(2*(TIME_MAX+1), 0.0);
 
 #ifdef OPTIMIZE_Y
     DoubleMatrix k;
@@ -46,14 +47,14 @@ protected:
     Dimension _spaceDimensionZ = Dimension(DIMX_STEP, 0, DIMX_MAX);
 
 public:
-    double lambda1 = 0.01;
-    double initial_temperature = 0.0;
-    double envrmnt_temperature = 5.0;
     const size_t heating_source_number = 2;
     const size_t meausere_point_number = 2;
     SpacePoint *measurePoint;
+    double lambda1 = 0.01;
+    double initial_temperature = 0.0;
+    double envrmnt_temperature = 5.0;
 
-    bool drawImages = false;
+    size_t drawImages = 0;
 };
 
 class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationIBVP : public IHeatEquationIBVP, public virtual Shared /*public ILoadedHeatEquationIBVP*/

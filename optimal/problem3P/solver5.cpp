@@ -313,7 +313,7 @@ auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE 
     if (static_cast<int>(tn.i) == timeDimension().max()) { lhe->Shared::U = u; }
 
 #ifdef OPTIMIZE_Y
-    const double time_size = spaceDimensionY().size();
+    const size_t time_size = spaceDimensionY().size();
     for (size_t i=0; i<heating_source_number; i++)
     {
         double qi = 0.0;
@@ -323,12 +323,13 @@ auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE 
             double up = DeltaFunction::lumpedPointG(u, mp, _spaceDimensionX, _spaceDimensionY);
             qi += k.at(i,j)*(up - z.at(i,j));
         }
-        lhe->qv[i*time_size + tn.i+1] = qi;
-        if (tn.i==0) lhe->qv[i*time_size + tn.i] = qi;
+        size_t index = i*time_size + tn.i;
+        lhe->qv[index+1] = qi;
+        if (tn.i==0) lhe->qv[index] = qi;
     }
 #endif
 
-    if (drawImages)
+    if (drawImages != 0)
     {
         //printf(">>> %6d %14.6f %14.6f\n", tn.i, u.min(), u.max());
 
