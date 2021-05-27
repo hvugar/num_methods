@@ -103,6 +103,8 @@ Functional::Functional(double diffusivity, double conductivity, double convectio
 {
     this->lambda1 = lambda;
 
+    const size_t time_size = _timeDimension.size();
+
     measurePoint = new SpacePoint[4];
     measurePoint[0] = SpacePoint(0.4, 0.6);
     measurePoint[1] = SpacePoint(0.8, 0.3);
@@ -111,6 +113,12 @@ Functional::Functional(double diffusivity, double conductivity, double convectio
 
     k = DoubleMatrix(heating_source_number, meausere_point_number, -0.1);
     z = DoubleMatrix(heating_source_number, meausere_point_number, +0.2);
+
+    uj_v = DoubleVector(meausere_point_number*time_size, 0.0);
+    pi_v = DoubleVector(heating_source_number*time_size, 0.0);
+
+    qi_v = DoubleVector(heating_source_number*time_size, 0.0);
+    gj_v = DoubleVector(meausere_point_number*time_size, 0.0);
 }
 
 auto Functional::fx(const DoubleVector &x) const -> double
@@ -177,19 +185,14 @@ auto Functional::integral(const DoubleMatrix &) const -> double
 
 auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 {
+    const size_t time_size = _timeDimension.size();
+    const double time_step = _timeDimension.step();
+
 #ifdef OPTIMIZE_Q
     const_cast<Functional*>(this)->qv = x;
 #endif
 
 #ifdef OPTIMIZE_Y
-    for (size_t i=0; i<heating_source_number; i++)
-    {
-        for (size_t j=0; j<meausere_point_number; j++)
-        {
-            const_cast<Functional*>(this)->k.at(i,j) = x[0*heating_source_number*meausere_point_number + i*heating_source_number + j];
-            const_cast<Functional*>(this)->z.at(i,j) = x[1*heating_source_number*meausere_point_number + i*heating_source_number + j];
-        }
-    }
 #endif
 
     g.resize(x.length());
@@ -197,7 +200,6 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
     LoadedHeatEquationFBVP::implicit_calculate_D2V1();
 
 #ifdef OPTIMIZE_Q
-    size_t time_size = _timeDimension.size();
     for (size_t i=0; i<heating_source_number; i++)
     {
         for (size_t ln=0; ln<time_size; ln++)
@@ -212,8 +214,27 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
     {
         for (size_t j=0; j<meausere_point_number; j++)
         {
+            const_cast<Functional*>(this)->k.at(i,j) = x[0*heating_source_number*meausere_point_number + i*heating_source_number + j];
+            const_cast<Functional*>(this)->z.at(i,j) = x[1*heating_source_number*meausere_point_number + i*heating_source_number + j];
+
             g[0*heating_source_number*meausere_point_number + i*heating_source_number + j] = 0.0;
             g[1*heating_source_number*meausere_point_number + i*heating_source_number + j] = 0.0;
+        }
+    }
+
+    for (size_t i=0; i<heating_source_number; i++)
+    {
+        const size_t n = i*time_size;
+        for (size_t j=0; j<meausere_point_number; j++)
+        {
+            const size_t m = j*time_size;
+
+            for (size_t ln=0; ln<time_size; ln++)
+            {
+                double w = ((ln==0 || ln == time_size-1) ? 0.5 : 1.0) * time_step;
+                g[0*heating_source_number*meausere_point_number + i*heating_source_number + j] += -pi_v.at(n+ln) * (uj_v.at(m+ln)-z.at(i,j)) * w;
+                g[1*heating_source_number*meausere_point_number + i*heating_source_number + j] += +pi_v.at(n+ln) * k.at(i,j) * w;
+            }
         }
     }
 #endif
@@ -244,6 +265,8 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
     //IPrinter::printVector(g.mid(   0, time_size));
     //IPrinter::printVector(x.mid(time_size+1, 2*time_size+1));
     //IPrinter::printVector(g.mid(time_size+1, 2*time_size+1));
+    IPrinter::printVector(x, nullptr, x.length());
+    IPrinter::printVector(g, nullptr, g.length());
     const_cast<Functional*>(this)->functionCount = 0;
 
     if (iteration!=0) const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(alpha*0.5, alpha*0.1);
@@ -257,13 +280,13 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
     }
 
 
-    //    const_cast<Functional*>(this)->drawImages = true;
-    //    const_cast<Functional*>(this)->qv = x;
-    //    LoadedHeatEquationIBVP::implicit_calculate_D2V1();
-    //    const_cast<Functional*>(this)->drawImages = false;
-    //    std::string path = "E:\\project\\hvugar\\num_methods\\trunk\\optimal\\bin\\data\\problem3P\\f\\png\\";
-    //    system(std::string("mkdir ").append(path).append(std::to_string(iteration)).append(" >nul").data());
-    //    system(std::string("move  ").append(path).append("*.png ").append(path).append(std::to_string(iteration)).append("\\ >nul").data());
+    const_cast<Functional*>(this)->drawImages = 1;
+    //const_cast<Functional*>(this)->qv = x;
+    LoadedHeatEquationIBVP::implicit_calculate_D2V1();
+    const_cast<Functional*>(this)->drawImages = 0;
+    std::string path = "E:\\project\\hvugar\\num_methods\\trunk\\optimal\\bin\\data\\problem3P\\f\\png\\";
+    system(std::string("mkdir ").append(path).append(std::to_string(iteration)).append(" >nul").data());
+    system(std::string("move  ").append(path).append("*.png ").append(path).append(std::to_string(iteration)).append("\\ >nul").data());
 }
 
 /*********************************************************************************************************************************************/
@@ -294,41 +317,61 @@ auto LoadedHeatEquationIBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) co
 {
     const double dimX_step = spaceDimensionX().step();
     const double dimY_step = spaceDimensionY().step();
-    double fx = -thermalConvection() * envrmnt_temperature;
 
     double sum = 0.0;
+#ifdef OPTIMIZE_Y
+    size_t time_size = timeDimension().size();
+    for (size_t i=0; i<heating_source_number; i++)
+    {
+        const SpacePoint &si = s(tn, i);
+        const double w = DeltaFunction::gaussian(sn, si, SpacePoint(dimX_step, dimY_step));
+        if (w > 0.0) { for (size_t j=0; j<meausere_point_number; j++) { sum += qi_v.at(i*time_size + tn.i) * w; } }
+    }
+#endif
+
+#ifdef OPTIMIZE_Q
     for (size_t i=0; i<heating_source_number; i++)
     {
         const SpacePoint &zi = s(tn, i);
         const double w = DeltaFunction::gaussian(sn, zi, SpacePoint(dimX_step, dimY_step));
         if (w > 0.0) { sum += q(tn, i) * w; }
     }
+#endif
 
-    return fx + sum;
+    return sum - thermalConvection() * envrmnt_temperature;
 }
 
 auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
 {
     LoadedHeatEquationIBVP* lhe = const_cast<LoadedHeatEquationIBVP*>(this);
-    if (static_cast<int>(tn.i) == timeDimension().max()) { lhe->Shared::U = u; }
 
 #ifdef OPTIMIZE_Y
-    const size_t time_size = spaceDimensionY().size();
+    size_t time__min = timeDimension().min();
+    size_t time__max = timeDimension().max();
+    size_t time_size = timeDimension().size();
+    for (size_t j=0; j<meausere_point_number; j++)
+    {
+        const SpacePoint &mp = measurePoint[j];
+        lhe->Shared::uj_v.at(j*time_size+tn.i) = DeltaFunction::lumpedPointG(u, mp, _spaceDimensionX, _spaceDimensionY, 1, 4);
+    }
+
     for (size_t i=0; i<heating_source_number; i++)
     {
         double qi = 0.0;
-        for (size_t j=0; j<meausere_point_number; j++)
-        {
-            const SpacePoint &mp = measurePoint[j];
-            double up = DeltaFunction::lumpedPointG(u, mp, _spaceDimensionX, _spaceDimensionY);
-            qi += k.at(i,j)*(up - z.at(i,j));
-        }
         size_t index = i*time_size + tn.i;
-        lhe->qv[index+1] = qi;
-        if (tn.i==0) lhe->qv[index] = qi;
+        for (size_t j=0; j<meausere_point_number; j++) { qi += k.at(i,j)*(uj_v.at(j*time_size+tn.i) - z.at(i,j)); }
+        if (tn.i==time__min) lhe->qi_v.at(index) = qi;
+        if (tn.i!=time__max) lhe->qi_v.at(index+1) = qi;
+        if (tn.i==time__max) lhe->qi_v.at(index) = qi;
     }
 #endif
 
+    saveImage(u, tn);
+    if (static_cast<int>(tn.i) == timeDimension().max()) { lhe->Shared::U = u; }
+}
+
+auto LoadedHeatEquationIBVP::saveImage(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void
+{
     if (drawImages != 0)
     {
         //printf(">>> %6d %14.6f %14.6f\n", tn.i, u.min(), u.max());
@@ -338,32 +381,6 @@ auto LoadedHeatEquationIBVP::layerInfo(const DoubleMatrix &u, const TimeNodePDE 
         visualizeMatrixHeat(u, u.min(), u.max(), pixmap, 101, 101);
         pixmap.save(filename);
     }
-
-
-
-    //static double MIN = +10000.0;
-    //static double MAX = -10000.0;
-    //if (u.max()>MAX) MAX = u.max();
-    //if (u.min()<MIN) MIN = u.min();
-    //printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, u.min(), u.max(), MIN, MAX);
-
-    //if (tn.i%10==0)
-    //    {
-    //QString filename = QString("data/problem3P/f/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
-    //QPixmap pixmap;
-    //visualizeMatrixHeat(u, 0.0, 3.864, pixmap, 101, 101);
-    //visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-    //visualizeMatrixHeat(u, 0.50, 2.32, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-
-    //QPainter painter(&pixmap);
-    //painter.setFont(QFont("Consolas", 12));
-    //painter.setPen(Qt::white);
-
-    //painter.drawText(2, 30, QString("time: ")+QString::number(tn.t, 'f', 3));
-    //painter.drawText(2, 60, QString("temp: ")+QString::number(u.max(), 'f', 3)+QString(" max temp: ")+QString::number(MAX, 'f', 3));
-    //pixmap.save(filename);
-    //    }
 }
 
 auto LoadedHeatEquationIBVP::timeDimension() const -> Dimension { return Shared::_timeDimension; }
@@ -402,58 +419,72 @@ auto LoadedHeatEquationFBVP::boundary(const SpaceNodePDE &/*sn*/, const TimeNode
     bc = BoundaryConditionPDE::Robin(lambda1, +1.0); return 0.0;
 }
 
-auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &/*tn*/) const -> double
+auto LoadedHeatEquationFBVP::f(const SpaceNodePDE &sn, const TimeNodePDE &tn) const -> double
 {
     const double dimX_step = spaceDimensionX().step();
     const double dimY_step = spaceDimensionY().step();
 
     double sum = 0.0;
+#ifdef OPTIMIZE_Y
+    size_t time_size = timeDimension().size();
     for (size_t j=0; j<meausere_point_number; j++)
     {
         const SpacePoint &mp = measurePoint[j];
         const double w = DeltaFunction::gaussian(sn, mp, SpacePoint(dimX_step, dimY_step));
-        if (w > 0.0) { sum += q(tn, i) * w; }
+        if (w > 0.0) { for (size_t i=0; i<heating_source_number; i++) { sum -= gj_v.at(j*time_size+tn.i) * w; } }
     }
+#endif
 
-    return 0.0;
+    return sum;
 }
 
 auto LoadedHeatEquationFBVP::layerInfo(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
 {
     LoadedHeatEquationFBVP* lhe = const_cast<LoadedHeatEquationFBVP*>(this);
 
-#if defined(OPTIMIZE_Q) || defined(OPTIMIZE_Y)
+#ifdef OPTIMIZE_Y
+    size_t time__min = timeDimension().min();
+    size_t time__max = timeDimension().max();
     size_t time_size = timeDimension().size();
     for (size_t i=0; i<heating_source_number; i++)
     {
-        const SpacePoint &zi = s(tn, i);
-        lhe->Shared::pv[i*time_size+tn.i] = DeltaFunction::lumpedPointG(p, zi, _spaceDimensionX, _spaceDimensionY, 1, 4);
+        const SpacePoint &si = s(tn, i);
+        lhe->Shared::pi_v[i*time_size+tn.i] = DeltaFunction::lumpedPointG(p, si, _spaceDimensionX, _spaceDimensionY, 1, 4);
+    }
+
+    for (size_t j=0; j<meausere_point_number; j++)
+    {
+        double gj = 0.0;
+        size_t index = j*time_size + tn.i;
+        for (size_t i=0; i<heating_source_number; i++) { gj += k.at(j,i)*pi_v[i*time_size+tn.i]; }
+        if (tn.i==time__max) lhe->gj_v.at(index) = gj;
+        if (tn.i!=time__min) lhe->gj_v.at(index-1) = gj;
+        if (tn.i==time__min) lhe->gj_v.at(index) = gj;
     }
 #endif
 
-    //static double MIN = +10000.0;
-    //static double MAX = -10000.0;
-    //if (p.max()>MAX) MAX = p.max();
-    //if (p.min()<MIN) MIN = p.min();
-    //printf(">>> %6d %14.6f %14.6f %14.6f %14.6f\n", tn.i, p.min(), p.max(), MIN, MAX);
+#ifdef OPTIMIZE_Q
+    size_t time_size = timeDimension().size();
+    for (size_t i=0; i<heating_source_number; i++)
+    {
+        const SpacePoint &si = s(tn, i);
+        lhe->Shared::pi_v[i*time_size+tn.i] = DeltaFunction::lumpedPointG(p, si, _spaceDimensionX, _spaceDimensionY, 1, 4);
+    }
+#endif
 
-    //if (tn.i%10==0)
-    //    {
-    //QString filename = QString("data/problem3P/b/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
-    //QPixmap pixmap;
-    //visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 101, 101);
-    //visualizeMatrixHeat(u, 1.50, 2.1807, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-    //visualizeMatrixHeat(u, 0.50, 2.32, pixmap, spaceDimensionX().size(), spaceDimensionY().size());
-    //visualizeMatrixHeat(u, u.min(), u.max(), pixmap, spaceDimensionX().size(), spaceDimensionY().size());
+    saveImage(p, tn);
+}
 
-    //                QPainter painter(&pixmap);
-    //                painter.setFont(QFont("Consolas", 12));
-    //                painter.setPen(Qt::white);
+auto LoadedHeatEquationFBVP::saveImage(const DoubleMatrix &p, const TimeNodePDE &tn) const -> void
+{
+    if (drawImages != 0)
+    {
+        QString filename = QString("data/problem3P/b/png/%1.png").arg(tn.i, 8, 10, QChar('0'));
+        QPixmap pixmap;
+        visualizeMatrixHeat(p, p.min(), p.max(), pixmap, 101, 101);
+        pixmap.save(filename);
+    }
 
-    //                painter.drawText(2, 30, QString("time: ")+QString::number(tn.t, 'f', 3));
-    //                painter.drawText(2, 60, QString("temp: ")+QString::number(u.max(), 'f', 3)+QString(" max temp: ")+QString::number(MAX, 'f', 3));
-    //pixmap.save(filename);
-    //    }
 }
 
 auto LoadedHeatEquationFBVP::timeDimension() const -> Dimension { return Shared::_timeDimension; }
@@ -469,7 +500,7 @@ auto LoadedHeatEquationFBVP::spaceDimensionZ() const -> Dimension { return Share
 auto Shared::q(const TimeNodePDE &tn, size_t i) const -> double
 {
     size_t time_size = _timeDimension.size();
-    return qv[i*time_size + tn.i];
+    return qi_v[i*time_size + tn.i];
     //    return 0.05*tn.t;
 }
 

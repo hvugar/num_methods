@@ -31,9 +31,11 @@ public:
     DoubleMatrix U = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
     DoubleMatrix V = DoubleMatrix(DIMY_MAX+1, DIMX_MAX+1, 10.0);
 
-    DoubleVector qv = DoubleVector(2*(TIME_MAX+1), 0.0);
-    DoubleVector pv = DoubleVector(2*(TIME_MAX+1), 0.0);
-    //DoubleVector zv = DoubleVector(2*(TIME_MAX+1), 0.0);
+    DoubleVector uj_v;
+    DoubleVector pi_v;
+
+    DoubleVector qi_v;
+    DoubleVector gj_v;
 
 #ifdef OPTIMIZE_Y
     DoubleMatrix k;
@@ -75,6 +77,8 @@ protected:
     virtual auto spaceDimensionX() const -> Dimension override;
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
+
+    auto saveImage(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void;
 };
 
 class PROBLEM3P_SHARED_EXPORT LoadedHeatEquationFBVP : public IHeatEquationFBVP, public virtual Shared /*public ILoadedHeatEquationFBVP*/
@@ -95,6 +99,8 @@ protected:
     virtual auto spaceDimensionX() const -> Dimension override;
     virtual auto spaceDimensionY() const -> Dimension override;
     virtual auto spaceDimensionZ() const -> Dimension override;
+
+    auto saveImage(const DoubleMatrix &u, const TimeNodePDE &tn) const -> void;
 };
 
 
