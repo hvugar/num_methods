@@ -293,7 +293,7 @@ void R1FxMinimizer::goldenSectionSearch(double &x, double &a, double &b, double 
     unsigned int iteration = 0;
     unsigned int fx__count = 0;
 
-    if ( mfunction == NULL )
+    if ( mfunction == nullptr )
     {
         std::string msg = "in function \"goldenSectionSearch\" function pointer is null.";
         throw std::runtime_error(msg);
@@ -318,7 +318,9 @@ void R1FxMinimizer::goldenSectionSearch(double &x, double &a, double &b, double 
     double y2 = 0.0;
 
     x = (a+b)/2.0;
-    if (mcallback) mcallback->goldenSectionSearchCallback(iteration, NAN, a, b, NAN, NAN, NAN, fx__count);
+    if (mcallback) mcallback->goldenSectionSearchCallback(iteration, std::numeric_limits<double>::quiet_NaN(), a, b,
+                                                          std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(),
+                                                          std::numeric_limits<double>::quiet_NaN(), fx__count);
 
     // Lazimi epsilon deqiqliyini alana qeder iterasiyalari davam edirik
     while ( fabs(b-a) > epsilon )
@@ -354,7 +356,9 @@ void R1FxMinimizer::goldenSectionSearch(double &x, double &a, double &b, double 
 
         x = (b+a)/2.0;
         iteration++;
-        if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+        if (mcallback) mcallback->goldenSectionSearchCallback(iteration, x, a, b,
+                                                              std::numeric_limits<double>::quiet_NaN(),
+                                                              std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), fx__count);
     }
 
     //double c = (a+b)/2.0;
@@ -385,7 +389,7 @@ void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double 
     unsigned int iteration = 0;
     unsigned int fx__count = 0;
 
-    if ( mfunction == NULL )
+    if ( mfunction == nullptr )
     {
         std::string msg = "in function \"halphIntervalMethod\" function pointer is null.";
         throw std::runtime_error(msg);
@@ -401,7 +405,9 @@ void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double 
     x = (a+b)/2.0;
     double f_xm = mfunction->fx(x); fx__count++;
 
-    if (mcallback) mcallback->halphIntervalMethodCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+    if (mcallback) mcallback->halphIntervalMethodCallback(iteration, x, a, b, std::numeric_limits<double>::quiet_NaN(),
+                                                          std::numeric_limits<double>::quiet_NaN(),
+                                                          std::numeric_limits<double>::quiet_NaN(), fx__count);
 
     while ( l > epsilon )
     {
@@ -433,7 +439,9 @@ void R1FxMinimizer::halphIntervalMethod(double &x, double &a, double &b, double 
 
         x = (b+a)/2.0;
         iteration++;
-        if (mcallback) mcallback->halphIntervalMethodCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+        if (mcallback) mcallback->halphIntervalMethodCallback(iteration, x, a, b,
+                                                              std::numeric_limits<double>::quiet_NaN(),
+                                                              std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), fx__count);
     }
 
     //x = (b + a) /  2.0;
@@ -474,7 +482,8 @@ void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsi
         throw std::invalid_argument(msg);
     }
 
-    if (mcallback) mcallback->dichotomyCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+    if (mcallback) mcallback->dichotomyCallback(iteration, x, a, b, std::numeric_limits<double>::quiet_NaN(),
+                                                std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), fx__count);
 
     while ( fabs(b - a) > epsilon )
     {
@@ -495,7 +504,8 @@ void R1FxMinimizer::dichotomyMethod(double &x, double &a, double &b, double epsi
 
         x = (a + b)/2.0;
         iteration++;
-        if (mcallback) mcallback->dichotomyCallback(iteration, x, a, b, NAN, NAN, NAN, fx__count);
+        if (mcallback) mcallback->dichotomyCallback(iteration, x, a, b, std::numeric_limits<double>::quiet_NaN(),
+                                                    std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN(), fx__count);
     }
 }
 
@@ -724,7 +734,7 @@ R1Function* R1FxMinimizer::Callback::function() const
  * @param fa      Величина функции в точке a
  * @param fb      Величина функции в точке b
  */
-void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f) noexcept
+void stranghLineSearch(double x, double step, double &a, double &b, R1Function *f)
 {
     if ( f == nullptr )
     {
@@ -823,7 +833,7 @@ void stranghLineSearch(double x, double step, double &a, double &b, R1Function *
  */
 double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, double epsilon)
 {
-    if ( f == NULL )
+    if ( f == nullptr )
     {
         std::string msg = "in function \"goldenSectionSearch\" function pointer is null.";
         throw std::runtime_error(msg);
@@ -837,8 +847,8 @@ double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, doubl
 
     double phi = 1.6180339887498948482045868343656;
 
-    double x1 = NAN;
-    double x2 = NAN;
+    double x1 = std::numeric_limits<double>::quiet_NaN();
+    double x2 = std::numeric_limits<double>::quiet_NaN();
 
     double y1 = 0.0;
     double y2 = 0.0;
@@ -863,14 +873,16 @@ double goldenSectionSearch(double &a, double &b, double &x, R1Function *f, doubl
             a = x1;
             x1 = x2;    // Tapilmish x2 noqtesi ve bu noqtede funksiyanin qiymeti
             y1 = y2;    // sonraki iterasiyada x1 qiymeti kimi istifade olunacaq.
-            x2 = NAN;   // x2 novbeti iterasiyada axtarilacaq
+            // x2 novbeti iterasiyada axtarilacaq
+            x2 = std::numeric_limits<double>::quiet_NaN();
         }
         else
         {
             b = x2;
             x2 = x1;    // Tapilmish x1 noqtesi ve bu noqtede funksiyanin qiymeti
             y2 = y1;    // sonraki iterasiyada x2 qiymeti kimi istifade olunacaq.
-            x1 = NAN;   // x1 novbeti iterasiyada axtarilacaq
+            // x1 novbeti iterasiyada axtarilacaq
+            x1 = std::numeric_limits<double>::quiet_NaN();
         }
     }
 

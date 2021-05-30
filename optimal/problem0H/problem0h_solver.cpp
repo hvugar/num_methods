@@ -429,7 +429,7 @@ auto ProblemSolver::gradient(const DoubleVector &x, DoubleVector &g) const -> vo
     //std::cout << "Gradients calculated." << std::endl;
 }
 
-auto ProblemSolver::project(DoubleVector &x, unsigned int index) -> void
+auto ProblemSolver::project(DoubleVector &x, size_t index) -> void
 {
     const Dimension &time = timeDimension();
     const unsigned int time_size = time.size();
@@ -442,15 +442,15 @@ auto ProblemSolver::project(DoubleVector &x, unsigned int index) -> void
 
 auto ProblemSolver::project(DoubleVector &) const  -> void {}
 
-auto ProblemSolver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const -> void
+auto ProblemSolver::print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void
 {
     C_UNUSED(i); C_UNUSED(x); C_UNUSED(g); C_UNUSED(f); C_UNUSED(alpha); C_UNUSED(result);
     const char* msg = nullptr; C_UNUSED(msg);
-    if (result == GradientMethod::MethodResult::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
-    if (result == GradientMethod::MethodResult::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
-    if (result == GradientMethod::MethodResult::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
-    if (result == GradientMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
-    if (result == GradientMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
+    if (result == GradientBasedMethod::MethodResult::BREAK_FIRST_ITERATION)    msg = "BREAK_FIRST_ITERATION   ";
+    if (result == GradientBasedMethod::MethodResult::FIRST_ITERATION)          msg = "FIRST_ITERATION         ";
+    //if (result == GradientBasedMethod::MethodResult::BREAK_GRADIENT_NORM_LESS) msg = "BREAK_GRADIENT_NORM_LESS";
+    //if (result == GradientBasedMethod::MethodResult::BREAK_DISTANCE_LESS)      msg = "BREAK_DISTANCE_LESS     ";
+    if (result == GradientBasedMethod::MethodResult::NEXT_ITERATION)           msg = "NEXT_ITERATION          ";
 
     ProblemSolver* fw = const_cast<ProblemSolver*>(this);
     fw->vectorToParameter(x);
@@ -507,7 +507,7 @@ double ProblemSolver::frw_initial(const SpaceNodePDE &, InitialCondition) const 
 
 double ProblemSolver::frw_boundary(const SpaceNodePDE &, const TimeNodePDE &, BoundaryConditionPDE & condition) const
 {
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 0.0);
+    condition = BoundaryConditionPDE::Dirichlet();
     return 0.0;
 }
 
@@ -812,7 +812,7 @@ double ProblemSolver::bcw_final(const SpaceNodePDE &sn, FinalCondition condition
 
 double ProblemSolver::bcw_boundary(const SpaceNodePDE&, const TimeNodePDE&, BoundaryConditionPDE &condition) const
 {
-    condition = BoundaryConditionPDE(BoundaryCondition::Dirichlet, 1.0, 0.0, 0.0);
+    condition = BoundaryConditionPDE::Dirichlet();
     return 0.0;
 }
 

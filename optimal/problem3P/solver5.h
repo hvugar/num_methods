@@ -6,7 +6,7 @@
 #undef TIME_STEP
 #define TIME_STEP 0.01
 #undef TIME_MAX
-#define TIME_MAX 300
+#define TIME_MAX 500
 #define DIMX_STEP 0.01
 #define DIMX_MAX 100
 #define DIMY_STEP 0.01
@@ -15,6 +15,7 @@
 
 //#define OPTIMIZE_Q
 #define OPTIMIZE_Y
+//#define CALCULATE_GRAD
 
 namespace p3p5
 {
@@ -50,7 +51,7 @@ protected:
 
 public:
     const size_t heating_source_number = 2;
-    const size_t meausere_point_number = 2;
+    const size_t meausere_point_number = 4;
     SpacePoint *measurePoint;
     double lambda1 = 0.01;
     double initial_temperature = 0.0;

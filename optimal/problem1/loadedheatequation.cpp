@@ -6,9 +6,9 @@ void LoadedHeatEquation::Main(int argc UNUSED_PARAM, char** argv UNUSED_PARAM)
     LoadedHeatEquation ex1;
 
     Dimension time(0.1, 10, 0);
-    ex1.setTimeDimension(time);
+    //ex1.setTimeDimension(time);
     Dimension dim1(0.001, 1000, 0);
-    ex1.setSpaceDimensionX(dim1);
+    //ex1.setSpaceDimensionX(dim1);
 
     ex1.lambda0 = 0.001;
     ex1.lambda1 = 1000.0;

@@ -1,6 +1,6 @@
 #include "delta_grid_2d_ext1.h"
 
-void DeltaGrid2DExt1::Main(int argc, char **argv)
+void DeltaGrid2DExt1::Main(int /*argc*/, char **/*argv*/)
 {
     //example1();
     example2();
@@ -47,7 +47,7 @@ void DeltaGrid2DExt1::example2()
 {
     struct A
     {
-        static double fx(double x) { return exp(x*x); }
+        //static double fx(double x) { return exp(x*x); }
         static double gs(SpacePoint sp, SpacePoint mu, double sigmaX, double sigmaY)
         {
             return (1.0/(2.0*M_PI*sigmaX*sigmaY))*
@@ -125,7 +125,7 @@ double DeltaGrid2DExt1::fx(double x, double y) const
     //return sin(50.0*x*x)*cos(5.0*x)+sin(20.0*y*y)*sin(5.0*y)-0.5;
 }
 
-double DeltaGrid2DExt1::dx(double x, double y) const
+double DeltaGrid2DExt1::dx(double x, double /*y*/) const
 {
     //return 0.0;
     //return 1.0;
@@ -136,7 +136,7 @@ double DeltaGrid2DExt1::dx(double x, double y) const
     //return 100.0*x*cos(50.0*x*x)*cos(5.0*x) - 5.0*sin(50.0*x*x)*sin(5.0*x);
 }
 
-double DeltaGrid2DExt1::dy(double x, double y) const
+double DeltaGrid2DExt1::dy(double /*x*/, double y) const
 {
     //return 0.0;
     //return 1.0;
@@ -147,7 +147,7 @@ double DeltaGrid2DExt1::dy(double x, double y) const
     //return 40.0*y*cos(20.0*y*y)*sin(5.0*y) + 5.0*sin(20.0*y*y)*cos(5.0*y);
 }
 
-void DeltaGrid1DExt1::Main(int argc, char **argv)
+void DeltaGrid1DExt1::Main(int /*argc*/, char **/*argv*/)
 {
     //example1();
     //example2();
@@ -172,7 +172,7 @@ void DeltaGrid1DExt1::example1()
     printf("%10.6f\n", dg.p().x);
 
     double z, dx;
-    printf("%14.10f %14.10f %14.10f\n", ex1.fx(dg.p().x), ex1.dx(dg.p().x));
+    printf("%14.10f %14.10f\n", ex1.fx(dg.p().x), ex1.dx(dg.p().x));
     puts("---");
     z = dg.consentrateInPoint(u, dx, 3); printf("%14.10f %14.10f\n", z, dx);
     z = dg.consentrateInPoint(u, dx, 4); printf("%14.10f %14.10f\n", z, dx);
@@ -185,24 +185,24 @@ void DeltaGrid1DExt1::example2()
 {
     struct A
     {
-        static double fx(double x) { return exp(x*x); }
-        static double gs(double x, double mu, double sigma) { return (1.0/(sqrt(2.0*M_PI)*sigma))*exp(-((x-mu)*(x-mu))/(2.0*sigma*sigma)); }
+        //static double fx(double x) { return exp(x*x); }
+        //static double gs(double x, double mu, double sigma) { return (1.0/(sqrt(2.0*M_PI)*sigma))*exp(-((x-mu)*(x-mu))/(2.0*sigma*sigma)); }
     };
 
-    const double x = 0.00;
-    const double c = 0.00;
+    //const double x = 0.00;
+    //const double c = 0.00;
     const double h = 0.01;
     const double m = 0.004;
     DeltaGrid1D dg;
     dg.initGrid(100, h);
     double node[] = {0.00, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10};
-    for (unsigned int i=0; i<=10; i++)
+    for (int i=0; i<=10; i++)
     {
         double w = dg.onFlyWeight(SpaceNodePDE(0, 10.0*node[i]), SpacePoint(0.5+m), 1);
 
         double sum = 0.0;
         sum += 0.5*dg.onFlyWeight(SpaceNodePDE(0, 0.00), SpacePoint(0.5+m), 1);
-        for (unsigned int j=1; j<=99; j++)
+        for (int j=1; j<=99; j++)
         {
             sum += dg.onFlyWeight(SpaceNodePDE(j, j*0.01), SpacePoint(0.5+m), 1);
         }

@@ -332,7 +332,7 @@ void ArtProblem1::optimize(DoubleVector &x0) const
     g.calculate(x0);
 }
 
-void ArtProblem1::project(DoubleVector &x UNUSED_PARAM, unsigned int i UNUSED_PARAM)
+void ArtProblem1::project(DoubleVector &x, size_t i)
 {
     /* e lower/upper limits */
     if (optimizeE)

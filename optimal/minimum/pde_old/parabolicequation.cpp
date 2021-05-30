@@ -1979,7 +1979,7 @@ void IBackwardParabolicEquation2D::calculateMVD(DoubleCube &psi, double h1, doub
     rx2.clear();
 }
 
-void IParabolicEquation::calculateL(DoubleMatrix &u, double hx, double ht, unsigned int N, unsigned int M, double a) const
+void IParabolicEquation::calculateL(DoubleMatrix &/*u*/, double /*hx*/, double /*ht*/, unsigned int /*N*/, unsigned int /*M*/, double /*a*/) const
 {
 //    u.clear();
 

@@ -16,7 +16,7 @@ class Problem1L3 : public IProblem1, public IProjection
 {
 public:
     Problem1L3();
-    virtual void project(DoubleVector &x, unsigned int index);
+    virtual void project(DoubleVector &x, size_t index);
     static void Main(int argc, char* argv[]);
 };
 

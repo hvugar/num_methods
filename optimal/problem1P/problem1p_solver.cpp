@@ -102,7 +102,6 @@ void ProblemSolver::Main(int argc, char* argv[])
 ProblemSolver::ProblemSolver(const Dimension &timeDimension, const Dimension &spaceDimensionX)
 {
     forward.solver = backward.solver = this;
-    forward._userHalfValues = backward._userHalfValues = true;
 
     setTimeDimension(timeDimension);
     setSpaceDimensionX(spaceDimensionX);
@@ -212,7 +211,7 @@ double ProblemSolver::integral(const DoubleVector &x) const
     return integ_sum;
 }
 
-void ProblemSolver::project(DoubleVector &x, unsigned int)
+void ProblemSolver::project(DoubleVector &x, size_t)
 {
     unsigned int s = mPointCount*2;
     unsigned int f = mPointCount*3;
@@ -235,7 +234,7 @@ void ProblemSolver::project(DoubleVector &x, unsigned int)
     }
 }
 
-void ProblemSolver::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const
+void ProblemSolver::print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const
 {
     printf("%6d %10.6f ", iteration, f);
     IPrinter::printVector(x, "xx: ");

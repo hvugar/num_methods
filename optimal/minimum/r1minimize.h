@@ -7,7 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void MINIMUMSHARED_EXPORT stranghLineSearch(double x, double step, double &a, double &b, R1Function *fn) noexcept;
+void MINIMUMSHARED_EXPORT stranghLineSearch(double x, double step, double &a, double &b, R1Function *fn);
 double MINIMUMSHARED_EXPORT goldenSectionSearch(double &a, double &b, double &x, R1Function *f, double epsilon);
 double MINIMUMSHARED_EXPORT goldenSectionSearch1(double &a, double &b, double &x, R1Function *f, double epsilon);
 double MINIMUMSHARED_EXPORT goldenSectionSearch2(double &a, double &b, double &x, R1Function *f, double epsilon);

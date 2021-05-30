@@ -118,11 +118,11 @@ public:
     virtual auto fx(double t) const -> double;
     virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
 
-    virtual auto project(DoubleVector &x, unsigned int index) -> void;
+    virtual auto project(DoubleVector &x, size_t index) -> void;
     virtual auto project(DoubleVector &) const  -> void;
 
     virtual auto print(unsigned int i, const DoubleVector &x, const DoubleVector &g, double f,
-                       double alpha, GradientMethod::MethodResult result) const -> void;
+                       double alpha, GradientBasedMethod::MethodResult result) const -> void;
 
     virtual auto integral1(const DoubleMatrix &u) const -> double;
     virtual auto integral2(const DoubleMatrix &u) const -> double;

@@ -236,12 +236,12 @@ void IProblem1::calculateU1(DoubleMatrix &u, const DoubleVector &k, const Double
     u.clear();
     u.resize(M+1, N+1);
 
-    double *da = (double*) malloc(sizeof(double)*(N+1));
-    double *db = (double*) malloc(sizeof(double)*(N+1));
-    double *dc = (double*) malloc(sizeof(double)*(N+1));
-    double *dd = (double*) malloc(sizeof(double)*(N+1));
-    double *rx = (double*) malloc(sizeof(double)*(N+1));
-    double *de = (double*) malloc(sizeof(double)*(N+1));
+    double *da = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *db = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *dc = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *dd = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *rx = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *de = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
 
     double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
     double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
@@ -346,12 +346,12 @@ void IProblem1::calculateU2(DoubleMatrix &u, const DoubleVector &k, const Double
     u.clear();
     u.resize(M+1, N+1);
 
-    double *da = (double*) malloc(sizeof(double)*(N+1));
-    double *db = (double*) malloc(sizeof(double)*(N+1));
-    double *dc = (double*) malloc(sizeof(double)*(N+1));
-    double *dd = (double*) malloc(sizeof(double)*(N+1));
-    double *rx = (double*) malloc(sizeof(double)*(N+1));
-    double *de = (double*) malloc(sizeof(double)*(N+1));
+    double *da = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *db = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *dc = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *dd = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *rx = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *de = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
 
     double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
     double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
@@ -437,12 +437,12 @@ void IProblem1::calculateU3(DoubleMatrix &u, const DoubleVector &k, const Double
     u.clear();
     u.resize(M+1, N+1);
 
-    double *da = (double*) malloc(sizeof(double)*(N+1));
-    double *db = (double*) malloc(sizeof(double)*(N+1));
-    double *dc = (double*) malloc(sizeof(double)*(N+1));
-    double *dd = (double*) malloc(sizeof(double)*(N+1));
-    double *rx = (double*) malloc(sizeof(double)*(N+1));
-    double *de = (double*) malloc(sizeof(double)*(N+1));
+    double *da = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *db = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *dc = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *dd = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *rx = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
+    double *de = static_cast<double*>( malloc(sizeof(double)*(N+1)) );
 
     double a_a_ht_hx_hx = (a*a*ht)/(hx*hx);
     double lambda1_a_a_ht_hx = (lambda1*a*a*ht)/hx;
@@ -812,7 +812,7 @@ void IProblem1::calculateP(DoubleMatrix &p, const DoubleMatrix &u, const DoubleV
     free(da);
 }
 
-void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, double alpha, GradientMethod::MethodResult) const
+void IProblem1::print(unsigned int i, const DoubleVector &y, const DoubleVector &g, double fx, double alpha, GradientBasedMethod::MethodResult) const
 {
     IProblem1 *pm = const_cast<IProblem1*>(this);
     DoubleVector k,z,e;

@@ -231,7 +231,7 @@ double Problem1L1::fx(const DoubleVector &x) const
     double norm2 = 0.0;
     double norm3 = 0.0;
 
-    int i = 0;
+    size_t i = 0;
 #ifdef _OPTIMIZE_K_
     norm1 = sqrt((k.at(0)-xs.at(i))*(k.at(0)-xs.at(i))+(k.at(1)-xs.at(i+1))*(k.at(1)-xs.at(i+1)));
     i+=2;
@@ -373,7 +373,7 @@ void Problem1L1::gradient(const DoubleVector &x, DoubleVector &g) const
 #endif
 }
 
-void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector &, double, double, GradientMethod::MethodResult) const
+void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector &, double, double, GradientBasedMethod::MethodResult /*result*/) const
 {
     int j = 0;
     printf("x: ");
@@ -448,7 +448,7 @@ void Problem1L1::print(unsigned int i, const DoubleVector &x, const DoubleVector
     //    puts("\n-----------------------------------------");
 }
 
-void Problem1L1::project(DoubleVector &x UNUSED_PARAM, unsigned int i UNUSED_PARAM)
+void Problem1L1::project(DoubleVector &x UNUSED_PARAM, size_t /*i*/)
 {
     int j = 0;
 #ifdef _OPTIMIZE_K_

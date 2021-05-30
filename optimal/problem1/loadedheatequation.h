@@ -22,6 +22,11 @@ public:
 
     virtual double g(const TimeNodePDE &tn) const;
     virtual double h(const TimeNodePDE &tn) const;
+
+    virtual Dimension timeDimension() const { return Dimension(); }
+    virtual Dimension spaceDimensionX() const { return Dimension(); }
+    virtual Dimension spaceDimensionY() const { return Dimension(); }
+    virtual Dimension spaceDimensionZ() const { return Dimension(); }
 };
 
 #endif // LOADEDHEATEQUATION_H

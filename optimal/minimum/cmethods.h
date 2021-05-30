@@ -35,8 +35,6 @@ void MINIMUMSHARED_EXPORT tomasAlgorithmRight2Left(const double *a, const double
 
 void MINIMUMSHARED_EXPORT tomasAlgorithmLeft2RightCheck(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N);// COMPLETED
 
-
-
 void MINIMUMSHARED_EXPORT tomasAlgorithmLeft2RightModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e, double f);
 void MINIMUMSHARED_EXPORT tomasAlgorithmRight2LeftModefied(const double *a, const double *b, const double *c, const double *d, double *x, unsigned int N, double *e, double f);
 
@@ -51,10 +49,10 @@ void MINIMUMSHARED_EXPORT qovma2(double *a, double *b, double *c, double *d, dou
 void MINIMUMSHARED_EXPORT gaussianElimination(double **a, double *b, double *x, unsigned int n);
 void MINIMUMSHARED_EXPORT gaussJordanElimination(double **a, double *b, double *x, unsigned int n);
 
-void MINIMUMSHARED_EXPORT euler(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
-void MINIMUMSHARED_EXPORT eulerMod(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
-void MINIMUMSHARED_EXPORT runge_kutta_rk3(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
-void MINIMUMSHARED_EXPORT runge_kutta_rk4(double x0, double y0, double xN, double yN, unsigned int N, double *x, double *y, ODE1stOrderEquation eq);
+void MINIMUMSHARED_EXPORT euler(double x0, double y0, double xN, double yN, size_t N, double *x, double *y, ODE1stOrderEquation eq);
+void MINIMUMSHARED_EXPORT eulerMod(double x0, double y0, double xN, double yN, size_t N, double *x, double *y, ODE1stOrderEquation eq);
+void MINIMUMSHARED_EXPORT runge_kutta_rk3(double x0, double y0, double xN, double yN, size_t N, double *x, double *y, ODE1stOrderEquation eq);
+void MINIMUMSHARED_EXPORT runge_kutta_rk4(double x0, double y0, double xN, double yN, size_t N, double *x, double *y, ODE1stOrderEquation eq);
 
 void MINIMUMSHARED_EXPORT runge_kutta_rk4_system(double x0, double x1, double *y0, double **y1, size_t n, unsigned int N, double h, ODE1stOrderEquationN *eq);
 //void RungaKuttaSystem(RmFunction *f, double x0, const double *y0, double x, double *y, const int n, double h);

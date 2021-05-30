@@ -76,8 +76,8 @@ public:
 
     virtual void gradient(const DoubleVector &x, DoubleVector &g) const;
     virtual double fx(const DoubleVector &x) const;
-    virtual void project(DoubleVector &x, unsigned int index);
-    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientMethod::MethodResult result) const;
+    virtual void project(DoubleVector &x, size_t index);
+    virtual void print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const;
 
     const Dimension &timeDimension() const { return _timeDimension; }
     void setTimeDimension(const Dimension &timeDimension);

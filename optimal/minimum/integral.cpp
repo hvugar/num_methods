@@ -76,7 +76,7 @@ double trapesium(R1Function *f, size_t N, double a, double b)
     return sum;
 }
 
-double trapesium2D(const DoubleMatrix &m, double hx, double hy)
+double trapesium2D(const DoubleMatrix &/*m*/, double /*hx*/, double /*hy*/)
 {
     //    size_t rows = m.rows();
     //    size_t cols = m.cols();
@@ -111,22 +111,22 @@ double trapesium2D(const DoubleMatrix &m, double hx, double hy)
     return sum;
 }
 
-double Integral::rectangle(const DoubleVector &v)
+double Integral::rectangle(const DoubleVector &/*v*/)
 {
     return 0.0;
 }
 
-double Integral::trapezoidal(const DoubleVector &v)
+double Integral::trapezoidal(const DoubleVector &/*v*/)
 {
     return 0.0;
 }
 
-double Integral::simpsons(const DoubleVector &v)
+double Integral::simpsons(const DoubleVector &/*v*/)
 {
     return 0.0;
 }
 
-double Integral::rectangle(const DoubleMatrix &m)
+double Integral::rectangle(const DoubleMatrix &/*m*/)
 {
     return 0.0;
 }
