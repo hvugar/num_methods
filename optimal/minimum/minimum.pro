@@ -6,6 +6,8 @@ CONFIG -= qt
 CONFIG += shared
 CONFIG += c++11
 
+QMAKE_CLEAN +=
+
 DEFINES += MINIMUM_LIBRARY
 
 DESTDIR = ../bin

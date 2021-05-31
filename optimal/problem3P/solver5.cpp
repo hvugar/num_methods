@@ -4,7 +4,7 @@ using namespace p3p5;
 
 void Functional::Main(int /*argc*/, char** /*argv*/)
 {
-    Functional f(0.01, 0.0, 0.01, 0.0001);
+    Functional f(0.01, 0.0, 0.001, 0.0001);
 
     const size_t heating_source_number = f.heating_source_number;
     const size_t meausere_point_number = f.meausere_point_number;
@@ -82,9 +82,14 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     //const double x1[] = { -0.142684,-0.477681,-0.148600,-0.086369,-0.229681,0.140437,0.279019,0.173836,10.156707,10.437467,10.168664,10.123407,10.152389,9.971530,9.957007,9.991577 };
 
     // T=600
-    const double x1[] = { -0.139751,-0.474833,-0.150734,-0.085685,-0.230342,0.140775,0.279316,0.173955,10.149486,10.412895,10.160875,10.119001,10.151724,9.971919,9.957810,9.992079 };
+    //const double x1[] = { -0.139751,-0.474833,-0.150734,-0.085685,-0.230342,0.140775,0.279316,0.173955,10.149486,10.412895,10.160875,10.119001,10.151724,9.971919,9.957810,9.992079 };
+    //const double x1[] = { -0.138460,-0.473968,-0.151473,-0.084952,-0.230539,0.141092,0.279258,0.173815,10.138741,10.376056,10.149122,10.112448,10.150277,9.972811,9.959564,9.993170 };
+
+    // T=10000
+    const double x1[] = { -0.134009,-0.472945,-0.152794,-0.079919,-0.229945,0.143364,0.277946,0.172524,10.138670,10.375812,10.149044,10.112404,10.150022,9.972967,9.959873,9.99336 };
 
     for (size_t i=0; i<2*heating_source_number * meausere_point_number; i++) { x[i] = x1[i]; }
+
 
 
 #endif
@@ -134,8 +139,8 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 #endif
 
 
-    //f.gm = new ConjugateGradient;       f.gm->setNormalize(false);
-    f.gm = new SteepestDescentGradient; f.gm->setNormalize(true);
+    f.gm = new ConjugateGradient;       f.gm->setNormalize(false);
+    //f.gm = new SteepestDescentGradient; f.gm->setNormalize(true);
     f.gm->setFunction(&f);
     f.gm->setGradient(&f);
     f.gm->setPrinter(&f);
@@ -237,7 +242,7 @@ auto Functional::integral(const DoubleMatrix &) const -> double
     class Integral : public RnFunction
     {
     public:
-        virtual auto fx(const DoubleVector &x) const -> double { return 0.0; }
+        virtual auto fx(const DoubleVector &x) const -> double override { return 0.0; }
     };
 
     return usum*(hx*hy);

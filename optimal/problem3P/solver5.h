@@ -6,7 +6,7 @@
 #undef TIME_STEP
 #define TIME_STEP 0.01
 #undef TIME_MAX
-#define TIME_MAX 800
+#define TIME_MAX 1000
 #define DIMX_STEP 0.01
 #define DIMX_MAX 100
 #define DIMY_STEP 0.01
@@ -118,12 +118,12 @@ public:
 
     Functional(double diffusivity = 1.0, double conductivity = 0.0, double convection = 0.0, double lambda = 0.0);
 
-    virtual auto fx(const DoubleVector &x) const -> double;
+    virtual auto fx(const DoubleVector &x) const -> double override;
     virtual auto integral(const DoubleMatrix &U) const -> double;
-    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void;
+    virtual auto gradient(const DoubleVector &x, DoubleVector &g) const -> void override;
 
-    virtual auto project(DoubleVector &x, size_t index) -> void;
-    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void;
+    virtual auto project(DoubleVector &x, size_t index) -> void override;
+    virtual auto print(unsigned int iteration, const DoubleVector &x, const DoubleVector &g, double f, double alpha, GradientBasedMethod::MethodResult result) const -> void override;
 
     GradientBasedMethod *gm;
     double lastFx = 0.0;
