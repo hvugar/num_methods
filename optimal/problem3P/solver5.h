@@ -6,7 +6,7 @@
 #undef TIME_STEP
 #define TIME_STEP 0.01
 #undef TIME_MAX
-#define TIME_MAX 500
+#define TIME_MAX 800
 #define DIMX_STEP 0.01
 #define DIMX_MAX 100
 #define DIMY_STEP 0.01
@@ -129,6 +129,8 @@ public:
     double lastFx = 0.0;
 
     size_t functionCount = 0;
+    bool optimizeK = true;
+    bool optimizeZ = true;
 };
 
 }

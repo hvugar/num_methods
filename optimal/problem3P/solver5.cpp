@@ -80,7 +80,13 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     //const double x1[] = { -0.123125,-0.485238,-0.186630,-0.150516,-0.220890,-0.016917,0.051749,-0.017874,10.058294,10.060698,10.032328,10.019139,10.029638,9.975233,10.003558,10.012117 };
     //const double x1[] = { -0.098624,-0.522315,-0.144864,-0.109226,-0.249009,-0.031725,0.110425,0.081891,10.089100,10.169224,10.078014,10.051277,10.072794,9.980609,9.992992,10.017170 };
     //const double x1[] = { -0.142684,-0.477681,-0.148600,-0.086369,-0.229681,0.140437,0.279019,0.173836,10.156707,10.437467,10.168664,10.123407,10.152389,9.971530,9.957007,9.991577 };
-    //for (size_t i=0; i<2*heating_source_number * meausere_point_number; i++) { x[i] = x1[i]; }
+
+    // T=600
+    const double x1[] = { -0.139751,-0.474833,-0.150734,-0.085685,-0.230342,0.140775,0.279316,0.173955,10.149486,10.412895,10.160875,10.119001,10.151724,9.971919,9.957810,9.992079 };
+
+    for (size_t i=0; i<2*heating_source_number * meausere_point_number; i++) { x[i] = x1[i]; }
+
+
 #endif
 
 #ifdef OPTIMIZE_Q
@@ -128,8 +134,8 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 #endif
 
 
-    f.gm = new ConjugateGradient;       f.gm->setNormalize(false);
-    //f.gm = new SteepestDescentGradient; f.gm->setNormalize(false);
+    //f.gm = new ConjugateGradient;       f.gm->setNormalize(false);
+    f.gm = new SteepestDescentGradient; f.gm->setNormalize(true);
     f.gm->setFunction(&f);
     f.gm->setGradient(&f);
     f.gm->setPrinter(&f);
@@ -284,8 +290,8 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
             for (size_t ln=0; ln<time_size; ln++)
             {
                 double w = (ln==0 || ln == time_size-1) ? 0.5*time_step : time_step;
-                g[0*heating_source_number*meausere_point_number + i*meausere_point_number + j] += -pi_v[offset1+ln] * (uj_v[offset2+ln]-z[i][j]) * w;
-                g[1*heating_source_number*meausere_point_number + i*meausere_point_number + j] += +pi_v[offset1+ln] * k[i][j] * w;
+                if (optimizeK) g[0*heating_source_number*meausere_point_number + i*meausere_point_number + j] += -pi_v[offset1+ln] * (uj_v[offset2+ln]-z[i][j]) * w;
+                if (optimizeZ) g[1*heating_source_number*meausere_point_number + i*meausere_point_number + j] += +pi_v[offset1+ln] * k[i][j] * w;
             }
         }
     }
@@ -325,6 +331,8 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
     IPrinter::printVector(g, "g:\t", g.length());
 #endif
     const_cast<Functional*>(this)->functionCount = 0;
+    const_cast<Functional*>(this)->optimizeK = iteration%2==0;
+    const_cast<Functional*>(this)->optimizeZ = iteration%2==1;
 
     if (iteration!=0) const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(alpha*0.5, alpha*0.1);
 
