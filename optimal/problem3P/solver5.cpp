@@ -85,8 +85,12 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     //const double x1[] = { -0.139751,-0.474833,-0.150734,-0.085685,-0.230342,0.140775,0.279316,0.173955,10.149486,10.412895,10.160875,10.119001,10.151724,9.971919,9.957810,9.992079 };
     //const double x1[] = { -0.138460,-0.473968,-0.151473,-0.084952,-0.230539,0.141092,0.279258,0.173815,10.138741,10.376056,10.149122,10.112448,10.150277,9.972811,9.959564,9.993170 };
 
+    // T=800
+    // const double x1[] = { -0.138864,-0.471275,-0.152512,-0.088256,-0.231484,0.140026,0.279987,0.175223,10.056367,10.094603,10.059245,10.061847,10.218046,9.930965,9.877373,9.942132 };
+     const double x1[] = { -0.134553,-0.470363,-0.153744,-0.083357,-0.230604,0.142347,0.278852,0.174166,10.056316,10.094430,10.059189,10.061815,10.217860,9.931077,9.877598,9.942273 };
+
     // T=10000
-    const double x1[] = { -0.134009,-0.472945,-0.152794,-0.079919,-0.229945,0.143364,0.277946,0.172524,10.138670,10.375812,10.149044,10.112404,10.150022,9.972967,9.959873,9.99336 };
+    //const double x1[] = { -0.134009,-0.472945,-0.152794,-0.079919,-0.229945,0.143364,0.277946,0.172524,10.138670,10.375812,10.149044,10.112404,10.150022,9.972967,9.959873,9.99336 };
 
     for (size_t i=0; i<2*heating_source_number * meausere_point_number; i++) { x[i] = x1[i]; }
 
@@ -148,7 +152,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
     f.gm->setOptimalityTolerance(0.0);
     f.gm->setStepTolerance(0.0);
     f.gm->setFunctionTolerance(0.0);
-    f.gm->setR1MinimizeEpsilon(0.01, 0.001);
+    f.gm->setR1MinimizeEpsilon(0.1, 0.01);
     //f.gm->setMaxIterationCount(100);
     f.gm->showExitMessage(true);
     f.gm->calculate(x);
@@ -321,7 +325,7 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
     const_cast<Functional*>(this)->lastFx = f;
 
     size_t time_size = static_cast<size_t>(_timeDimension.max());
-    printf("I[%3d]: %10.6f | %10.6f %10.6f | %10.6f %10.6f | %10.6f | %4zu | %4zu | %4zu | %4zu | %10.6f %10.6f\n", iteration, f, U.min(), U.max(),
+    printf("I[%3d]: %10.6f | %d | %10.6f %10.6f | %10.6f %10.6f | %10.6f | %4zu | %4zu | %4zu | %4zu | %10.6f %10.6f\n", iteration,f,  _timeDimension.size(), U.min(), U.max(),
            gm->min_step, gm->min_epsilon, alpha, functionCount,
            gm->search_function_count, gm->golden_function_count, gm->total__function_count, x.min(), x.max());
 
