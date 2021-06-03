@@ -3,6 +3,13 @@
 
 #include "pibvp.h"
 
+enum SweepMethodDirection
+{
+    ForwardSweep = 1,
+    BackwardSweep = 2,
+    Centered = 3
+};
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 class MINIMUMSHARED_EXPORT IHeatEquationIBVPEx : public IHeatEquationIBVP

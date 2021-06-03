@@ -1556,6 +1556,47 @@ double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, c
     return uv;
 }
 
+double DeltaFunction::lumpedPointG(const DoubleVector &u, const double m, const Dimension &dimensionX, size_t nps, size_t k)
+{
+    const double hx = dimensionX.step();
+    const unsigned int Nx = dimensionX.size()-1;
+    const double lx = hx*Nx;
+    const double px = m;
+    const size_t rx = static_cast<size_t>(round((px/hx)*lx));
+
+    const size_t minX = static_cast<size_t>(rx - nps*k);
+    const size_t maxX = static_cast<size_t>(rx + nps*k);
+    const double sigma = static_cast<double>(nps)*hx;
+
+    double uv = 0.0;
+    //double ux = 0.0, uy = 0.0;
+    double p;
+
+        for (size_t i=minX; i<=maxX; i++)
+        {
+            p = static_cast<double>(i)*hx;
+            double w = gaussian(p, m, sigma);
+            // Trapezoidal rule
+            if (i==minX || i==maxX) { w *= 0.5; }
+
+            // Simpson's rule
+            //if (i==minX || i==maxX) { w *= 1.0; } else if (i%2==1) { w *= 4.0; } else { w *= 2.0; }
+            uv += w * u[i];
+            //ux += w * (u[j][i+1]-u[j][i-1])/(2.0*hx);
+            //uy += w * (u[j+1][i]-u[j-1][i])/(2.0*hy);
+        }
+    // Trapezoidal rule
+    uv *= (hx);
+
+    // Simpson's rule
+    //uv *= ((hx*hy)/9.0);
+
+    //ux *= ((hx*hy)/9.0);
+    //uy *= ((hx*hy)/9.0);
+
+    return uv;
+}
+
 double DeltaFunction::lumpedPointG(const DoubleMatrix &u, const SpacePoint &m, const Dimension &dimensionX, const Dimension &dimensionY, size_t nps, size_t k, double &dx, double &dy)
 {
     const double hx = dimensionX.step(), hy = dimensionY.step();

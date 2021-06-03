@@ -1438,8 +1438,8 @@ void IHeatEquationFBVP::implicit_calculate_D1V1() const
 
     for (size_t ln=M-1, size_ln = static_cast<size_t>(0)-1; ln != size_ln; ln--)
     {
-        TimeNodePDE tn0; tn0.i = static_cast<unsigned int>(k+1); tn0.t = tn0.i*ht;
-        TimeNodePDE tn1; tn1.i = static_cast<unsigned int>(k  ); tn1.t = tn1.i*ht;
+        TimeNodePDE tn0; tn0.i = static_cast<unsigned int>(ln+1); tn0.t = tn0.i*ht;
+        TimeNodePDE tn1; tn1.i = static_cast<unsigned int>(ln  ); tn1.t = tn1.i*ht;
 
         size_t i = 1;
         for (int n=xmin+1; n<=xmax-1; n++, i++)

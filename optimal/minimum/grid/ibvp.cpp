@@ -1,5 +1,14 @@
 #include "ibvp.h"
 
+GridDimensionPDE::GridDimensionPDE() {}
+
+GridDimensionPDE::GridDimensionPDE(const GridDimensionPDE& /*other*/) {}
+
+GridDimensionPDE& GridDimensionPDE::operator=(const GridDimensionPDE& /*other*/) { return *this; }
+
+GridDimensionPDE::~GridDimensionPDE() {}
+
+
 InitialBoundaryValueProblemPDE::InitialBoundaryValueProblemPDE() {}
 
 InitialBoundaryValueProblemPDE::InitialBoundaryValueProblemPDE(const InitialBoundaryValueProblemPDE& other) :

@@ -57,7 +57,7 @@
     ClassName(); \
     ClassName(const ClassName &); \
     ClassName & operator =(const ClassName &); \
-    virtual ~ClassName()
+    virtual ~ClassName();
 
 #define PUBLIC_CONSTRUCTORS_VIRTUAL_DESTRUCTOR_IMPL(ClassName) \
     ClassName::ClassName() {} \
