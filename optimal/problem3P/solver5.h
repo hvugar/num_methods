@@ -6,7 +6,7 @@
 #undef TIME_STEP
 #define TIME_STEP 0.01
 #undef TIME_MAX
-#define TIME_MAX 400
+#define TIME_MAX 600
 #define DIMX_STEP 0.01
 #define DIMX_MAX 100
 #define DIMY_STEP 0.01
@@ -15,7 +15,7 @@
 
 //#define OPTIMIZE_Q
 #define OPTIMIZE_Y
-//#define CALCULATE_GRAD
+#define CALCULATE_GRAD
 
 namespace p3p5
 {
