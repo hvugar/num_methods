@@ -18,7 +18,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
     //for (size_t ln=0; ln<time_size; ln++) { x[0*time_size+ln] = x1[ln]; x[1*time_size+ln] = x2[ln]; }
 
-    for (size_t i=0; i<heating_source_number; i++) { for (size_t ln=0; ln<time_size; ln++) { x[i*time_size+ln] = 0.1; } }
+    for (size_t i=0; i<heating_source_number; i++) { for (size_t ln=0; ln<time_size; ln++) { x[i*time_size+ln] = 0.1*(i+1)*ln*P3P6_TIME_STEP; } }
 
 #endif
 
@@ -78,24 +78,31 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 #if defined(P3P6_OPTIMIZE_Q) && defined(P3P6_CALCULATE_GRAD)
     IPrinter::printVector(x.mid(0*time_size, 1*time_size-1));
     IPrinter::printVector(x.mid(1*time_size, 2*time_size-1));
-    IPrinter::printVector(f.pi_v.mid(0*time_size, 1*time_size-1));
-    IPrinter::printVector(f.pi_v.mid(1*time_size, 2*time_size-1));
     IPrinter::printSeperatorLine();
 
     DoubleVector g1(x.length());
     DoubleVector g2(x.length(), 0.0);
 
     f.gradient(x, g1);
-    IPrinter::printVector(g1.mid(   0, 1000).L2Normalize());
-    IPrinter::printVector(g1.mid(1001, 2001).L2Normalize());
+    IPrinter::printVector(g1.mid(0*time_size, 1*time_size-1).L2Normalize());
+    IPrinter::printVector(g1.mid(1*time_size, 2*time_size-1).L2Normalize());
     IPrinter::printSeperatorLine();
 
-    std::vector<size_t> i1 = {   0,  100,  200,  300,  400,  500,  600,  700,  800,  900, 1000};
-    std::vector<size_t> i2 = {1001, 1101, 1201, 1301, 1401, 1501, 1601, 1701, 1801, 1901, 2001};
-    IGradient::Gradient(P3P6_NUM_GRAD_STEP, &f, x, g2, i1); g2[0*time_size] *= 2; g2[1*time_size-1] *= 2;
+    //    std::vector<size_t> i1 = {   0,  100,  200,  300,  400,  500,  600,  700,  800,  900, 1000};
+    //    std::vector<size_t> i2 = {1001, 1101, 1201, 1301, 1401, 1501, 1601, 1701, 1801, 1901, 2001};
+    //    IGradient::Gradient(P3P6_NUM_GRAD_STEP, &f, x, g2, i1); g2[0*time_size] *= 2; g2[1*time_size-1] *= 2;
+    //    IPrinter::printVector(g2.mid(0*time_size, 1*time_size-1).L2Normalize());
+    //    IGradient::Gradient(P3P6_NUM_GRAD_STEP, &f, x, g2, i2); g2[1*time_size] *= 2; g2[2*time_size-1] *= 2;
+    //    IPrinter::printVector(g2.mid(1*time_size, 2*time_size-1).L2Normalize());
+    //    IPrinter::printSeperatorLine();
+
+
+    IGradient::Gradient(&f, P3P6_NUM_GRAD_STEP, x, g2, 0*time_size, 1*time_size-1); g2[0*time_size] *= 2; g2[1*time_size-1] *= 2;
     IPrinter::printVector(g2.mid(0*time_size, 1*time_size-1).L2Normalize());
-    IGradient::Gradient(P3P6_NUM_GRAD_STEP, &f, x, g2, i2); g2[1*time_size] *= 2; g2[2*time_size-1] *= 2;
+    IGradient::Gradient(&f, P3P6_NUM_GRAD_STEP, x, g2, 1*time_size, 2*time_size-1); g2[1*time_size] *= 2; g2[2*time_size-1] *= 2;
     IPrinter::printVector(g2.mid(1*time_size, 2*time_size-1).L2Normalize());
+    IPrinter::printSeperatorLine();
+
 #endif
 
 #if defined(P3P6_OPTIMIZE_Y) && defined(CALCULATE_GRAD)
@@ -122,7 +129,7 @@ void Functional::Main(int /*argc*/, char** /*argv*/)
 
 
     f.gm = new ConjugateGradient;       f.gm->setNormalize(false);
-    //f.gm = new SteepestDescentGradient; f.gm->setNormalize(true);
+//    f.gm = new SteepestDescentGradient; f.gm->setNormalize(false);
     f.gm->setFunction(&f);
     f.gm->setGradient(&f);
     f.gm->setPrinter(&f);
@@ -260,9 +267,9 @@ auto Functional::gradient(const DoubleVector &x, DoubleVector &g) const -> void
 
 auto Functional::project(DoubleVector &x, size_t index) -> void
 {
-#ifdef OPTIMIZE_Q
+#ifdef P3P6_OPTIMIZE_Q
     if (x[index] <=  0.0) x[index] =  0.0;
-    if (x[index] >= 12.0) x[index] = 12.0;
+    //if (x[index] >= 12.0) x[index] = 12.0;
 #endif
 }
 
@@ -275,33 +282,33 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
 
     const_cast<Functional*>(this)->lastFx = f;
 
-    size_t time_size = static_cast<size_t>(_timeDimension.max());
-    printf("I[%3d]: %10.6f | %d | %10.6f %10.6f | %10.6f %10.6f | %10.6f | %4zu | %4zu | %4zu | %4zu | %10.6f %10.6f\n", iteration,f,  _timeDimension.size(), U.min(), U.max(),
+    const size_t time_size = _timeDimension.size();
+    printf("I[%3d]: %10.6f | %d | %10.6f %10.6f | %10.6f %10.6f | %10.6f | %4zu | %4zu | %4zu | %4zu | %10.6f %10.6f\n", iteration,f,  time_size, U.min(), U.max(),
            gm->min_step, gm->min_epsilon, alpha, functionCount,
            gm->search_function_count, gm->golden_function_count, gm->total__function_count, x.min(), x.max());
 
 #ifdef P3P6_OPTIMIZE_Q
-    IPrinter::printVector(x.mid(   0, time_size));
-    IPrinter::printVector(g.mid(   0, time_size));
-    IPrinter::printVector(x.mid(time_size+1, 2*time_size+1));
-    IPrinter::printVector(g.mid(time_size+1, 2*time_size+1));
+    //    IPrinter::printVector(x.mid(0*time_size, 1*time_size-1));
+    //    IPrinter::printVector(x.mid(1*time_size, 2*time_size-1));
+    //    IPrinter::printVector(g.mid(0*time_size, 1*time_size-1));
+    //    IPrinter::printVector(g.mid(1*time_size, 2*time_size-1));
 #endif
 #ifdef OPTIMIZE_Y
     IPrinter::printVector(x, "x:\t", x.length());
     IPrinter::printVector(g, "g:\t", g.length());
 #endif
     const_cast<Functional*>(this)->functionCount = 0;
-    const_cast<Functional*>(this)->optimizeK = iteration%2==0;
-    const_cast<Functional*>(this)->optimizeZ = iteration%2==1;
+    //    const_cast<Functional*>(this)->optimizeK = iteration%2==0;
+    //    const_cast<Functional*>(this)->optimizeZ = iteration%2==1;
 
-    if (iteration!=0) const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(alpha*0.5, alpha*0.1);
+    //if (iteration!=0) const_cast<Functional*>(this)->gm->setR1MinimizeEpsilon(alpha*0.5, alpha*0.1);
 
-    if (f<=1.0)
+    if (f<=0.0001)
     {
-        //        std::cout << "---" << std::endl;
+        IPrinter::printSeperatorLine();
 #ifdef P3P6_OPTIMIZE_Q
-        IPrinter::printVector(x.mid(   0, time_size), nullptr, x.mid(   0, time_size).length());
-        IPrinter::printVector(x.mid(time_size+1, 2*time_size+1), nullptr, x.mid(time_size+1, 2*time_size+1).length());
+        IPrinter::printVector(x.mid(0*time_size, 1*time_size-1), nullptr, x.mid(0*time_size, 1*time_size-1).length());
+        IPrinter::printVector(x.mid(1*time_size, 2*time_size-1), nullptr, x.mid(1*time_size, 2*time_size-1).length());
 #endif
 #ifdef P3P6_OPTIMIZE_Y
         //        const size_t offset = heating_source_number*meausere_point_number;
@@ -309,7 +316,7 @@ auto Functional::print(unsigned int iteration, const DoubleVector &x, const Doub
         //        IPrinter::printVector(qi_v.mid(0*time_size1, 1*time_size1-1), nullptr, time_size1);
         //        IPrinter::printVector(qi_v.mid(1*time_size1, 2*time_size1-1), nullptr, time_size1);
 #endif
-        //        std::cout << "---" << std::endl;
+        IPrinter::printSeperatorLine();
     }
 
 

@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-#define P3P6_TIME_STEP 0.01
-#define P3P6_TIME_MAX 1000
+#define P3P6_TIME_STEP 0.1
+#define P3P6_TIME_MAX 100
 #define P3P6_TIME_SIZE P3P6_TIME_MAX+1
 #define P3P6_DIMX_STEP 0.01
 #define P3P6_DIMX_MAX 100
@@ -12,7 +12,7 @@
 
 #define P3P6_OPTIMIZE_Q
 //#define P3P6_OPTIMIZE_Y
-#define P3P6_CALCULATE_GRAD
+//#define P3P6_CALCULATE_GRAD
 
 namespace p3p6
 {
